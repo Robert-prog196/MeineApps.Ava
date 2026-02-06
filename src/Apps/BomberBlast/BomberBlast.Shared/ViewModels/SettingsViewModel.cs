@@ -17,6 +17,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IHighScoreService _highScoreService;
     private readonly ILocalizationService _localizationService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IGameStyleService _gameStyleService;
 
     private bool _isInitializing = true;
 
@@ -106,6 +107,39 @@ public partial class SettingsViewModel : ObservableObject
     private string _musicVolumeText = "70%";
 
     // ═══════════════════════════════════════════════════════════════════════
+    // OBSERVABLE PROPERTIES - VISUAL STYLE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>Whether Classic style is selected.</summary>
+    public bool IsClassicSelected
+    {
+        get => _gameStyleService.CurrentStyle == GameVisualStyle.Classic;
+        set { if (value) SelectStyle("Classic"); }
+    }
+
+    /// <summary>Whether Neon style is selected.</summary>
+    public bool IsNeonSelected
+    {
+        get => _gameStyleService.CurrentStyle == GameVisualStyle.Neon;
+        set { if (value) SelectStyle("Neon"); }
+    }
+
+    /// <summary>Localized label for visual style section.</summary>
+    public string VisualStyleText => _localizationService.GetString("VisualStyle");
+
+    /// <summary>Localized name for Classic style.</summary>
+    public string ClassicStyleName => _localizationService.GetString("StyleClassic");
+
+    /// <summary>Localized name for Neon style.</summary>
+    public string NeonStyleName => _localizationService.GetString("StyleNeon");
+
+    /// <summary>Localized description for Classic style.</summary>
+    public string ClassicStyleDesc => _localizationService.GetString("StyleClassicDesc");
+
+    /// <summary>Localized description for Neon style.</summary>
+    public string NeonStyleDesc => _localizationService.GetString("StyleNeonDesc");
+
+    // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES - LANGUAGE & PREMIUM
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -151,12 +185,14 @@ public partial class SettingsViewModel : ObservableObject
         IProgressService progressService,
         IHighScoreService highScoreService,
         ILocalizationService localizationService,
-        IPurchaseService purchaseService)
+        IPurchaseService purchaseService,
+        IGameStyleService gameStyleService)
     {
         _progressService = progressService;
         _highScoreService = highScoreService;
         _localizationService = localizationService;
         _purchaseService = purchaseService;
+        _gameStyleService = gameStyleService;
 
         // Version info
         var assembly = System.Reflection.Assembly.GetEntryAssembly();
@@ -258,6 +294,24 @@ public partial class SettingsViewModel : ObservableObject
 
         SelectedLanguage = code;
         _localizationService.SetLanguage(code);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COMMANDS - VISUAL STYLE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void SelectStyle(string style)
+    {
+        if (_isInitializing || string.IsNullOrEmpty(style))
+            return;
+
+        if (Enum.TryParse<GameVisualStyle>(style, out var parsed))
+        {
+            _gameStyleService.SetStyle(parsed);
+            OnPropertyChanged(nameof(IsClassicSelected));
+            OnPropertyChanged(nameof(IsNeonSelected));
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════

@@ -480,6 +480,22 @@
   <data name="LanguagePT" xml:space="preserve">
     <value>Português</value>
   </data>
+  <!-- Visual Style -->
+  <data name="VisualStyle" xml:space="preserve">
+    <value>Style visuel</value>
+  </data>
+  <data name="StyleClassic" xml:space="preserve">
+    <value>Classique</value>
+  </data>
+  <data name="StyleClassicDesc" xml:space="preserve">
+    <value>Look HD Bomberman</value>
+  </data>
+  <data name="StyleNeon" xml:space="preserve">
+    <value>Néon</value>
+  </data>
+  <data name="StyleNeonDesc" xml:space="preserve">
+    <value>Effets lumineux cyberpunk</value>
+  </data>
   <!-- Input Controls -->
   <data name="InputFloatingJoystick" xml:space="preserve">
     <value>Joystick flottant</value>

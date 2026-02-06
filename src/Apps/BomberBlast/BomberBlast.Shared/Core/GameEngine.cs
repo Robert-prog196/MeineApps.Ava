@@ -23,6 +23,7 @@ public class GameEngine : IDisposable
     private readonly IHighScoreService _highScoreService;
     private readonly InputManager _inputManager;
     private readonly ILocalizationService _localizationService;
+    private readonly IGameStyleService _gameStyleService;
     private readonly GameRenderer _renderer;
 
     // Game state
@@ -93,7 +94,8 @@ public class GameEngine : IDisposable
         IProgressService progressService,
         IHighScoreService highScoreService,
         InputManager inputManager,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IGameStyleService gameStyleService)
     {
         _soundManager = soundManager;
         _spriteSheet = spriteSheet;
@@ -101,8 +103,9 @@ public class GameEngine : IDisposable
         _highScoreService = highScoreService;
         _inputManager = inputManager;
         _localizationService = localizationService;
+        _gameStyleService = gameStyleService;
 
-        _renderer = new GameRenderer(_spriteSheet);
+        _renderer = new GameRenderer(_spriteSheet, _gameStyleService);
         _grid = new GameGrid();
         _timer = new GameTimer();
         _enemyAI = new EnemyAI(_grid);
@@ -890,7 +893,7 @@ public class GameEngine : IDisposable
 
     private void SpawnPontanPunishment()
     {
-        // Spawn Pontans as punishment (reduced for 11x9 grid)
+        // Spawn Pontans as punishment
         var random = new Random();
         for (int i = 0; i < 4; i++)
         {

@@ -75,6 +75,7 @@ public partial class App : Application
         services.AddSingleton<IProgressService, ProgressService>();
         services.AddSingleton<IHighScoreService, HighScoreService>();
         services.AddSingleton<ISoundService, NullSoundService>();
+        services.AddSingleton<IGameStyleService, GameStyleService>();
         services.AddSingleton<SoundManager>();
         services.AddSingleton<SpriteSheet>();
         services.AddSingleton<InputManager>();

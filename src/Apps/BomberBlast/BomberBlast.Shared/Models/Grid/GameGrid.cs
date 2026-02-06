@@ -1,15 +1,15 @@
 namespace BomberBlast.Models.Grid;
 
 /// <summary>
-/// The game grid (11x9 like GBA Bomberman - compact for mobile)
+/// The game grid (15x10 - optimized for 16:9 landscape with side HUD)
 /// </summary>
 public class GameGrid
 {
-    /// <summary>Grid width in cells (GBA style)</summary>
-    public const int WIDTH = 11;
+    /// <summary>Grid width in cells</summary>
+    public const int WIDTH = 15;
 
-    /// <summary>Grid height in cells (GBA style)</summary>
-    public const int HEIGHT = 9;
+    /// <summary>Grid height in cells</summary>
+    public const int HEIGHT = 10;
 
     /// <summary>Cell size in pixels (for rendering)</summary>
     public const int CELL_SIZE = 32;

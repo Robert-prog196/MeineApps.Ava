@@ -3,6 +3,7 @@
 ## Overview
 Bomberman-clone game with SkiaSharp rendering, AI pathfinding, and multiple input methods.
 Landscape-only on Android. Ported from .NET MAUI to Avalonia UI.
+Grid: 15x10 (previously 11x9). Two visual styles: Classic HD + Neon/Cyberpunk. HUD on right side.
 
 ## Project Structure
 
@@ -19,7 +20,7 @@ BomberBlast/
 │   │   ├── GameTimer.cs         # Timer management
 │   │   └── SoundManager.cs      # Audio (ISoundService abstraction)
 │   ├── Graphics/                # SkiaSharp rendering
-│   │   ├── GameRenderer.cs      # Full game renderer + HUD
+│   │   ├── GameRenderer.cs      # Full game renderer + HUD (Classic/Neon palettes, side HUD)
 │   │   └── SpriteSheet.cs       # Sprite management
 │   ├── Input/                   # Input system
 │   │   ├── IInputHandler.cs     # Interface
@@ -31,14 +32,16 @@ BomberBlast/
 │   │   └── InputManager.cs      # Manages active input handler
 │   ├── Models/
 │   │   ├── Entities/            # Player, Enemy, Bomb, Explosion, PowerUp, Direction
-│   │   ├── Grid/                # Cell, CellType, GameGrid (11x9)
+│   │   ├── Grid/                # Cell, CellType, GameGrid (15x10)
 │   │   └── Levels/              # Level, LevelGenerator (50 levels + arcade)
 │   ├── Services/
 │   │   ├── ISoundService.cs     # Sound abstraction
 │   │   ├── IProgressService.cs  # Game progress persistence
 │   │   ├── ProgressService.cs
 │   │   ├── IHighScoreService.cs
-│   │   └── HighScoreService.cs
+│   │   ├── HighScoreService.cs
+│   │   ├── IGameStyleService.cs # Visual style (Classic/Neon)
+│   │   └── GameStyleService.cs  # Persists style via IPreferencesService
 │   ├── ViewModels/              # 9 ViewModels (MVVM)
 │   │   ├── MainViewModel.cs     # Navigation/view switching
 │   │   ├── GameViewModel.cs     # 60fps game loop (DispatcherTimer)
