@@ -7,8 +7,8 @@
     <!-- App Identity -->
     <ApplicationId>com.meineapps.worktimepro</ApplicationId>
     <ApplicationTitle>WorkTimePro</ApplicationTitle>
-    <ApplicationVersion>9</ApplicationVersion>
-    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>10</ApplicationVersion>
+    <ApplicationDisplayVersion>2.0.1</ApplicationDisplayVersion>
 
     <!-- Android Settings -->
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>

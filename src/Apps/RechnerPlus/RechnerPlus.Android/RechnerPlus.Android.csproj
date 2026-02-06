@@ -7,8 +7,8 @@
     <!-- App Identity -->
     <ApplicationId>com.meineapps.rechnerplus</ApplicationId>
     <ApplicationTitle>RechnerPlus</ApplicationTitle>
-    <ApplicationVersion>24</ApplicationVersion>
-    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>25</ApplicationVersion>
+    <ApplicationDisplayVersion>2.0.1</ApplicationDisplayVersion>
 
     <!-- Android Settings -->
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
