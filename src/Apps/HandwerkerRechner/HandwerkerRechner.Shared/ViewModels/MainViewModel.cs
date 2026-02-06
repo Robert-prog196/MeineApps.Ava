@@ -16,11 +16,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private bool _disposed;
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
     private readonly ILocalizationService _localization;
 
     /// <summary>
     /// Event for showing alerts/messages to the user (title, message)
     /// </summary>
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
+
     public event Action<string, string>? MessageRequested;
 
     // Sub-ViewModels for embedded tabs
@@ -29,15 +33,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public MainViewModel(
         IPurchaseService purchaseService,
+        IAdService adService,
         ILocalizationService localization,
         IThemeService themeService,
         SettingsViewModel settingsViewModel,
         ProjectsViewModel projectsViewModel)
     {
         _purchaseService = purchaseService;
+        _adService = adService;
         _localization = localization;
         SettingsViewModel = settingsViewModel;
         ProjectsViewModel = projectsViewModel;
+
+        IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
         // Wire Projects navigation (open project in calculator)
         ProjectsViewModel.NavigationRequested += OnProjectNavigation;

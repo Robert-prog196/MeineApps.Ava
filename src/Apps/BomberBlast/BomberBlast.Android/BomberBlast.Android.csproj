@@ -13,10 +13,16 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Ads.Lite" />
+    <PackageReference Include="Xamarin.Google.UserMessagingPlatform" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BomberBlast.Shared\BomberBlast.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Libraries\MeineApps.Core.Premium.Ava\Android\AdMobHelper.cs" Link="Services\AdMobHelper.cs" />
   </ItemGroup>
 
 </Project>

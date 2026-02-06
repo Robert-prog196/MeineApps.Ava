@@ -5,6 +5,11 @@
     <Description>Premium Services Library for Avalonia Apps - Ads, In-App Purchases, Trial</Description>
   </PropertyGroup>
 
+  <!-- Android/ folder contains linked files for Android projects, not compiled here -->
+  <ItemGroup>
+    <Compile Remove="Android\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- Avalonia Core -->
     <PackageReference Include="Avalonia" />

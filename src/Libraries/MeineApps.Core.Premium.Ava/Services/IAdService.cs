@@ -11,6 +11,11 @@ public interface IAdService
     bool AdsEnabled { get; }
 
     /// <summary>
+    /// Whether the banner ad is currently visible
+    /// </summary>
+    bool BannerVisible { get; }
+
+    /// <summary>
     /// Initialize the ad service with the banner ID
     /// </summary>
     void Initialize(string bannerId);

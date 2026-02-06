@@ -1,0 +1,224 @@
+using Android.App;
+using Android.Gms.Ads;
+using Android.Views;
+using Android.Widget;
+using MeineApps.Core.Premium.Ava.Services;
+using Xamarin.Google.UserMesssagingPlatform;
+
+namespace MeineApps.Core.Premium.Ava.Droid;
+
+/// <summary>
+/// Helper for Google AdMob banner ads on Android.
+/// This file is linked from all ad-supported Android projects via Compile Include.
+/// It is NOT compiled as part of the MeineApps.Core.Premium.Ava (net10.0) library.
+/// </summary>
+public sealed class AdMobHelper : IDisposable
+{
+    private AdView? _adView;
+    private IAdService? _adService;
+    private IPurchaseService? _purchaseService;
+    private bool _disposed;
+
+    /// <summary>
+    /// Initialize Google Mobile Ads SDK.
+    /// Call once in OnCreate before any ad operations.
+    /// </summary>
+    public static void Initialize(Activity activity)
+    {
+        try
+        {
+            MobileAds.Initialize(activity);
+        }
+        catch
+        {
+            // Init failure must not crash the app
+        }
+    }
+
+    /// <summary>
+    /// Request GDPR consent via UMP (User Messaging Platform).
+    /// Shows consent form if required for EU users.
+    /// Call after MobileAds.Initialize.
+    /// </summary>
+    public static void RequestConsent(Activity activity)
+    {
+        try
+        {
+            var consentInfo = UserMessagingPlatform.GetConsentInformation(activity);
+            var requestParams = new ConsentRequestParameters.Builder()
+                .SetTagForUnderAgeOfConsent(false)
+                .Build();
+
+            consentInfo.RequestConsentInfoUpdate(
+                activity,
+                requestParams,
+                new ConsentSuccessListener(() =>
+                {
+                    if (consentInfo.IsConsentFormAvailable)
+                    {
+                        UserMessagingPlatform.LoadAndShowConsentFormIfRequired(
+                            activity,
+                            new ConsentFormDismissedListener(_ => { }));
+                    }
+                }),
+                new ConsentFailureListener(_ => { }));
+        }
+        catch
+        {
+            // Consent failure must not crash the app
+        }
+    }
+
+    /// <summary>
+    /// Attach a banner ad as a FrameLayout overlay above the Avalonia tab bar.
+    /// For apps with bottom tabs, pass the tab bar height in dp so the ad sits above it.
+    /// For apps without tabs (e.g. BomberBlast), pass 0 for ad at the very bottom.
+    /// </summary>
+    public void AttachToActivity(Activity activity, string adUnitId, IAdService adService,
+        IPurchaseService purchaseService, int tabBarHeightDp = 0)
+    {
+        _adService = adService;
+        _purchaseService = purchaseService;
+
+        // Subscribe to premium/ad status changes
+        _adService.AdsStateChanged += OnAdsStateChanged;
+        _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
+
+        // Don't create ad view for premium users
+        if (_purchaseService.IsPremium || !_adService.AdsEnabled)
+            return;
+
+        try
+        {
+            var contentParent = activity.FindViewById<FrameLayout>(global::Android.Resource.Id.Content);
+            if (contentParent == null) return;
+
+            // Banner ad as overlay on top of AvaloniaView
+            _adView = new AdView(activity);
+            _adView.AdSize = AdSize.Banner;
+            _adView.AdUnitId = adUnitId;
+
+            var density = activity.Resources?.DisplayMetrics?.Density ?? 1f;
+            var baseBottomMarginPx = (int)(tabBarHeightDp * density);
+
+            var adParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MatchParent,
+                ViewGroup.LayoutParams.WrapContent,
+                GravityFlags.Bottom | GravityFlags.CenterHorizontal);
+            adParams.BottomMargin = baseBottomMarginPx;
+
+            contentParent.AddView(_adView, adParams);
+
+            // Adjust bottom margin for navigation bar insets (edge-to-edge)
+            try
+            {
+                AndroidX.Core.View.ViewCompat.SetOnApplyWindowInsetsListener(_adView,
+                    new AdInsetListener(baseBottomMarginPx));
+            }
+            catch
+            {
+                // Non-critical: ad position may be slightly off on some devices
+            }
+
+            // Load the first ad
+            _adView.LoadAd(new AdRequest.Builder().Build());
+
+            // Notify ad service that banner is visible
+            _adService.ShowBanner();
+        }
+        catch
+        {
+            // Ad creation failure must not crash the app
+        }
+    }
+
+    /// <summary>
+    /// Resume ad loading (call in Activity.OnResume).
+    /// </summary>
+    public void Resume() => _adView?.Resume();
+
+    /// <summary>
+    /// Pause ad loading (call in Activity.OnPause).
+    /// </summary>
+    public void Pause() => _adView?.Pause();
+
+    private void OnAdsStateChanged(object? sender, EventArgs e)
+    {
+        if (_adService != null && !_adService.AdsEnabled)
+            HideBanner();
+    }
+
+    private void OnPremiumStatusChanged(object? sender, EventArgs e)
+    {
+        if (_purchaseService?.IsPremium == true)
+            HideBanner();
+    }
+
+    private void HideBanner()
+    {
+        if (_adView != null)
+            _adView.Visibility = ViewStates.Gone;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+
+        if (_adService != null)
+            _adService.AdsStateChanged -= OnAdsStateChanged;
+        if (_purchaseService != null)
+            _purchaseService.PremiumStatusChanged -= OnPremiumStatusChanged;
+
+        _adView?.Destroy();
+        _adView = null;
+    }
+
+    /// <summary>
+    /// Adjusts AdView bottom margin to account for navigation bar insets (edge-to-edge).
+    /// </summary>
+    private sealed class AdInsetListener : Java.Lang.Object, AndroidX.Core.View.IOnApplyWindowInsetsListener
+    {
+        private readonly int _baseBottomMarginPx;
+
+        public AdInsetListener(int baseBottomMarginPx) => _baseBottomMarginPx = baseBottomMarginPx;
+
+        public AndroidX.Core.View.WindowInsetsCompat? OnApplyWindowInsets(
+            View? v, AndroidX.Core.View.WindowInsetsCompat? insets)
+        {
+            if (v == null || insets == null) return insets;
+            var navBars = insets.GetInsets(AndroidX.Core.View.WindowInsetsCompat.Type.NavigationBars());
+            if (v.LayoutParameters is FrameLayout.LayoutParams lp)
+            {
+                lp.BottomMargin = _baseBottomMarginPx + navBars.Bottom;
+                v.LayoutParameters = lp;
+            }
+            return insets;
+        }
+    }
+
+    // UMP callback wrappers
+    private sealed class ConsentSuccessListener : Java.Lang.Object,
+        IConsentInformationOnConsentInfoUpdateSuccessListener
+    {
+        private readonly Action _onSuccess;
+        public ConsentSuccessListener(Action onSuccess) => _onSuccess = onSuccess;
+        public void OnConsentInfoUpdateSuccess() => _onSuccess();
+    }
+
+    private sealed class ConsentFailureListener : Java.Lang.Object,
+        IConsentInformationOnConsentInfoUpdateFailureListener
+    {
+        private readonly Action<FormError?> _onFailure;
+        public ConsentFailureListener(Action<FormError?> onFailure) => _onFailure = onFailure;
+        public void OnConsentInfoUpdateFailure(FormError? error) => _onFailure(error);
+    }
+
+    private sealed class ConsentFormDismissedListener : Java.Lang.Object,
+        IConsentFormOnConsentFormDismissedListener
+    {
+        private readonly Action<FormError?> _onDismissed;
+        public ConsentFormDismissedListener(Action<FormError?> onDismissed) => _onDismissed = onDismissed;
+        public void OnConsentFormDismissed(FormError? error) => _onDismissed(error);
+    }
+}

@@ -12,4 +12,12 @@
     <AndroidPackageFormat>aab</AndroidPackageFormat>
 
   </PropertyGroup>
+
+  <!-- D8/DEX Fix: Xamarin.GooglePlayServices.Ads.Lite transitiv bringt sowohl
+       compose.runtime.annotation.jvm als auch compose.runtime.annotation.android mit,
+       beide enthalten DoNotRetain.class → duplizierter Typ. JVM-Variante excluden. -->
+  <ItemGroup Condition="$(TargetFramework.Contains('android'))">
+    <PackageReference Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm"
+                      ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
 </Project>

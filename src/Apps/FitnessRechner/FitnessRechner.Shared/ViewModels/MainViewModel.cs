@@ -14,6 +14,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 {
     private bool _disposed;
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
     private readonly ITrackingService _trackingService;
     private readonly IFoodSearchService _foodSearchService;
     private readonly IPreferencesService _preferences;
@@ -25,10 +26,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Raised when the VM wants to show a message (title, message).
     /// </summary>
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
+
     public event Action<string, string>? MessageRequested;
 
     public MainViewModel(
         IPurchaseService purchaseService,
+        IAdService adService,
         ITrackingService trackingService,
         IFoodSearchService foodSearchService,
         IPreferencesService preferences,
@@ -39,10 +44,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         FoodSearchViewModel foodSearchViewModel)
     {
         _purchaseService = purchaseService;
+        _adService = adService;
         _trackingService = trackingService;
         _foodSearchService = foodSearchService;
         _preferences = preferences;
         _localization = localization;
+
+        IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
         SettingsViewModel = settingsViewModel;
         ProgressViewModel = progressViewModel;

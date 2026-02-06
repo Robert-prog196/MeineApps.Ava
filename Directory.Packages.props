@@ -64,6 +64,16 @@
     <PackageVersion Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- ADS (Google AdMob)                                               -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <PackageVersion Include="Xamarin.GooglePlayServices.Ads.Lite" Version="124.0.0.4" />
+    <PackageVersion Include="Xamarin.Google.UserMessagingPlatform" Version="4.0.0.1" />
+
+    <!-- Transitive dependency von Ads.Lite: JVM-Variante muss excluded werden,
+         da .android-Variante dieselben Klassen enthaelt (D8 duplicate type error) -->
+    <PackageVersion Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm" Version="1.10.0.1" />
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <!-- EXPORT (PDF/Excel)                                               -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <PackageVersion Include="PdfSharpCore" Version="1.3.67" />

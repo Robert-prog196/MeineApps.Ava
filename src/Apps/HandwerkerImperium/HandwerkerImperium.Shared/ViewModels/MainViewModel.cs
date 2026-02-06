@@ -45,6 +45,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IAchievementService _achievementService;
     private readonly ISaveGameService _saveGameService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
     private bool _disposed;
     private decimal _pendingOfflineEarnings;
 
@@ -60,6 +61,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
 
     [ObservableProperty]
     private decimal _money;
@@ -250,6 +254,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IDailyRewardService dailyRewardService,
         IAchievementService achievementService,
         IPurchaseService purchaseService,
+        IAdService adService,
         ISaveGameService saveGameService,
         ShopViewModel shopViewModel,
         StatisticsViewModel statisticsViewModel,
@@ -271,7 +276,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _dailyRewardService = dailyRewardService;
         _achievementService = achievementService;
         _purchaseService = purchaseService;
+        _adService = adService;
         _saveGameService = saveGameService;
+
+        IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
         // Store child ViewModels
         ShopViewModel = shopViewModel;

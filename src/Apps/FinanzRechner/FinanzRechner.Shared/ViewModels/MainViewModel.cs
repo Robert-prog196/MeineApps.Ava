@@ -11,8 +11,12 @@ namespace FinanzRechner.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
     private readonly ILocalizationService _localizationService;
     private readonly IExpenseService _expenseService;
+
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
 
     public event Action<string, string>? MessageRequested;
 
@@ -29,6 +33,7 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(
         IPurchaseService purchaseService,
+        IAdService adService,
         ILocalizationService localizationService,
         IExpenseService expenseService,
         ExpenseTrackerViewModel expenseTrackerViewModel,
@@ -43,8 +48,12 @@ public partial class MainViewModel : ObservableObject
         YieldViewModel yieldViewModel)
     {
         _purchaseService = purchaseService;
+        _adService = adService;
         _localizationService = localizationService;
         _expenseService = expenseService;
+
+        IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
         ExpenseTrackerViewModel = expenseTrackerViewModel;
         StatisticsViewModel = statisticsViewModel;

@@ -8,7 +8,7 @@
              x:Class="HandwerkerImperium.Views.MainView"
              x:DataType="vm:MainViewModel">
 
-  <Grid RowDefinitions="*,Auto">
+  <Grid RowDefinitions="*,Auto,Auto">
 
     <!-- ============================================ -->
     <!-- Row 0: Content Area (switches based on tab)  -->
@@ -53,9 +53,13 @@
     </Panel>
 
     <!-- ============================================ -->
-    <!-- Row 1: Bottom Tab Bar                        -->
+    <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->
+    <Border Grid.Row="1" Height="50"
+            IsVisible="{Binding IsAdBannerVisible}" />
+
+    <!-- Row 2: Bottom Tab Bar                        -->
     <!-- ============================================ -->
-    <Border Grid.Row="1"
+    <Border Grid.Row="2"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,1,0,0"
             BorderBrush="{DynamicResource CardBorderBrush}"
@@ -136,7 +140,7 @@
     <!-- ============================================ -->
 
     <!-- Offline Earnings Dialog -->
-    <Border Grid.RowSpan="2" Background="#AA000000"
+    <Border Grid.RowSpan="3" Background="#AA000000"
             IsVisible="{Binding IsOfflineEarningsDialogVisible}">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16" Padding="24"
@@ -171,7 +175,7 @@
     </Border>
 
     <!-- Level Up Dialog -->
-    <Border Grid.RowSpan="2" Background="#AA000000"
+    <Border Grid.RowSpan="3" Background="#AA000000"
             IsVisible="{Binding IsLevelUpDialogVisible}">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16" Padding="24"
@@ -204,7 +208,7 @@
     </Border>
 
     <!-- Daily Reward Dialog -->
-    <Border Grid.RowSpan="2" Background="#AA000000"
+    <Border Grid.RowSpan="3" Background="#AA000000"
             IsVisible="{Binding IsDailyRewardDialogVisible}">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16" Padding="24"
@@ -236,7 +240,7 @@
     </Border>
 
     <!-- Achievement Unlocked Dialog -->
-    <Border Grid.RowSpan="2" Background="#AA000000"
+    <Border Grid.RowSpan="3" Background="#AA000000"
             IsVisible="{Binding IsAchievementDialogVisible}">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16" Padding="24"
@@ -267,7 +271,7 @@
     </Border>
 
     <!-- Loading Overlay -->
-    <Border Grid.RowSpan="2"
+    <Border Grid.RowSpan="3"
             Background="#CC000000"
             IsVisible="{Binding IsLoading}">
       <ProgressBar IsIndeterminate="True"

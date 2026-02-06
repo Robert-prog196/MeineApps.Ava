@@ -25,16 +25,19 @@ public static class AdConfig
 
     public static class HandwerkerRechner
     {
+        public const string AppId = "ca-app-pub-2667921454778639~2757130357";
         public const string BannerAdUnitId = "ca-app-pub-2667921454778639/6519786556";
     }
 
     public static class FinanzRechner
     {
+        public const string AppId = "ca-app-pub-2667921454778639~7519993133";
         public const string BannerAdUnitId = "ca-app-pub-2667921454778639/6463946234";
     }
 
     public static class FitnessRechner
     {
+        public const string AppId = "ca-app-pub-2667921454778639~5150864569";
         public const string BannerAdUnitId = "ca-app-pub-2667921454778639/5165292531";
     }
 
@@ -46,17 +49,15 @@ public static class AdConfig
 
     public static class BomberBlast
     {
-        public const string AppId = "ca-app-pub-3940256099942544~3347511713"; // Test ID - Replace with real ID
-        public const string BannerAdUnitId = "ca-app-pub-3940256099942544/6300978111"; // Test ID - Replace with real ID
-        public const string InterstitialAdUnitId = "ca-app-pub-3940256099942544/1033173712"; // Test ID
-        public const string RewardedAdUnitId = "ca-app-pub-3940256099942544/5224354917"; // Test ID
+        public const string AppId = "ca-app-pub-2588160251469436~8809763733";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5589430378";
     }
 
     public static class HandwerkerImperium
     {
-        public const string AppId = "ca-app-pub-3940256099942544~3347511713"; // Test ID - Replace with real ID
-        public const string BannerAdUnitId = "ca-app-pub-3940256099942544/6300978111"; // Test ID - Replace with real ID
-        public const string RewardedAdUnitId = "ca-app-pub-3940256099942544/5224354917"; // Test ID
+        public const string AppId = "ca-app-pub-2588160251469436~1938872706";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5062090417";
+        public const string InterstitialAdUnitId = "ca-app-pub-2588160251469436/3553567622";
     }
 
     /// <summary>

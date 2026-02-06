@@ -24,6 +24,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ILocalizationService _localization;
     private readonly ITrialService _trialService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
 
     private System.Timers.Timer? _updateTimer;
     private bool _disposed;
@@ -58,6 +59,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public VacationViewModel VacationVm { get; }
     public ShiftPlanViewModel ShiftPlanVm { get; }
 
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
+
     public event Action<string>? MessageRequested;
 
     public MainViewModel(
@@ -67,6 +71,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ILocalizationService localization,
         ITrialService trialService,
         IPurchaseService purchaseService,
+        IAdService adService,
         WeekOverviewViewModel weekVm,
         CalendarViewModel calendarVm,
         StatisticsViewModel statisticsVm,
@@ -83,6 +88,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _localization = localization;
         _trialService = trialService;
         _purchaseService = purchaseService;
+        _adService = adService;
+
+        IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
         // Child VMs
         WeekVm = weekVm;

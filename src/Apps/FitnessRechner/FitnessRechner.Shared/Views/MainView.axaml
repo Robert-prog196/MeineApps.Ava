@@ -46,7 +46,7 @@
     </DataTemplate>
   </UserControl.DataTemplates>
 
-  <Grid RowDefinitions="*,Auto">
+  <Grid RowDefinitions="*,Auto,Auto">
 
     <!-- Content Area -->
     <Panel Grid.Row="0">
@@ -79,8 +79,12 @@
       </Panel>
     </Panel>
 
+    <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->
+    <Border Grid.Row="1" Height="50"
+            IsVisible="{Binding IsAdBannerVisible}" />
+
     <!-- Bottom Navigation Bar -->
-    <Border Grid.Row="1"
+    <Border Grid.Row="2"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             BorderThickness="0,1,0,0">
