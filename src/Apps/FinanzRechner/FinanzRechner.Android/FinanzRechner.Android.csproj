@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+
+    <!-- App Identity -->
+    <ApplicationId>com.meineapps.finanzrechner</ApplicationId>
+    <ApplicationTitle>FinanzRechner</ApplicationTitle>
+    <ApplicationVersion>13</ApplicationVersion>
+    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+
+    <!-- Android Settings -->
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FinanzRechner.Shared\FinanzRechner.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

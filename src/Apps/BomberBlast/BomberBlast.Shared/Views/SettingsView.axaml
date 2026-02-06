@@ -1,0 +1,367 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <!-- Gradient Background -->
+  <Panel>
+    <Border>
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="{DynamicResource GradientStartColor}" Offset="0" />
+          <GradientStop Color="{DynamicResource GradientMidColor}" Offset="0.5" />
+          <GradientStop Color="{DynamicResource GradientEndColor}" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+      <!-- Header -->
+      <Border Grid.Row="0"
+              Classes="CardElevated"
+              Padding="16,12"
+              CornerRadius="0,0,12,12">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Back Button -->
+          <Button Classes="Text"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+          </Button>
+
+          <!-- Title -->
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Settings}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+
+          <!-- Spacer -->
+          <Border Grid.Column="2" Width="44" />
+        </Grid>
+      </Border>
+
+      <!-- Content -->
+      <ScrollViewer Grid.Row="1" Padding="12">
+        <StackPanel Spacing="12">
+
+          <!-- Controls + Sound: Side by Side -->
+          <Grid ColumnDefinitions="*,*">
+
+            <!-- Controls Section -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,6,0">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Gamepad" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate ControlsSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <!-- Control Type Selection -->
+                <StackPanel Spacing="4">
+                  <RadioButton GroupName="Controls"
+                               IsChecked="{Binding IsJoystickSelected}"
+                               Content="{loc:Translate ControlFloatingJoystick}" />
+                  <RadioButton GroupName="Controls"
+                               IsChecked="{Binding IsSwipeSelected}"
+                               Content="{loc:Translate ControlSwipe}" />
+                  <RadioButton GroupName="Controls"
+                               IsChecked="{Binding IsDPadSelected}"
+                               Content="{loc:Translate ControlDPad}" />
+                </StackPanel>
+
+                <!-- Joystick Size -->
+                <Grid ColumnDefinitions="Auto,*,40">
+                  <TextBlock Text="{loc:Translate JoystickSize}"
+                             Width="80" FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <Slider Grid.Column="1"
+                          Minimum="80" Maximum="160"
+                          Value="{Binding JoystickSize}"
+                          Margin="4,0" />
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding JoystickSizeText}"
+                             FontSize="12"
+                             Foreground="{DynamicResource AccentBrush}"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Joystick Opacity -->
+                <Grid ColumnDefinitions="Auto,*,40">
+                  <TextBlock Text="{loc:Translate JoystickOpacity}"
+                             Width="80" FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <Slider Grid.Column="1"
+                          Minimum="0.3" Maximum="1.0"
+                          Value="{Binding JoystickOpacity}"
+                          Margin="4,0" />
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding JoystickOpacityText}"
+                             FontSize="12"
+                             Foreground="{DynamicResource AccentBrush}"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Haptic Feedback -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate HapticFeedback}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                IsChecked="{Binding HapticEnabled}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Sound Section -->
+            <Border Grid.Column="1" Classes="Card" Margin="6,0,0,0">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="VolumeHigh" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate SoundSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <!-- SFX Toggle -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate SoundEffects}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                IsChecked="{Binding SfxEnabled}" />
+                </Grid>
+
+                <!-- SFX Volume -->
+                <Grid ColumnDefinitions="Auto,*,40">
+                  <TextBlock Text="{loc:Translate SfxVolume}"
+                             Width="80" FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <Slider Grid.Column="1"
+                          Minimum="0" Maximum="1"
+                          Value="{Binding SfxVolume}"
+                          Margin="4,0" />
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding SfxVolumeText}"
+                             FontSize="12"
+                             Foreground="{DynamicResource AccentBrush}"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Music Toggle -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate Music}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                IsChecked="{Binding MusicEnabled}" />
+                </Grid>
+
+                <!-- Music Volume -->
+                <Grid ColumnDefinitions="Auto,*,40">
+                  <TextBlock Text="{loc:Translate MusicVolume}"
+                             Width="80" FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <Slider Grid.Column="1"
+                          Minimum="0" Maximum="1"
+                          Value="{Binding MusicVolume}"
+                          Margin="4,0" />
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding MusicVolumeText}"
+                             FontSize="12"
+                             Foreground="{DynamicResource AccentBrush}"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Center" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+          <!-- Language + Premium: Side by Side -->
+          <Grid ColumnDefinitions="*,*">
+
+            <!-- Language Section -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,6,0">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Translate" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate LanguageSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <ComboBox ItemsSource="{Binding Languages}"
+                          SelectedItem="{Binding SelectedLanguage}"
+                          HorizontalAlignment="Stretch">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:LanguageOption">
+                      <TextBlock Text="{Binding DisplayName}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+              </StackPanel>
+            </Border>
+
+            <!-- Premium Section -->
+            <Border Grid.Column="1" Classes="Card" Margin="6,0,0,0">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Crown" Width="20" Height="20"
+                                   Foreground="Gold" />
+                  <TextBlock Text="{loc:Translate PremiumSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </StackPanel>
+
+                <!-- Premium Status -->
+                <Grid ColumnDefinitions="*,Auto"
+                      IsVisible="{Binding IsPremium}">
+                  <TextBlock Text="{loc:Translate PremiumActive}"
+                             FontSize="14" FontWeight="Bold"
+                             Foreground="{DynamicResource SuccessBrush}" />
+                  <mi:MaterialIcon Grid.Column="1"
+                                   Kind="Check" Width="24" Height="24"
+                                   Foreground="{DynamicResource SuccessBrush}" />
+                </Grid>
+
+                <TextBlock Text="{loc:Translate PremiumDescription}"
+                           FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding !IsPremium}" />
+
+                <!-- Buy Premium -->
+                <Button Content="{loc:Translate BuyPremium}"
+                        Classes="Primary"
+                        Background="Gold"
+                        Command="{Binding BuyPremiumCommand}"
+                        IsVisible="{Binding !IsPremium}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center" />
+
+                <!-- Restore Purchases -->
+                <Button Content="{loc:Translate RestorePurchases}"
+                        Classes="Secondary"
+                        Command="{Binding RestorePurchasesCommand}"
+                        IsVisible="{Binding !IsPremium}"
+                        HorizontalAlignment="Left" />
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+          <!-- Data + About: Side by Side -->
+          <Grid ColumnDefinitions="*,*">
+
+            <!-- Data Section -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,6,0"
+                    BorderBrush="{DynamicResource ErrorBrush}"
+                    BorderThickness="2">
+              <StackPanel Spacing="12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="AlertCircle" Width="20" Height="20"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                  <TextBlock Text="{loc:Translate DataSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource ErrorBrush}" />
+                </StackPanel>
+
+                <Button Content="{loc:Translate ResetProgress}"
+                        Classes="Primary"
+                        Background="{DynamicResource ErrorBrush}"
+                        Command="{Binding ResetProgressCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="14" />
+
+                <Button Content="{loc:Translate ClearHighScores}"
+                        Classes="Primary"
+                        Background="{DynamicResource ErrorBrush}"
+                        Command="{Binding ClearHighScoresCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="14" />
+              </StackPanel>
+            </Border>
+
+            <!-- About Section -->
+            <Border Grid.Column="1" Classes="Card" Margin="6,0,0,0">
+              <StackPanel Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="InformationOutline" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate AboutSection}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate Version}"
+                             FontSize="14"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Grid.Column="1"
+                             Text="{Binding AppVersion}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                </Grid>
+
+                <TextBlock Text="{Binding CopyrightText}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                <Button Content="{loc:Translate PrivacyPolicy}"
+                        Classes="Secondary"
+                        Command="{Binding OpenPrivacyPolicyCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+          <!-- Bottom Spacer -->
+          <Border Height="16" />
+
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- Ad Banner placeholder -->
+      <Border Grid.Row="2"
+              Height="50"
+              IsVisible="{Binding ShowAds}"
+              Background="{DynamicResource SurfaceBrush}"
+              Padding="12,4">
+        <TextBlock Text="Ad Banner"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   FontSize="12" />
+      </Border>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

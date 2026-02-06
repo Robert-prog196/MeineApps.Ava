@@ -1,0 +1,148 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.AchievementsView"
+             x:DataType="vm:AchievementsViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            Classes="CardElevated"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Back Button -->
+        <Button Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+        </Button>
+
+        <!-- Title -->
+        <TextBlock Grid.Column="1"
+                   Text="{loc:Translate Achievements}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+
+        <!-- Progress Badge -->
+        <Border Grid.Column="2"
+                Background="{DynamicResource SurfaceBrush}"
+                CornerRadius="8"
+                Padding="12,6">
+          <TextBlock Text="{Binding ProgressText}"
+                     FontSize="14" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" Padding="16">
+      <StackPanel Spacing="16">
+
+        <!-- Overall Progress -->
+        <Border Classes="CardElevated" Padding="16">
+          <StackPanel Spacing="8">
+            <TextBlock Text="{loc:Translate AchievementProgress}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <ProgressBar Value="{Binding OverallProgress}"
+                         Maximum="1"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         Height="8" />
+            <TextBlock Text="{Binding ProgressText, StringFormat='{}{0} completed'}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Achievement List -->
+        <ItemsControl ItemsSource="{Binding Achievements}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:AchievementDisplayModel">
+              <Border Classes="Card"
+                      Padding="12"
+                      Margin="0,0,0,12">
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      ColumnSpacing="12"
+                      RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="4">
+
+                  <!-- Icon -->
+                  <Border Grid.RowSpan="3"
+                          Background="{Binding IconBackground}"
+                          CornerRadius="8"
+                          Width="48" Height="48"
+                          VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Icon}"
+                               FontSize="24"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                  </Border>
+
+                  <!-- Title -->
+                  <TextBlock Grid.Column="1"
+                             Text="{Binding Title}"
+                             FontSize="14" FontWeight="Bold"
+                             Foreground="{Binding TitleColor}" />
+
+                  <!-- Reward / Checkmark -->
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding RewardText}"
+                             FontSize="12"
+                             Foreground="{DynamicResource SuccessBrush}"
+                             VerticalAlignment="Center"
+                             IsVisible="{Binding !IsUnlocked}" />
+
+                  <mi:MaterialIcon Grid.Column="2"
+                                   Kind="Check" Width="20" Height="20"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding IsUnlocked}" />
+
+                  <!-- Description -->
+                  <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                             Text="{Binding Description}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                  <!-- Progress Bar (if not unlocked) -->
+                  <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                        ColumnDefinitions="*,Auto"
+                        ColumnSpacing="8"
+                        IsVisible="{Binding !IsUnlocked}">
+                    <ProgressBar Value="{Binding ProgressFraction}"
+                                 Maximum="1"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 Height="4"
+                                 VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ProgressText}"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               VerticalAlignment="Center" />
+                  </Grid>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

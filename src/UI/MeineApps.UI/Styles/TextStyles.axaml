@@ -1,0 +1,124 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- TEXT BLOCK STYLES                                                       -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Display Large -->
+  <Style Selector="TextBlock.DisplayLarge">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplayLg}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="56" />
+  </Style>
+
+  <!-- Display Medium -->
+  <Style Selector="TextBlock.DisplayMedium">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplayMd}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="44" />
+  </Style>
+
+  <!-- Headline Large -->
+  <Style Selector="TextBlock.HeadlineLarge">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeHeadlineLg}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="40" />
+  </Style>
+
+  <!-- Headline Medium -->
+  <Style Selector="TextBlock.HeadlineMedium">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeHeadlineMd}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="36" />
+  </Style>
+
+  <!-- Title Large -->
+  <Style Selector="TextBlock.TitleLarge">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeTitleLg}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="28" />
+  </Style>
+
+  <!-- Title Medium -->
+  <Style Selector="TextBlock.TitleMedium">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeTitleMd}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="24" />
+  </Style>
+
+  <!-- Body Large -->
+  <Style Selector="TextBlock.BodyLarge">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeBodyLg}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="24" />
+  </Style>
+
+  <!-- Body Medium (Default) -->
+  <Style Selector="TextBlock.BodyMedium">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeBodyMd}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="LineHeight" Value="20" />
+  </Style>
+
+  <!-- Label Large -->
+  <Style Selector="TextBlock.LabelLarge">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabelLg}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="LineHeight" Value="20" />
+  </Style>
+
+  <!-- Label Medium -->
+  <Style Selector="TextBlock.LabelMedium">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabelMd}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="LineHeight" Value="16" />
+  </Style>
+
+  <!-- Caption -->
+  <Style Selector="TextBlock.Caption">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeCaption}" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+    <Setter Property="LineHeight" Value="16" />
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- COLOR VARIANTS                                                          -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <Style Selector="TextBlock.Muted">
+    <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Secondary">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Primary">
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Success">
+    <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Warning">
+    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Error">
+    <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+  </Style>
+
+</Styles>

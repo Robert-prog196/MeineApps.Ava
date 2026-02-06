@@ -1,0 +1,216 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:models="using:WorkTimePro.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.WeekOverviewView"
+             x:DataType="vm:WeekOverviewViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" Margin="16">
+
+      <!-- ==================== Week Navigation ==================== -->
+      <Border Classes="CardElevated">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button Grid.Column="0" Classes="Text"
+                  Command="{Binding PreviousWeekCommand}">
+            <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+          </Button>
+
+          <StackPanel Grid.Column="1"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+            <TextBlock Text="{Binding WeekDisplay}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding DateRangeDisplay}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <Button Grid.Column="2" Classes="Text"
+                  Command="{Binding NextWeekCommand}">
+            <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+          </Button>
+        </Grid>
+      </Border>
+
+      <!-- Today Button -->
+      <Button Content="{Binding TodayButtonText}"
+              Classes="Secondary"
+              Command="{Binding GoToTodayCommand}"
+              HorizontalAlignment="Center" />
+
+      <!-- ==================== Week Summary ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+
+          <!-- Progress Bar -->
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate WeekProgress}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding ProgressText}"
+                         FontSize="14" FontWeight="Bold"
+                         Foreground="{DynamicResource AccentBrush}" />
+            </Grid>
+            <ProgressBar Value="{Binding ProgressPercent}"
+                         Maximum="100"
+                         Foreground="{DynamicResource AccentBrush}"
+                         Height="12" />
+          </StackPanel>
+
+          <!-- Time Metrics -->
+          <Grid ColumnDefinitions="*,*,*">
+
+            <!-- Work Time -->
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+              <TextBlock Text="{loc:Translate WorkTime}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding WorkTimeDisplay}"
+                         FontSize="22" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Target -->
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+              <TextBlock Text="{loc:Translate Target}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding TargetTimeDisplay}"
+                         FontSize="22"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Balance -->
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+              <TextBlock Text="{loc:Translate Balance}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding BalanceDisplay}"
+                         FontSize="22" FontWeight="Bold"
+                         Foreground="{Binding BalanceColor}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+          </Grid>
+
+          <!-- Day Type Statistics -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="16">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <mi:MaterialIcon Kind="Briefcase" Width="16" Height="16"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{Binding WorkedDays}" FontSize="14"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Days}" FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="4"
+                        IsVisible="{Binding HasVacationDays}">
+              <mi:MaterialIcon Kind="Beach" Width="16" Height="16"
+                               Foreground="{DynamicResource InfoBrush}" />
+              <TextBlock Text="{Binding VacationDays}" FontSize="14"
+                         Foreground="{DynamicResource InfoBrush}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="4"
+                        IsVisible="{Binding HasSickDays}">
+              <mi:MaterialIcon Kind="Thermometer" Width="16" Height="16"
+                               Foreground="{DynamicResource ErrorBrush}" />
+              <TextBlock Text="{Binding SickDays}" FontSize="14"
+                         Foreground="{DynamicResource ErrorBrush}" />
+            </StackPanel>
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Days List ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="{loc:Translate DaysThisWeek}"
+                     FontSize="16" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+
+          <ItemsControl ItemsSource="{Binding Days}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:WorkDay">
+                <Button Classes="Text"
+                        Command="{Binding $parent[ItemsControl].((vm:WeekOverviewViewModel)DataContext).SelectDayCommand}"
+                        CommandParameter="{Binding .}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Margin="0,2" Padding="0">
+                  <Border Classes="Card" Padding="12" Margin="0">
+                    <Grid ColumnDefinitions="Auto,*,Auto,60">
+
+                      <!-- Status Icon -->
+                      <TextBlock Grid.Column="0"
+                                 Text="{Binding StatusIcon}"
+                                 FontSize="24"
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,12,0" />
+
+                      <!-- Date and Status -->
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding DayName}"
+                                   FontSize="14" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding DateShortDisplay}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </StackPanel>
+
+                      <!-- Work Time -->
+                      <StackPanel Grid.Column="2" VerticalAlignment="Center"
+                                  HorizontalAlignment="Right" Margin="0,0,8,0">
+                        <TextBlock Text="{Binding ActualWorkDisplay}"
+                                   FontSize="16" FontWeight="Bold"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding TargetWorkDisplay}"
+                                   FontSize="12"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </StackPanel>
+
+                      <!-- Balance -->
+                      <TextBlock Grid.Column="3"
+                                 Text="{Binding BalanceDisplay}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{Binding BalanceColor}"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Right" />
+
+                    </Grid>
+                  </Border>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

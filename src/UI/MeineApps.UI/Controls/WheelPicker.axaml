@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MeineApps.UI.Controls.WheelPicker"
+             ClipToBounds="True" Focusable="True" Cursor="Hand"
+             Background="Transparent">
+
+  <Panel Height="200" Width="70">
+
+    <!-- Selection indicator lines -->
+    <Border Height="40" VerticalAlignment="Center"
+            CornerRadius="6"
+            BorderBrush="{DynamicResource PrimaryBrush}"
+            BorderThickness="0,1.5"
+            Opacity="0.4"
+            IsHitTestVisible="False" />
+
+    <!-- Items -->
+    <StackPanel VerticalAlignment="Center">
+      <Border Height="40">
+        <TextBlock x:Name="Item0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="15" Opacity="0.2" Foreground="{DynamicResource TextPrimaryBrush}" />
+      </Border>
+      <Border Height="40">
+        <TextBlock x:Name="Item1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="20" Opacity="0.5" Foreground="{DynamicResource TextPrimaryBrush}" />
+      </Border>
+      <Border Height="40">
+        <TextBlock x:Name="Item2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="28" FontWeight="Medium" Foreground="{DynamicResource PrimaryBrush}" />
+      </Border>
+      <Border Height="40">
+        <TextBlock x:Name="Item3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="20" Opacity="0.5" Foreground="{DynamicResource TextPrimaryBrush}" />
+      </Border>
+      <Border Height="40">
+        <TextBlock x:Name="Item4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   FontSize="15" Opacity="0.2" Foreground="{DynamicResource TextPrimaryBrush}" />
+      </Border>
+    </StackPanel>
+
+  </Panel>
+
+</UserControl>

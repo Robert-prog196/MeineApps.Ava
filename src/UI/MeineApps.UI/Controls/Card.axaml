@@ -1,0 +1,83 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- CARD STYLES                                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Base Card -->
+  <Style Selector="Border.Card">
+    <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource CardRadius}" />
+    <Setter Property="Padding" Value="{DynamicResource CardPadding}" />
+    <Setter Property="BoxShadow" Value="{DynamicResource CardShadow}" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Elevated Card (on hover) -->
+  <Style Selector="Border.Card.Elevated">
+    <Setter Property="BoxShadow" Value="{DynamicResource ElevatedShadow}" />
+  </Style>
+
+  <!-- Interactive Card (clickable) -->
+  <Style Selector="Border.Card.Interactive">
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+
+  <Style Selector="Border.Card.Interactive:pointerover">
+    <Setter Property="Background" Value="{DynamicResource CardHoverBrush}" />
+    <Setter Property="BoxShadow" Value="{DynamicResource CardShadowHover}" />
+    <Setter Property="RenderTransform" Value="translateY(-2px)" />
+  </Style>
+
+  <!-- Outlined Card (no shadow, with border) -->
+  <Style Selector="Border.Card.Outlined">
+    <Setter Property="BoxShadow" Value="none" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Compact Card (less padding) -->
+  <Style Selector="Border.Card.Compact">
+    <Setter Property="Padding" Value="12" />
+  </Style>
+
+  <!-- Large Card (more padding) -->
+  <Style Selector="Border.Card.Large">
+    <Setter Property="Padding" Value="24" />
+  </Style>
+
+  <!-- Success Card -->
+  <Style Selector="Border.Card.Success">
+    <Setter Property="Background" Value="{DynamicResource SuccessBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Warning Card -->
+  <Style Selector="Border.Card.Warning">
+    <Setter Property="Background" Value="{DynamicResource WarningBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource WarningBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Error Card -->
+  <Style Selector="Border.Card.Error">
+    <Setter Property="Background" Value="{DynamicResource ErrorBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ErrorBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <!-- Info Card -->
+  <Style Selector="Border.Card.Info">
+    <Setter Property="Background" Value="{DynamicResource InfoBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource InfoBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+</Styles>

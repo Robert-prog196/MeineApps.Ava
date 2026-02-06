@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="MeineApps.UI.Controls.EmptyStateView">
+
+  <StackPanel HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Spacing="16"
+              Margin="32">
+
+    <!-- Icon -->
+    <mi:MaterialIcon x:Name="IconElement"
+                     Width="{DynamicResource IconSizeXl}"
+                     Height="{DynamicResource IconSizeXl}"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center" />
+
+    <!-- Title -->
+    <TextBlock x:Name="TitleText"
+               FontSize="{DynamicResource FontSizeTitleLg}"
+               FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               HorizontalAlignment="Center"
+               TextAlignment="Center" />
+
+    <!-- Subtitle -->
+    <TextBlock x:Name="SubtitleText"
+               FontSize="{DynamicResource FontSizeBodyMd}"
+               Foreground="{DynamicResource TextMutedBrush}"
+               HorizontalAlignment="Center"
+               TextAlignment="Center"
+               TextWrapping="Wrap"
+               MaxWidth="300" />
+
+    <!-- Action Button (optional) -->
+    <Button x:Name="ActionButton"
+            Classes="Primary"
+            IsVisible="False"
+            HorizontalAlignment="Center"
+            Margin="0,8,0,0" />
+
+  </StackPanel>
+
+</UserControl>

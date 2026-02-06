@@ -1,0 +1,242 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:views="using:ZeitManager.Views"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="ZeitManager.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <UserControl.Styles>
+    <!-- Fade transition for tab content switching -->
+    <Style Selector="Border.TabContent">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.TabContent:not(.Active)">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+    <Style Selector="Border.TabContent.Active">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="IsHitTestVisible" Value="True" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- Content Area -->
+    <Panel Grid.Row="0">
+      <Border Classes="TabContent"
+              Classes.Active="{Binding IsTimerActive}">
+        <views:TimerView DataContext="{Binding TimerViewModel}" />
+      </Border>
+      <Border Classes="TabContent"
+              Classes.Active="{Binding IsStopwatchActive}">
+        <views:StopwatchView DataContext="{Binding StopwatchViewModel}" />
+      </Border>
+      <Border Classes="TabContent"
+              Classes.Active="{Binding IsAlarmActive}">
+        <views:AlarmView DataContext="{Binding AlarmViewModel}" />
+      </Border>
+      <Border Classes="TabContent"
+              Classes.Active="{Binding IsSettingsActive}">
+        <views:SettingsView DataContext="{Binding SettingsViewModel}" />
+      </Border>
+    </Panel>
+
+    <!-- Bottom Navigation Bar -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,*,*,*" Margin="0,2">
+
+        <!-- Timer Tab -->
+        <Button Grid.Column="0"
+                Classes="Text"
+                Command="{Binding NavigateToTimerCommand}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0"
+                Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsTimerActive}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsTimerActive}" />
+            <Panel>
+              <mi:MaterialIcon Kind="TimerSand" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsTimerActive}" />
+              <mi:MaterialIcon Kind="TimerSandEmpty" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsTimerActive}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding NavTimerText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsTimerActive}" />
+              <TextBlock Text="{Binding NavTimerText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsTimerActive}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+        <!-- Stopwatch Tab -->
+        <Button Grid.Column="1"
+                Classes="Text"
+                Command="{Binding NavigateToStopwatchCommand}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0"
+                Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsStopwatchActive}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsStopwatchActive}" />
+            <Panel>
+              <mi:MaterialIcon Kind="Timer" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsStopwatchActive}" />
+              <mi:MaterialIcon Kind="TimerOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsStopwatchActive}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding NavStopwatchText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsStopwatchActive}" />
+              <TextBlock Text="{Binding NavStopwatchText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsStopwatchActive}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+        <!-- Alarm Tab -->
+        <Button Grid.Column="2"
+                Classes="Text"
+                Command="{Binding NavigateToAlarmCommand}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0"
+                Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsAlarmActive}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsAlarmActive}" />
+            <Panel>
+              <mi:MaterialIcon Kind="Alarm" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsAlarmActive}" />
+              <mi:MaterialIcon Kind="AlarmOff" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsAlarmActive}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding NavAlarmText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsAlarmActive}" />
+              <TextBlock Text="{Binding NavAlarmText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsAlarmActive}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+        <!-- Settings Tab -->
+        <Button Grid.Column="3"
+                Classes="Text"
+                Command="{Binding NavigateToSettingsCommand}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0"
+                Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsSettingsActive}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsSettingsActive}" />
+            <Panel>
+              <mi:MaterialIcon Kind="Cog" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsSettingsActive}" />
+              <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsSettingsActive}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsSettingsActive}" />
+              <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsSettingsActive}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+      </Grid>
+    </Border>
+
+    <!-- Snackbar Message -->
+    <Border Grid.Row="0" Grid.RowSpan="2"
+            IsVisible="{Binding IsSnackbarVisible}"
+            IsHitTestVisible="False"
+            VerticalAlignment="Bottom" HorizontalAlignment="Center"
+            Margin="16,0,16,80">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="8" Padding="16,10"
+              MinWidth="200" MaxWidth="400"
+              BoxShadow="0 2 8 0 #40000000">
+        <TextBlock Text="{Binding SnackbarMessage}" Classes="BodyMedium"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   TextWrapping="Wrap" TextAlignment="Center" />
+      </Border>
+    </Border>
+
+    <!-- Alarm Overlay (topmost layer) -->
+    <Border Grid.Row="0" Grid.RowSpan="2"
+            IsVisible="{Binding IsAlarmOverlayVisible}"
+            IsHitTestVisible="{Binding IsAlarmOverlayVisible}">
+      <views:AlarmOverlayView DataContext="{Binding AlarmOverlayViewModel}" />
+    </Border>
+
+  </Grid>
+
+</UserControl>

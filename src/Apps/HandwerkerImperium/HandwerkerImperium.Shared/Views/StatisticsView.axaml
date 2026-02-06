@@ -1,0 +1,382 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.StatisticsView"
+             x:DataType="vm:StatisticsViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            Classes="CardElevated"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <!-- Back Button -->
+        <Button Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+        </Button>
+
+        <!-- Title (centered) -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+          <mi:MaterialIcon Kind="ChartBar" Width="28" Height="28"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{loc:Translate Stats}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+        </StackPanel>
+
+        <!-- Refresh Button -->
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding RefreshStatisticsCommand}">
+          <mi:MaterialIcon Kind="Refresh" Width="24" Height="24" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" Padding="16">
+      <StackPanel Spacing="20">
+
+        <!-- PLAYER OVERVIEW -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="AccountHardHat" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Player}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
+                  ColumnSpacing="16" RowSpacing="8">
+              <!-- Level -->
+              <StackPanel>
+                <TextBlock Text="{loc:Translate Level}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding PlayerLevel}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="Gold" />
+              </StackPanel>
+
+              <!-- Total XP -->
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{loc:Translate TotalXP}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalXp, StringFormat='{}{0:N0}'}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="Gold" />
+              </StackPanel>
+
+              <!-- Play Time -->
+              <StackPanel Grid.Row="1">
+                <TextBlock Text="{loc:Translate PlayTime}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalPlayTime}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Current Balance -->
+              <StackPanel Grid.Row="1" Grid.Column="1">
+                <TextBlock Text="{loc:Translate Balance}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding CurrentBalance}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}" />
+              </StackPanel>
+
+              <!-- Total Earned -->
+              <StackPanel Grid.Row="2">
+                <TextBlock Text="{loc:Translate TotalEarned}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalMoneyEarned}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}" />
+              </StackPanel>
+
+              <!-- Total Spent -->
+              <StackPanel Grid.Row="2" Grid.Column="1">
+                <TextBlock Text="{loc:Translate TotalSpent}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalMoneySpent}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource WarningBrush}" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- ORDERS & MINIGAMES -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="GamepadVariant" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Text="{loc:Translate MiniGames}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
+                  ColumnSpacing="16" RowSpacing="8">
+              <!-- Orders Completed -->
+              <StackPanel>
+                <TextBlock Text="{loc:Translate Orders}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalOrdersCompleted, StringFormat='{}{0:N0}'}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Mini-Games Played -->
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{loc:Translate MiniGames}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalMiniGamesPlayed, StringFormat='{}{0:N0}'}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Perfect Ratings -->
+              <StackPanel Grid.Row="1">
+                <TextBlock Text="{loc:Translate Perfect}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding PerfectRatings, StringFormat='{}{0:N0}'}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Perfect Rate -->
+              <StackPanel Grid.Row="1" Grid.Column="1">
+                <TextBlock Text="{loc:Translate PerfectRate}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding PerfectRate, StringFormat='{}{0:F1}%'}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Current Streak -->
+              <StackPanel Grid.Row="2">
+                <TextBlock Text="{loc:Translate CurrentStreak}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Fire" Width="18" Height="18"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                  <TextBlock Text="{Binding CurrentPerfectStreak}"
+                             FontSize="20" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </StackPanel>
+
+              <!-- Best Streak -->
+              <StackPanel Grid.Row="2" Grid.Column="1">
+                <TextBlock Text="{loc:Translate BestStreak}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Star" Width="18" Height="18"
+                                   Foreground="Gold" />
+                  <TextBlock Text="{Binding BestPerfectStreak}"
+                             FontSize="20" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- PRESTIGE -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Creation" Width="20" Height="20"
+                               Foreground="Gold" />
+              <TextBlock Text="{loc:Translate Prestige}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                  ColumnSpacing="16" RowSpacing="8">
+              <!-- Prestige Level -->
+              <StackPanel>
+                <TextBlock Text="{loc:Translate PrestigeLevel}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding PrestigeLevel}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="Gold" />
+              </StackPanel>
+
+              <!-- Multiplier -->
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{loc:Translate IncomeBonus}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding PrestigeMultiplier}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="Gold" />
+              </StackPanel>
+
+              <!-- Potential Bonus -->
+              <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                <TextBlock FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}">
+                  <Run Text="{loc:Translate NextPrestigeBonus}" />
+                  <Run Text="{Binding PotentialBonus}"
+                       Foreground="{DynamicResource WarningBrush}"
+                       FontWeight="Bold" />
+                </TextBlock>
+              </StackPanel>
+            </Grid>
+
+            <!-- Prestige Button -->
+            <Button Classes="Primary"
+                    Background="{DynamicResource WarningBrush}"
+                    Command="{Binding PrestigeCommand}"
+                    IsEnabled="{Binding CanPrestige}"
+                    Margin="0,8,0,0"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Creation" Width="16" Height="16" />
+                <TextBlock Text="{loc:Translate Prestige}"
+                           FontSize="16" FontWeight="Bold" />
+              </StackPanel>
+            </Button>
+
+            <!-- Requirement info when can't prestige -->
+            <TextBlock Text="{Binding MinLevelRequiredText}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       IsVisible="{Binding !CanPrestige}" />
+          </StackPanel>
+        </Border>
+
+        <!-- WORKSHOP SUMMARY -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Factory" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Workshops}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+              <!-- Total Workshops -->
+              <StackPanel>
+                <TextBlock Text="{loc:Translate Workshops}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalWorkshops}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Total Workers -->
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{loc:Translate Workers}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalWorkers}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Income/s -->
+              <StackPanel Grid.Column="2">
+                <TextBlock Text="{loc:Translate Income}" FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TotalIncomePerSecond}"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- WORKSHOP DETAILS -->
+        <Border Classes="Card"
+                IsVisible="{Binding HasWorkshopStats}">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="ClipboardList" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Text="{loc:Translate WorkshopDetails}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding WorkshopStats}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:WorkshopStatistic">
+                  <Border Background="{DynamicResource SurfaceBrush}"
+                          CornerRadius="8"
+                          Padding="12,8"
+                          Margin="0,4">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="12">
+                      <!-- Icon -->
+                      <TextBlock Text="{Binding Icon}"
+                                 FontSize="20"
+                                 VerticalAlignment="Center" />
+
+                      <!-- Name -->
+                      <TextBlock Grid.Column="1"
+                                 Text="{Binding Name}"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center" />
+
+                      <!-- Level -->
+                      <TextBlock Grid.Column="2"
+                                 VerticalAlignment="Center">
+                        <Run Text="Lv." FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <Run Text="{Binding Level}" FontSize="14" FontWeight="Bold" />
+                      </TextBlock>
+
+                      <!-- Workers -->
+                      <StackPanel Grid.Column="3"
+                                  Orientation="Horizontal"
+                                  Spacing="2"
+                                  VerticalAlignment="Center">
+                        <mi:MaterialIcon Kind="AccountHardHat" Width="14" Height="14"
+                                         Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Workers}"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+
+                      <!-- Income -->
+                      <TextBlock Grid.Column="4"
+                                 Text="{Binding IncomePerSecond}"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource SuccessBrush}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- Bottom Spacer -->
+        <Border Height="20" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

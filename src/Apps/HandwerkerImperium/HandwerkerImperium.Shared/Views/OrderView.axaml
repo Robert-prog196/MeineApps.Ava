@@ -1,0 +1,220 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.OrderView"
+             x:DataType="vm:OrderViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            Classes="CardElevated"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <!-- Back Button -->
+        <Button Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+        </Button>
+
+        <!-- Title (centered) -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+          <mi:MaterialIcon Kind="ClipboardList" Width="22" Height="22"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{loc:Translate OrderDetails}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+        </StackPanel>
+
+        <!-- Spacer for symmetry -->
+        <Border Grid.Column="2" Width="44" />
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" Padding="16">
+      <StackPanel Spacing="20">
+
+        <!-- ORDER INFO CARD -->
+        <Border Classes="Card">
+          <StackPanel Spacing="16">
+            <!-- Customer & Title -->
+            <StackPanel Orientation="Horizontal" Spacing="16">
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="16"
+                      Width="80" Height="80">
+                <TextBlock Text="{Binding CustomerIcon}"
+                           FontSize="48"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+              </Border>
+
+              <StackPanel VerticalAlignment="Center" Spacing="8">
+                <TextBlock Text="{Binding OrderTitle}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding WorkshopIcon}" FontSize="14" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding WorkshopName}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+                <Border Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="8"
+                        Padding="8,4"
+                        HorizontalAlignment="Left">
+                  <TextBlock Text="{Binding DifficultyText}"
+                             FontSize="12" FontWeight="Bold"
+                             Foreground="{Binding DifficultyColor}" />
+                </Border>
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Task Count Info -->
+            <TextBlock FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}">
+              <Run Text="{Binding MiniGamesRequired}" FontWeight="Bold" />
+              <Run Text=" " />
+              <Run Text="{loc:Translate MiniGamesRequiredFormat}" />
+            </TextBlock>
+          </StackPanel>
+        </Border>
+
+        <!-- REWARDS CARD -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Gift" Width="20" Height="20"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Reward}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+              <!-- Money Reward -->
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="12"
+                      Padding="16">
+                <StackPanel HorizontalAlignment="Center" Spacing="4">
+                  <mi:MaterialIcon Kind="CashMultiple" Width="32" Height="32"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding RewardText}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource SuccessBrush}"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+              </Border>
+
+              <!-- XP Reward -->
+              <Border Grid.Column="1"
+                      Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="12"
+                      Padding="16">
+                <StackPanel HorizontalAlignment="Center" Spacing="4">
+                  <mi:MaterialIcon Kind="Star" Width="32" Height="32"
+                                   Foreground="Gold"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding XpRewardText}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="Gold"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- PROGRESS CARD (only when in progress) -->
+        <Border Classes="Card"
+                IsVisible="{Binding IsInProgress}">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="ChartBar" Width="20" Height="20"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Progress}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="8">
+              <TextBlock Text="{loc:Translate MiniGames}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Grid.Column="1" FontSize="14"
+                         Foreground="{DynamicResource TextPrimaryBrush}">
+                <Run Text="{Binding MiniGamesCompleted}" FontWeight="Bold" />
+                <Run Text=" / " />
+                <Run Text="{Binding MiniGamesRequired}" />
+              </TextBlock>
+
+              <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
+                           Value="{Binding Progress}"
+                           Maximum="1"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           Height="8" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- ACTIONS -->
+        <StackPanel Spacing="12">
+          <!-- Start Button (when not started) -->
+          <Button Content="{loc:Translate StartOrder}"
+                  Classes="Primary"
+                  Command="{Binding StartOrderCommand}"
+                  IsVisible="{Binding CanStart}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+
+          <!-- Continue Button (when in progress) -->
+          <Button Content="{loc:Translate ContinuePlaying}"
+                  Classes="Primary"
+                  Command="{Binding ContinueOrderCommand}"
+                  IsVisible="{Binding IsInProgress}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+
+          <!-- Cancel Button (when in progress) -->
+          <Button Content="{loc:Translate CancelOrder}"
+                  Classes="Secondary"
+                  Command="{Binding CancelOrderCommand}"
+                  IsVisible="{Binding IsInProgress}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+        </StackPanel>
+
+        <!-- TIP CARD -->
+        <Border Classes="Card"
+                IsVisible="{Binding CanStart}">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="LightbulbOn" Width="24" Height="24"
+                             Foreground="{DynamicResource WarningBrush}" />
+            <TextBlock Text="{loc:Translate OrderTip}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Bottom Spacer -->
+        <Border Height="20" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

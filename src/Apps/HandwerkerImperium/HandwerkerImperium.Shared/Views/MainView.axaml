@@ -1,0 +1,281 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:views="using:HandwerkerImperium.Views"
+             xmlns:miniGames="using:HandwerkerImperium.Views.MiniGames"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.MainView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Content Area (switches based on tab)  -->
+    <!-- ============================================ -->
+    <Panel x:Name="ContentPanel" Grid.Row="0">
+      <!-- Dashboard Tab (uses MainViewModel directly) -->
+      <views:DashboardView IsVisible="{Binding IsDashboardActive}" />
+
+      <!-- Shop Tab -->
+      <views:ShopView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsShopActive}"
+                      DataContext="{Binding ShopViewModel}" />
+
+      <!-- Statistics Tab -->
+      <views:StatisticsView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsStatisticsActive}"
+                            DataContext="{Binding StatisticsViewModel}" />
+
+      <!-- Achievements Tab -->
+      <views:AchievementsView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsAchievementsActive}"
+                              DataContext="{Binding AchievementsViewModel}" />
+
+      <!-- Settings Tab -->
+      <views:SettingsView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsSettingsActive}"
+                          DataContext="{Binding SettingsViewModel}" />
+
+      <!-- Workshop Detail (overlay when selected) -->
+      <views:WorkshopView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsWorkshopDetailActive}"
+                          DataContext="{Binding WorkshopViewModel}" />
+
+      <!-- Order Detail (overlay when selected) -->
+      <views:OrderView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsOrderDetailActive}"
+                       DataContext="{Binding OrderViewModel}" />
+
+      <!-- MiniGame Views (overlay when active) -->
+      <miniGames:SawingGameView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsSawingGameActive}"
+                                DataContext="{Binding SawingGameViewModel}" />
+      <miniGames:PipePuzzleView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsPipePuzzleActive}"
+                                DataContext="{Binding PipePuzzleViewModel}" />
+      <miniGames:WiringGameView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsWiringGameActive}"
+                                DataContext="{Binding WiringGameViewModel}" />
+      <miniGames:PaintingGameView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsPaintingGameActive}"
+                                  DataContext="{Binding PaintingGameViewModel}" />
+    </Panel>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Bottom Tab Bar                        -->
+    <!-- ============================================ -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="0,8"
+            IsVisible="{Binding IsTabBarVisible}">
+      <Grid ColumnDefinitions="*,*,*,*,*">
+
+        <!-- Dashboard -->
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding SelectDashboardTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                MinHeight="48">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Home" Width="24" Height="24" />
+            <TextBlock Text="{loc:Translate Home}"
+                       FontSize="10" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Statistics -->
+        <Button Grid.Column="1" Classes="Text"
+                Command="{Binding SelectStatisticsTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                MinHeight="48">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="ChartBar" Width="24" Height="24" />
+            <TextBlock Text="{loc:Translate Stats}"
+                       FontSize="10" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Achievements -->
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding SelectAchievementsTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                MinHeight="48">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Trophy" Width="24" Height="24" />
+            <TextBlock Text="{loc:Translate Achievements}"
+                       FontSize="10" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Shop -->
+        <Button Grid.Column="3" Classes="Text"
+                Command="{Binding SelectShopTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                MinHeight="48">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Cart" Width="24" Height="24" />
+            <TextBlock Text="{loc:Translate Shop}"
+                       FontSize="10" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Settings -->
+        <Button Grid.Column="4" Classes="Text"
+                Command="{Binding SelectSettingsTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                MinHeight="48">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24" />
+            <TextBlock Text="{loc:Translate Settings}"
+                       FontSize="10" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Dialog Overlays                              -->
+    <!-- ============================================ -->
+
+    <!-- Offline Earnings Dialog -->
+    <Border Grid.RowSpan="2" Background="#AA000000"
+            IsVisible="{Binding IsOfflineEarningsDialogVisible}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24"
+              MaxWidth="340" MaxHeight="300"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="{loc:Translate WelcomeBack}"
+                     FontSize="22" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{loc:Translate WhileYouWereAway}"
+                     FontSize="14" TextWrapping="Wrap"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <TextBlock Text="{Binding OfflineEarningsAmountText}"
+                     FontSize="28" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Text="{Binding OfflineEarningsDurationText}"
+                     FontSize="12"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+            <Button Classes="Outlined" Content="{loc:Translate Collect}"
+                    Command="{Binding CollectOfflineEarningsNormalCommand}" MinWidth="100" />
+            <Button Classes="Primary" Content="{loc:Translate DoubleWithAd}"
+                    Command="{Binding CollectOfflineEarningsWithAdCommand}" MinWidth="120" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Level Up Dialog -->
+    <Border Grid.RowSpan="2" Background="#AA000000"
+            IsVisible="{Binding IsLevelUpDialogVisible}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24"
+              MaxWidth="340" MaxHeight="300"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="{loc:Translate LevelUpTitle}"
+                     FontSize="22" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock FontSize="36" HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextPrimaryBrush}">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="Level {0}">
+                <Binding Path="LevelUpNewLevel" />
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
+          <TextBlock Text="{Binding LevelUpUnlockedText}"
+                     FontSize="14" TextWrapping="Wrap"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     IsVisible="{Binding LevelUpUnlockedText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          <Button Classes="Primary" Content="OK"
+                  Command="{Binding DismissLevelUpDialogCommand}"
+                  HorizontalAlignment="Center" MinWidth="120" />
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Daily Reward Dialog -->
+    <Border Grid.RowSpan="2" Background="#AA000000"
+            IsVisible="{Binding IsDailyRewardDialogVisible}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24"
+              MaxWidth="340" MaxHeight="350"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="{loc:Translate DailyReward}"
+                     FontSize="22" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Text="{Binding DailyRewardDayText}"
+                     FontSize="16"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding DailyRewardAmountText}"
+                     FontSize="28" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Text="{Binding DailyRewardStreakText}"
+                     FontSize="12"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <Button Classes="Primary" Content="{loc:Translate ClaimReward}"
+                  Command="{Binding ClaimDailyRewardCommand}"
+                  HorizontalAlignment="Center" MinWidth="160" />
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Achievement Unlocked Dialog -->
+    <Border Grid.RowSpan="2" Background="#AA000000"
+            IsVisible="{Binding IsAchievementDialogVisible}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24"
+              MaxWidth="340" MaxHeight="280"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="{loc:Translate AchievementUnlocked}"
+                     FontSize="22" FontWeight="Bold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <mi:MaterialIcon Kind="Trophy" Width="48" Height="48"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding AchievementName}"
+                     FontSize="18" FontWeight="SemiBold"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding AchievementDescription}"
+                     FontSize="14" TextWrapping="Wrap"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <Button Classes="Primary" Content="OK"
+                  Command="{Binding DismissAchievementDialogCommand}"
+                  HorizontalAlignment="Center" MinWidth="120" />
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Loading Overlay -->
+    <Border Grid.RowSpan="2"
+            Background="#CC000000"
+            IsVisible="{Binding IsLoading}">
+      <ProgressBar IsIndeterminate="True"
+                   Width="48" Height="48"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+    </Border>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>RechnerPlus</RootNamespace>
+    <Description>RechnerPlus - Scientific Calculator with Unit Converter</Description>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia -->
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Material.Avalonia" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+
+    <!-- MVVM -->
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Xaml.Behaviors.Avalonia" />
+
+    <!-- DI -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\MeineApps.CalcLib\MeineApps.CalcLib.csproj" />
+    <ProjectReference Include="..\..\..\Libraries\MeineApps.Core.Ava\MeineApps.Core.Ava.csproj" />
+    <ProjectReference Include="..\..\..\UI\MeineApps.UI\MeineApps.UI.csproj" />
+  </ItemGroup>
+
+  <!-- ResX Localization -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings\AppStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Resources\Strings\AppStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppStrings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+</Project>

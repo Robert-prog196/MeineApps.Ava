@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:skia="using:Avalonia.Labs.Controls"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.GameView"
+             x:DataType="vm:GameViewModel"
+             Focusable="True">
+
+  <Panel>
+    <!-- SkiaSharp Game Canvas -->
+    <Border Background="Black">
+      <skia:SKCanvasView x:Name="GameCanvas" />
+    </Border>
+
+    <!-- Pause Overlay (triggered by Escape key) -->
+    <Border IsVisible="{Binding IsPaused}"
+            Background="#CC000000">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="20"
+              Padding="24"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              MinWidth="400"
+              BorderBrush="{DynamicResource CardBorderBrush}"
+              BorderThickness="1">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate Paused}"
+                     FontSize="36"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+
+          <!-- 2x2 Button Grid -->
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+            <Button Grid.Row="0" Grid.Column="0"
+                    Content="{loc:Translate Resume}"
+                    Classes="Primary"
+                    Background="{DynamicResource SuccessBrush}"
+                    Command="{Binding ResumeCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="48"
+                    Margin="0,0,6,6" />
+
+            <Button Grid.Row="0" Grid.Column="1"
+                    Content="{loc:Translate RestartLevel}"
+                    Classes="Primary"
+                    Background="{DynamicResource WarningBrush}"
+                    Command="{Binding RestartCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="48"
+                    Margin="6,0,0,6" />
+
+            <Button Grid.Row="1" Grid.Column="0"
+                    Content="{loc:Translate Settings}"
+                    Classes="Secondary"
+                    Command="{Binding SettingsCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="48"
+                    Margin="0,6,6,0" />
+
+            <Button Grid.Row="1" Grid.Column="1"
+                    Content="{loc:Translate QuitToMenu}"
+                    Classes="Primary"
+                    Background="{DynamicResource ErrorBrush}"
+                    Command="{Binding QuitToMenuCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="48"
+                    Margin="6,6,0,0" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+  </Panel>
+
+</UserControl>

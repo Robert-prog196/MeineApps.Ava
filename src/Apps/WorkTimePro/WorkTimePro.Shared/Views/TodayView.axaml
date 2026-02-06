@@ -1,0 +1,263 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.TodayView"
+             x:DataType="vm:MainViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="12" Margin="16">
+
+      <!-- Date Header -->
+      <TextBlock Text="{Binding TodayDateDisplay}"
+                 Classes="PageTitle"
+                 HorizontalAlignment="Center" />
+
+      <!-- ==================== Status Card ==================== -->
+      <Border Classes="CardElevated" Padding="24">
+        <StackPanel Spacing="20">
+
+          <!-- Status Badge -->
+          <Border Background="{Binding StatusColor}"
+                  CornerRadius="16"
+                  Padding="16,8"
+                  HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="{Binding StatusIconKind}"
+                               Width="18" Height="18"
+                               Foreground="White" />
+              <TextBlock Text="{Binding StatusText}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Big Start/Stop Button -->
+          <Button Command="{Binding ToggleTrackingCommand}"
+                  HorizontalAlignment="Center"
+                  Width="120" Height="120"
+                  CornerRadius="60"
+                  Background="{Binding StatusColor}"
+                  Padding="0"
+                  HorizontalContentAlignment="Center"
+                  VerticalContentAlignment="Center">
+            <mi:MaterialIcon Kind="{Binding StatusIconKind}"
+                             Width="48" Height="48"
+                             Foreground="White" />
+          </Button>
+
+          <!-- Pause Button -->
+          <Button Content="{Binding PauseButtonText}"
+                  Classes="Secondary"
+                  Command="{Binding TogglePauseCommand}"
+                  HorizontalAlignment="Center"
+                  IsVisible="{Binding IsWorking}" />
+
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Time Metrics Card ==================== -->
+      <Border Classes="Card" Padding="16">
+        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto"
+              RowSpacing="12">
+
+          <!-- Work Time -->
+          <StackPanel Grid.Column="0" Grid.Row="0"
+                      HorizontalAlignment="Center">
+            <TextBlock Text="{Binding CurrentWorkTime}"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource SuccessBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate WorkTime}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Break Time -->
+          <StackPanel Grid.Column="1" Grid.Row="0"
+                      HorizontalAlignment="Center">
+            <TextBlock Text="{Binding CurrentPauseTime}"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource WarningBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Break}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Balance -->
+          <StackPanel Grid.Column="2" Grid.Row="0"
+                      HorizontalAlignment="Center">
+            <TextBlock Text="{Binding BalanceTime}"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{Binding BalanceColor}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Balance}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Target -->
+          <StackPanel Grid.Column="0" Grid.Row="1"
+                      HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TargetWorkTime}"
+                       FontSize="16"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Target}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Check-In Time -->
+          <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"
+                      HorizontalAlignment="Center"
+                      IsVisible="{Binding HasCheckedIn}">
+            <TextBlock Text="{Binding FirstCheckIn}"
+                       FontSize="16"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Start}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+      <!-- ==================== Auto-Pause Warning ==================== -->
+      <Border Background="{DynamicResource WarningLightBrush}"
+              BorderBrush="{DynamicResource WarningBrush}"
+              BorderThickness="1"
+              CornerRadius="12"
+              Padding="12"
+              IsVisible="{Binding HasAutoPause}">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <mi:MaterialIcon Kind="FlashOutline"
+                           Width="24" Height="24"
+                           Foreground="{DynamicResource WarningBrush}" />
+          <StackPanel>
+            <TextBlock Text="{loc:Translate AutoPauseAdded}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="{DynamicResource WarningBrush}" />
+            <TextBlock Text="{Binding AutoPauseInfo}"
+                       FontSize="12"
+                       Foreground="{DynamicResource WarningBrush}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Day Details Button -->
+      <Button Content="{Binding ShowDayDetailsText}"
+              Classes="Secondary"
+              Command="{Binding NavigateToDayDetailCommand}"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center" />
+
+      <!-- ==================== Quick Navigation Section ==================== -->
+      <TextBlock Text="{loc:Translate MoreFeatures}"
+                 FontSize="18" FontWeight="Bold"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 Margin="0,8,0,0" />
+
+      <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+            ColumnSpacing="12" RowSpacing="12"
+            Margin="0,0,0,16">
+
+        <!-- Month Overview -->
+        <Button Grid.Row="0" Grid.Column="0"
+                Command="{Binding NavigateToMonthCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Height="80"
+                CornerRadius="12"
+                Background="{DynamicResource SecondaryBrush}">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <mi:MaterialIcon Kind="CalendarMonth"
+                             Width="24" Height="24"
+                             Foreground="White"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate MonthOverview}"
+                       FontSize="11" Foreground="White"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Year Overview -->
+        <Button Grid.Row="0" Grid.Column="1"
+                Command="{Binding NavigateToYearCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Height="80"
+                CornerRadius="12"
+                Background="{DynamicResource SecondaryBrush}">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <mi:MaterialIcon Kind="ChartBar"
+                             Width="24" Height="24"
+                             Foreground="White"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate YearOverview}"
+                       FontSize="11" Foreground="White"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Vacation -->
+        <Button Grid.Row="1" Grid.Column="0"
+                Command="{Binding NavigateToVacationCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Height="80"
+                CornerRadius="12"
+                Background="{DynamicResource InfoBrush}">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <mi:MaterialIcon Kind="Beach"
+                             Width="24" Height="24"
+                             Foreground="White"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Vacation}"
+                       FontSize="11" Foreground="White"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Shift Plan -->
+        <Button Grid.Row="1" Grid.Column="1"
+                Command="{Binding NavigateToShiftPlanCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Height="80"
+                CornerRadius="12"
+                Background="{DynamicResource WarningBrush}">
+          <StackPanel HorizontalAlignment="Center" Spacing="4">
+            <mi:MaterialIcon Kind="SwapHorizontal"
+                             Width="24" Height="24"
+                             Foreground="White"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate ShiftPlan}"
+                       FontSize="11" Foreground="White"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+      </Grid>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

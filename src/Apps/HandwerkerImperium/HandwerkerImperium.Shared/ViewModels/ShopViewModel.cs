@@ -1,0 +1,379 @@
+using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using HandwerkerImperium.Helpers;
+using HandwerkerImperium.Services.Interfaces;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Premium.Ava.Services;
+
+namespace HandwerkerImperium.ViewModels;
+
+/// <summary>
+/// ViewModel for the shop page.
+/// Manages in-app purchases and premium features.
+/// </summary>
+public partial class ShopViewModel : ObservableObject
+{
+    private readonly IGameStateService _gameStateService;
+    private readonly IAudioService _audioService;
+    private readonly ISaveGameService _saveGameService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
+    private readonly ILocalizationService _localizationService;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // EVENTS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public event Action<string>? NavigationRequested;
+
+    /// <summary>
+    /// Event to show an alert dialog. Parameters: title, message, buttonText.
+    /// </summary>
+    public event Action<string, string, string>? AlertRequested;
+
+    /// <summary>
+    /// Event to request a confirmation dialog.
+    /// Parameters: title, message, acceptText, cancelText. Returns bool.
+    /// </summary>
+    public event Func<string, string, string, string, Task<bool>>? ConfirmationRequested;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // OBSERVABLE PROPERTIES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isPremium;
+
+    [ObservableProperty]
+    private string _currentBalance = "0 €";
+
+    [ObservableProperty]
+    private List<ShopItem> _shopItems = [];
+
+    /// <summary>
+    /// Indicates whether ads should be shown (not premium).
+    /// </summary>
+    public bool ShowAds => !IsPremium;
+
+    /// <summary>
+    /// Localized text for restore purchases button.
+    /// </summary>
+    public string RestorePurchasesText => $"🔄 {_localizationService.GetString("RestorePurchases")}";
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // CONSTRUCTOR
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public ShopViewModel(
+        IGameStateService gameStateService,
+        IAudioService audioService,
+        ISaveGameService saveGameService,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService,
+        ILocalizationService localizationService)
+    {
+        _gameStateService = gameStateService;
+        _audioService = audioService;
+        _saveGameService = saveGameService;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
+        _localizationService = localizationService;
+
+        // Subscribe to premium status changes
+        _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
+
+        LoadShopData();
+        _rewardedAdService.InitializeAsync().FireAndForget();
+    }
+
+    private void OnPremiumStatusChanged(object? sender, EventArgs e)
+    {
+        IsPremium = _purchaseService.IsPremium;
+        _gameStateService.State.IsPremium = _purchaseService.IsPremium;
+        _rewardedAdService.Disable();
+        OnPropertyChanged(nameof(ShowAds));
+        LoadShopData();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void LoadShopData()
+    {
+        var state = _gameStateService.State;
+        IsPremium = state.IsPremium;
+        CurrentBalance = FormatMoney(state.Money);
+
+        // Create shop items with localized texts
+        ShopItems =
+        [
+            new ShopItem
+            {
+                Id = "premium",
+                Name = _localizationService.GetString("ShopPremiumName"),
+                Description = _localizationService.GetString("ShopPremiumDesc"),
+                Icon = "⭐",
+                Price = "4,99 €",
+                IsPremiumItem = true,
+                IsPurchased = state.IsPremium
+            },
+            new ShopItem
+            {
+                Id = "booster_2x_30min",
+                Name = _localizationService.GetString("ShopBooster30MinName"),
+                Description = _localizationService.GetString("ShopBooster30MinDesc"),
+                Icon = "🚀",
+                Price = _localizationService.GetString("WatchVideo"),
+                IsAdReward = true
+            },
+            new ShopItem
+            {
+                Id = "booster_2x_2h",
+                Name = _localizationService.GetString("ShopBooster2hName"),
+                Description = _localizationService.GetString("ShopBooster2hDesc"),
+                Icon = "💎",
+                Price = "1,99 €",
+                IsPremiumItem = true
+            },
+            new ShopItem
+            {
+                Id = "instant_cash_small",
+                Name = _localizationService.GetString("ShopCashSmallName"),
+                Description = _localizationService.GetString("ShopCashSmallDesc"),
+                Icon = "💰",
+                Price = _localizationService.GetString("WatchVideo"),
+                IsAdReward = true
+            },
+            new ShopItem
+            {
+                Id = "instant_cash_large",
+                Name = _localizationService.GetString("ShopCashLargeName"),
+                Description = _localizationService.GetString("ShopCashLargeDesc"),
+                Icon = "💵",
+                Price = "0,99 €",
+                IsPremiumItem = true
+            },
+            new ShopItem
+            {
+                Id = "skip_time_1h",
+                Name = _localizationService.GetString("ShopSkipTimeName"),
+                Description = _localizationService.GetString("ShopSkipTimeDesc"),
+                Icon = "⏱️",
+                Price = _localizationService.GetString("WatchVideo"),
+                IsAdReward = true
+            }
+        ];
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COMMANDS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        NavigationRequested?.Invoke("..");
+    }
+
+    [RelayCommand]
+    private async Task PurchaseItemAsync(ShopItem? item)
+    {
+        if (item == null) return;
+
+        await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+
+        if (item.IsPurchased)
+        {
+            ShowAlert(
+                _localizationService.GetString("AlreadyPurchased"),
+                _localizationService.GetString("AlreadyPurchasedDesc"),
+                "OK");
+            return;
+        }
+
+        if (item.IsAdReward)
+        {
+            if (!_rewardedAdService.IsAvailable)
+            {
+                // Premium users don't need ads
+                await ApplyReward(item);
+                return;
+            }
+
+            bool watchAd = false;
+            if (ConfirmationRequested != null)
+            {
+                watchAd = await ConfirmationRequested.Invoke(
+                    item.Name,
+                    $"{item.Description}\n\n{_localizationService.GetString("WatchVideoQuestion")}",
+                    _localizationService.GetString("WatchVideo"),
+                    _localizationService.GetString("Cancel"));
+            }
+            else
+            {
+                Debug.WriteLine($"[ShopVM] WatchAd requested for {item.Id}");
+                watchAd = true;
+            }
+
+            if (watchAd)
+            {
+                bool success = await _rewardedAdService.ShowAdAsync();
+                if (success)
+                {
+                    await ApplyReward(item);
+                }
+            }
+        }
+        else if (item.IsPremiumItem)
+        {
+            bool confirm = false;
+            if (ConfirmationRequested != null)
+            {
+                confirm = await ConfirmationRequested.Invoke(
+                    item.Name,
+                    $"{item.Description}\n\n{_localizationService.GetString("Price")}: {item.Price}",
+                    _localizationService.GetString("Buy"),
+                    _localizationService.GetString("Cancel"));
+            }
+            else
+            {
+                Debug.WriteLine($"[ShopVM] Purchase requested for {item.Id}");
+                confirm = true;
+            }
+
+            if (confirm)
+            {
+                bool success = false;
+
+                if (item.Id == "premium")
+                {
+                    success = await _purchaseService.PurchaseRemoveAdsAsync();
+                }
+                else if (item.Id == "booster_2x_2h" || item.Id == "instant_cash_large")
+                {
+                    // These are consumable items - for now show placeholder
+                    ShowAlert(
+                        _localizationService.GetString("ComingSoon"),
+                        _localizationService.GetString("ComingSoonDesc"),
+                        "OK");
+                    return;
+                }
+
+                if (success)
+                {
+                    _gameStateService.State.IsPremium = true;
+                    await _saveGameService.SaveAsync();
+                    await _audioService.PlaySoundAsync(GameSound.LevelUp);
+                    ShowAlert(
+                        _localizationService.GetString("ThankYou"),
+                        _localizationService.GetString("ThankYouPremiumDesc"),
+                        _localizationService.GetString("Great"));
+                    LoadShopData();
+                }
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestorePurchasesAsync()
+    {
+        await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+
+        bool restored = await _purchaseService.RestorePurchasesAsync();
+
+        if (restored)
+        {
+            _gameStateService.State.IsPremium = _purchaseService.IsPremium;
+            await _saveGameService.SaveAsync();
+            await _audioService.PlaySoundAsync(GameSound.LevelUp);
+            ShowAlert(
+                _localizationService.GetString("PurchasesRestored"),
+                _localizationService.GetString("PurchasesRestoredDesc"),
+                _localizationService.GetString("Great"));
+            LoadShopData();
+        }
+        else
+        {
+            ShowAlert(
+                _localizationService.GetString("NoPurchasesFound"),
+                _localizationService.GetString("NoPurchasesFoundDesc"),
+                "OK");
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void ShowAlert(string title, string message, string buttonText)
+    {
+        if (AlertRequested != null)
+        {
+            AlertRequested.Invoke(title, message, buttonText);
+        }
+        else
+        {
+            Debug.WriteLine($"[ShopVM] Alert: {title} - {message}");
+        }
+    }
+
+    private async Task ApplyReward(ShopItem item)
+    {
+        switch (item.Id)
+        {
+            case "booster_2x_30min":
+                // TODO: Implement booster system
+                ShowAlert(
+                    _localizationService.GetString("BoosterActivated"),
+                    _localizationService.GetString("BoosterActivatedDesc"),
+                    _localizationService.GetString("Great"));
+                break;
+
+            case "instant_cash_small":
+                _gameStateService.AddMoney(1000);
+                CurrentBalance = FormatMoney(_gameStateService.State.Money);
+                await _audioService.PlaySoundAsync(GameSound.MoneyEarned);
+                ShowAlert(
+                    _localizationService.GetString("MoneyReceived"),
+                    string.Format(_localizationService.GetString("MoneyReceivedFormat"), "1.000 €"),
+                    _localizationService.GetString("Great"));
+                break;
+
+            case "skip_time_1h":
+                var hourlyEarnings = _gameStateService.State.TotalIncomePerSecond * 3600;
+                _gameStateService.AddMoney(hourlyEarnings);
+                CurrentBalance = FormatMoney(_gameStateService.State.Money);
+                await _audioService.PlaySoundAsync(GameSound.MoneyEarned);
+                ShowAlert(
+                    _localizationService.GetString("TimeSkipped"),
+                    string.Format(_localizationService.GetString("MoneyReceivedFormat"), FormatMoney(hourlyEarnings)),
+                    _localizationService.GetString("Great"));
+                break;
+        }
+
+        await _saveGameService.SaveAsync();
+    }
+
+    private static string FormatMoney(decimal amount) => MoneyFormatter.Format(amount, 2);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUPPORTING TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/// <summary>
+/// Represents an item in the shop.
+/// </summary>
+public class ShopItem
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string Icon { get; set; } = "";
+    public string Price { get; set; } = "";
+    public bool IsPremiumItem { get; set; }
+    public bool IsAdReward { get; set; }
+    public bool IsPurchased { get; set; }
+}

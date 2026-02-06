@@ -1,0 +1,283 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels.Floor"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerRechner.Views.Floor.TileCalculatorView"
+             x:DataType="vm:TileCalculatorViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Header with Back Button + Title       -->
+    <!-- ============================================ -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0"
+                Classes="Text"
+                Command="{Binding GoBackCommand}"
+                Padding="4"
+                VerticalAlignment="Center">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="1"
+                   Text="{loc:Translate CalcTiles}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center"
+                   Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Scrollable Content                    -->
+    <!-- ============================================ -->
+    <ScrollViewer Grid.Row="1" Padding="16">
+      <StackPanel Spacing="16">
+
+        <!-- Input Section: Room Dimensions -->
+        <Border Classes="Card" Padding="16" CornerRadius="12">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate RoomDimensions}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Room Length -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate RoomLength}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding RoomLength}"
+                       Watermark="m"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Room Width -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate RoomWidth}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding RoomWidth}"
+                       Watermark="m"
+                       Classes="Outlined" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Input Section: Tile Dimensions -->
+        <Border Classes="Card" Padding="16" CornerRadius="12">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate TileDimensions}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Tile Length -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate TileLength}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding TileLength}"
+                       Watermark="cm"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Tile Width -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate TileWidth}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding TileWidth}"
+                       Watermark="cm"
+                       Classes="Outlined" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Input Section: Additional Options -->
+        <Border Classes="Card" Padding="16" CornerRadius="12">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate CostCalculation}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Waste Percentage -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate Waste}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding WastePercentage}"
+                       Watermark="%"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Price Per Tile (optional) -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate PricePerTile}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding PricePerTile}"
+                       Watermark="EUR"
+                       Classes="Outlined" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Results Section -->
+        <Border Classes="Card Elevated" Padding="16" CornerRadius="12"
+                IsVisible="{Binding HasResult}">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate Result}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryBrush}" />
+
+            <!-- Area -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate TotalArea}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding AreaDisplay}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Tiles Needed -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate TilesNeeded}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding TilesNeededDisplay}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Tiles With Waste -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate TilesWithWaste}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding TilesWithWasteDisplay}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource AccentBrush}" />
+            </Grid>
+
+            <!-- Total Cost (only when ShowCost) -->
+            <Grid ColumnDefinitions="*,Auto"
+                  IsVisible="{Binding ShowCost}">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate TotalCost}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding TotalCostDisplay}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource PrimaryBrush}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ============================================ -->
+    <!-- Row 2: Action Buttons                        -->
+    <!-- ============================================ -->
+    <Border Grid.Row="2"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="*,8,*,8,*">
+        <!-- Reset -->
+        <Button Grid.Column="0"
+                Classes="Outlined"
+                Command="{Binding ResetCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Reset}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Calculate -->
+        <Button Grid.Column="2"
+                Classes="Primary"
+                Command="{Binding CalculateCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="Calculator" Width="18" Height="18" />
+            <TextBlock Text="{loc:Translate Calculate}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Save Project -->
+        <Button Grid.Column="4"
+                Classes="Secondary"
+                Command="{Binding SaveProjectCommand}"
+                IsVisible="{Binding HasResult}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
+            <TextBlock Text="{loc:Translate Save}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Save Project Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            ZIndex="100"
+            Background="#80000000"
+            IsVisible="{Binding ShowSaveDialog}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate SaveProject}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBox Text="{Binding SaveProjectName}"
+                   Watermark="{loc:Translate ProjectName}"
+                   Classes="Outlined" />
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Grid.Column="0"
+                    Classes="Outlined"
+                    Command="{Binding CancelSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Cancel}" />
+            <Button Grid.Column="2"
+                    Classes="Primary"
+                    Command="{Binding ConfirmSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Save}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

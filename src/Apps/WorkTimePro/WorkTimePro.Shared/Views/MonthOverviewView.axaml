@@ -1,0 +1,266 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:models="using:WorkTimePro.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.MonthOverviewView"
+             x:DataType="vm:MonthOverviewViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Back Button Header -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            Padding="8,4">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+        <TextBlock Text="{loc:Translate MonthOverview}"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Spacing="8" Margin="16">
+
+        <!-- ==================== Month Navigation ==================== -->
+        <Border Classes="CardElevated">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <Button Grid.Column="0" Classes="Text"
+                    Command="{Binding PreviousMonthCommand}">
+              <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+            </Button>
+
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+              <TextBlock Text="{Binding MonthDisplay}"
+                         FontSize="20" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         HorizontalAlignment="Center" />
+              <StackPanel Orientation="Horizontal"
+                          HorizontalAlignment="Center"
+                          Spacing="4"
+                          IsVisible="{Binding IsLocked}">
+                <mi:MaterialIcon Kind="Lock" Width="12" Height="12"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{loc:Translate Completed}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </StackPanel>
+
+            <Button Grid.Column="2" Classes="Text"
+                    Command="{Binding NextMonthCommand}">
+              <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+            </Button>
+          </Grid>
+        </Border>
+
+        <!-- ==================== Summary ==================== -->
+        <Border Classes="Card">
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
+                ColumnSpacing="16" RowSpacing="16">
+
+            <!-- Work Time -->
+            <StackPanel Grid.Column="0" Grid.Row="0">
+              <TextBlock Text="{loc:Translate WorkTime}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding WorkTimeDisplay}"
+                         FontSize="24" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <!-- Target -->
+            <StackPanel Grid.Column="1" Grid.Row="0">
+              <TextBlock Text="{loc:Translate Target}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding TargetTimeDisplay}"
+                         FontSize="24"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- Month Balance -->
+            <StackPanel Grid.Column="0" Grid.Row="1">
+              <TextBlock Text="{loc:Translate MonthBalance}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding BalanceDisplay}"
+                         FontSize="22" FontWeight="Bold"
+                         Foreground="{Binding BalanceColor}" />
+            </StackPanel>
+
+            <!-- Cumulative Balance -->
+            <StackPanel Grid.Column="1" Grid.Row="1">
+              <TextBlock Text="{loc:Translate CumulativeBalance}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding CumulativeBalanceDisplay}"
+                         FontSize="22" FontWeight="Bold"
+                         Foreground="{Binding CumulativeBalanceColor}" />
+            </StackPanel>
+
+            <!-- Work Days -->
+            <StackPanel Grid.Column="0" Grid.Row="2">
+              <TextBlock Text="{loc:Translate WorkDaysTotal}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{Binding WorkedDays}"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="/"
+                           FontSize="16"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{Binding TargetDays}"
+                           FontSize="16"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </StackPanel>
+
+          </Grid>
+        </Border>
+
+        <!-- ==================== Absences ==================== -->
+        <Border Classes="Card">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="24">
+            <!-- Vacation -->
+            <StackPanel HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Beach" Width="24" Height="24"
+                               Foreground="{DynamicResource InfoBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding VacationDays}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource InfoBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{loc:Translate Vacation}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Sick -->
+            <StackPanel HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Thermometer" Width="24" Height="24"
+                               Foreground="{DynamicResource ErrorBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding SickDays}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource ErrorBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{loc:Translate Sick}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Holiday -->
+            <StackPanel HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="PartyPopper" Width="24" Height="24"
+                               Foreground="{DynamicResource WarningBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding HolidayDays}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource WarningBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{loc:Translate Holiday}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Weeks ==================== -->
+        <Border Classes="Card">
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="CalendarWeek" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Text="{loc:Translate Weeks}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding Weeks}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:WorkWeek">
+                  <Border Classes="Card" Padding="12" Margin="0,2">
+                    <Grid ColumnDefinitions="Auto,*,Auto,60" ColumnSpacing="12">
+                      <TextBlock Grid.Column="0"
+                                 Text="{Binding WeekDisplay}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 VerticalAlignment="Center" />
+
+                      <ProgressBar Grid.Column="1"
+                                   Value="{Binding ProgressPercent}"
+                                   Maximum="100"
+                                   Foreground="{DynamicResource AccentBrush}"
+                                   VerticalAlignment="Center" />
+
+                      <TextBlock Grid.Column="2"
+                                 Text="{Binding ActualWorkDisplay}"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center" />
+
+                      <TextBlock Grid.Column="3"
+                                 Text="{Binding BalanceDisplay}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{Binding BalanceColor}"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Right" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Month Lock/Unlock Buttons ==================== -->
+        <Button Content="{Binding LockMonthButtonText}"
+                Classes="Primary"
+                Command="{Binding LockMonthCommand}"
+                IsVisible="{Binding !IsLocked}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <Button.Tag>
+            <mi:MaterialIcon Kind="Lock" Width="16" Height="16" Foreground="White" />
+          </Button.Tag>
+        </Button>
+
+        <Button Content="{Binding UnlockMonthButtonText}"
+                Classes="Secondary"
+                Command="{Binding UnlockMonthCommand}"
+                IsVisible="{Binding IsLocked}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <Button.Tag>
+            <mi:MaterialIcon Kind="LockOpen" Width="16" Height="16" />
+          </Button.Tag>
+        </Button>
+
+        <!-- Bottom Spacer -->
+        <Border Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

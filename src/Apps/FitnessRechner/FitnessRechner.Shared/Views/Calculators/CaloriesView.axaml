@@ -1,0 +1,221 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FitnessRechner.ViewModels.Calculators"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="FitnessRechner.Views.Calculators.CaloriesView"
+             x:DataType="vm:CaloriesViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Header with Back Button + Title       -->
+    <!-- ============================================ -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0"
+                Classes="Text"
+                Command="{Binding GoBackCommand}"
+                Padding="4"
+                VerticalAlignment="Center">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="1"
+                   Text="{loc:Translate CalcCalories}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center"
+                   Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Scrollable Content                    -->
+    <!-- ============================================ -->
+    <ScrollViewer Grid.Row="1" Padding="16">
+      <StackPanel Spacing="16">
+
+        <!-- Input Section -->
+        <Border Classes="Card" Padding="16" CornerRadius="12">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate Input}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Weight -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate Weight}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding Weight}"
+                       Watermark="kg"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Height -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate Height}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding Height}"
+                       Watermark="cm"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Age -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate Age}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding Age}"
+                       Watermark="{loc:Translate Years}"
+                       Classes="Outlined" />
+            </StackPanel>
+
+            <!-- Gender -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate Gender}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="16">
+                <RadioButton Content="{loc:Translate Male}"
+                             IsChecked="{Binding IsMale}"
+                             GroupName="Gender" />
+                <RadioButton Content="{loc:Translate Female}"
+                             IsChecked="{Binding IsMale, Converter={x:Static BoolConverters.Not}}"
+                             GroupName="Gender" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Activity Level -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate ActivityLevel}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <ComboBox ItemsSource="{Binding ActivityLevels}"
+                        SelectedIndex="{Binding ActivityLevelIndex}"
+                        HorizontalAlignment="Stretch" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Results Section -->
+        <Border Classes="CardElevated" Padding="16" CornerRadius="12"
+                IsVisible="{Binding HasResult}">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate Result}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryBrush}" />
+
+            <!-- BMR -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate Bmr}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding BmrDisplay}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- TDEE -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate Tdee}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding TdeeDisplay}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource AccentBrush}" />
+            </Grid>
+
+            <!-- Weight Loss -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate WeightLoss}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding WeightLossDisplay}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Weight Gain -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Translate WeightGain}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding WeightGainDisplay}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Set as Calorie Goal -->
+            <Button Classes="Secondary"
+                    Command="{Binding SetAsCalorieGoalCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Margin="0,8,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="Target" Width="18" Height="18" />
+                <TextBlock Text="{loc:Translate SetCalorieGoal}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ============================================ -->
+    <!-- Row 2: Action Buttons                        -->
+    <!-- ============================================ -->
+    <Border Grid.Row="2"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="*,8,*">
+        <!-- Reset -->
+        <Button Grid.Column="0"
+                Classes="Outlined"
+                Command="{Binding ResetCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Reset}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Calculate -->
+        <Button Grid.Column="2"
+                Classes="Primary"
+                Command="{Binding CalculateCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="Calculator" Width="18" Height="18" />
+            <TextBlock Text="{loc:Translate Calculate}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

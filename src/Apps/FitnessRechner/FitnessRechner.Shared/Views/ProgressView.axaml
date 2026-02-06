@@ -1,0 +1,803 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FitnessRechner.ViewModels"
+             xmlns:models="using:FitnessRechner.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:conv="using:FitnessRechner.Converters"
+             x:Class="FitnessRechner.Views.ProgressView"
+             x:DataType="vm:ProgressViewModel">
+
+  <UserControl.Resources>
+    <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
+    <conv:BoolToStringConverter x:Key="BmiBodyFatConverter" TrueValue="BMI" FalseValue="Body Fat" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Header with Title + Add Button        -->
+    <!-- ============================================ -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{loc:Translate Progress}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" />
+        <Button Grid.Column="1"
+                Classes="Primary Small"
+                Command="{Binding ToggleAddFormCommand}"
+                IsVisible="{Binding !ShowAddForm}">
+          <mi:MaterialIcon Kind="Plus" Width="20" Height="20" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Tab Bar (4 Tabs)                      -->
+    <!-- ============================================ -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            Padding="8,4">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Disabled">
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+
+          <!-- Weight Tab -->
+          <Button Classes="Text" Padding="0" Height="NaN"
+                  Command="{Binding SelectWeightTabCommand}">
+            <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
+                    Background="{Binding IsWeightTab, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="ScaleBathroom" Width="16" Height="16"
+                                 Foreground="{Binding IsWeightTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                <TextBlock Text="{loc:Translate TabWeight}" FontSize="13" VerticalAlignment="Center"
+                           Foreground="{Binding IsWeightTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </StackPanel>
+            </Border>
+          </Button>
+
+          <!-- Body Tab -->
+          <Button Classes="Text" Padding="0" Height="NaN"
+                  Command="{Binding SelectBodyTabCommand}">
+            <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
+                    Background="{Binding IsBodyTab, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="HumanMaleBoard" Width="16" Height="16"
+                                 Foreground="{Binding IsBodyTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                <TextBlock Text="{loc:Translate TabBody}" FontSize="13" VerticalAlignment="Center"
+                           Foreground="{Binding IsBodyTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </StackPanel>
+            </Border>
+          </Button>
+
+          <!-- Water Tab -->
+          <Button Classes="Text" Padding="0" Height="NaN"
+                  Command="{Binding SelectWaterTabCommand}">
+            <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
+                    Background="{Binding IsWaterTab, Converter={x:Static conv:TabColorConverters.WaterTab}}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="Water" Width="16" Height="16"
+                                 Foreground="{Binding IsWaterTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                <TextBlock Text="{loc:Translate TabWater}" FontSize="13" VerticalAlignment="Center"
+                           Foreground="{Binding IsWaterTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </StackPanel>
+            </Border>
+          </Button>
+
+          <!-- Calories Tab -->
+          <Button Classes="Text" Padding="0" Height="NaN"
+                  Command="{Binding SelectCaloriesTabCommand}">
+            <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
+                    Background="{Binding IsCaloriesTab, Converter={x:Static conv:TabColorConverters.CaloriesTab}}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="Fire" Width="16" Height="16"
+                                 Foreground="{Binding IsCaloriesTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                <TextBlock Text="{loc:Translate TabCalories}" FontSize="13" VerticalAlignment="Center"
+                           Foreground="{Binding IsCaloriesTab, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </StackPanel>
+            </Border>
+          </Button>
+
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 2: Tab Content (Scrollable)              -->
+    <!-- ============================================ -->
+    <ScrollViewer Grid.Row="2" Padding="16">
+      <Panel>
+
+        <!-- ==================== WEIGHT TAB ==================== -->
+        <StackPanel Spacing="16" IsVisible="{Binding IsWeightTab}">
+
+          <!-- Stats Card -->
+          <Border Classes="Card" Padding="16">
+            <Grid ColumnDefinitions="*,*,*">
+              <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="{Binding WeightCurrentDisplay}"
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Current}" Classes="Caption" HorizontalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding WeightAverageDisplay}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Average}" Classes="Caption" HorizontalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding WeightTrendDisplay}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Trend}" Classes="Caption" HorizontalAlignment="Center" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <!-- Chart Card -->
+          <Border Classes="Card" Padding="16">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate WeightStats30Days}"
+                         FontSize="16" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <lvc:CartesianChart Height="200"
+                                  Series="{Binding WeightChartSeries}"
+                                  XAxes="{Binding XAxes}"
+                                  YAxes="{Binding YAxesWeight}"
+                                  ZoomMode="None" />
+            </StackPanel>
+          </Border>
+
+          <!-- Add Weight Form -->
+          <Border Classes="Card" Padding="16"
+                  Background="{DynamicResource PrimaryBrush}"
+                  IsVisible="{Binding ShowAddForm}">
+            <StackPanel Spacing="12">
+              <TextBlock Text="{loc:Translate AddWeight}"
+                         FontSize="18" FontWeight="Bold" Foreground="White" />
+              <TextBox Text="{Binding NewValue}"
+                       Watermark="{loc:Translate WeightValue}" />
+              <CalendarDatePicker SelectedDate="{Binding NewDate}"
+                                  HorizontalAlignment="Stretch" />
+              <TextBox Text="{Binding NewNote}"
+                       Watermark="{loc:Translate NotePlaceholder}" />
+              <Grid ColumnDefinitions="*,8,*">
+                <Button Grid.Column="0"
+                        Command="{Binding ToggleAddFormCommand}"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center">
+                  <TextBlock Text="{loc:Translate Cancel}" />
+                </Button>
+                <Button Grid.Column="2" Classes="Success"
+                        Command="{Binding AddEntryCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center">
+                  <TextBlock Text="{loc:Translate Save}" />
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Weight Entries List -->
+          <StackPanel Spacing="8" IsVisible="{Binding !ShowAddForm}">
+            <TextBlock Text="{loc:Translate WeightEntries}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Empty State -->
+            <StackPanel IsVisible="{Binding !WeightEntries.Count}"
+                        HorizontalAlignment="Center" Spacing="8" Margin="0,20">
+              <mi:MaterialIcon Kind="ScaleBathroom" Width="32" Height="32"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding WeightEntries}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:TrackingEntry">
+                  <Border Classes="Card Compact" Margin="0,4" Padding="12">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                      <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                        <TextBlock Text="{Binding Date, StringFormat='{}{0:dd}'}"
+                                   FontSize="20" FontWeight="Bold"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM}'}"
+                                   FontSize="10"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="1" Text="{Binding Note}" Classes="Caption"
+                                 VerticalAlignment="Center"
+                                 IsVisible="{Binding Note, Converter={StaticResource IsNotNullConverter}}" />
+                      <TextBlock Grid.Column="2"
+                                 Text="{Binding Value, StringFormat='{}{0:F1} kg'}"
+                                 FontSize="18" FontWeight="Bold"
+                                 Foreground="{DynamicResource SuccessBrush}"
+                                 VerticalAlignment="Center" />
+                      <Button Grid.Column="3" Classes="Icon"
+                              Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteEntryCommand}"
+                              CommandParameter="{Binding .}"
+                              Margin="8,0,0,0">
+                        <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                         Foreground="{DynamicResource ErrorBrush}" />
+                      </Button>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </StackPanel>
+
+        <!-- ==================== BODY TAB ==================== -->
+        <StackPanel Spacing="16" IsVisible="{Binding IsBodyTab}">
+
+          <!-- Sub-Tabs (BMI / Body Fat) -->
+          <Grid ColumnDefinitions="*,8,*">
+            <Button Grid.Column="0" Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SelectBmiCommand}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+              <Border CornerRadius="12" Padding="12" Cursor="Hand"
+                      Background="{Binding IsBmiSelected, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                <TextBlock Text="BMI" FontSize="16" FontWeight="Bold"
+                           Foreground="{Binding IsBmiSelected, Converter={x:Static conv:TabColorConverters.ActiveText}}"
+                           HorizontalAlignment="Center" />
+              </Border>
+            </Button>
+            <Button Grid.Column="2" Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SelectBodyFatCommand}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+              <Border CornerRadius="12" Padding="12" Cursor="Hand"
+                      Background="{Binding IsBodyFatSelected, Converter={x:Static conv:TabColorConverters.BodyFatTab}}">
+                <TextBlock Text="{loc:Translate BodyFat}" FontSize="16" FontWeight="Bold"
+                           Foreground="{Binding IsBodyFatSelected, Converter={x:Static conv:TabColorConverters.ActiveText}}"
+                           HorizontalAlignment="Center" />
+              </Border>
+            </Button>
+          </Grid>
+
+          <!-- BMI Content -->
+          <StackPanel Spacing="16" IsVisible="{Binding IsBmiSelected}">
+
+            <!-- BMI Stats -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate BmiStats30Days}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BmiCurrentDisplay}"
+                               FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource InfoBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Current}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BmiAverageDisplay}"
+                               FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Average}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BmiTrendDisplay}"
+                               FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Trend}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BmiMinDisplay}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Min}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BmiMaxDisplay}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Max}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- BMI Chart -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="8">
+                <lvc:CartesianChart Height="200"
+                                    Series="{Binding BmiChartSeries}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxesBmi}"
+                                    ZoomMode="None" />
+                <TextBlock Text="{loc:Translate HealthyBmiRange}" Classes="Caption"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+            <!-- BMI Entries -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate BmiEntries}"
+                         FontSize="16" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
+                         HorizontalAlignment="Center" Margin="0,20"
+                         IsVisible="{Binding !HasBmiEntries}" />
+              <ItemsControl ItemsSource="{Binding BmiEntries}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="models:TrackingEntry">
+                    <Border Classes="Card Compact" Margin="0,4" Padding="12">
+                      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                          <TextBlock Text="{Binding Date, StringFormat='{}{0:dd}'}"
+                                     FontSize="20" FontWeight="Bold"
+                                     Foreground="{DynamicResource InfoBrush}"
+                                     HorizontalAlignment="Center" />
+                          <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM}'}"
+                                     FontSize="10" Foreground="{DynamicResource TextMutedBrush}"
+                                     HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding Note}" Classes="Caption"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding Note, Converter={StaticResource IsNotNullConverter}}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource InfoBrush}"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="3" Classes="Icon"
+                                Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteEntryCommand}"
+                                CommandParameter="{Binding .}"
+                                Margin="8,0,0,0">
+                          <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                           Foreground="{DynamicResource ErrorBrush}" />
+                        </Button>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Body Fat Content -->
+          <StackPanel Spacing="16" IsVisible="{Binding IsBodyFatSelected}">
+
+            <!-- Body Fat Stats -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate BodyFatStats30Days}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BodyFatCurrentDisplay}"
+                               FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource WarningBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Current}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BodyFatAverageDisplay}"
+                               FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Average}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BodyFatTrendDisplay}"
+                               FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Trend}" Classes="Caption" HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BodyFatMinDisplay}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Min}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding BodyFatMaxDisplay}"
+                               FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Max}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Body Fat Chart -->
+            <Border Classes="Card" Padding="16">
+              <lvc:CartesianChart Height="200"
+                                  Series="{Binding BodyFatChartSeries}"
+                                  XAxes="{Binding XAxes}"
+                                  YAxes="{Binding YAxesBodyFat}"
+                                  ZoomMode="None" />
+            </Border>
+
+            <!-- Body Fat Entries -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate BodyFatEntries}"
+                         FontSize="16" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
+                         HorizontalAlignment="Center" Margin="0,20"
+                         IsVisible="{Binding !HasBodyFatEntries}" />
+              <ItemsControl ItemsSource="{Binding BodyFatEntries}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="models:TrackingEntry">
+                    <Border Classes="Card Compact" Margin="0,4" Padding="12">
+                      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                          <TextBlock Text="{Binding Date, StringFormat='{}{0:dd}'}"
+                                     FontSize="20" FontWeight="Bold"
+                                     Foreground="{DynamicResource WarningBrush}"
+                                     HorizontalAlignment="Center" />
+                          <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM}'}"
+                                     FontSize="10" Foreground="{DynamicResource TextMutedBrush}"
+                                     HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding Note}" Classes="Caption"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding Note, Converter={StaticResource IsNotNullConverter}}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Value, StringFormat='{}{0:F1}%'}"
+                                   FontSize="18" FontWeight="Bold"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="3" Classes="Icon"
+                                Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteEntryCommand}"
+                                CommandParameter="{Binding .}"
+                                Margin="8,0,0,0">
+                          <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                           Foreground="{DynamicResource ErrorBrush}" />
+                        </Button>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Add Form for Body Tab -->
+          <Border Classes="Card" Padding="16"
+                  Background="{DynamicResource PrimaryBrush}"
+                  IsVisible="{Binding ShowAddForm}">
+            <StackPanel Spacing="12">
+              <TextBlock Text="{Binding IsBmiSelected, Converter={StaticResource BmiBodyFatConverter}}"
+                         FontSize="18" FontWeight="Bold" Foreground="White" />
+              <TextBox Text="{Binding NewValue}" Watermark="Value" />
+              <CalendarDatePicker SelectedDate="{Binding NewDate}"
+                                  HorizontalAlignment="Stretch" />
+              <TextBox Text="{Binding NewNote}"
+                       Watermark="{loc:Translate NotePlaceholder}" />
+              <Grid ColumnDefinitions="*,8,*">
+                <Button Grid.Column="0"
+                        Command="{Binding ToggleAddFormCommand}"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center">
+                  <TextBlock Text="{loc:Translate Cancel}" />
+                </Button>
+                <Button Grid.Column="2" Classes="Success"
+                        Command="{Binding AddEntryCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center">
+                  <TextBlock Text="{loc:Translate Save}" />
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- ==================== WATER TAB ==================== -->
+        <StackPanel Spacing="16" IsVisible="{Binding IsWaterTab}">
+
+          <!-- Water Progress Card -->
+          <Border Classes="Card" Padding="16">
+            <StackPanel Spacing="12">
+              <TextBlock Text="{loc:Translate WaterToday}"
+                         FontSize="16" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <ProgressBar Value="{Binding WaterProgress}"
+                             Maximum="1"
+                             Foreground="{DynamicResource InfoBrush}"
+                             Height="12" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TodayWater, StringFormat='{}{0:F0} ml'}"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{DynamicResource InfoBrush}"
+                           VerticalAlignment="Center" />
+              </Grid>
+              <TextBlock Text="{Binding WaterStatusText}" Classes="Caption"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Quick-Add Buttons -->
+          <TextBlock Text="{loc:Translate QuickAdd}"
+                     FontSize="16" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <Grid ColumnDefinitions="*,8,*,8,*">
+            <Button Grid.Column="0" Classes="Secondary"
+                    Command="{Binding QuickAddWaterCommand}"
+                    CommandParameter="250"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
+              <TextBlock Text="+250ml" FontSize="14" />
+            </Button>
+            <Button Grid.Column="2" Classes="Secondary"
+                    Command="{Binding QuickAddWaterCommand}"
+                    CommandParameter="500"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
+              <TextBlock Text="+500ml" FontSize="14" />
+            </Button>
+            <Button Grid.Column="4" Classes="Primary"
+                    Command="{Binding QuickAddWaterCommand}"
+                    CommandParameter="1000"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
+              <TextBlock Text="+1L" FontSize="14" />
+            </Button>
+          </Grid>
+
+          <!-- Water Goal Input -->
+          <Border Classes="Card" Padding="16">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate WaterGoal}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <Grid ColumnDefinitions="*,8,Auto">
+                <TextBox Grid.Column="0"
+                         Text="{Binding DailyWaterGoal}"
+                         Watermark="ml" />
+                <Button Grid.Column="2" Classes="Primary"
+                        Command="{Binding SetWaterGoalCommand}"
+                        HorizontalContentAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
+                    <TextBlock Text="{loc:Translate Save}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- ==================== CALORIES TAB ==================== -->
+        <StackPanel Spacing="16" IsVisible="{Binding IsCaloriesTab}">
+
+          <!-- Calorie Overview Card -->
+          <Border Classes="Card" Padding="16">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                <StackPanel HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding DailyCalorieGoal, StringFormat='{}{0:F0}'}"
+                             FontSize="20" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate GoalLabel}" Classes="Caption"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding ConsumedCalories, StringFormat='{}{0:F0}'}"
+                             FontSize="20" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Consumed}" Classes="Caption"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding RemainingCalories, StringFormat='{}{0:F0}'}"
+                             FontSize="20" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Remaining}" Classes="Caption"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+              </Grid>
+              <TextBlock Text="{Binding CalorieStatusText}" Classes="Caption"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Macro Progress Card -->
+          <Border Classes="Card" Padding="16"
+                  IsVisible="{Binding HasMacroGoals}">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate Macros}"
+                         FontSize="16" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+
+              <!-- Protein -->
+              <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
+                <TextBlock Text="{loc:Translate Protein}" FontSize="12"
+                           Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1"
+                             Value="{Binding ProteinProgress}"
+                             Maximum="1"
+                             Foreground="{DynamicResource SuccessBrush}"
+                             Height="8" />
+                <TextBlock Grid.Column="2"
+                           Text="{Binding ProteinConsumed, StringFormat='{}{0:F0}g'}"
+                           FontSize="12" Foreground="{DynamicResource SuccessBrush}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+              </Grid>
+
+              <!-- Carbs -->
+              <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
+                <TextBlock Text="{loc:Translate Carbs}" FontSize="12"
+                           Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1"
+                             Value="{Binding CarbsProgress}"
+                             Maximum="1"
+                             Foreground="{DynamicResource WarningBrush}"
+                             Height="8" />
+                <TextBlock Grid.Column="2"
+                           Text="{Binding CarbsConsumed, StringFormat='{}{0:F0}g'}"
+                           FontSize="12" Foreground="{DynamicResource WarningBrush}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+              </Grid>
+
+              <!-- Fat -->
+              <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
+                <TextBlock Text="{loc:Translate Fat}" FontSize="12"
+                           Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1"
+                             Value="{Binding FatProgress}"
+                             Maximum="1"
+                             Foreground="{DynamicResource ErrorBrush}"
+                             Height="8" />
+                <TextBlock Grid.Column="2"
+                           Text="{Binding FatConsumed, StringFormat='{}{0:F0}g'}"
+                           FontSize="12" Foreground="{DynamicResource ErrorBrush}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Today's Meals -->
+          <StackPanel Spacing="8">
+            <TextBlock Text="{loc:Translate TodayMeals}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Empty State -->
+            <TextBlock Text="{loc:Translate NoMealsYet}" Classes="Caption"
+                       HorizontalAlignment="Center" Margin="0,20"
+                       IsVisible="{Binding !HasMeals}" />
+
+            <ItemsControl ItemsSource="{Binding TodayMeals}"
+                          IsVisible="{Binding HasMeals}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:FoodLogEntry">
+                  <Border Classes="Card Compact" Margin="0,4" Padding="12">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                      <StackPanel>
+                        <TextBlock Text="{Binding FoodName}"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding Grams, StringFormat='{}{0:F0}g'}"
+                                     Classes="Caption" />
+                          <TextBlock Text="|" Classes="Caption" />
+                          <TextBlock Text="{Binding Meal}" Classes="Caption" />
+                        </StackPanel>
+                      </StackPanel>
+                      <TextBlock Grid.Column="1"
+                                 Text="{Binding Calories, StringFormat='{}{0:F0} kcal'}"
+                                 FontSize="16" FontWeight="Bold"
+                                 Foreground="{DynamicResource ErrorBrush}"
+                                 VerticalAlignment="Center" />
+                      <Button Grid.Column="2" Classes="Icon"
+                              Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteMealCommand}"
+                              CommandParameter="{Binding .}"
+                              Margin="4,0,0,0">
+                        <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                         Foreground="{DynamicResource ErrorBrush}" />
+                      </Button>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Add Food Button -->
+          <Button Classes="Primary"
+                  Command="{Binding ToggleFoodSearchCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <mi:MaterialIcon Kind="Plus" Width="18" Height="18" />
+              <TextBlock Text="{loc:Translate AddFood}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+
+          <!-- Calorie Goal Input -->
+          <Border Classes="Card" Padding="16">
+            <StackPanel Spacing="8">
+              <TextBlock Text="{loc:Translate SetCalorieGoal}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <Grid ColumnDefinitions="*,8,Auto">
+                <TextBox Grid.Column="0"
+                         Text="{Binding DailyCalorieGoal}"
+                         Watermark="kcal" />
+                <Button Grid.Column="2" Classes="Primary"
+                        Command="{Binding SetCalorieGoalCommand}"
+                        HorizontalContentAlignment="Center">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
+                    <TextBlock Text="{loc:Translate Save}" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- Loading Indicator -->
+        <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding IsLoading}" IsHitTestVisible="False">
+          <ProgressBar IsIndeterminate="True" Width="120" />
+        </Border>
+
+      </Panel>
+    </ScrollViewer>
+
+    <!-- ============================================ -->
+    <!-- Row 3: Undo Banner                           -->
+    <!-- ============================================ -->
+    <Border Grid.Row="3"
+            Background="{DynamicResource SurfaceBrush}"
+            CornerRadius="8"
+            Padding="16,12"
+            Margin="16,8"
+            IsVisible="{Binding ShowUndoBanner}">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{Binding UndoMessage}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   FontSize="14" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Classes="Warning Small"
+                Command="{Binding UndoDeleteCommand}">
+          <TextBlock Text="{loc:Translate Undo}" FontWeight="Bold" />
+        </Button>
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

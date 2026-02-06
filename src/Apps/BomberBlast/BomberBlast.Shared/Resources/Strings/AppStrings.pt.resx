@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- App Name -->
+  <data name="AppName" xml:space="preserve">
+    <value>BomberBlast</value>
+  </data>
+
+  <!-- Menu -->
+  <data name="StoryMode" xml:space="preserve">
+    <value>Modo História</value>
+  </data>
+  <data name="ArcadeMode" xml:space="preserve">
+    <value>Modo Arcade</value>
+  </data>
+  <data name="QuickPlay" xml:space="preserve">
+    <value>Jogo Rápido</value>
+  </data>
+  <data name="HighScores" xml:space="preserve">
+    <value>Pontuações</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configurações</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continuar</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Ajuda</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+
+  <!-- Game -->
+  <data name="Paused" xml:space="preserve">
+    <value>PAUSADO</value>
+  </data>
+  <data name="Resume" xml:space="preserve">
+    <value>Retomar</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Reiniciar</value>
+  </data>
+  <data name="RestartLevel" xml:space="preserve">
+    <value>Reiniciar Nível</value>
+  </data>
+  <data name="Quit" xml:space="preserve">
+    <value>Sair</value>
+  </data>
+  <data name="QuitToMenu" xml:space="preserve">
+    <value>Voltar ao Menu</value>
+  </data>
+  <data name="GameOver" xml:space="preserve">
+    <value>FIM DE JOGO</value>
+  </data>
+  <data name="LevelComplete" xml:space="preserve">
+    <value>NÍVEL COMPLETO!</value>
+  </data>
+  <data name="NewHighScore" xml:space="preserve">
+    <value>NOVO RECORDE!</value>
+  </data>
+  <data name="TryAgain" xml:space="preserve">
+    <value>Tentar Novamente</value>
+  </data>
+  <data name="MainMenu" xml:space="preserve">
+    <value>Menu Principal</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Pontos</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="Wave" xml:space="preserve">
+    <value>Onda</value>
+  </data>
+  <data name="TimeBonus" xml:space="preserve">
+    <value>Bônus de Tempo</value>
+  </data>
+
+  <!-- Level Select -->
+  <data name="SelectLevel" xml:space="preserve">
+    <value>Selecionar Nível</value>
+  </data>
+  <data name="CompletedLevels" xml:space="preserve">
+    <value>Completados: {0}/{1} Níveis</value>
+  </data>
+  <data name="TotalStars" xml:space="preserve">
+    <value>Estrelas: {0}/{1} ★</value>
+  </data>
+
+  <!-- High Scores -->
+  <data name="NoHighScoresYet" xml:space="preserve">
+    <value>Ainda não há recordes!</value>
+  </data>
+  <data name="PlayArcadeToScore" xml:space="preserve">
+    <value>Jogue Modo Arcade para pontuar</value>
+  </data>
+  <data name="WaveFormat" xml:space="preserve">
+    <value>Onda {0}</value>
+  </data>
+  <data name="ScoreFormat" xml:space="preserve">
+    <value>Pontos: {0}</value>
+  </data>
+  <data name="HighScoreWaveDate" xml:space="preserve">
+    <value>Onda {0} - {1}</value>
+  </data>
+  <data name="TapToResume" xml:space="preserve">
+    <value>Toque para continuar</value>
+  </data>
+  <data name="FinalScore" xml:space="preserve">
+    <value>Pontuação final: {0}</value>
+  </data>
+  <data name="WaveReached" xml:space="preserve">
+    <value>Onda alcançada: {0}</value>
+  </data>
+  <data name="WaveOverlay" xml:space="preserve">
+    <value>ONDA {0}</value>
+  </data>
+  <data name="StageOverlay" xml:space="preserve">
+    <value>NÍVEL {0}</value>
+  </data>
+  <data name="TimeBonusFormat" xml:space="preserve">
+    <value>Bônus de tempo: +{0}</value>
+  </data>
+  <data name="SwipeHint" xml:space="preserve">
+    <value>Deslize para mover, Toque para bomba</value>
+  </data>
+  <data name="LevelFormat" xml:space="preserve">
+    <value>Nível {0}</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="Controls" xml:space="preserve">
+    <value>Controles</value>
+  </data>
+  <data name="ControlsSection" xml:space="preserve">
+    <value>Controles</value>
+  </data>
+  <data name="SoundSection" xml:space="preserve">
+    <value>Som</value>
+  </data>
+  <data name="PremiumSection" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="DataSection" xml:space="preserve">
+    <value>Dados</value>
+  </data>
+  <data name="AboutSection" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="FloatingJoystick" xml:space="preserve">
+    <value>Joystick Flutuante</value>
+  </data>
+  <data name="FloatingJoystickRecommended" xml:space="preserve">
+    <value>Joystick Flutuante (Recomendado)</value>
+  </data>
+  <data name="SwipeGestures" xml:space="preserve">
+    <value>Gestos de Deslizar</value>
+  </data>
+  <data name="ClassicDPad" xml:space="preserve">
+    <value>D-Pad Clássico</value>
+  </data>
+  <data name="JoystickSize" xml:space="preserve">
+    <value>Tamanho do Joystick</value>
+  </data>
+  <data name="JoystickOpacity" xml:space="preserve">
+    <value>Opacidade do Joystick</value>
+  </data>
+  <data name="HapticFeedback" xml:space="preserve">
+    <value>Feedback Tátil</value>
+  </data>
+  <data name="Sound" xml:space="preserve">
+    <value>Som</value>
+  </data>
+  <data name="SoundEffects" xml:space="preserve">
+    <value>Efeitos Sonoros</value>
+  </data>
+  <data name="SfxVolume" xml:space="preserve">
+    <value>Volume dos Efeitos</value>
+  </data>
+  <data name="Music" xml:space="preserve">
+    <value>Música</value>
+  </data>
+  <data name="MusicVolume" xml:space="preserve">
+    <value>Volume da Música</value>
+  </data>
+  <data name="TrialDaysRemaining" xml:space="preserve">
+    <value>Teste: {0} dias restantes</value>
+  </data>
+  <data name="TrialExpired" xml:space="preserve">
+    <value>Teste expirado</value>
+  </data>
+  <data name="TrialAvailable" xml:space="preserve">
+    <value>14 dias de teste grátis!</value>
+  </data>
+  <data name="PremiumActive" xml:space="preserve">
+    <value>✓ Premium Ativo - Sem Anúncios!</value>
+  </data>
+  <data name="BuyPremium" xml:space="preserve">
+    <value>Comprar Premium - €3,99</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Restaurar Compras</value>
+  </data>
+  <data name="RemoveAdsDescription" xml:space="preserve">
+    <value>Remove todos os anúncios e apoia o desenvolvimento</value>
+  </data>
+  <data name="ResetProgress" xml:space="preserve">
+    <value>Redefinir Progresso</value>
+  </data>
+  <data name="ClearHighScores" xml:space="preserve">
+    <value>Limpar Recordes</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Política de Privacidade</value>
+  </data>
+  <data name="ResetProgressTitle" xml:space="preserve">
+    <value>Redefinir Progresso</value>
+  </data>
+  <data name="ResetProgressMessage" xml:space="preserve">
+    <value>Tem certeza que deseja redefinir todo o progresso? Esta ação não pode ser desfeita.</value>
+  </data>
+  <data name="ResetProgressConfirm" xml:space="preserve">
+    <value>Tem certeza de que deseja redefinir todo o progresso? Esta ação não pode ser desfeita.</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Redefinir</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="ProgressResetTitle" xml:space="preserve">
+    <value>Progresso Redefinido</value>
+  </data>
+  <data name="ProgressResetMessage" xml:space="preserve">
+    <value>Todo o progresso foi redefinido.</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ClearScoresTitle" xml:space="preserve">
+    <value>Limpar Recordes</value>
+  </data>
+  <data name="ClearScoresMessage" xml:space="preserve">
+    <value>Tem certeza que deseja limpar todos os recordes? Esta ação não pode ser desfeita.</value>
+  </data>
+  <data name="ClearScoresConfirm" xml:space="preserve">
+    <value>Tem certeza de que deseja limpar todas as pontuações? Esta ação não pode ser desfeita.</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Limpar</value>
+  </data>
+  <data name="ScoresClearedTitle" xml:space="preserve">
+    <value>Recordes Limpos</value>
+  </data>
+  <data name="ScoresClearedMessage" xml:space="preserve">
+    <value>Todos os recordes foram limpos.</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processando...</value>
+  </data>
+  <data name="ThankYou" xml:space="preserve">
+    <value>Obrigado!</value>
+  </data>
+  <data name="PremiumActivated" xml:space="preserve">
+    <value>Premium ativado! Os anúncios foram removidos.</value>
+  </data>
+  <data name="PurchaseFailed" xml:space="preserve">
+    <value>Compra Falhou</value>
+  </data>
+  <data name="PurchaseFailedMessage" xml:space="preserve">
+    <value>A compra não pôde ser concluída. Tente novamente.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Erro</value>
+  </data>
+  <data name="Restored" xml:space="preserve">
+    <value>Restaurado!</value>
+  </data>
+  <data name="PurchaseRestored" xml:space="preserve">
+    <value>Sua compra premium foi restaurada.</value>
+  </data>
+  <data name="NoPurchases" xml:space="preserve">
+    <value>Sem Compras</value>
+  </data>
+  <data name="NoPurchasesMessage" xml:space="preserve">
+    <value>Nenhuma compra anterior encontrada.</value>
+  </data>
+  <data name="NoPurchasesFound" xml:space="preserve">
+    <value>Nenhuma compra anterior encontrada.</value>
+  </data>
+  <data name="ErrorOccurred" xml:space="preserve">
+    <value>Ocorreu um erro</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>Não foi possível restaurar as compras</value>
+  </data>
+  <data name="ProgressResetDone" xml:space="preserve">
+    <value>Todo o progresso foi redefinido.</value>
+  </data>
+  <data name="ScoresClearedDone" xml:space="preserve">
+    <value>Todas as pontuações foram limpas.</value>
+  </data>
+  <data name="ControlFloatingJoystick" xml:space="preserve">
+    <value>Joystick flutuante (Recomendado)</value>
+  </data>
+  <data name="ControlSwipe" xml:space="preserve">
+    <value>Gestos de deslize</value>
+  </data>
+  <data name="ControlDPad" xml:space="preserve">
+    <value>D-Pad clássico</value>
+  </data>
+  <data name="PremiumDescription" xml:space="preserve">
+    <value>Remover todos os anúncios e apoiar o desenvolvimento</value>
+  </data>
+
+  <!-- Help Page -->
+  <data name="HowToPlay" xml:space="preserve">
+    <value>Como Jogar</value>
+  </data>
+  <data name="HowToPlayDesc" xml:space="preserve">
+    <value>Coloque bombas para destruir blocos e inimigos. Encontre a saída para completar o nível. Colete power-ups para ficar mais forte!</value>
+  </data>
+  <data name="ControlsHelp" xml:space="preserve">
+    <value>Controles</value>
+  </data>
+  <data name="ControlsHelpDesc" xml:space="preserve">
+    <value>Use o joystick para se mover. Toque no botão de bomba para colocar uma. Você pode mudar os controles nas Configurações.</value>
+  </data>
+  <data name="PowerUps" xml:space="preserve">
+    <value>Power-Ups</value>
+  </data>
+  <data name="Enemies" xml:space="preserve">
+    <value>Inimigos</value>
+  </data>
+  <data name="Tips" xml:space="preserve">
+    <value>Dicas</value>
+  </data>
+  <data name="TipsDesc" xml:space="preserve">
+    <value>• Não se prenda com suas próprias bombas!&#x0a;• Fique de olho no timer - Pontans aparecem quando o tempo acaba!&#x0a;• Mate todos os inimigos para revelar a saída.&#x0a;• Colete power-ups para mais bombas e alcance.</value>
+  </data>
+
+  <!-- Enemies -->
+  <data name="Enemy_Ballom" xml:space="preserve">
+    <value>Ballom</value>
+  </data>
+  <data name="Enemy_Ballom_Desc" xml:space="preserve">
+    <value>Lento e fácil de evitar. 100 pontos.</value>
+  </data>
+  <data name="Enemy_Onil" xml:space="preserve">
+    <value>Onil</value>
+  </data>
+  <data name="Enemy_Onil_Desc" xml:space="preserve">
+    <value>Velocidade normal, persegue o jogador. 200 pontos.</value>
+  </data>
+  <data name="Enemy_Doll" xml:space="preserve">
+    <value>Doll</value>
+  </data>
+  <data name="Enemy_Doll_Desc" xml:space="preserve">
+    <value>Velocidade normal, movimento aleatório. 400 pontos.</value>
+  </data>
+  <data name="Enemy_Minvo" xml:space="preserve">
+    <value>Minvo</value>
+  </data>
+  <data name="Enemy_Minvo_Desc" xml:space="preserve">
+    <value>Rápido e agressivo. 800 pontos.</value>
+  </data>
+  <data name="Enemy_Kondoria" xml:space="preserve">
+    <value>Kondoria</value>
+  </data>
+  <data name="Enemy_Kondoria_Desc" xml:space="preserve">
+    <value>Muito lento mas atravessa paredes! 1.000 pontos.</value>
+  </data>
+  <data name="Enemy_Ovapi" xml:space="preserve">
+    <value>Ovapi</value>
+  </data>
+  <data name="Enemy_Ovapi_Desc" xml:space="preserve">
+    <value>Lento, atravessa paredes. 2.000 pontos.</value>
+  </data>
+  <data name="Enemy_Pass" xml:space="preserve">
+    <value>Pass</value>
+  </data>
+  <data name="Enemy_Pass_Desc" xml:space="preserve">
+    <value>Rápido e inteligente. 4.000 pontos.</value>
+  </data>
+  <data name="Enemy_Pontan" xml:space="preserve">
+    <value>Pontan</value>
+  </data>
+  <data name="Enemy_Pontan_Desc" xml:space="preserve">
+    <value>Muito rápido, atravessa paredes! 8.000 pontos.</value>
+  </data>
+
+  <!-- Power-ups -->
+  <data name="PowerUp_BombUp" xml:space="preserve">
+    <value>Bomba Extra</value>
+  </data>
+  <data name="PowerUp_BombUp_Desc" xml:space="preserve">
+    <value>+1 capacidade de bombas (máx 10)</value>
+  </data>
+  <data name="PowerUp_Fire" xml:space="preserve">
+    <value>Fogo</value>
+  </data>
+  <data name="PowerUp_Fire_Desc" xml:space="preserve">
+    <value>+1 alcance de explosão (máx 10)</value>
+  </data>
+  <data name="PowerUp_Speed" xml:space="preserve">
+    <value>Velocidade</value>
+  </data>
+  <data name="PowerUp_Speed_Desc" xml:space="preserve">
+    <value>Mova-se mais rápido (temporário)</value>
+  </data>
+  <data name="PowerUp_Wallpass" xml:space="preserve">
+    <value>Atravessar Muros</value>
+  </data>
+  <data name="PowerUp_Wallpass_Desc" xml:space="preserve">
+    <value>Atravesse blocos (temporário)</value>
+  </data>
+  <data name="PowerUp_Detonator" xml:space="preserve">
+    <value>Detonador</value>
+  </data>
+  <data name="PowerUp_Detonator_Desc" xml:space="preserve">
+    <value>Detone bombas manualmente (temporário)</value>
+  </data>
+  <data name="PowerUp_Bombpass" xml:space="preserve">
+    <value>Atravessar Bombas</value>
+  </data>
+  <data name="PowerUp_Bombpass_Desc" xml:space="preserve">
+    <value>Atravesse bombas (temporário)</value>
+  </data>
+  <data name="PowerUp_Flamepass" xml:space="preserve">
+    <value>Imunidade ao Fogo</value>
+  </data>
+  <data name="PowerUp_Flamepass_Desc" xml:space="preserve">
+    <value>Imune a explosões (temporário)</value>
+  </data>
+  <data name="PowerUp_Mystery" xml:space="preserve">
+    <value>Mistério</value>
+  </data>
+  <data name="PowerUp_Mystery_Desc" xml:space="preserve">
+    <value>35 segundos de invencibilidade</value>
+  </data>
+
+  <!-- Languages -->
+  <data name="LanguageSection" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="LanguageDE" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="LanguageEN" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LanguageES" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="LanguageFR" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="LanguageIT" xml:space="preserve">
+    <value>Italiano</value>
+  </data>
+  <data name="LanguagePT" xml:space="preserve">
+    <value>Português</value>
+  </data>
+  <!-- Input Controls -->
+  <data name="InputFloatingJoystick" xml:space="preserve">
+    <value>Joystick flutuante</value>
+  </data>
+  <data name="InputSwipeGestures" xml:space="preserve">
+    <value>Gestos de deslizar</value>
+  </data>
+  <data name="InputClassicDPad" xml:space="preserve">
+    <value>D-Pad clássico</value>
+  </data>
+
+</root>

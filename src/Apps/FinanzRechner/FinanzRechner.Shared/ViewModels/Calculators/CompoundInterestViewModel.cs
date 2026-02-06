@@ -1,0 +1,165 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using FinanzRechner.Models;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using MeineApps.Core.Ava.Localization;
+using SkiaSharp;
+
+namespace FinanzRechner.ViewModels.Calculators;
+
+public partial class CompoundInterestViewModel : ObservableObject
+{
+    private readonly FinanceEngine _financeEngine;
+    private readonly ILocalizationService _localizationService;
+
+    public CompoundInterestViewModel(FinanceEngine financeEngine, ILocalizationService localizationService)
+    {
+        _financeEngine = financeEngine;
+        _localizationService = localizationService;
+    }
+
+    public Action? GoBackAction { get; set; }
+
+    #region Localized Text Properties
+
+    public string TitleText => _localizationService.GetString("CalcCompoundInterest") ?? "Compound Interest";
+    public string PrincipalText => _localizationService.GetString("Principal") ?? "Principal (EUR)";
+    public string AnnualRateText => _localizationService.GetString("AnnualRate") ?? "Annual Rate (%)";
+    public string YearsText => _localizationService.GetString("Years") ?? "Years";
+    public string CompoundingsPerYearText => _localizationService.GetString("CompoundingsPerYear") ?? "Compoundings per Year";
+    public string ResultText => _localizationService.GetString("Result") ?? "Result";
+    public string FinalAmountText => _localizationService.GetString("FinalAmount") ?? "Final Amount";
+    public string InterestEarnedText => _localizationService.GetString("InterestEarned") ?? "Interest Earned";
+    public string CapitalGrowthText => _localizationService.GetString("CapitalGrowth") ?? "Capital Growth";
+    public string ResetText => _localizationService.GetString("Reset") ?? "Reset";
+    public string CalculateText => _localizationService.GetString("Calculate") ?? "Calculate";
+
+    #endregion
+
+    #region Input Properties
+
+    [ObservableProperty]
+    private double _principal = 10000;
+
+    [ObservableProperty]
+    private double _annualRate = 5;
+
+    [ObservableProperty]
+    private int _years = 10;
+
+    [ObservableProperty]
+    private int _compoundingsPerYear = 1;
+
+    #endregion
+
+    #region Result Properties
+
+    [ObservableProperty]
+    private CompoundInterestResult? _result;
+
+    [ObservableProperty]
+    private bool _hasResult;
+
+    public string FinalAmountDisplay => Result != null ? $"{Result.FinalAmount:N2} \u20ac" : "";
+    public string InterestEarnedDisplay => Result != null ? $"{Result.InterestEarned:N2} \u20ac" : "";
+
+    partial void OnResultChanged(CompoundInterestResult? value)
+    {
+        OnPropertyChanged(nameof(FinalAmountDisplay));
+        OnPropertyChanged(nameof(InterestEarnedDisplay));
+        UpdateChartData();
+    }
+
+    #endregion
+
+    #region Chart Properties
+
+    [ObservableProperty]
+    private ISeries[] _chartSeries = Array.Empty<ISeries>();
+
+    [ObservableProperty]
+    private Axis[] _xAxes = Array.Empty<Axis>();
+
+    [ObservableProperty]
+    private Axis[] _yAxes = Array.Empty<Axis>();
+
+    private void UpdateChartData()
+    {
+        if (Result == null || Years <= 0)
+        {
+            ChartSeries = Array.Empty<ISeries>();
+            return;
+        }
+
+        var capitalValues = new List<double>();
+        var rate = AnnualRate / 100;
+        var n = CompoundingsPerYear;
+
+        for (int year = 0; year <= Years; year++)
+        {
+            var value = Principal * Math.Pow(1 + rate / n, n * year);
+            capitalValues.Add(value);
+        }
+
+        ChartSeries = new ISeries[]
+        {
+            new LineSeries<double>
+            {
+                Values = capitalValues,
+                Name = _localizationService.GetString("ChartCapital") ?? "Capital",
+                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50").WithAlpha(50)),
+                Stroke = new SolidColorPaint(SKColor.Parse("#4CAF50")) { StrokeThickness = 3 },
+                GeometryFill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
+                GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
+                GeometrySize = 8
+            }
+        };
+
+        XAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = _localizationService.GetString("ChartYears") ?? "Years",
+                MinLimit = 0,
+                MaxLimit = Years,
+                MinStep = 1,
+                Labels = Enumerable.Range(0, Years + 1).Select(x => x.ToString()).ToArray()
+            }
+        };
+    }
+
+    #endregion
+
+    [RelayCommand]
+    private void Calculate()
+    {
+        if (Principal <= 0 || Years <= 0 || CompoundingsPerYear <= 0)
+        {
+            HasResult = false;
+            return;
+        }
+
+        Result = _financeEngine.CalculateCompoundInterest(Principal, AnnualRate, Years, CompoundingsPerYear);
+        HasResult = true;
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        Principal = 10000;
+        AnnualRate = 5;
+        Years = 10;
+        CompoundingsPerYear = 1;
+        Result = null;
+        HasResult = false;
+        ChartSeries = Array.Empty<ISeries>();
+    }
+
+    [RelayCommand]
+    private void GoBack() => GoBackAction?.Invoke();
+}

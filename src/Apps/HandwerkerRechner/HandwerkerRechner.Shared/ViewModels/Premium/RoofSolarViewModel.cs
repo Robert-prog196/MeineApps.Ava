@@ -1,0 +1,438 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using HandwerkerRechner.Models;
+using HandwerkerRechner.Services;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+
+namespace HandwerkerRechner.ViewModels.Premium;
+
+public partial class RoofSolarViewModel : ObservableObject
+{
+    private readonly CraftEngine _engine;
+    private readonly IProjectService _projectService;
+    private readonly ILocalizationService _localization;
+    private readonly ICalculationHistoryService _historyService;
+    private string? _currentProjectId;
+
+    public event Action<string>? NavigationRequested;
+    public event Action<string, string>? MessageRequested;
+    private void NavigateTo(string route) => NavigationRequested?.Invoke(route);
+
+    public RoofSolarViewModel(
+        CraftEngine engine,
+        IProjectService projectService,
+        ILocalizationService localization,
+        ICalculationHistoryService historyService)
+    {
+        _engine = engine;
+        _projectService = projectService;
+        _localization = localization;
+        _historyService = historyService;
+    }
+
+    /// <summary>
+    /// Loads project data by ID (replaces IQueryAttributable)
+    /// </summary>
+    public async Task LoadFromProjectIdAsync(string projectId)
+    {
+        if (!string.IsNullOrEmpty(projectId))
+        {
+            _currentProjectId = projectId;
+            await LoadProjectAsync(projectId);
+        }
+    }
+
+    // Save Dialog
+    [ObservableProperty] private bool _showSaveDialog;
+    [ObservableProperty] private string _saveProjectName = string.Empty;
+
+    private string DefaultProjectName => Calculators[SelectedCalculator];
+
+    // Calculator Selection
+    [ObservableProperty] private int _selectedCalculator;
+
+    partial void OnSelectedCalculatorChanged(int value)
+    {
+        // Reset cost values when switching calculators to prevent state leaking
+        switch (value)
+        {
+            case 0: // Roof Pitch - reset costs
+                PricePerTile = 0;
+                SolarSystemCost = 0;
+                break;
+            case 1: // Roof Tiles - reset solar cost
+                SolarSystemCost = 0;
+                break;
+            case 2: // Solar - reset tile cost
+                PricePerTile = 0;
+                break;
+        }
+        // Clear results when switching
+        HasResult = false;
+    }
+
+    public List<string> Calculators => [
+        _localization.GetString("RoofPitch"),
+        _localization.GetString("RoofTiles"),
+        _localization.GetString("SolarYield")
+    ];
+
+    // Roof Pitch Inputs
+    [ObservableProperty] private double _run = 5;
+    [ObservableProperty] private double _rise = 2;
+
+    // Roof Tiles Inputs
+    [ObservableProperty] private double _roofArea = 100;
+    [ObservableProperty] private double _tilesPerSqm = 10;
+
+    // Solar Yield Inputs
+    [ObservableProperty] private double _solarRoofArea = 50;
+    [ObservableProperty] private double _panelEfficiency = 20;
+    [ObservableProperty] private int _selectedOrientation = 4; // South
+    [ObservableProperty] private double _tiltDegrees = 30;
+
+    public List<string> Orientations => [
+        _localization.GetString("OrientationNorth"),
+        _localization.GetString("OrientationNorthEast"),
+        _localization.GetString("OrientationEast"),
+        _localization.GetString("OrientationSouthEast"),
+        _localization.GetString("OrientationSouth"),
+        _localization.GetString("OrientationSouthWest"),
+        _localization.GetString("OrientationWest"),
+        _localization.GetString("OrientationNorthWest")
+    ];
+
+    // Results
+    [ObservableProperty] private RoofPitchResult? _pitchResult;
+    [ObservableProperty] private RoofTilesResult? _tilesResult;
+    [ObservableProperty] private SolarYieldResult? _solarResult;
+    [ObservableProperty] private bool _hasResult;
+
+    [ObservableProperty]
+    private bool _isCalculating;
+
+    #region Cost Calculation
+
+    // Dachneigung: Keine Kostenberechnung (nur Winkelberechnung)
+
+    // Dachziegel: Preis pro Ziegel
+    [ObservableProperty]
+    private double _pricePerTile = 0;
+
+    [ObservableProperty]
+    private bool _showTileCost = false;
+
+    public string RoofTileCostDisplay => (ShowTileCost && PricePerTile > 0 && TilesResult != null && TilesResult.TilesNeeded > 0)
+        ? $"{_localization.GetString("TotalCost")}: {(TilesResult.TilesNeeded * PricePerTile):F2} \u20ac"
+        : "";
+
+    partial void OnPricePerTileChanged(double value)
+    {
+        ShowTileCost = value > 0;
+        OnPropertyChanged(nameof(RoofTileCostDisplay));
+    }
+
+    partial void OnTilesResultChanged(RoofTilesResult? value)
+    {
+        OnPropertyChanged(nameof(RoofTileCostDisplay));
+    }
+
+    // Solar-Ertrag: Anlagenkosten
+    [ObservableProperty]
+    private double _solarSystemCost = 0;
+
+    [ObservableProperty]
+    private bool _showSolarCost = false;
+
+    public string SolarCostDisplay => ShowSolarCost && SolarSystemCost > 0
+        ? $"{_localization.GetString("ResultSystemCost")}: {SolarSystemCost:F2} \u20ac"
+        : "";
+
+    public string PaybackTimeDisplay => (ShowSolarCost && SolarSystemCost > 0 && SolarResult != null && SolarResult.AnnualYieldKwh > 0)
+        ? $"{_localization.GetString("ResultPaybackTime")}: {(SolarSystemCost / (SolarResult.AnnualYieldKwh * 0.30)):F1} {_localization.GetString("HistoryYears")}" // Annahme: 0,30 €/kWh
+        : "";
+
+    partial void OnSolarSystemCostChanged(double value)
+    {
+        ShowSolarCost = value > 0;
+        OnPropertyChanged(nameof(SolarCostDisplay));
+        OnPropertyChanged(nameof(PaybackTimeDisplay));
+    }
+
+    partial void OnSolarResultChanged(SolarYieldResult? value)
+    {
+        OnPropertyChanged(nameof(PaybackTimeDisplay));
+    }
+
+    #endregion
+
+    [RelayCommand]
+    private async Task Calculate()
+    {
+        if (IsCalculating) return;
+
+        try
+        {
+            IsCalculating = true;
+
+            switch (SelectedCalculator)
+            {
+                case 0: // Roof Pitch
+                    if (Run <= 0 || Rise <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    PitchResult = _engine.CalculateRoofPitch(Run, Rise);
+                    TilesResult = null;
+                    SolarResult = null;
+                    break;
+
+                case 1: // Roof Tiles
+                    if (RoofArea <= 0 || TilesPerSqm <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    TilesResult = _engine.CalculateRoofTiles(RoofArea, TilesPerSqm);
+                    PitchResult = null;
+                    SolarResult = null;
+                    break;
+
+                case 2: // Solar Yield
+                    if (SolarRoofArea <= 0 || PanelEfficiency <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    var orientation = (Orientation)SelectedOrientation;
+                    SolarResult = _engine.EstimateSolarYield(SolarRoofArea, PanelEfficiency / 100, orientation, TiltDegrees);
+                    PitchResult = null;
+                    TilesResult = null;
+                    break;
+            }
+            HasResult = true;
+
+            // Save to history
+            await SaveToHistoryAsync();
+        }
+        finally
+        {
+            IsCalculating = false;
+        }
+    }
+
+    private async Task SaveToHistoryAsync()
+    {
+        try
+        {
+            string calcType, title;
+            Dictionary<string, object> data;
+
+            switch (SelectedCalculator)
+            {
+                case 0: // Roof Pitch
+                    calcType = "RoofPitchCalculator";
+                    title = string.Format(_localization.GetString("HistoryRoofPitch"), Run, Rise);
+                    data = new Dictionary<string, object>
+                    {
+                        ["Run"] = Run,
+                        ["Rise"] = Rise,
+                        ["Result"] = PitchResult != null ? new Dictionary<string, object>
+                        {
+                            ["PitchDegrees"] = PitchResult.PitchDegrees,
+                            ["PitchPercent"] = PitchResult.PitchPercent
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+
+                case 1: // Roof Tiles
+                    calcType = "RoofTilesCalculator";
+                    title = $"{RoofArea} m\u00b2 {_localization.GetString("HistoryRoofArea")}";
+                    data = new Dictionary<string, object>
+                    {
+                        ["RoofArea"] = RoofArea,
+                        ["TilesPerSqm"] = TilesPerSqm,
+                        ["Result"] = TilesResult != null ? new Dictionary<string, object>
+                        {
+                            ["TilesNeeded"] = TilesResult.TilesNeeded,
+                            ["TilesWithReserve"] = TilesResult.TilesWithReserve
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+
+                default: // Solar Yield
+                    calcType = "SolarYieldCalculator";
+                    title = $"{SolarRoofArea} m\u00b2, {Orientations[SelectedOrientation]}";
+                    data = new Dictionary<string, object>
+                    {
+                        ["SolarRoofArea"] = SolarRoofArea,
+                        ["PanelEfficiency"] = PanelEfficiency,
+                        ["SelectedOrientation"] = SelectedOrientation,
+                        ["TiltDegrees"] = TiltDegrees,
+                        ["Result"] = SolarResult != null ? new Dictionary<string, object>
+                        {
+                            ["KwPeak"] = SolarResult.KwPeak,
+                            ["AnnualYieldKwh"] = SolarResult.AnnualYieldKwh,
+                            ["UsableArea"] = SolarResult.UsableArea
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+            }
+
+            await _historyService.AddCalculationAsync(calcType, title, data);
+        }
+        catch (Exception)
+        {
+            // Silently ignore history save errors
+        }
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        Run = 5;
+        Rise = 2;
+        RoofArea = 100;
+        TilesPerSqm = 10;
+        SolarRoofArea = 50;
+        PanelEfficiency = 20;
+        SelectedOrientation = 4;
+        TiltDegrees = 30;
+        PricePerTile = 0;
+        SolarSystemCost = 0;
+        PitchResult = null;
+        TilesResult = null;
+        SolarResult = null;
+        HasResult = false;
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        NavigateTo("..");
+    }
+
+    [RelayCommand]
+    private async Task SaveProject()
+    {
+        if (!HasResult) return;
+        SaveProjectName = string.Empty;
+        ShowSaveDialog = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmSaveProject()
+    {
+        var name = SaveProjectName;
+        if (string.IsNullOrWhiteSpace(name))
+            name = DefaultProjectName;
+
+        ShowSaveDialog = false;
+
+        try
+        {
+            var calcType = SelectedCalculator switch
+            {
+                0 => CalculatorType.RoofPitch,
+                1 => CalculatorType.RoofTiles,
+                2 => CalculatorType.SolarYield,
+                _ => CalculatorType.RoofPitch
+            };
+
+            var project = new Project
+            {
+                Name = name,
+                CalculatorType = calcType
+            };
+
+            if (!string.IsNullOrEmpty(_currentProjectId))
+            {
+                project.Id = _currentProjectId;
+            }
+
+            var data = new Dictionary<string, object>
+            {
+                ["SelectedCalculator"] = SelectedCalculator,
+                // Roof Pitch
+                ["Run"] = Run,
+                ["Rise"] = Rise,
+                // Roof Tiles
+                ["RoofArea"] = RoofArea,
+                ["TilesPerSqm"] = TilesPerSqm,
+                ["PricePerTile"] = PricePerTile,
+                // Solar Yield
+                ["SolarRoofArea"] = SolarRoofArea,
+                ["PanelEfficiency"] = PanelEfficiency,
+                ["SelectedOrientation"] = SelectedOrientation,
+                ["TiltDegrees"] = TiltDegrees,
+                ["SolarSystemCost"] = SolarSystemCost
+            };
+
+            project.SetData(data);
+            await _projectService.SaveProjectAsync(project);
+            _currentProjectId = project.Id;
+
+            MessageRequested?.Invoke(
+                _localization.GetString("Success"),
+                _localization.GetString("ProjectSaved"));
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("Error"),
+                _localization.GetString("ProjectSaveFailed"));
+        }
+    }
+
+    [RelayCommand]
+    private void CancelSaveProject()
+    {
+        ShowSaveDialog = false;
+        SaveProjectName = string.Empty;
+    }
+
+    private async Task LoadProjectAsync(string projectId)
+    {
+        try
+        {
+            var project = await _projectService.LoadProjectAsync(projectId);
+            if (project == null)
+                return;
+
+            SelectedCalculator = project.GetValue("SelectedCalculator", 0);
+
+            // Roof Pitch
+            Run = project.GetValue("Run", 5.0);
+            Rise = project.GetValue("Rise", 2.0);
+
+            // Roof Tiles
+            RoofArea = project.GetValue("RoofArea", 100.0);
+            TilesPerSqm = project.GetValue("TilesPerSqm", 10.0);
+            PricePerTile = project.GetValue("PricePerTile", 0.0);
+
+            // Solar Yield
+            SolarRoofArea = project.GetValue("SolarRoofArea", 50.0);
+            PanelEfficiency = project.GetValue("PanelEfficiency", 20.0);
+            SelectedOrientation = project.GetValue("SelectedOrientation", 4);
+            TiltDegrees = project.GetValue("TiltDegrees", 30.0);
+            SolarSystemCost = project.GetValue("SolarSystemCost", 0.0);
+
+            await Calculate();
+        }
+        catch (Exception)
+        {
+            // Silently ignore load errors
+        }
+    }
+}

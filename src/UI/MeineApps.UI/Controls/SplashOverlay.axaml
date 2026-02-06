@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MeineApps.UI.Controls.SplashOverlay"
+             IsHitTestVisible="True">
+
+  <UserControl.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="0:0:0.4" Easing="CubicEaseOut" />
+    </Transitions>
+  </UserControl.Transitions>
+
+  <Panel Background="{DynamicResource BackgroundBrush}">
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="24">
+
+      <!-- App Icon -->
+      <Border CornerRadius="28"
+              Width="120" Height="120"
+              HorizontalAlignment="Center"
+              ClipToBounds="True">
+        <Image x:Name="AppIconImage"
+               Width="120" Height="120"
+               Stretch="UniformToFill" />
+      </Border>
+
+      <!-- App Name -->
+      <TextBlock x:Name="AppNameText"
+                 FontSize="28"
+                 FontWeight="Bold"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 HorizontalAlignment="Center" />
+
+      <!-- Loading indicator -->
+      <Border Height="3"
+              Width="180"
+              CornerRadius="2"
+              Background="{DynamicResource SurfaceBrush}"
+              HorizontalAlignment="Center"
+              Margin="0,16,0,0">
+        <Border x:Name="LoadingBar"
+                Height="3"
+                CornerRadius="2"
+                Background="{DynamicResource PrimaryBrush}"
+                HorizontalAlignment="Left"
+                Width="0">
+          <Border.Transitions>
+            <Transitions>
+              <DoubleTransition Property="Width" Duration="0:0:1.2" Easing="CubicEaseInOut" />
+            </Transitions>
+          </Border.Transitions>
+        </Border>
+      </Border>
+    </StackPanel>
+  </Panel>
+</UserControl>

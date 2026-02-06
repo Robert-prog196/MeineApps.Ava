@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NavCalculator" xml:space="preserve">
+    <value>Calcolatrice</value>
+  </data>
+  <data name="NavConverter" xml:space="preserve">
+    <value>Convertitore</value>
+  </data>
+  <data name="NavSettings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+  <data name="ModeBasic" xml:space="preserve">
+    <value>Base</value>
+  </data>
+  <data name="ModeScientific" xml:space="preserve">
+    <value>Scientifico</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="HistoryTitle" xml:space="preserve">
+    <value>Cronologia</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Cancella cronologia</value>
+  </data>
+  <data name="NoCalculationsYet" xml:space="preserve">
+    <value>Nessun calcolo ancora</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copia</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Incolla</value>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>Copiato negli appunti</value>
+  </data>
+  <data name="CopyFailed" xml:space="preserve">
+    <value>Copia fallita</value>
+  </data>
+  <data name="PasteSuccess" xml:space="preserve">
+    <value>Incollato</value>
+  </data>
+  <data name="PasteFailed" xml:space="preserve">
+    <value>Incolla fallito</value>
+  </data>
+  <data name="PasteInvalidNumber" xml:space="preserve">
+    <value>Numero non valido</value>
+  </data>
+  <data name="ClipboardEmpty" xml:space="preserve">
+    <value>Appunti vuoti</value>
+  </data>
+  <data name="ExpressionTooLong" xml:space="preserve">
+    <value>Espressione troppo lunga</value>
+  </data>
+  <data name="FactorialRangeError" xml:space="preserve">
+    <value>Fattoriale: Il valore deve essere tra 0 e 170</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+  <data name="SettingsChooseDesign" xml:space="preserve">
+    <value>Scegli design</value>
+  </data>
+  <data name="SettingsLanguage" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="SettingsAboutApp" xml:space="preserve">
+    <value>Info app</value>
+  </data>
+  <data name="FeedbackButton" xml:space="preserve">
+    <value>Invia feedback</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Informativa sulla privacy</value>
+  </data>
+  <data name="PrivacyPolicyUrl" xml:space="preserve">
+    <value>https://sites.google.com/rs-digital.org/rechnerplus/startseite</value>
+  </data>
+  <data name="BrowserError" xml:space="preserve">
+    <value>Impossibile aprire il browser. Si prega di controllare la connessione Internet.</value>
+  </data>
+  <data name="ThemeMidnight" xml:space="preserve">
+    <value>Mezzanotte</value>
+  </data>
+  <data name="ThemeMidnightDesc" xml:space="preserve">
+    <value>Moderno scuro</value>
+  </data>
+  <data name="ThemeAurora" xml:space="preserve">
+    <value>Aurora</value>
+  </data>
+  <data name="ThemeAuroraDesc" xml:space="preserve">
+    <value>Colorato scuro</value>
+  </data>
+  <data name="ThemeDaylight" xml:space="preserve">
+    <value>Luce del giorno</value>
+  </data>
+  <data name="ThemeDaylightDesc" xml:space="preserve">
+    <value>Chiaro e pulito</value>
+  </data>
+  <data name="ThemeForest" xml:space="preserve">
+    <value>Foresta</value>
+  </data>
+  <data name="ThemeForestDesc" xml:space="preserve">
+    <value>Naturale scuro</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>RechnerPlus</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>La calcolatrice moderna per Android, Windows e Linux con modalita Scientifica e Convertitore di unita.</value>
+  </data>
+  <data name="VersionFormat" xml:space="preserve">
+    <value>Versione {0}</value>
+  </data>
+  <data name="ConverterTitle" xml:space="preserve">
+    <value>Convertitore di Unita</value>
+  </data>
+  <data name="ConverterCategory" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="ConverterFrom" xml:space="preserve">
+    <value>Da</value>
+  </data>
+  <data name="ConverterTo" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="CategoryLength" xml:space="preserve">
+    <value>Lunghezza</value>
+  </data>
+  <data name="CategoryWeight" xml:space="preserve">
+    <value>Peso</value>
+  </data>
+  <data name="CategoryTemperature" xml:space="preserve">
+    <value>Temperatura</value>
+  </data>
+  <data name="CategoryArea" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="CategoryVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="CategorySpeed" xml:space="preserve">
+    <value>Velocita</value>
+  </data>
+  <data name="CategoryTime" xml:space="preserve">
+    <value>Tempo</value>
+  </data>
+  <data name="CategoryData" xml:space="preserve">
+    <value>Dati</value>
+  </data>
+  <data name="ConverterEnterValue" xml:space="preserve">
+    <value>Inserire valore</value>
+  </data>
+  <data name="ConverterSwapUnits" xml:space="preserve">
+    <value>Scambia unita</value>
+  </data>
+  <data name="ConverterInvalidInput" xml:space="preserve">
+    <value>Input non valido</value>
+  </data>
+  <data name="QuartUS" xml:space="preserve">
+    <value>Quarto (US)</value>
+  </data>
+  <data name="UnitMillimeter" xml:space="preserve">
+    <value>Millimetro</value>
+  </data>
+  <data name="UnitCentimeter" xml:space="preserve">
+    <value>Centimetro</value>
+  </data>
+  <data name="UnitMeter" xml:space="preserve">
+    <value>Metro</value>
+  </data>
+  <data name="UnitKilometer" xml:space="preserve">
+    <value>Chilometro</value>
+  </data>
+  <data name="UnitInch" xml:space="preserve">
+    <value>Pollice</value>
+  </data>
+  <data name="UnitFoot" xml:space="preserve">
+    <value>Piede</value>
+  </data>
+  <data name="UnitYard" xml:space="preserve">
+    <value>Iarda</value>
+  </data>
+  <data name="UnitMile" xml:space="preserve">
+    <value>Miglio</value>
+  </data>
+  <data name="UnitMilligram" xml:space="preserve">
+    <value>Milligrammo</value>
+  </data>
+  <data name="UnitGram" xml:space="preserve">
+    <value>Grammo</value>
+  </data>
+  <data name="UnitKilogram" xml:space="preserve">
+    <value>Chilogrammo</value>
+  </data>
+  <data name="UnitTonne" xml:space="preserve">
+    <value>Tonnellata</value>
+  </data>
+  <data name="UnitOunce" xml:space="preserve">
+    <value>Oncia</value>
+  </data>
+  <data name="UnitPound" xml:space="preserve">
+    <value>Libbra</value>
+  </data>
+  <data name="UnitCelsius" xml:space="preserve">
+    <value>Celsius</value>
+  </data>
+  <data name="UnitFahrenheit" xml:space="preserve">
+    <value>Fahrenheit</value>
+  </data>
+  <data name="UnitKelvin" xml:space="preserve">
+    <value>Kelvin</value>
+  </data>
+  <data name="UnitMilliliter" xml:space="preserve">
+    <value>Millilitro</value>
+  </data>
+  <data name="UnitLiter" xml:space="preserve">
+    <value>Litro</value>
+  </data>
+  <data name="UnitCubicMeter" xml:space="preserve">
+    <value>Metro cubo</value>
+  </data>
+  <data name="UnitGallonUS" xml:space="preserve">
+    <value>Gallone (US)</value>
+  </data>
+  <data name="UnitPintUS" xml:space="preserve">
+    <value>Pinta (US)</value>
+  </data>
+  <data name="UnitCup" xml:space="preserve">
+    <value>Tazza</value>
+  </data>
+  <data name="UnitMetersPerSecond" xml:space="preserve">
+    <value>Metri al secondo</value>
+  </data>
+  <data name="UnitKilometersPerHour" xml:space="preserve">
+    <value>Chilometri all'ora</value>
+  </data>
+  <data name="UnitMilesPerHour" xml:space="preserve">
+    <value>Miglia all'ora</value>
+  </data>
+  <data name="UnitKnots" xml:space="preserve">
+    <value>Nodi</value>
+  </data>
+  <data name="UnitMilliseconds" xml:space="preserve">
+    <value>Millisecondi</value>
+  </data>
+  <data name="UnitSeconds" xml:space="preserve">
+    <value>Secondi</value>
+  </data>
+  <data name="UnitMinutes" xml:space="preserve">
+    <value>Minuti</value>
+  </data>
+  <data name="UnitHours" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="UnitDays" xml:space="preserve">
+    <value>Giorni</value>
+  </data>
+  <data name="UnitWeeks" xml:space="preserve">
+    <value>Settimane</value>
+  </data>
+  <data name="UnitSquareMeter" xml:space="preserve">
+    <value>Metro quadrato</value>
+  </data>
+  <data name="UnitSquareKilometer" xml:space="preserve">
+    <value>Chilometro quadrato</value>
+  </data>
+  <data name="UnitHectare" xml:space="preserve">
+    <value>Ettaro</value>
+  </data>
+  <data name="UnitSquareFoot" xml:space="preserve">
+    <value>Piede quadrato</value>
+  </data>
+  <data name="UnitAcre" xml:space="preserve">
+    <value>Acro</value>
+  </data>
+  <data name="UnitByte" xml:space="preserve">
+    <value>Byte</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>Kilobyte</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>Megabyte</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>Gigabyte</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>Terabyte</value>
+  </data>
+  <data name="UnitBit" xml:space="preserve">
+    <value>Bit</value>
+  </data>
+</root>

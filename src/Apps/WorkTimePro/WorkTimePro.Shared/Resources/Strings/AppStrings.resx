@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+
+  <!-- App -->
+  <data name="AppName" xml:space="preserve">
+    <value>WorkTime Pro</value>
+  </data>
+
+  <!-- Status -->
+  <data name="Status_Idle" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="Status_Working" xml:space="preserve">
+    <value>Working</value>
+  </data>
+  <data name="Status_OnBreak" xml:space="preserve">
+    <value>On break</value>
+  </data>
+
+  <!-- Main Page -->
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="WorkTime" xml:space="preserve">
+    <value>Work time</value>
+  </data>
+  <data name="Break" xml:space="preserve">
+    <value>Break</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="DayProgress" xml:space="preserve">
+    <value>Day progress</value>
+  </data>
+  <data name="WeekProgress" xml:space="preserve">
+    <value>Week progress</value>
+  </data>
+  <data name="StartPause" xml:space="preserve">
+    <value>Start break</value>
+  </data>
+  <data name="EndPause" xml:space="preserve">
+    <value>End break</value>
+  </data>
+  <data name="DayDetails" xml:space="preserve">
+    <value>Day details</value>
+  </data>
+
+  <!-- Auto-Pause -->
+  <data name="AutoPause" xml:space="preserve">
+    <value>Auto break</value>
+  </data>
+  <data name="AutoPauseAdded" xml:space="preserve">
+    <value>Auto break added</value>
+  </data>
+  <data name="AutoPauseLegal" xml:space="preserve">
+    <value>Automatically added (legal requirement)</value>
+  </data>
+
+  <!-- Week -->
+  <data name="Week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="WeekOverview" xml:space="preserve">
+    <value>Week overview</value>
+  </data>
+  <data name="ThisWeek" xml:space="preserve">
+    <value>This week</value>
+  </data>
+  <data name="WorkedDays" xml:space="preserve">
+    <value>Worked days</value>
+  </data>
+
+  <!-- Month -->
+  <data name="Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="MonthOverview" xml:space="preserve">
+    <value>Month overview</value>
+  </data>
+  <data name="MonthBalance" xml:space="preserve">
+    <value>Month balance</value>
+  </data>
+  <data name="CumulativeBalance" xml:space="preserve">
+    <value>Cumulative balance</value>
+  </data>
+  <data name="CloseMonth" xml:space="preserve">
+    <value>Close month</value>
+  </data>
+  <data name="UnlockMonth" xml:space="preserve">
+    <value>Unlock month</value>
+  </data>
+  <data name="MonthLocked" xml:space="preserve">
+    <value>Month closed</value>
+  </data>
+
+  <!-- Calendar -->
+  <data name="Calendar" xml:space="preserve">
+    <value>Calendar</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+
+  <!-- Statistics -->
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="TotalWorkTime" xml:space="preserve">
+    <value>Total work time</value>
+  </data>
+  <data name="Overtime" xml:space="preserve">
+    <value>Overtime</value>
+  </data>
+  <data name="AveragePerDay" xml:space="preserve">
+    <value>Average per day</value>
+  </data>
+  <data name="WeeklyWorkTime" xml:space="preserve">
+    <value>Weekly work time</value>
+  </data>
+  <data name="OvertimeTrend" xml:space="preserve">
+    <value>Overtime trend</value>
+  </data>
+
+  <!-- Day Status -->
+  <data name="DayStatus_WorkDay" xml:space="preserve">
+    <value>Work day</value>
+  </data>
+  <data name="DayStatus_Weekend" xml:space="preserve">
+    <value>Weekend</value>
+  </data>
+  <data name="DayStatus_Vacation" xml:space="preserve">
+    <value>Vacation</value>
+  </data>
+  <data name="DayStatus_Holiday" xml:space="preserve">
+    <value>Holiday</value>
+  </data>
+  <data name="DayStatus_Sick" xml:space="preserve">
+    <value>Sick</value>
+  </data>
+  <data name="DayStatus_HomeOffice" xml:space="preserve">
+    <value>Home office</value>
+  </data>
+  <data name="DayStatus_BusinessTrip" xml:space="preserve">
+    <value>Business trip</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="WorkTimeSettings" xml:space="preserve">
+    <value>Work time</value>
+  </data>
+  <data name="DailyTarget" xml:space="preserve">
+    <value>Daily target (hours)</value>
+  </data>
+  <data name="WeeklyTarget" xml:space="preserve">
+    <value>Weekly target</value>
+  </data>
+  <data name="WorkDays" xml:space="preserve">
+    <value>Work days</value>
+  </data>
+  <data name="AutoPauseSettings" xml:space="preserve">
+    <value>Auto break</value>
+  </data>
+  <data name="AutoPauseEnabled" xml:space="preserve">
+    <value>Auto break enabled</value>
+  </data>
+  <data name="AutoPauseAfterHours" xml:space="preserve">
+    <value>After hours</value>
+  </data>
+  <data name="AutoPauseDescription" xml:space="preserve">
+    <value>Automatically add legally required break time</value>
+  </data>
+  <data name="PauseMinutes" xml:space="preserve">
+    <value>Break duration (minutes)</value>
+  </data>
+  <data name="Reminders" xml:space="preserve">
+    <value>Reminders</value>
+  </data>
+  <data name="MorningReminder" xml:space="preserve">
+    <value>Start of work</value>
+  </data>
+  <data name="EveningReminder" xml:space="preserve">
+    <value>End of work</value>
+  </data>
+  <data name="BreakReminder" xml:space="preserve">
+    <value>Break reminder</value>
+  </data>
+  <data name="OvertimeWarning" xml:space="preserve">
+    <value>Overtime warning</value>
+  </data>
+  <data name="OvertimeWarningHours" xml:space="preserve">
+    <value>Warn after hours/week</value>
+  </data>
+  <data name="Holidays" xml:space="preserve">
+    <value>Holidays</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="LegalSources" xml:space="preserve">
+    <value>Legal sources</value>
+  </data>
+  <data name="LegalSourcesDescription" xml:space="preserve">
+    <value>Break regulations and work time limits are based on the German Working Hours Act (ArbZG). This app is not an official government product.</value>
+  </data>
+  <data name="LegalSourceArbZG" xml:space="preserve">
+    <value>Working Hours Act (ArbZG)</value>
+  </data>
+  <data name="LegalSourceHolidays" xml:space="preserve">
+    <value>Public holidays (BMI)</value>
+  </data>
+  <data name="LegalCompliance" xml:space="preserve">
+    <value>Legal compliance check</value>
+  </data>
+  <data name="LegalComplianceDescription" xml:space="preserve">
+    <value>Show warnings for violations (max. 10h/day, min. 11h rest)</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Save settings</value>
+  </data>
+
+  <!-- Premium -->
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="PremiumStatus" xml:space="preserve">
+    <value>Premium status</value>
+  </data>
+  <data name="PremiumActive" xml:space="preserve">
+    <value>Premium active</value>
+  </data>
+  <data name="TrialDaysLeft" xml:space="preserve">
+    <value>Trial: {0} days left</value>
+  </data>
+  <data name="FreeVersion" xml:space="preserve">
+    <value>Free version with ads</value>
+  </data>
+  <data name="BuyPremium" xml:space="preserve">
+    <value>Buy Premium</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Restore purchases</value>
+  </data>
+
+  <!-- Actions -->
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
+  <!-- Errors -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="PurchaseFailed" xml:space="preserve">
+    <value>Purchase failed</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>Restore failed</value>
+  </data>
+
+  <!-- Time entries -->
+  <data name="TimeEntries" xml:space="preserve">
+    <value>Time entries</value>
+  </data>
+  <data name="CheckIn" xml:space="preserve">
+    <value>Check-in</value>
+  </data>
+  <data name="CheckOut" xml:space="preserve">
+    <value>Check-out</value>
+  </data>
+  <data name="AddEntry" xml:space="preserve">
+    <value>Add entry</value>
+  </data>
+  <data name="DeleteEntry" xml:space="preserve">
+    <value>Delete entry</value>
+  </data>
+  <data name="DeleteEntryConfirm" xml:space="preserve">
+    <value>Do you want to delete the entry at {0}?</value>
+  </data>
+  <data name="NoEntries" xml:space="preserve">
+    <value>No entries</value>
+  </data>
+
+  <!-- Pauses -->
+  <data name="Pauses" xml:space="preserve">
+    <value>Breaks</value>
+  </data>
+  <data name="ManualPause" xml:space="preserve">
+    <value>Manual break</value>
+  </data>
+  <data name="DeletePause" xml:space="preserve">
+    <value>Delete break</value>
+  </data>
+  <data name="DeletePauseConfirm" xml:space="preserve">
+    <value>Do you want to delete the break from {0} to {1}?</value>
+  </data>
+  <data name="NoPauses" xml:space="preserve">
+    <value>No breaks recorded</value>
+  </data>
+  <data name="AutoPauseCannotDelete" xml:space="preserve">
+    <value>Auto breaks are calculated automatically and cannot be deleted manually.</value>
+  </data>
+
+  <!-- Legal warnings -->
+  <data name="LegalWarnings" xml:space="preserve">
+    <value>Work time law notices</value>
+  </data>
+  <data name="MaxDailyHoursExceeded" xml:space="preserve">
+    <value>Daily work time over {0}h (Work Time Act)</value>
+  </data>
+  <data name="MinBreakNotMet" xml:space="preserve">
+    <value>At least {0} min break required for over {1}h work time</value>
+  </data>
+  <data name="MinRestNotMet" xml:space="preserve">
+    <value>Rest time under {0}h between shifts</value>
+  </data>
+
+  <!-- Weekdays -->
+  <data name="Monday" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="Tuesday" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="Wednesday" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="Thursday" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="Friday" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="Saturday" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="Sunday" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="Mon" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="Tue" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="Wed" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="Thu" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="Fri" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="Sat" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="Sun" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+
+  <!-- Trial Offer -->
+  <data name="TrialOfferTitle" xml:space="preserve">
+    <value>Try Premium for free?</value>
+  </data>
+  <data name="TrialOfferStart" xml:space="preserve">
+    <value>14 days free trial</value>
+  </data>
+  <data name="TrialOfferBuyNow" xml:space="preserve">
+    <value>Buy now</value>
+  </data>
+  <data name="TrialStartedTitle" xml:space="preserve">
+    <value>Trial started!</value>
+  </data>
+  <data name="TrialStartedMessage" xml:space="preserve">
+    <value>You now have {0} days of Premium without ads. Enjoy!</value>
+  </data>
+
+  <!-- Purchase Options -->
+  <data name="PurchaseOptionTitle" xml:space="preserve">
+    <value>Choose Premium</value>
+  </data>
+  <data name="PurchaseOptionMonthly" xml:space="preserve">
+    <value>Monthly: €3.99/month</value>
+  </data>
+  <data name="PurchaseOptionLifetime" xml:space="preserve">
+    <value>Lifetime: €19.99 (one-time)</value>
+  </data>
+  <data name="PurchaseSuccess" xml:space="preserve">
+    <value>Purchase successful! Thank you for your support.</value>
+  </data>
+  <data name="HasSubscription" xml:space="preserve">
+    <value>Subscription active</value>
+  </data>
+  <data name="HasLifetime" xml:space="preserve">
+    <value>Lifetime Premium</value>
+  </data>
+
+  <!-- Additional UI Strings -->
+  <data name="ShowDayDetails" xml:space="preserve">
+    <value>Show day details</value>
+  </data>
+  <data name="DaysThisWeek" xml:space="preserve">
+    <value>Days this week</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>Charts</value>
+  </data>
+  <data name="Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="WorkTimeTable" xml:space="preserve">
+    <value>Work time table</value>
+  </data>
+  <data name="WeeklyWorkTimeChart" xml:space="preserve">
+    <value>Weekly work time</value>
+  </data>
+  <data name="OvertimeTrendChart" xml:space="preserve">
+    <value>Overtime trend</value>
+  </data>
+  <data name="WeekdayAverage" xml:space="preserve">
+    <value>Average by weekday</value>
+  </data>
+  <data name="ProjectDistribution" xml:space="preserve">
+    <value>Project distribution</value>
+  </data>
+  <data name="EmployerDistribution" xml:space="preserve">
+    <value>Employer distribution</value>
+  </data>
+  <data name="PauseStats" xml:space="preserve">
+    <value>Breaks</value>
+  </data>
+  <data name="Manual" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="Vacation" xml:space="preserve">
+    <value>Vacation</value>
+  </data>
+  <data name="VacationDaysPerYear" xml:space="preserve">
+    <value>Vacation days per year</value>
+  </data>
+  <data name="VacationDefault" xml:space="preserve">
+    <value>Default: 30 days</value>
+  </data>
+  <data name="IndividualHoursPerDay" xml:space="preserve">
+    <value>Individual hours per day</value>
+  </data>
+  <data name="SelectRegion" xml:space="preserve">
+    <value>Select region</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings saved successfully</value>
+  </data>
+  <data name="Sick" xml:space="preserve">
+    <value>Sick</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Holiday" xml:space="preserve">
+    <value>Holiday</value>
+  </data>
+  <data name="AvgPerDay" xml:space="preserve">
+    <value>Avg/day</value>
+  </data>
+  <data name="WorkedDaysCount" xml:space="preserve">
+    <value>Work days</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportAs" xml:space="preserve">
+    <value>Export as...</value>
+  </data>
+  <data name="ExportSuccess" xml:space="preserve">
+    <value>Export successful</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Export failed</value>
+  </data>
+
+  <!-- DayDetailPage -->
+  <data name="LockedMonthClosure" xml:space="preserve">
+    <value>Locked (month closed)</value>
+  </data>
+  <data name="ManualBreak" xml:space="preserve">
+    <value>Break (manual)</value>
+  </data>
+  <data name="LegalWarningsTitle" xml:space="preserve">
+    <value>Working time law notices</value>
+  </data>
+  <data name="NoBreaksRecorded" xml:space="preserve">
+    <value>No breaks recorded</value>
+  </data>
+
+  <!-- VacationPage -->
+  <data name="VacationManagement" xml:space="preserve">
+    <value>Vacation Management</value>
+  </data>
+  <data name="VacationAccount" xml:space="preserve">
+    <value>Vacation Account</value>
+  </data>
+  <data name="AddNewVacation" xml:space="preserve">
+    <value>Add New Vacation</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="WorkDaysFormat" xml:space="preserve">
+    <value>{0} work days</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="NoteOptional" xml:space="preserve">
+    <value>Note (optional)</value>
+  </data>
+  <data name="AddVacation" xml:space="preserve">
+    <value>Add Vacation</value>
+  </data>
+  <data name="PremiumVacationFeature" xml:space="preserve">
+    <value>Premium Feature</value>
+  </data>
+  <data name="PremiumVacationDesc" xml:space="preserve">
+    <value>With Premium you can manage vacations and track days off.</value>
+  </data>
+  <data name="RegisteredVacations" xml:space="preserve">
+    <value>Registered Vacations</value>
+  </data>
+  <data name="NoVacationsRegistered" xml:space="preserve">
+    <value>No vacations registered</value>
+  </data>
+  <data name="UnlockPremium" xml:space="preserve">
+    <value>Unlock Premium</value>
+  </data>
+
+  <!-- ShiftPlanPage -->
+  <data name="ShiftPlan" xml:space="preserve">
+    <value>Shift Plan</value>
+  </data>
+  <data name="TotalHoursFormat" xml:space="preserve">
+    <value>Total: {0} hrs</value>
+  </data>
+  <data name="SelectShiftPattern" xml:space="preserve">
+    <value>Select shift pattern</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>+ New</value>
+  </data>
+  <data name="ApplyToWeek" xml:space="preserve">
+    <value>Apply to Week</value>
+  </data>
+  <data name="ShiftPattern" xml:space="preserve">
+    <value>Shift Pattern</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="EarlyShiftExample" xml:space="preserve">
+    <value>e.g. Early Shift</value>
+  </data>
+  <data name="TodayButton" xml:space="preserve">
+    <value>Today</value>
+  </data>
+
+  <!-- YearOverviewPage -->
+  <data name="YearOverview" xml:space="preserve">
+    <value>Year Overview</value>
+  </data>
+  <data name="ActualTime" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="TargetTime" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="WorkDaysTotal" xml:space="preserve">
+    <value>Work days</value>
+  </data>
+  <data name="AvgPerDayShort" xml:space="preserve">
+    <value>Avg/day</value>
+  </data>
+  <data name="VacationLabel" xml:space="preserve">
+    <value>Vacation</value>
+  </data>
+  <data name="SickLabel" xml:space="preserve">
+    <value>Sick</value>
+  </data>
+  <data name="DaysFormat" xml:space="preserve">
+    <value>{0} days</value>
+  </data>
+  <data name="PdfExport" xml:space="preserve">
+    <value>PDF Export</value>
+  </data>
+  <data name="WorkHoursPerMonth" xml:space="preserve">
+    <value>Work hours per month</value>
+  </data>
+  <data name="OvertimeDevelopment" xml:space="preserve">
+    <value>Overtime development</value>
+  </data>
+  <data name="MonthsOverviewTitle" xml:space="preserve">
+    <value>Months Overview</value>
+  </data>
+  <data name="Actual" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="TargetShort" xml:space="preserve">
+    <value>Target</value>
+  </data>
+
+  <!-- MonthOverviewPage -->
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Weeks" xml:space="preserve">
+    <value>Weeks</value>
+  </data>
+
+  <!-- Navigation -->
+  <data name="MoreFeatures" xml:space="preserve">
+    <value>More Features</value>
+  </data>
+
+  <!-- New strings for Code Review Cleanup -->
+  <data name="EditDay" xml:space="preserve">
+    <value>Edit day</value>
+  </data>
+  <data name="DeleteBreakConfirm" xml:space="preserve">
+    <value>Delete break?</value>
+  </data>
+  <data name="DeleteVacationConfirm" xml:space="preserve">
+    <value>Delete vacation?</value>
+  </data>
+  <data name="DeleteVacationMessage" xml:space="preserve">
+    <value>Do you really want to delete this vacation?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="SelectDayType" xml:space="preserve">
+    <value>Select day type</value>
+  </data>
+  <data name="Regular" xml:space="preserve">
+    <value>Regular</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data available</value>
+  </data>
+  <data name="BreakDeleted" xml:space="preserve">
+    <value>Break deleted</value>
+  </data>
+  <data name="VacationDeleted" xml:space="preserve">
+    <value>Vacation deleted</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Confirm delete</value>
+  </data>
+  <data name="LoadingData" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="ChangeStatus" xml:space="preserve">
+    <value>Change status</value>
+  </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Show details</value>
+  </data>
+  <data name="EnterVacation" xml:space="preserve">
+    <value>Enter vacation</value>
+  </data>
+  <data name="MultiDayVacation" xml:space="preserve">
+    <value>Vacation (multiple days)</value>
+  </data>
+  <data name="ReportSick" xml:space="preserve">
+    <value>Report sick</value>
+  </data>
+  <data name="ResetStatus" xml:space="preserve">
+    <value>Reset status</value>
+  </data>
+  <data name="EnterVacationTitle" xml:space="preserve">
+    <value>Enter vacation</value>
+  </data>
+  <data name="HowManyDays" xml:space="preserve">
+    <value>How many days?</value>
+  </data>
+  <data name="NumberOfDays" xml:space="preserve">
+    <value>Number of days</value>
+  </data>
+  <data name="VacationEntered" xml:space="preserve">
+    <value>Vacation entered</value>
+  </data>
+  <data name="VacationDaysEnteredFormat" xml:space="preserve">
+    <value>{0} vacation days from {1} have been entered.</value>
+  </data>
+  <data name="HomeOfficeTitle" xml:space="preserve">
+    <value>Home office</value>
+  </data>
+  <data name="OptionalNotePrompt" xml:space="preserve">
+    <value>Optional note (e.g. reason, project):</value>
+  </data>
+  <data name="NotePlaceholder" xml:space="preserve">
+    <value>e.g. Project work, concentration</value>
+  </data>
+  <data name="InvalidTimeFormat" xml:space="preserve">
+    <value>Invalid time format. Please use HH:mm.</value>
+  </data>
+  <data name="EnterTime" xml:space="preserve">
+    <value>Enter time:</value>
+  </data>
+  <data name="EditTime" xml:space="preserve">
+    <value>Edit time</value>
+  </data>
+  <data name="NewTimeFor" xml:space="preserve">
+    <value>New time for {0}:</value>
+  </data>
+  <data name="EditBreak" xml:space="preserve">
+    <value>Edit break</value>
+  </data>
+  <data name="BreakStartTime" xml:space="preserve">
+    <value>Break start time:</value>
+  </data>
+  <data name="BreakEndTime" xml:space="preserve">
+    <value>Break end time:</value>
+  </data>
+  <data name="AutoBreakInfo" xml:space="preserve">
+    <value>Auto breaks are calculated automatically and cannot be manually edited.</value>
+  </data>
+  <data name="CloseMonthConfirm" xml:space="preserve">
+    <value>Do you want to close {0}? Entries cannot be edited afterwards.</value>
+  </data>
+  <data name="UnlockMonthConfirm" xml:space="preserve">
+    <value>Do you want to unlock {0}?</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="VacationDaysInfo" xml:space="preserve">
+    <value>Vacation days for this year:</value>
+  </data>
+  <data name="CarryOverDays" xml:space="preserve">
+    <value>Carry over days</value>
+  </data>
+  <data name="DaysCarriedOver" xml:space="preserve">
+    <value>{0} days from {1} have been carried over.</value>
+  </data>
+  <data name="NoDaysToCarryOver" xml:space="preserve">
+    <value>No remaining days from {0} to carry over.</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>remaining</value>
+  </data>
+  <data name="RemainingDays" xml:space="preserve">
+    <value>remaining</value>
+  </data>
+  <data name="Planned" xml:space="preserve">
+    <value>planned</value>
+  </data>
+  <data name="NoWorkDaysInPeriod" xml:space="preserve">
+    <value>The selected period contains no work days.</value>
+  </data>
+  <data name="PremiumFeature" xml:space="preserve">
+    <value>Premium feature</value>
+  </data>
+  <data name="PremiumRequired" xml:space="preserve">
+    <value>This feature requires Premium. Upgrade now!</value>
+  </data>
+  <data name="PdfExportPremium" xml:space="preserve">
+    <value>PDF export is a Premium feature.</value>
+  </data>
+  <data name="ExportFailedMessage" xml:space="preserve">
+    <value>Export failed: {0}</value>
+  </data>
+  <data name="SpecialLeave" xml:space="preserve">
+    <value>Special leave</value>
+  </data>
+  <data name="UnpaidLeave" xml:space="preserve">
+    <value>Unpaid leave</value>
+  </data>
+  <data name="OvertimeCompensation" xml:space="preserve">
+    <value>Overtime compensation</value>
+  </data>
+  <data name="Illness" xml:space="preserve">
+    <value>Illness</value>
+  </data>
+
+  <!-- Table Headers -->
+  <data name="TableDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="TableStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="TableCheckIn" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="TableCheckOut" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="TableWork" xml:space="preserve">
+    <value>Work</value>
+  </data>
+  <data name="TablePause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="TableBalance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+
+  <!-- Chart Labels -->
+  <data name="ChartActualHours" xml:space="preserve">
+    <value>Actual hours</value>
+  </data>
+  <data name="ChartTargetFormat" xml:space="preserve">
+    <value>Target ({0}h)</value>
+  </data>
+  <data name="ChartHours" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="ChartDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="ChartCumulative" xml:space="preserve">
+    <value>Cumulative</value>
+  </data>
+  <data name="ChartAvgHours" xml:space="preserve">
+    <value>Avg hours</value>
+  </data>
+  <data name="ChartWorkHours" xml:space="preserve">
+    <value>Work hours</value>
+  </data>
+  <data name="ChartCumulativeBalance" xml:space="preserve">
+    <value>Cum. balance</value>
+  </data>
+
+  <!-- Shift Plan -->
+  <data name="ShiftOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="ErrorLoading" xml:space="preserve">
+    <value>Error loading: {0}</value>
+  </data>
+  <data name="ErrorSaving" xml:space="preserve">
+    <value>Error saving: {0}</value>
+  </data>
+  <data name="ErrorGeneric" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="ErrorOpenUrl" xml:space="preserve">
+    <value>Could not open URL: {0}</value>
+  </data>
+
+  <!-- Additional Day Status -->
+  <data name="DayStatus_Training" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="DayStatus_CompensatoryTime" xml:space="preserve">
+    <value>Compensatory time</value>
+  </data>
+
+  <!-- Calendar Sync -->
+  <data name="CalendarCreatedBy" xml:space="preserve">
+    <value>Created by WorkTime Pro</value>
+  </data>
+  <data name="CalendarAutoBreak" xml:space="preserve">
+    <value>thereof auto: {0} min</value>
+  </data>
+
+</root>

@@ -1,0 +1,461 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using HandwerkerRechner.Models;
+using HandwerkerRechner.Services;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+
+namespace HandwerkerRechner.ViewModels.Premium;
+
+public partial class GardenViewModel : ObservableObject
+{
+    private readonly CraftEngine _engine;
+    private readonly IProjectService _projectService;
+    private readonly ILocalizationService _localization;
+    private readonly ICalculationHistoryService _historyService;
+    private string? _currentProjectId;
+
+    public event Action<string>? NavigationRequested;
+    public event Action<string, string>? MessageRequested;
+    private void NavigateTo(string route) => NavigationRequested?.Invoke(route);
+
+    public GardenViewModel(
+        CraftEngine engine,
+        IProjectService projectService,
+        ILocalizationService localization,
+        ICalculationHistoryService historyService)
+    {
+        _engine = engine;
+        _projectService = projectService;
+        _localization = localization;
+        _historyService = historyService;
+    }
+
+    /// <summary>
+    /// Loads project data by ID (replaces IQueryAttributable)
+    /// </summary>
+    public async Task LoadFromProjectIdAsync(string projectId)
+    {
+        if (!string.IsNullOrEmpty(projectId))
+        {
+            _currentProjectId = projectId;
+            await LoadProjectAsync(projectId);
+        }
+    }
+
+    // Save Dialog
+    [ObservableProperty] private bool _showSaveDialog;
+    [ObservableProperty] private string _saveProjectName = string.Empty;
+
+    private string DefaultProjectName => Calculators[SelectedCalculator];
+
+    // Calculator Selection
+    [ObservableProperty] private int _selectedCalculator;
+
+    partial void OnSelectedCalculatorChanged(int value)
+    {
+        // Reset cost values when switching calculators to prevent state leaking
+        switch (value)
+        {
+            case 0: // Paving - reset other costs
+                PricePerBag = 0;
+                PricePerSqmLiner = 0;
+                break;
+            case 1: // Soil - reset other costs
+                PricePerStone = 0;
+                PricePerSqmLiner = 0;
+                break;
+            case 2: // Pond - reset other costs
+                PricePerStone = 0;
+                PricePerBag = 0;
+                break;
+        }
+        // Clear results when switching
+        HasResult = false;
+    }
+
+    public List<string> Calculators => [
+        _localization.GetString("Paving"),
+        _localization.GetString("Soil"),
+        _localization.GetString("PondLiner")
+    ];
+
+    // Paving Inputs
+    [ObservableProperty] private double _pavingArea = 20;
+    [ObservableProperty] private double _stoneLength = 20;
+    [ObservableProperty] private double _stoneWidth = 10;
+    [ObservableProperty] private double _jointWidth = 3;
+
+    // Soil Inputs
+    [ObservableProperty] private double _soilArea = 10;
+    [ObservableProperty] private double _soilDepth = 5;
+    [ObservableProperty] private double _bagLiters = 40;
+
+    // Pond Liner Inputs
+    [ObservableProperty] private double _pondLength = 3;
+    [ObservableProperty] private double _pondWidth = 2;
+    [ObservableProperty] private double _pondDepth = 1;
+    [ObservableProperty] private double _overlap = 0.5;
+
+    #region Cost Calculation
+
+    // Pflastersteine: Preis pro Stein
+    [ObservableProperty]
+    private double _pricePerStone = 0;
+
+    [ObservableProperty]
+    private bool _showPavingCost = false;
+
+    public string PavingCostDisplay => (ShowPavingCost && PricePerStone > 0 && PavingResult != null && PavingResult.StonesNeeded > 0)
+        ? $"{_localization.GetString("TotalCost")}: {(PavingResult.StonesNeeded * PricePerStone):F2} \u20ac"
+        : "";
+
+    partial void OnPricePerStoneChanged(double value)
+    {
+        ShowPavingCost = value > 0;
+        OnPropertyChanged(nameof(PavingCostDisplay));
+    }
+
+    // Erde/Mulch: Preis pro Sack
+    [ObservableProperty]
+    private double _pricePerBag = 0;
+
+    [ObservableProperty]
+    private bool _showSoilCost = false;
+
+    public string SoilCostDisplay => (ShowSoilCost && PricePerBag > 0 && SoilResult != null && SoilResult.BagsNeeded > 0)
+        ? $"{_localization.GetString("TotalCost")}: {(SoilResult.BagsNeeded * PricePerBag):F2} \u20ac"
+        : "";
+
+    partial void OnPricePerBagChanged(double value)
+    {
+        ShowSoilCost = value > 0;
+        OnPropertyChanged(nameof(SoilCostDisplay));
+    }
+
+    // Teichfolie: Preis pro m²
+    [ObservableProperty]
+    private double _pricePerSqmLiner = 0;
+
+    [ObservableProperty]
+    private bool _showLinerCost = false;
+
+    public string LinerCostDisplay => (ShowLinerCost && PricePerSqmLiner > 0 && PondResult != null && PondResult.LinerArea > 0)
+        ? $"{_localization.GetString("TotalCost")}: {(PondResult.LinerArea * PricePerSqmLiner):F2} \u20ac"
+        : "";
+
+    partial void OnPricePerSqmLinerChanged(double value)
+    {
+        ShowLinerCost = value > 0;
+        OnPropertyChanged(nameof(LinerCostDisplay));
+    }
+
+    #endregion
+
+    // Results
+    [ObservableProperty] private PavingResult? _pavingResult;
+    [ObservableProperty] private SoilResult? _soilResult;
+    [ObservableProperty] private PondLinerResult? _pondResult;
+    [ObservableProperty] private bool _hasResult;
+
+    [ObservableProperty]
+    private bool _isCalculating;
+
+    partial void OnPavingResultChanged(PavingResult? value)
+    {
+        OnPropertyChanged(nameof(PavingCostDisplay));
+    }
+
+    partial void OnSoilResultChanged(SoilResult? value)
+    {
+        OnPropertyChanged(nameof(SoilCostDisplay));
+    }
+
+    partial void OnPondResultChanged(PondLinerResult? value)
+    {
+        OnPropertyChanged(nameof(LinerCostDisplay));
+    }
+
+    [RelayCommand]
+    private async Task Calculate()
+    {
+        if (IsCalculating) return;
+
+        try
+        {
+            IsCalculating = true;
+
+            switch (SelectedCalculator)
+            {
+                case 0: // Paving
+                    if (PavingArea <= 0 || StoneLength <= 0 || StoneWidth <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    PavingResult = _engine.CalculatePaving(PavingArea, StoneLength, StoneWidth, JointWidth);
+                    SoilResult = null;
+                    PondResult = null;
+                    break;
+
+                case 1: // Soil
+                    if (SoilArea <= 0 || SoilDepth <= 0 || BagLiters <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    SoilResult = _engine.CalculateSoil(SoilArea, SoilDepth, BagLiters);
+                    PavingResult = null;
+                    PondResult = null;
+                    break;
+
+                case 2: // Pond Liner
+                    if (PondLength <= 0 || PondWidth <= 0 || PondDepth <= 0)
+                    {
+                        HasResult = false;
+                        MessageRequested?.Invoke(
+                            _localization.GetString("InvalidInputTitle"),
+                            _localization.GetString("ValueMustBePositive"));
+                        return;
+                    }
+                    PondResult = _engine.CalculatePondLiner(PondLength, PondWidth, PondDepth, Overlap);
+                    PavingResult = null;
+                    SoilResult = null;
+                    break;
+            }
+            HasResult = true;
+
+            // Save to history
+            await SaveToHistoryAsync();
+        }
+        finally
+        {
+            IsCalculating = false;
+        }
+    }
+
+    private async Task SaveToHistoryAsync()
+    {
+        try
+        {
+            string calcType, title;
+            Dictionary<string, object> data;
+
+            switch (SelectedCalculator)
+            {
+                case 0: // Paving
+                    calcType = "PavingCalculator";
+                    title = $"{PavingArea} m\u00b2, {StoneLength}\u00d7{StoneWidth} cm";
+                    data = new Dictionary<string, object>
+                    {
+                        ["PavingArea"] = PavingArea,
+                        ["StoneLength"] = StoneLength,
+                        ["StoneWidth"] = StoneWidth,
+                        ["JointWidth"] = JointWidth,
+                        ["Result"] = PavingResult != null ? new Dictionary<string, object>
+                        {
+                            ["StonesNeeded"] = PavingResult.StonesNeeded,
+                            ["StonesWithReserve"] = PavingResult.StonesWithReserve
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+
+                case 1: // Soil
+                    calcType = "SoilCalculator";
+                    title = string.Format(_localization.GetString("HistorySoilDepth"), SoilArea, SoilDepth);
+                    data = new Dictionary<string, object>
+                    {
+                        ["SoilArea"] = SoilArea,
+                        ["SoilDepth"] = SoilDepth,
+                        ["BagLiters"] = BagLiters,
+                        ["Result"] = SoilResult != null ? new Dictionary<string, object>
+                        {
+                            ["VolumeLiters"] = SoilResult.VolumeLiters,
+                            ["BagsNeeded"] = SoilResult.BagsNeeded
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+
+                default: // Pond Liner
+                    calcType = "PondLinerCalculator";
+                    title = $"{PondLength}\u00d7{PondWidth}\u00d7{PondDepth} m";
+                    data = new Dictionary<string, object>
+                    {
+                        ["PondLength"] = PondLength,
+                        ["PondWidth"] = PondWidth,
+                        ["PondDepth"] = PondDepth,
+                        ["Overlap"] = Overlap,
+                        ["Result"] = PondResult != null ? new Dictionary<string, object>
+                        {
+                            ["LinerLength"] = PondResult.LinerLength,
+                            ["LinerWidth"] = PondResult.LinerWidth,
+                            ["LinerArea"] = PondResult.LinerArea
+                        } : new Dictionary<string, object>()
+                    };
+                    break;
+            }
+
+            await _historyService.AddCalculationAsync(calcType, title, data);
+        }
+        catch (Exception)
+        {
+            // Silently ignore history save errors
+        }
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        PavingArea = 20;
+        StoneLength = 20;
+        StoneWidth = 10;
+        JointWidth = 3;
+        SoilArea = 10;
+        SoilDepth = 5;
+        BagLiters = 40;
+        PondLength = 3;
+        PondWidth = 2;
+        PondDepth = 1;
+        Overlap = 0.5;
+        PricePerStone = 0;
+        PricePerBag = 0;
+        PricePerSqmLiner = 0;
+        PavingResult = null;
+        SoilResult = null;
+        PondResult = null;
+        HasResult = false;
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        NavigateTo("..");
+    }
+
+    [RelayCommand]
+    private async Task SaveProject()
+    {
+        if (!HasResult) return;
+        SaveProjectName = string.Empty;
+        ShowSaveDialog = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmSaveProject()
+    {
+        var name = SaveProjectName;
+        if (string.IsNullOrWhiteSpace(name))
+            name = DefaultProjectName;
+
+        ShowSaveDialog = false;
+
+        try
+        {
+            var calcType = SelectedCalculator switch
+            {
+                0 => CalculatorType.Paving,
+                1 => CalculatorType.Soil,
+                2 => CalculatorType.PondLiner,
+                _ => CalculatorType.Paving
+            };
+
+            var project = new Project
+            {
+                Name = name,
+                CalculatorType = calcType
+            };
+
+            if (!string.IsNullOrEmpty(_currentProjectId))
+            {
+                project.Id = _currentProjectId;
+            }
+
+            var data = new Dictionary<string, object>
+            {
+                ["SelectedCalculator"] = SelectedCalculator,
+                // Paving
+                ["PavingArea"] = PavingArea,
+                ["StoneLength"] = StoneLength,
+                ["StoneWidth"] = StoneWidth,
+                ["JointWidth"] = JointWidth,
+                ["PricePerStone"] = PricePerStone,
+                // Soil
+                ["SoilArea"] = SoilArea,
+                ["SoilDepth"] = SoilDepth,
+                ["BagLiters"] = BagLiters,
+                ["PricePerBag"] = PricePerBag,
+                // Pond Liner
+                ["PondLength"] = PondLength,
+                ["PondWidth"] = PondWidth,
+                ["PondDepth"] = PondDepth,
+                ["Overlap"] = Overlap,
+                ["PricePerSqmLiner"] = PricePerSqmLiner
+            };
+
+            project.SetData(data);
+            await _projectService.SaveProjectAsync(project);
+            _currentProjectId = project.Id;
+
+            MessageRequested?.Invoke(
+                _localization.GetString("Success"),
+                _localization.GetString("ProjectSaved"));
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("Error"),
+                _localization.GetString("ProjectSaveFailed"));
+        }
+    }
+
+    [RelayCommand]
+    private void CancelSaveProject()
+    {
+        ShowSaveDialog = false;
+        SaveProjectName = string.Empty;
+    }
+
+    private async Task LoadProjectAsync(string projectId)
+    {
+        try
+        {
+            var project = await _projectService.LoadProjectAsync(projectId);
+            if (project == null)
+                return;
+
+            SelectedCalculator = project.GetValue("SelectedCalculator", 0);
+
+            // Paving
+            PavingArea = project.GetValue("PavingArea", 20.0);
+            StoneLength = project.GetValue("StoneLength", 20.0);
+            StoneWidth = project.GetValue("StoneWidth", 10.0);
+            JointWidth = project.GetValue("JointWidth", 3.0);
+            PricePerStone = project.GetValue("PricePerStone", 0.0);
+
+            // Soil
+            SoilArea = project.GetValue("SoilArea", 10.0);
+            SoilDepth = project.GetValue("SoilDepth", 5.0);
+            BagLiters = project.GetValue("BagLiters", 40.0);
+            PricePerBag = project.GetValue("PricePerBag", 0.0);
+
+            // Pond Liner
+            PondLength = project.GetValue("PondLength", 3.0);
+            PondWidth = project.GetValue("PondWidth", 2.0);
+            PondDepth = project.GetValue("PondDepth", 1.0);
+            Overlap = project.GetValue("Overlap", 0.5);
+            PricePerSqmLiner = project.GetValue("PricePerSqmLiner", 0.0);
+
+            await Calculate();
+        }
+        catch (Exception)
+        {
+            // Silently ignore load errors
+        }
+    }
+}

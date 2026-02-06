@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.MainMenuView"
+             x:DataType="vm:MainMenuViewModel">
+
+  <!-- Background -->
+  <Panel Background="{DynamicResource BackgroundBrush}">
+    <Border Background="{DynamicResource SurfaceBrush}" Opacity="0.3" />
+
+    <Grid RowDefinitions="*,Auto" Margin="24,16">
+
+      <!-- Main Content: 2-Column Layout -->
+      <Grid Grid.Row="0"
+            ColumnDefinitions="*,2*"
+            VerticalAlignment="Center">
+
+        <!-- Left: Title + Version -->
+        <StackPanel Grid.Column="0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="0">
+          <TextBlock Text="BOMBER"
+                     FontSize="40"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource SecondaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="BLAST"
+                     FontSize="40"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource AccentBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,-12,0,0" />
+          <TextBlock Text="{Binding VersionText}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,16,0,0" />
+        </StackPanel>
+
+        <!-- Right: Button Grid (2 columns) -->
+        <Grid Grid.Column="1"
+              ColumnDefinitions="*,*"
+              RowDefinitions="Auto,Auto,Auto,Auto"
+              Margin="24,0,0,0"
+              VerticalAlignment="Center">
+
+          <!-- Primary Buttons (Left column) -->
+          <Button Grid.Row="0" Grid.Column="0"
+                  Content="{loc:Translate StoryMode}"
+                  Classes="Primary"
+                  Command="{Binding StoryModeCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="0,0,6,6"
+                  Height="48" />
+
+          <Button Grid.Row="1" Grid.Column="0"
+                  Content="{loc:Translate Continue}"
+                  Classes="Primary"
+                  Background="{DynamicResource SuccessBrush}"
+                  Command="{Binding ContinueCommand}"
+                  IsVisible="{Binding HasProgress}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="0,0,6,6"
+                  Height="48" />
+
+          <Button Grid.Row="2" Grid.Column="0"
+                  Content="{loc:Translate ArcadeMode}"
+                  Classes="Primary"
+                  Background="{DynamicResource ErrorBrush}"
+                  Command="{Binding ArcadeModeCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="0,0,6,6"
+                  Height="48" />
+
+          <Button Grid.Row="3" Grid.Column="0"
+                  Content="{loc:Translate QuickPlay}"
+                  Classes="Primary"
+                  Background="{DynamicResource WarningBrush}"
+                  Command="{Binding QuickPlayCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="0,0,6,6"
+                  Height="48" />
+
+          <!-- Secondary Buttons (Right column) -->
+          <Button Grid.Row="0" Grid.Column="1"
+                  Content="{loc:Translate HighScores}"
+                  Classes="Secondary"
+                  Command="{Binding HighScoresCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="6,0,0,6"
+                  Height="48" />
+
+          <Button Grid.Row="1" Grid.Column="1"
+                  Content="{loc:Translate Help}"
+                  Classes="Secondary"
+                  Command="{Binding HelpCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="6,0,0,6"
+                  Height="48" />
+
+          <Button Grid.Row="2" Grid.Column="1"
+                  Content="{loc:Translate Settings}"
+                  Classes="Secondary"
+                  Command="{Binding SettingsCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="6,0,0,6"
+                  Height="48" />
+
+        </Grid>
+      </Grid>
+
+      <!-- Ad Banner placeholder -->
+      <Border Grid.Row="1"
+              Height="50"
+              IsVisible="{Binding ShowAds}"
+              Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="8"
+              HorizontalAlignment="Stretch"
+              Margin="0,8,0,0">
+        <TextBlock Text="Ad Banner"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   FontSize="12" />
+      </Border>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

@@ -1,0 +1,502 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="WorkTimePro.Views.StatisticsView"
+             x:DataType="vm:StatisticsViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="12" Margin="16">
+
+      <!-- ==================== Period Selection ==================== -->
+      <Border Classes="CardElevated">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="CalendarMonth" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Period}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Period Buttons -->
+          <WrapPanel Orientation="Horizontal"
+                     HorizontalAlignment="Center">
+            <Panel Margin="4">
+              <Button Classes="Primary Small"
+                      Content="{loc:Translate Week}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Week"
+                      IsVisible="{Binding IsWeekSelected}" />
+              <Button Classes="Outlined Small"
+                      Content="{loc:Translate Week}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Week"
+                      IsVisible="{Binding !IsWeekSelected}" />
+            </Panel>
+            <Panel Margin="4">
+              <Button Classes="Primary Small"
+                      Content="{loc:Translate Month}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Month"
+                      IsVisible="{Binding IsMonthSelected}" />
+              <Button Classes="Outlined Small"
+                      Content="{loc:Translate Month}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Month"
+                      IsVisible="{Binding !IsMonthSelected}" />
+            </Panel>
+            <Panel Margin="4">
+              <Button Classes="Primary Small"
+                      Content="{loc:Translate Quarter}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Quarter"
+                      IsVisible="{Binding IsQuarterSelected}" />
+              <Button Classes="Outlined Small"
+                      Content="{loc:Translate Quarter}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Quarter"
+                      IsVisible="{Binding !IsQuarterSelected}" />
+            </Panel>
+            <Panel Margin="4">
+              <Button Classes="Primary Small"
+                      Content="{loc:Translate Year}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Year"
+                      IsVisible="{Binding IsYearSelected}" />
+              <Button Classes="Outlined Small"
+                      Content="{loc:Translate Year}"
+                      Command="{Binding ChangePeriodCommand}"
+                      CommandParameter="Year"
+                      IsVisible="{Binding !IsYearSelected}" />
+            </Panel>
+          </WrapPanel>
+
+          <TextBlock Text="{Binding PeriodDisplay}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource AccentBrush}"
+                     HorizontalAlignment="Center" />
+
+          <!-- View Toggle + Export -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8" Margin="0,8,0,0">
+            <Panel>
+              <Button Classes="Primary Small"
+                      Content="{Binding ChartsButtonText}"
+                      Command="{Binding ToggleViewCommand}"
+                      IsVisible="{Binding !ShowTable}" />
+              <Button Classes="Outlined Small"
+                      Content="{Binding ChartsButtonText}"
+                      Command="{Binding ToggleViewCommand}"
+                      IsVisible="{Binding ShowTable}" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small"
+                      Content="{Binding TableButtonText}"
+                      Command="{Binding ToggleViewCommand}"
+                      IsVisible="{Binding ShowTable}" />
+              <Button Classes="Outlined Small"
+                      Content="{Binding TableButtonText}"
+                      Command="{Binding ToggleViewCommand}"
+                      IsVisible="{Binding !ShowTable}" />
+            </Panel>
+            <Button Classes="Primary Small"
+                    Content="{Binding ExportButtonText}"
+                    Command="{Binding ExportCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Main Summary (Charts mode) ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+              ColumnSpacing="16" RowSpacing="16">
+
+          <!-- Total Time -->
+          <StackPanel Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate WorkTime}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding TotalWorkDisplay}"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Overtime -->
+          <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate Overtime}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding TotalOvertimeDisplay}"
+                       FontSize="28" FontWeight="Bold"
+                       Foreground="{Binding OvertimeColor}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Average -->
+          <StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate AvgPerDay}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding AverageDailyDisplay}"
+                       FontSize="20"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Worked Days -->
+          <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate WorkedDaysCount}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding WorkedDays}"
+                       FontSize="20"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+      <!-- ==================== Absence Overview (Charts mode) ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <Grid ColumnDefinitions="*,*,*,*">
+
+          <!-- Vacation -->
+          <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Beach" Width="22" Height="22"
+                             Foreground="{DynamicResource InfoBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding VacationDays}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource InfoBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Vacation}"
+                       FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Sick -->
+          <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Thermometer" Width="22" Height="22"
+                             Foreground="{DynamicResource ErrorBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding SickDays}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource ErrorBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Sick}"
+                       FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Home Office -->
+          <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="HomeAccount" Width="22" Height="22"
+                             Foreground="{DynamicResource PrimaryBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding HomeOfficeDays}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Home}"
+                       FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Holidays -->
+          <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="PartyPopper" Width="22" Height="22"
+                             Foreground="{DynamicResource WarningBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding HolidayDays}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource WarningBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Holiday}"
+                       FontSize="11"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+        </Grid>
+      </Border>
+
+      <!-- ==================== Break Statistics (Charts mode) ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Coffee" Width="20" Height="20"
+                             Foreground="{DynamicResource WarningBrush}" />
+            <TextBlock Text="{Binding PauseStatsTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,*,*">
+            <!-- Manual -->
+            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+              <TextBlock Text="{loc:Translate Manual}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding TotalManualPauseDisplay}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource SuccessBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Auto -->
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+              <TextBlock Text="{Binding AutoPauseLabel}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding TotalAutoPauseDisplay}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource WarningBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Average -->
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+              <TextBlock Text="{loc:Translate AvgPerDay}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding AveragePauseDisplay}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+
+          <!-- Break PieChart -->
+          <lvc:PieChart Series="{Binding PauseChart}"
+                        Height="150"
+                        InitialRotation="-90"
+                        IsVisible="{Binding HasPauseChartData}" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Weekly Work Time Chart ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="ChartBar" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding WeeklyChartTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <lvc:CartesianChart Series="{Binding WeeklyChart}"
+                              XAxes="{Binding WeeklyXAxes}"
+                              YAxes="{Binding WeeklyYAxes}"
+                              Height="220"
+                              ZoomMode="None" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Overtime Trend Chart ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="TrendingUp" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding OvertimeChartTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <lvc:CartesianChart Series="{Binding OvertimeChart}"
+                              XAxes="{Binding OvertimeXAxes}"
+                              YAxes="{Binding OvertimeYAxes}"
+                              Height="220"
+                              ZoomMode="None" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Weekday Distribution Chart ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding !ShowTable}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="CalendarWeek" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding WeekdayChartTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <lvc:CartesianChart Series="{Binding WeekdayChart}"
+                              XAxes="{Binding WeekdayXAxes}"
+                              YAxes="{Binding WeekdayYAxes}"
+                              Height="200"
+                              ZoomMode="None" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Project Distribution (if projects exist) ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding HasProjects}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Briefcase" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding ProjectChartTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <lvc:PieChart Series="{Binding ProjectChart}"
+                        Height="250"
+                        InitialRotation="-90" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Employer Distribution ==================== -->
+      <Border Classes="Card"
+              IsVisible="{Binding HasEmployers}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="AccountGroup" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding EmployerChartTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <lvc:PieChart Series="{Binding EmployerChart}"
+                        Height="250"
+                        InitialRotation="-90" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Table View ==================== -->
+      <Border Classes="Card" Padding="8"
+              IsVisible="{Binding ShowTable}">
+        <StackPanel Spacing="4">
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="8,4">
+            <mi:MaterialIcon Kind="FileDocument" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding WorkTimeTableTitle}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Table Header -->
+          <Border Background="{DynamicResource PrimaryBrush}"
+                  Padding="6" CornerRadius="4">
+            <Grid ColumnDefinitions="70,60,42,42,42,38,48">
+              <TextBlock Grid.Column="0" Text="{loc:Translate TableDate}" Foreground="White" FontSize="10" FontWeight="Bold" />
+              <TextBlock Grid.Column="1" Text="{loc:Translate TableStatus}" Foreground="White" FontSize="10" FontWeight="Bold" />
+              <TextBlock Grid.Column="2" Text="{loc:Translate TableCheckIn}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
+              <TextBlock Grid.Column="3" Text="{loc:Translate TableCheckOut}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
+              <TextBlock Grid.Column="4" Text="{loc:Translate TableWork}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
+              <TextBlock Grid.Column="5" Text="{loc:Translate TablePause}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
+              <TextBlock Grid.Column="6" Text="{loc:Translate TableBalance}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
+            </Grid>
+          </Border>
+
+          <!-- Table Data -->
+          <ItemsControl ItemsSource="{Binding TableDays}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:WorkDayTableItem">
+                <Border Padding="6,5"
+                        Background="{DynamicResource CardBrush}">
+                  <Grid ColumnDefinitions="70,60,42,42,42,38,48">
+                    <TextBlock Grid.Column="0" Text="{Binding DateDisplay}"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding StatusIcon}" FontSize="12" />
+                      <TextBlock Text="{Binding StatusName}" FontSize="9"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="2" Text="{Binding CheckInTime}"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="3" Text="{Binding CheckOutTime}"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="4" Text="{Binding WorkTime}"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="5" Orientation="Horizontal"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding PauseTime}" FontSize="10"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <mi:MaterialIcon Kind="FlashOutline" Width="7" Height="7"
+                                       Foreground="{DynamicResource WarningBrush}"
+                                       IsVisible="{Binding HasAutoBreak}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="6" Text="{Binding Balance}"
+                               FontSize="10" FontWeight="Bold"
+                               Foreground="{Binding BalanceColor}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Empty State -->
+          <StackPanel IsVisible="{Binding HasNoTableData}"
+                      HorizontalAlignment="Center"
+                      Margin="0,24">
+            <mi:MaterialIcon Kind="FileDocument" Width="48" Height="48"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate NoEntries}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Loading Indicator -->
+      <ProgressBar IsIndeterminate="True"
+                   IsVisible="{Binding IsLoading}"
+                   HorizontalAlignment="Center" />
+
+      <!-- Bottom Spacer -->
+      <Border Height="16" />
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

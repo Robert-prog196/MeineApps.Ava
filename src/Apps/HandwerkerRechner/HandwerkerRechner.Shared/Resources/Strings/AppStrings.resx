@@ -1,0 +1,1687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- App Info -->
+  <data name="AppName" xml:space="preserve">
+    <value>CraftsmanCalc</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Material calculator for craftsmen and DIY</value>
+  </data>
+
+  <!-- Categories -->
+  <data name="CategoryFloorWall" xml:space="preserve">
+    <value>Floor &amp; Wall</value>
+  </data>
+  <data name="CategoryDrywall" xml:space="preserve">
+    <value>Drywall</value>
+  </data>
+  <data name="CategoryElectrical" xml:space="preserve">
+    <value>Electrical</value>
+  </data>
+  <data name="CategoryMetal" xml:space="preserve">
+    <value>Metal</value>
+  </data>
+  <data name="CategoryGarden" xml:space="preserve">
+    <value>Garden</value>
+  </data>
+  <data name="CategoryRoofSolar" xml:space="preserve">
+    <value>Roof &amp; Solar</value>
+  </data>
+
+  <!-- Floor Calculators -->
+  <data name="CalcTiles" xml:space="preserve">
+    <value>Tiles</value>
+  </data>
+  <data name="CalcWallpaper" xml:space="preserve">
+    <value>Wallpaper</value>
+  </data>
+  <data name="CalcPaint" xml:space="preserve">
+    <value>Paint</value>
+  </data>
+  <data name="CalcFlooring" xml:space="preserve">
+    <value>Flooring</value>
+  </data>
+
+  <!-- Common Labels -->
+  <data name="Calculate" xml:space="preserve">
+    <value>Calculate</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+
+  <!-- Input Labels -->
+  <data name="RoomDimensions" xml:space="preserve">
+    <value>Room Dimensions</value>
+  </data>
+  <data name="RoomLength" xml:space="preserve">
+    <value>Room length (m)</value>
+  </data>
+  <data name="RoomWidth" xml:space="preserve">
+    <value>Room width (m)</value>
+  </data>
+  <data name="RoomHeight" xml:space="preserve">
+    <value>Room height (m)</value>
+  </data>
+  <data name="TileDimensions" xml:space="preserve">
+    <value>Tile Dimensions</value>
+  </data>
+  <data name="TileLength" xml:space="preserve">
+    <value>Tile length (cm)</value>
+  </data>
+  <data name="TileWidth" xml:space="preserve">
+    <value>Tile width (cm)</value>
+  </data>
+  <data name="Waste" xml:space="preserve">
+    <value>Waste (%)</value>
+  </data>
+  <data name="Area" xml:space="preserve">
+    <value>Area (m²)</value>
+  </data>
+  <data name="Coverage" xml:space="preserve">
+    <value>Coverage (m²/L)</value>
+  </data>
+  <data name="Coats" xml:space="preserve">
+    <value>Coats</value>
+  </data>
+  <data name="WallLength" xml:space="preserve">
+    <value>Wall length (m)</value>
+  </data>
+  <data name="RollDimensions" xml:space="preserve">
+    <value>Roll Dimensions</value>
+  </data>
+  <data name="RollLength" xml:space="preserve">
+    <value>Roll length (m)</value>
+  </data>
+  <data name="RollWidth" xml:space="preserve">
+    <value>Roll width (cm)</value>
+  </data>
+  <data name="PatternRepeat" xml:space="preserve">
+    <value>Pattern repeat (cm)</value>
+  </data>
+  <data name="WallArea" xml:space="preserve">
+    <value>Wall area</value>
+  </data>
+  <data name="AreaToCalculate" xml:space="preserve">
+    <value>Area to Calculate</value>
+  </data>
+  <data name="PaintProperties" xml:space="preserve">
+    <value>Paint Properties</value>
+  </data>
+  <data name="TotalArea" xml:space="preserve">
+    <value>Total area (with coats)</value>
+  </data>
+  <data name="BoardDimensions" xml:space="preserve">
+    <value>Board Dimensions</value>
+  </data>
+  <data name="BoardLength" xml:space="preserve">
+    <value>Board length (m)</value>
+  </data>
+  <data name="BoardWidth" xml:space="preserve">
+    <value>Board width (cm)</value>
+  </data>
+  <data name="BoardsWithWaste" xml:space="preserve">
+    <value>With waste</value>
+  </data>
+
+  <!-- Result Labels -->
+  <data name="TilesNeeded" xml:space="preserve">
+    <value>Tiles needed</value>
+  </data>
+  <data name="TilesWithWaste" xml:space="preserve">
+    <value>With waste</value>
+  </data>
+  <data name="RollsNeeded" xml:space="preserve">
+    <value>Rolls needed</value>
+  </data>
+  <data name="LitersNeeded" xml:space="preserve">
+    <value>Liters needed</value>
+  </data>
+  <data name="BoardsNeeded" xml:space="preserve">
+    <value>Boards needed</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsChooseDesign" xml:space="preserve">
+    <value>Choose Design</value>
+  </data>
+  <data name="SettingsLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="SettingsAboutApp" xml:space="preserve">
+    <value>About App</value>
+  </data>
+  <data name="SettingsBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="FeedbackButton" xml:space="preserve">
+    <value>Send Feedback</value>
+  </data>
+
+  <!-- Themes -->
+  <data name="ThemeVivid" xml:space="preserve">
+    <value>Vivid</value>
+  </data>
+  <data name="ThemeVividDesc" xml:space="preserve">
+    <value>Modern &amp; Vibrant</value>
+  </data>
+  <data name="ThemeClassic" xml:space="preserve">
+    <value>Classic</value>
+  </data>
+  <data name="ThemeClassicDesc" xml:space="preserve">
+    <value>Clean &amp; Clear</value>
+  </data>
+  <data name="ThemeGlassDark" xml:space="preserve">
+    <value>Glass Dark</value>
+  </data>
+  <data name="ThemeGlassDarkDesc" xml:space="preserve">
+    <value>Elegant &amp; Dark</value>
+  </data>
+  <data name="ThemeSoftLight" xml:space="preserve">
+    <value>Soft Light</value>
+  </data>
+  <data name="ThemeSoftLightDesc" xml:space="preserve">
+    <value>Soft &amp; Light</value>
+  </data>
+
+  <!-- Premium -->
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="PremiumRequired" xml:space="preserve">
+    <value>Premium required</value>
+  </data>
+  <data name="PremiumDescription" xml:space="preserve">
+    <value>Unlock all calculators and remove ads</value>
+  </data>
+  <data name="PurchasePremium" xml:space="preserve">
+    <value>Purchase Premium</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Restore Purchases</value>
+  </data>
+
+  <!-- Main Page -->
+  <data name="Free" xml:space="preserve">
+    <value>FREE</value>
+  </data>
+  <data name="PremiumLabel" xml:space="preserve">
+    <value>PREMIUM</value>
+  </data>
+  <data name="ProfessionalCategories" xml:space="preserve">
+    <value>Professional Categories</value>
+  </data>
+  <data name="UnlockAllCategories" xml:space="preserve">
+    <value>Unlock all 5 categories</value>
+  </data>
+  <data name="OneTimePayment" xml:space="preserve">
+    <value>One-time payment • No more ads!</value>
+  </data>
+  <data name="PriceAllCategories" xml:space="preserve">
+    <value>3.99 €</value>
+  </data>
+  <data name="OrUnlockIndividual" xml:space="preserve">
+    <value>Or unlock individual categories for 0.99 € each:</value>
+  </data>
+  <data name="RestorePurchasesShort" xml:space="preserve">
+    <value>Restore purchases</value>
+  </data>
+  <data name="PremiumFeature" xml:space="preserve">
+    <value>Premium Feature</value>
+  </data>
+  <data name="ProjectStorageRequiresPremium" xml:space="preserve">
+    <value>Project storage requires premium. For only €0.99 you can save and load unlimited projects.</value>
+  </data>
+
+  <!-- Projects Page -->
+  <data name="MyProjects" xml:space="preserve">
+    <value>My Projects</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="NoProjectsSaved" xml:space="preserve">
+    <value>No projects saved</value>
+  </data>
+  <data name="SaveProjectsDescription" xml:space="preserve">
+    <value>Save your calculations as projects to reuse them later.</value>
+  </data>
+  <data name="DeleteProjectConfirm" xml:space="preserve">
+    <value>Delete project?</value>
+  </data>
+  <data name="DeleteProjectMessage" xml:space="preserve">
+    <value>Do you really want to delete "{0}"?</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+
+  <!-- Purchase Dialogs -->
+  <data name="UnlockCategory" xml:space="preserve">
+    <value>Unlock category</value>
+  </data>
+  <data name="UnlockCategoryMessage" xml:space="preserve">
+    <value>Would you like to unlock "{0}" for 0.99 €?
+
+✓ All calculators in this category
+✓ Ads will be permanently removed!</value>
+  </data>
+  <data name="Buy" xml:space="preserve">
+    <value>Buy</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="PurchasesRestored" xml:space="preserve">
+    <value>Purchases restored</value>
+  </data>
+  <data name="RestoredCategoriesMessage" xml:space="preserve">
+    <value>The following categories have been restored:</value>
+  </data>
+  <data name="RestoredCategoriesFullMessage" xml:space="preserve">
+    <value>The following categories have been restored:
+{0}
+
+Advertising has been disabled.</value>
+  </data>
+  <data name="NoPurchasesToRestore" xml:space="preserve">
+    <value>No purchases to restore</value>
+  </data>
+  <data name="NoPurchasesFound" xml:space="preserve">
+    <value>No purchases found</value>
+  </data>
+  <data name="NoPurchasesFoundMessage" xml:space="preserve">
+    <value>No previous purchases were found.</value>
+  </data>
+
+  <!-- Project Save/Load -->
+  <data name="SaveProject" xml:space="preserve">
+    <value>Save project</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Project name:</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="ProjectSaved" xml:space="preserve">
+    <value>Project saved!</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ProjectSaveFailed" xml:space="preserve">
+    <value>Project could not be saved.</value>
+  </data>
+  <data name="ProjectLoadFailed" xml:space="preserve">
+    <value>Project could not be loaded.</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+
+  <!-- Calculator Common -->
+  <data name="CostCalculation" xml:space="preserve">
+    <value>Cost calculation (optional)</value>
+  </data>
+  <data name="Visualization" xml:space="preserve">
+    <value>Visualization</value>
+  </data>
+  <data name="PricePerTile" xml:space="preserve">
+    <value>Price per tile (€)</value>
+  </data>
+  <data name="PricePerRoll" xml:space="preserve">
+    <value>Price per roll (€)</value>
+  </data>
+  <data name="PricePerLiter" xml:space="preserve">
+    <value>Price per liter (€)</value>
+  </data>
+  <data name="PricePerBoard" xml:space="preserve">
+    <value>Price per board (€)</value>
+  </data>
+  <data name="TotalCost" xml:space="preserve">
+    <value>Total cost</value>
+  </data>
+  <data name="SaveProjectButton" xml:space="preserve">
+    <value>Save as project</value>
+  </data>
+
+  <!-- Category Names in ViewModels -->
+  <data name="CategoryNameFloorWall" xml:space="preserve">
+    <value>Floor &amp; Wall</value>
+  </data>
+  <data name="CategoryNameDrywall" xml:space="preserve">
+    <value>Drywall</value>
+  </data>
+  <data name="CategoryNameElectrical" xml:space="preserve">
+    <value>Electrical</value>
+  </data>
+  <data name="CategoryNameMetal" xml:space="preserve">
+    <value>Metal</value>
+  </data>
+  <data name="CategoryNameGarden" xml:space="preserve">
+    <value>Garden</value>
+  </data>
+  <data name="CategoryNameRoofSolar" xml:space="preserve">
+    <value>Roof &amp; Solar</value>
+  </data>
+
+  <!-- Calculator Names for Multi-Calculator ViewModels -->
+  <data name="VoltageDrop" xml:space="preserve">
+    <value>Voltage Drop</value>
+  </data>
+  <data name="PowerCost" xml:space="preserve">
+    <value>Power Cost</value>
+  </data>
+  <data name="OhmsLaw" xml:space="preserve">
+    <value>Ohm's Law</value>
+  </data>
+  <data name="MetalWeight" xml:space="preserve">
+    <value>Metal Weight</value>
+  </data>
+  <data name="ThreadDrill" xml:space="preserve">
+    <value>Thread Drill</value>
+  </data>
+  <data name="Paving" xml:space="preserve">
+    <value>Paving Stones</value>
+  </data>
+  <data name="Soil" xml:space="preserve">
+    <value>Soil/Mulch</value>
+  </data>
+  <data name="PondLiner" xml:space="preserve">
+    <value>Pond Liner</value>
+  </data>
+  <data name="RoofPitch" xml:space="preserve">
+    <value>Roof Pitch</value>
+  </data>
+  <data name="RoofTiles" xml:space="preserve">
+    <value>Roof Tiles</value>
+  </data>
+  <data name="SolarYield" xml:space="preserve">
+    <value>Solar Yield</value>
+  </data>
+
+  <!-- Helper Descriptions -->
+  <data name="PricePerTileHint" xml:space="preserve">
+    <value>Enter the price per tile to calculate total cost.</value>
+  </data>
+  <data name="InvalidInputTitle" xml:space="preserve">
+    <value>Invalid Input</value>
+  </data>
+  <data name="ValueMustBePositive" xml:space="preserve">
+    <value>Value must be greater than 0.</value>
+  </data>
+
+  <!-- PDF Export -->
+  <data name="ExportPdf" xml:space="preserve">
+    <value>Export as PDF</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="MaterialList" xml:space="preserve">
+    <value>Material List</value>
+  </data>
+  <data name="GeneratedBy" xml:space="preserve">
+    <value>Generated by HandwerkerRechner</value>
+  </data>
+  <data name="ShareMaterialList" xml:space="preserve">
+    <value>Share Material List</value>
+  </data>
+  <data name="PdfExportSuccess" xml:space="preserve">
+    <value>PDF exported successfully!</value>
+  </data>
+  <data name="PdfExportFailed" xml:space="preserve">
+    <value>PDF export failed.</value>
+  </data>
+
+  <!-- Purchase All Categories Dialog -->
+  <data name="AlreadyUnlocked" xml:space="preserve">
+    <value>Already unlocked</value>
+  </data>
+  <data name="AlreadyUnlockedMessage" xml:space="preserve">
+    <value>You have already unlocked all categories!</value>
+  </data>
+  <data name="UnlockAllCategoriesTitle" xml:space="preserve">
+    <value>Unlock all categories</value>
+  </data>
+  <data name="UnlockAllCategoriesMessage" xml:space="preserve">
+    <value>Unlock all 5 premium categories for only 3.99 €?
+
+✓ Drywall (Framework, Panels, Filler)
+✓ Electrical (Voltage drop, Power costs, Ohm)
+✓ Metal (Weight, Thread taps)
+✓ Garden (Paving, Soil, Pond)
+✓ Roof &amp; Solar (Pitch, Tiles, Yield)
+
+✓ Ads will be permanently removed!
+
+Save 0.96 € compared to individual purchase!</value>
+  </data>
+  <data name="BuyAll" xml:space="preserve">
+    <value>Buy all (3.99 €)</value>
+  </data>
+  <data name="PurchaseSuccessful" xml:space="preserve">
+    <value>Purchase successful!</value>
+  </data>
+  <data name="PurchaseSuccessfulMessage" xml:space="preserve">
+    <value>All categories have been unlocked. Thank you for your purchase!</value>
+  </data>
+
+  <!-- Calculator Input Fields - Wallpaper -->
+  <data name="WallLengthSemantic" xml:space="preserve">
+    <value>Enter wall length in meters</value>
+  </data>
+  <data name="RollLengthSemantic" xml:space="preserve">
+    <value>Enter roll length in meters</value>
+  </data>
+  <data name="RollWidthSemantic" xml:space="preserve">
+    <value>Enter roll width in centimeters</value>
+  </data>
+  <data name="PatternRepeatSemantic" xml:space="preserve">
+    <value>Enter pattern repeat in centimeters</value>
+  </data>
+  <data name="PricePerRollSemantic" xml:space="preserve">
+    <value>Enter price per wallpaper roll in euros</value>
+  </data>
+
+  <!-- Calculator Input Fields - Paint -->
+  <data name="AreaSemantic" xml:space="preserve">
+    <value>Enter area in square meters</value>
+  </data>
+  <data name="CoverageSemantic" xml:space="preserve">
+    <value>Enter paint coverage in square meters per liter</value>
+  </data>
+  <data name="CoatsSemantic" xml:space="preserve">
+    <value>Enter number of coats</value>
+  </data>
+  <data name="PricePerLiterSemantic" xml:space="preserve">
+    <value>Enter price per liter of paint in euros</value>
+  </data>
+
+  <!-- Calculator Input Fields - Flooring -->
+  <data name="BoardLengthSemantic" xml:space="preserve">
+    <value>Enter board length in centimeters</value>
+  </data>
+  <data name="BoardWidthSemantic" xml:space="preserve">
+    <value>Enter board width in centimeters</value>
+  </data>
+  <data name="PricePerBoardSemantic" xml:space="preserve">
+    <value>Enter price per board in euros</value>
+  </data>
+
+  <!-- Placeholder Examples -->
+  <data name="PlaceholderDecimal" xml:space="preserve">
+    <value>e.g. 4.5</value>
+  </data>
+  <data name="PlaceholderDecimalSmall" xml:space="preserve">
+    <value>e.g. 2.5</value>
+  </data>
+  <data name="PlaceholderDecimalLarge" xml:space="preserve">
+    <value>e.g. 10.5</value>
+  </data>
+  <data name="PlaceholderWhole" xml:space="preserve">
+    <value>e.g. 30</value>
+  </data>
+  <data name="PlaceholderWholeSmall" xml:space="preserve">
+    <value>e.g. 10</value>
+  </data>
+  <data name="PlaceholderWholeLarge" xml:space="preserve">
+    <value>e.g. 100</value>
+  </data>
+  <data name="PlaceholderPercent" xml:space="preserve">
+    <value>e.g. 10</value>
+  </data>
+  <data name="PlaceholderPercentLarge" xml:space="preserve">
+    <value>e.g. 20</value>
+  </data>
+  <data name="PlaceholderPrice" xml:space="preserve">
+    <value>e.g. 2.50</value>
+  </data>
+  <data name="PlaceholderPriceLarge" xml:space="preserve">
+    <value>e.g. 12.50</value>
+  </data>
+  <data name="PlaceholderPriceMedium" xml:space="preserve">
+    <value>e.g. 8.50</value>
+  </data>
+  <data name="PlaceholderTiny" xml:space="preserve">
+    <value>e.g. 4</value>
+  </data>
+  <data name="PlaceholderSmall" xml:space="preserve">
+    <value>e.g. 15</value>
+  </data>
+  <data name="PlaceholderMedium" xml:space="preserve">
+    <value>e.g. 50</value>
+  </data>
+  <data name="PlaceholderLarge" xml:space="preserve">
+    <value>e.g. 230</value>
+  </data>
+  <data name="PlaceholderVeryLarge" xml:space="preserve">
+    <value>e.g. 12000</value>
+  </data>
+  <data name="PlaceholderCentimeters" xml:space="preserve">
+    <value>e.g. 32</value>
+  </data>
+  <data name="PlaceholderMillimeters" xml:space="preserve">
+    <value>e.g. 5</value>
+  </data>
+  <data name="PlaceholderLiters" xml:space="preserve">
+    <value>e.g. 40</value>
+  </data>
+  <data name="PlaceholderDegrees" xml:space="preserve">
+    <value>e.g. 30</value>
+  </data>
+  <data name="PlaceholderVoltage" xml:space="preserve">
+    <value>e.g. 230</value>
+  </data>
+  <data name="PlaceholderAmpere" xml:space="preserve">
+    <value>e.g. 16</value>
+  </data>
+  <data name="PlaceholderLength" xml:space="preserve">
+    <value>e.g. 3.5</value>
+  </data>
+  <data name="PlaceholderArea" xml:space="preserve">
+    <value>e.g. 80</value>
+  </data>
+  <data name="PlaceholderCount" xml:space="preserve">
+    <value>e.g. 12</value>
+  </data>
+  <data name="PlaceholderDepth" xml:space="preserve">
+    <value>e.g. 1.5</value>
+  </data>
+  <data name="PlaceholderWidth" xml:space="preserve">
+    <value>e.g. 0.53</value>
+  </data>
+  <data name="PlaceholderOverlap" xml:space="preserve">
+    <value>e.g. 0.5</value>
+  </data>
+  <data name="PlaceholderEfficiency" xml:space="preserve">
+    <value>e.g. 20</value>
+  </data>
+  <data name="PlaceholderCrossSection" xml:space="preserve">
+    <value>e.g. 2.5</value>
+  </data>
+  <data name="PlaceholderPower" xml:space="preserve">
+    <value>e.g. 100</value>
+  </data>
+  <data name="PlaceholderHours" xml:space="preserve">
+    <value>e.g. 4</value>
+  </data>
+  <data name="PlaceholderPrice085" xml:space="preserve">
+    <value>e.g. 0.85</value>
+  </data>
+  <data name="PlaceholderPrice499" xml:space="preserve">
+    <value>e.g. 4.99</value>
+  </data>
+  <data name="PlaceholderPrice030" xml:space="preserve">
+    <value>e.g. 0.30</value>
+  </data>
+  <data name="PlaceholderDimension" xml:space="preserve">
+    <value>e.g. 50</value>
+  </data>
+  <data name="PlaceholderThickness" xml:space="preserve">
+    <value>e.g. 3</value>
+  </data>
+
+  <!-- Remove Ads (NEW Monetization Model) -->
+  <data name="RemoveAds" xml:space="preserve">
+    <value>Remove Ads</value>
+  </data>
+  <data name="RemoveAdsDescription" xml:space="preserve">
+    <value>One-time payment • Ad-free forever</value>
+  </data>
+  <data name="RemoveAdsPrice" xml:space="preserve">
+    <value>€3.99</value>
+  </data>
+  <data name="AdFree" xml:space="preserve">
+    <value>AD-FREE</value>
+  </data>
+  <data name="AdFreeTitle" xml:space="preserve">
+    <value>Ad-Free</value>
+  </data>
+  <data name="AlreadyAdFree" xml:space="preserve">
+    <value>Already ad-free</value>
+  </data>
+  <data name="AlreadyAdFreeMessage" xml:space="preserve">
+    <value>You are already using the app without ads!</value>
+  </data>
+  <data name="RemoveAdsConfirmTitle" xml:space="preserve">
+    <value>Remove Ads?</value>
+  </data>
+  <data name="RemoveAdsConfirmMessage" xml:space="preserve">
+    <value>For €3.99 you can permanently remove all ads.
+
+✓ All 18 calculators free to use
+✓ No more ad banners
+✓ One-time payment - no subscriptions!</value>
+  </data>
+  <data name="RemoveAdsPurchaseSuccessMessage" xml:space="preserve">
+    <value>Ads have been removed. Thank you for your purchase!</value>
+  </data>
+  <data name="AdsRemovedRestoredMessage" xml:space="preserve">
+    <value>Your purchase has been restored. The app is now ad-free!</value>
+  </data>
+  <data name="RemoveAdsSettingsDescription" xml:space="preserve">
+    <value>Remove all ads from the app</value>
+  </data>
+  <data name="AdFreeThanks" xml:space="preserve">
+    <value>Thank you for your purchase! You are using the ad-free version.</value>
+  </data>
+  <data name="MoreCategories" xml:space="preserve">
+    <value>More Categories</value>
+  </data>
+  <data name="RemoveAdsButton" xml:space="preserve">
+    <value>Remove Ads (€3.99)</value>
+  </data>
+  <data name="RemoveAdsSemantic" xml:space="preserve">
+    <value>Remove ads permanently for 3.99 euros</value>
+  </data>
+
+  <!-- Garden Calculator Labels -->
+  <data name="CalcPavingStones" xml:space="preserve">
+    <value>Calculate paving stones</value>
+  </data>
+  <data name="CalcSoilMulch" xml:space="preserve">
+    <value>Calculate soil/mulch</value>
+  </data>
+  <data name="CalcPondLiner" xml:space="preserve">
+    <value>Calculate pond liner</value>
+  </data>
+  <data name="LabelAreaSqm" xml:space="preserve">
+    <value>Area (m²)</value>
+  </data>
+  <data name="LabelStoneLengthCm" xml:space="preserve">
+    <value>Stone length (cm)</value>
+  </data>
+  <data name="LabelStoneWidthCm" xml:space="preserve">
+    <value>Stone width (cm)</value>
+  </data>
+  <data name="LabelJointWidthMm" xml:space="preserve">
+    <value>Joint width (mm)</value>
+  </data>
+  <data name="LabelPricePerStone" xml:space="preserve">
+    <value>Price per stone (€)</value>
+  </data>
+  <data name="LabelDepthCm" xml:space="preserve">
+    <value>Depth (cm)</value>
+  </data>
+  <data name="LabelBagLiters" xml:space="preserve">
+    <value>Bag (L)</value>
+  </data>
+  <data name="LabelPricePerBag" xml:space="preserve">
+    <value>Price per bag (€)</value>
+  </data>
+  <data name="LabelLengthM" xml:space="preserve">
+    <value>Length (m)</value>
+  </data>
+  <data name="LabelWidthM" xml:space="preserve">
+    <value>Width (m)</value>
+  </data>
+  <data name="LabelDepthM" xml:space="preserve">
+    <value>Depth (m)</value>
+  </data>
+  <data name="LabelOverlapM" xml:space="preserve">
+    <value>Overlap (m)</value>
+  </data>
+  <data name="LabelPricePerSqmEur" xml:space="preserve">
+    <value>Price per m² (€)</value>
+  </data>
+  <data name="LabelJoints" xml:space="preserve">
+    <value>Joints</value>
+  </data>
+  <data name="LabelFivePercentReserve" xml:space="preserve">
+    <value>5% Reserve</value>
+  </data>
+  <data name="LabelMulch" xml:space="preserve">
+    <value>Mulch</value>
+  </data>
+  <data name="LabelCompost" xml:space="preserve">
+    <value>Compost</value>
+  </data>
+  <data name="LabelSoilWord" xml:space="preserve">
+    <value>Soil</value>
+  </data>
+  <data name="LabelArrowDepth" xml:space="preserve">
+    <value>↕ Depth</value>
+  </data>
+  <data name="LabelOverlap" xml:space="preserve">
+    <value>Overlap</value>
+  </data>
+  <data name="LabelWater" xml:space="preserve">
+    <value>Water</value>
+  </data>
+  <data name="LabelLiner" xml:space="preserve">
+    <value>Liner</value>
+  </data>
+  <data name="ResultStonesNeeded" xml:space="preserve">
+    <value>Stones needed</value>
+  </data>
+  <data name="ResultWithReserveFivePercent" xml:space="preserve">
+    <value>With reserve (+5%)</value>
+  </data>
+  <data name="ResultVolumeNeeded" xml:space="preserve">
+    <value>Volume needed</value>
+  </data>
+  <data name="ResultBagsNeeded" xml:space="preserve">
+    <value>Bags needed</value>
+  </data>
+  <data name="ResultLinerLength" xml:space="preserve">
+    <value>Liner length</value>
+  </data>
+  <data name="ResultLinerWidth" xml:space="preserve">
+    <value>Liner width</value>
+  </data>
+  <data name="ResultLinerArea" xml:space="preserve">
+    <value>Liner area</value>
+  </data>
+  <data name="VisPavingStonesDescription" xml:space="preserve">
+    <value>Paving stones with joints laid (different shades for realism)</value>
+  </data>
+  <data name="VisSoilMulchDescription" xml:space="preserve">
+    <value>Raised bed cross-section: Layers of mulch, compost and soil</value>
+  </data>
+  <data name="VisPondLinerDescription" xml:space="preserve">
+    <value>Pond cross-section: Liner with overlap on all sides (L × W + 2× depth + 2× overlap)</value>
+  </data>
+
+  <!-- Metal Calculator Labels -->
+  <data name="CalcMetalWeight" xml:space="preserve">
+    <value>Calculate metal weight</value>
+  </data>
+  <data name="CalcCoreDrillForThread" xml:space="preserve">
+    <value>Core drill for thread</value>
+  </data>
+  <data name="LabelMetal" xml:space="preserve">
+    <value>Metal</value>
+  </data>
+  <data name="LabelProfile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="LabelDimension1Mm" xml:space="preserve">
+    <value>Dimension 1 (mm)</value>
+  </data>
+  <data name="LabelDimension2Mm" xml:space="preserve">
+    <value>Dimension 2 (mm)</value>
+  </data>
+  <data name="LabelWallThicknessHint" xml:space="preserve">
+    <value>Wall thickness (mm) - for pipes/angles</value>
+  </data>
+  <data name="LabelPricePerKg" xml:space="preserve">
+    <value>Price per kg (€)</value>
+  </data>
+  <data name="LabelThreadSize" xml:space="preserve">
+    <value>Thread size</value>
+  </data>
+  <data name="LabelWeightUpper" xml:space="preserve">
+    <value>WEIGHT</value>
+  </data>
+  <data name="ResultVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="ResultWeight" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="ResultMaterialCost" xml:space="preserve">
+    <value>Material cost</value>
+  </data>
+  <data name="ResultThread" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="ResultCoreDrill" xml:space="preserve">
+    <value>Core drill</value>
+  </data>
+  <data name="VisMetalWeightDescription" xml:space="preserve">
+    <value>Steel beam profile (I-beam) with density calculation for various metals</value>
+  </data>
+  <data name="VisCoreDrillDescription" xml:space="preserve">
+    <value>Core drill for metric ISO thread (material: steel)</value>
+  </data>
+
+  <!-- Roof and Solar Calculator Labels -->
+  <data name="CalcRoofPitch" xml:space="preserve">
+    <value>Calculate roof pitch</value>
+  </data>
+  <data name="CalcRoofTiles" xml:space="preserve">
+    <value>Calculate roof tiles</value>
+  </data>
+  <data name="CalcSolarYield" xml:space="preserve">
+    <value>Estimate solar yield</value>
+  </data>
+  <data name="LabelBaseLengthM" xml:space="preserve">
+    <value>Base length (m)</value>
+  </data>
+  <data name="LabelRiseM" xml:space="preserve">
+    <value>Rise (m)</value>
+  </data>
+  <data name="LabelRoofAreaSqm" xml:space="preserve">
+    <value>Roof area (m²)</value>
+  </data>
+  <data name="LabelTilesPerSqm" xml:space="preserve">
+    <value>Tiles per m²</value>
+  </data>
+  <data name="LabelPricePerTileEur" xml:space="preserve">
+    <value>Price per tile (€)</value>
+  </data>
+  <data name="LabelEfficiencyPercent" xml:space="preserve">
+    <value>Efficiency (%)</value>
+  </data>
+  <data name="LabelOrientation" xml:space="preserve">
+    <value>Orientation</value>
+  </data>
+  <data name="LabelTiltDegrees" xml:space="preserve">
+    <value>Tilt (°)</value>
+  </data>
+  <data name="LabelSystemCostEur" xml:space="preserve">
+    <value>System cost (€)</value>
+  </data>
+  <data name="LabelHeight" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="LabelLength" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="LabelBattens" xml:space="preserve">
+    <value>Battens</value>
+  </data>
+  <data name="LabelKwhPerYear" xml:space="preserve">
+    <value>kWh/year</value>
+  </data>
+  <data name="LabelKwp" xml:space="preserve">
+    <value>kWp</value>
+  </data>
+  <data name="ResultPitchDegrees" xml:space="preserve">
+    <value>Pitch in degrees</value>
+  </data>
+  <data name="ResultPitchPercent" xml:space="preserve">
+    <value>Pitch in percent</value>
+  </data>
+  <data name="ResultTilesNeeded" xml:space="preserve">
+    <value>Tiles needed</value>
+  </data>
+  <data name="ResultUsableArea" xml:space="preserve">
+    <value>Usable area</value>
+  </data>
+  <data name="ResultPeakPower" xml:space="preserve">
+    <value>Peak power</value>
+  </data>
+  <data name="ResultAnnualYield" xml:space="preserve">
+    <value>Annual yield (approx.)</value>
+  </data>
+  <data name="ResultSystemCost" xml:space="preserve">
+    <value>System cost</value>
+  </data>
+  <data name="ResultPaybackTime" xml:space="preserve">
+    <value>Payback time</value>
+  </data>
+  <data name="VisRoofPitchDescription" xml:space="preserve">
+    <value>Roof pitch: Right triangle with height and base length to calculate degrees (°) and percent (%)</value>
+  </data>
+  <data name="VisRoofTilesDescription" xml:space="preserve">
+    <value>Roof tiles (curved) laid on battens with staggered rows for water runoff</value>
+  </data>
+  <data name="VisSolarYieldDescription" xml:space="preserve">
+    <value>Solar system on pitched roof: Solar radiation is converted to electrical energy by PV modules (kWp = peak power)</value>
+  </data>
+
+  <data name="TabHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="TabProjects" xml:space="preserve">
+    <value>Projects</value>
+  </data>
+  <data name="TabSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+
+  <!-- Metal Types -->
+  <data name="MetalSteel" xml:space="preserve">
+    <value>Steel</value>
+  </data>
+  <data name="MetalStainlessSteel" xml:space="preserve">
+    <value>Stainless Steel</value>
+  </data>
+  <data name="MetalAluminum" xml:space="preserve">
+    <value>Aluminum</value>
+  </data>
+  <data name="MetalCopper" xml:space="preserve">
+    <value>Copper</value>
+  </data>
+  <data name="MetalBrass" xml:space="preserve">
+    <value>Brass</value>
+  </data>
+  <data name="MetalBronze" xml:space="preserve">
+    <value>Bronze</value>
+  </data>
+
+  <!-- Profile Types -->
+  <data name="ProfileRoundBar" xml:space="preserve">
+    <value>Round Bar</value>
+  </data>
+  <data name="ProfileFlatBar" xml:space="preserve">
+    <value>Flat Bar</value>
+  </data>
+  <data name="ProfileSquareBar" xml:space="preserve">
+    <value>Square Bar</value>
+  </data>
+  <data name="ProfileRoundTube" xml:space="preserve">
+    <value>Round Tube</value>
+  </data>
+  <data name="ProfileSquareTube" xml:space="preserve">
+    <value>Square Tube</value>
+  </data>
+  <data name="ProfileAngle" xml:space="preserve">
+    <value>Angle</value>
+  </data>
+
+  <!-- Orientations -->
+  <data name="OrientationNorth" xml:space="preserve">
+    <value>North</value>
+  </data>
+  <data name="OrientationNorthEast" xml:space="preserve">
+    <value>Northeast</value>
+  </data>
+  <data name="OrientationEast" xml:space="preserve">
+    <value>East</value>
+  </data>
+  <data name="OrientationSouthEast" xml:space="preserve">
+    <value>Southeast</value>
+  </data>
+  <data name="OrientationSouth" xml:space="preserve">
+    <value>South</value>
+  </data>
+  <data name="OrientationSouthWest" xml:space="preserve">
+    <value>Southwest</value>
+  </data>
+  <data name="OrientationWest" xml:space="preserve">
+    <value>West</value>
+  </data>
+  <data name="OrientationNorthWest" xml:space="preserve">
+    <value>Northwest</value>
+  </data>
+
+  <!-- Units -->
+  <data name="UnitPlates" xml:space="preserve">
+    <value>plates</value>
+  </data>
+  <data name="UnitPieces" xml:space="preserve">
+    <value>pcs.</value>
+  </data>
+
+  <!-- Settings Localization -->
+  <data name="ThemeMidnightName" xml:space="preserve">
+    <value>Midnight</value>
+  </data>
+  <data name="ThemeMidnightDesc" xml:space="preserve">
+    <value>Modern dark</value>
+  </data>
+  <data name="ThemeAuroraName" xml:space="preserve">
+    <value>Aurora</value>
+  </data>
+  <data name="ThemeAuroraDesc" xml:space="preserve">
+    <value>Vibrant neon</value>
+  </data>
+  <data name="ThemeDaylightName" xml:space="preserve">
+    <value>Daylight</value>
+  </data>
+  <data name="ThemeDaylightDesc" xml:space="preserve">
+    <value>Clean light</value>
+  </data>
+  <data name="ThemeForestName" xml:space="preserve">
+    <value>Forest</value>
+  </data>
+  <data name="ThemeForestDesc" xml:space="preserve">
+    <value>Natural green</value>
+  </data>
+  <data name="SettingsUnitSystem" xml:space="preserve">
+    <value>Unit System</value>
+  </data>
+  <data name="UnitSystemMetric" xml:space="preserve">
+    <value>Metric</value>
+  </data>
+  <data name="UnitSystemImperial" xml:space="preserve">
+    <value>Imperial</value>
+  </data>
+  <data name="SettingsPremium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="RemoveAdsFullDesc" xml:space="preserve">
+    <value>Remove all ads and enjoy the full experience</value>
+  </data>
+  <data name="AdFreeConfirmation" xml:space="preserve">
+    <value>You are enjoying the ad-free experience. Thank you!</value>
+  </data>
+  <data name="SettingsAbout" xml:space="preserve">
+    <value>About</value>
+  </data>
+
+  <!-- Category Descriptions (Home Page) -->
+  <data name="CalcTilesDesc" xml:space="preserve">
+    <value>Calculate tiles, grout &amp; adhesive</value>
+  </data>
+  <data name="CalcWallpaperDesc" xml:space="preserve">
+    <value>Rolls, paste &amp; cutting waste</value>
+  </data>
+  <data name="CalcPaintDesc" xml:space="preserve">
+    <value>Paint quantity &amp; coverage</value>
+  </data>
+  <data name="CalcFlooringDesc" xml:space="preserve">
+    <value>Laminate, parquet &amp; underlay</value>
+  </data>
+  <data name="CategoryDrywallDesc" xml:space="preserve">
+    <value>Boards, profiles &amp; screws</value>
+  </data>
+  <data name="CategoryElectricalDesc" xml:space="preserve">
+    <value>Cable, fuses &amp; costs</value>
+  </data>
+  <data name="CategoryMetalDesc" xml:space="preserve">
+    <value>Weight &amp; material calculator</value>
+  </data>
+  <data name="CategoryGardenDesc" xml:space="preserve">
+    <value>Soil, lawn &amp; fencing</value>
+  </data>
+  <data name="CategoryRoofSolarDesc" xml:space="preserve">
+    <value>Roof tiles &amp; solar yield</value>
+  </data>
+
+  <!-- App Title -->
+  <data name="AppTitle" xml:space="preserve">
+    <value>HandwerkerRechner</value>
+  </data>
+
+  <!-- Calculator Type Names -->
+  <data name="CalcTypeTiles" xml:space="preserve">
+    <value>Tiles</value>
+  </data>
+  <data name="CalcTypeWallpaper" xml:space="preserve">
+    <value>Wallpaper</value>
+  </data>
+  <data name="CalcTypePaint" xml:space="preserve">
+    <value>Paint</value>
+  </data>
+  <data name="CalcTypeFlooring" xml:space="preserve">
+    <value>Flooring</value>
+  </data>
+  <data name="CalcTypeDrywallFraming" xml:space="preserve">
+    <value>Drywall</value>
+  </data>
+  <data name="CalcTypeBaseboard" xml:space="preserve">
+    <value>Baseboard</value>
+  </data>
+  <data name="CalcTypeVoltageDrop" xml:space="preserve">
+    <value>Voltage Drop</value>
+  </data>
+  <data name="CalcTypePowerCost" xml:space="preserve">
+    <value>Power Cost</value>
+  </data>
+  <data name="CalcTypeOhmsLaw" xml:space="preserve">
+    <value>Ohm's Law</value>
+  </data>
+  <data name="CalcTypeMetalWeight" xml:space="preserve">
+    <value>Metal Weight</value>
+  </data>
+  <data name="CalcTypeThreadDrill" xml:space="preserve">
+    <value>Thread/Drill</value>
+  </data>
+  <data name="CalcTypePaving" xml:space="preserve">
+    <value>Paving</value>
+  </data>
+  <data name="CalcTypeSoil" xml:space="preserve">
+    <value>Soil/Mulch</value>
+  </data>
+  <data name="CalcTypePondLiner" xml:space="preserve">
+    <value>Pond Liner</value>
+  </data>
+  <data name="CalcTypeRoofPitch" xml:space="preserve">
+    <value>Roof Pitch</value>
+  </data>
+  <data name="CalcTypeRoofTiles" xml:space="preserve">
+    <value>Roof Tiles</value>
+  </data>
+  <data name="CalcTypeSolarYield" xml:space="preserve">
+    <value>Solar Yield</value>
+  </data>
+
+  <!-- Project Management -->
+  <data name="ProjectDeleteFailed" xml:space="preserve">
+    <value>Failed to delete project.</value>
+  </data>
+  <data name="DeleteProjectTitle" xml:space="preserve">
+    <value>Delete Project</value>
+  </data>
+
+  <!-- Units -->
+  <data name="UnitSquareMeters" xml:space="preserve">
+    <value>m²</value>
+  </data>
+  <data name="UnitLiters" xml:space="preserve">
+    <value>liters</value>
+  </data>
+  <data name="UnitRolls" xml:space="preserve">
+    <value>rolls</value>
+  </data>
+  <data name="UnitBoards" xml:space="preserve">
+    <value>boards</value>
+  </data>
+  <data name="UnitKilograms" xml:space="preserve">
+    <value>kg</value>
+  </data>
+  <data name="UnitMeters" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="UnitVolts" xml:space="preserve">
+    <value>V</value>
+  </data>
+  <data name="UnitAmpere" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="UnitWatts" xml:space="preserve">
+    <value>W</value>
+  </data>
+  <data name="UnitOhms" xml:space="preserve">
+    <value>&#937;</value>
+  </data>
+  <data name="UnitDegrees" xml:space="preserve">
+    <value>°</value>
+  </data>
+  <data name="UnitPercent" xml:space="preserve">
+    <value>%</value>
+  </data>
+
+  <!-- Unit Converter Settings -->
+  <data name="UnitSystem" xml:space="preserve">
+    <value>Unit System</value>
+  </data>
+  <data name="UnitSystemChanged" xml:space="preserve">
+    <value>Unit system changed</value>
+  </data>
+  <data name="UnitSystemChangedMessage" xml:space="preserve">
+    <value>All calculators now use {0}.</value>
+  </data>
+
+  <!-- Info Help Texts -->
+  <data name="InfoWaste" xml:space="preserve">
+    <value>Waste</value>
+  </data>
+  <data name="InfoWasteDescription" xml:space="preserve">
+    <value>Waste is the additional material needed due to cutting and scrap.
+
+Recommended values:
+&#8226; Tiles, panels: 5-10%
+&#8226; Laminate, boards: 10-15%
+&#8226; Patterned wallpaper: 15-20%
+
+Plan for more waste in complex rooms (bay windows, niches).</value>
+  </data>
+  <data name="InfoRapport" xml:space="preserve">
+    <value>Pattern Repeat</value>
+  </data>
+  <data name="InfoRapportDescription" xml:space="preserve">
+    <value>The pattern repeat is the distance after which the wallpaper pattern repeats itself.
+
+Example:
+&#8226; Repeat 0 cm = no pattern (solid color)
+&#8226; Repeat 32 cm = pattern repeats every 32 cm
+
+The larger the repeat, the more waste occurs, as the strips must be cut to match.</value>
+  </data>
+  <data name="InfoVoltageDrop" xml:space="preserve">
+    <value>Voltage Drop</value>
+  </data>
+  <data name="InfoVoltageDropDescription" xml:space="preserve">
+    <value>Voltage drop is the voltage loss in a cable due to its electrical resistance.
+
+Maximum allowed (per VDE 0100):
+&#8226; Lighting: 3%
+&#8226; Outlets: 3%
+&#8226; Motors: 5%
+
+If the limit is exceeded, a thicker cross-section must be chosen.</value>
+  </data>
+  <data name="InfoCrossSection" xml:space="preserve">
+    <value>Cable Cross-Section</value>
+  </data>
+  <data name="InfoCrossSectionDescription" xml:space="preserve">
+    <value>The cross-section indicates the thickness of the conductor in mm².
+
+Typical values:
+&#8226; 1.5 mm²: Lighting (max. 16A)
+&#8226; 2.5 mm²: Outlets (max. 20A)
+&#8226; 4 mm²: Stove, water heater
+&#8226; 6 mm²: Heavy consumers
+
+The longer the cable, the thicker the cross-section should be.</value>
+  </data>
+  <data name="InfoCoverage" xml:space="preserve">
+    <value>Coverage</value>
+  </data>
+  <data name="InfoCoverageDescription" xml:space="preserve">
+    <value>Coverage indicates how much area can be painted with 1 liter of paint.
+
+Typical values:
+&#8226; Smooth wall paint: 6-8 m²/L
+&#8226; Textured wall paint: 4-6 m²/L
+&#8226; Emulsion paint: 7-10 m²/L
+&#8226; Latex paint: 5-7 m²/L
+
+Coverage decreases on rough surfaces!</value>
+  </data>
+
+  <!-- Calculation History -->
+  <data name="CalculationHistory" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="RecentCalculations" xml:space="preserve">
+    <value>Recent Calculations</value>
+  </data>
+  <data name="NoHistoryYet" xml:space="preserve">
+    <value>No calculations yet</value>
+  </data>
+  <data name="HistoryDescription" xml:space="preserve">
+    <value>Your last 10 calculations are saved automatically.</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+  </data>
+  <data name="ClearHistoryConfirm" xml:space="preserve">
+    <value>Clear history?</value>
+  </data>
+  <data name="ClearHistoryMessage" xml:space="preserve">
+    <value>Do you really want to delete all saved calculations?</value>
+  </data>
+  <data name="LoadCalculation" xml:space="preserve">
+    <value>Load Calculation</value>
+  </data>
+
+  <!-- Electrical Calculator Labels -->
+  <data name="VoltageDropCalculator" xml:space="preserve">
+    <value>Calculate voltage drop</value>
+  </data>
+  <data name="PowerCostCalculator" xml:space="preserve">
+    <value>Calculate power cost</value>
+  </data>
+  <data name="OhmsLawCalculator" xml:space="preserve">
+    <value>Ohm's Law</value>
+  </data>
+  <data name="Voltage" xml:space="preserve">
+    <value>Voltage (V)</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Current (A)</value>
+  </data>
+  <data name="CableLength" xml:space="preserve">
+    <value>Cable length (m)</value>
+  </data>
+  <data name="CrossSection" xml:space="preserve">
+    <value>Cross-section (mm²)</value>
+  </data>
+  <data name="CopperCable" xml:space="preserve">
+    <value>Copper cable</value>
+  </data>
+  <data name="Power" xml:space="preserve">
+    <value>Power (W)</value>
+  </data>
+  <data name="HoursPerDay" xml:space="preserve">
+    <value>hrs/day</value>
+  </data>
+  <data name="PricePerKwh" xml:space="preserve">
+    <value>€/kWh</value>
+  </data>
+  <data name="EnterAtLeastTwoValues" xml:space="preserve">
+    <value>Enter at least 2 values</value>
+  </data>
+  <data name="VoltageU" xml:space="preserve">
+    <value>Voltage U (V)</value>
+  </data>
+  <data name="CurrentI" xml:space="preserve">
+    <value>Current I (A)</value>
+  </data>
+  <data name="ResistanceR" xml:space="preserve">
+    <value>Resistance R (&#937;)</value>
+  </data>
+  <data name="PowerP" xml:space="preserve">
+    <value>Power P (W)</value>
+  </data>
+  <data name="CableLengthLabel" xml:space="preserve">
+    <value>Cable length</value>
+  </data>
+  <data name="VoltageDropTooHigh" xml:space="preserve">
+    <value>Voltage drop too high!</value>
+  </data>
+  <data name="VoltageDropOverCable" xml:space="preserve">
+    <value>Voltage drop over cable run (max. 3% recommended)</value>
+  </data>
+  <data name="PowerMeter" xml:space="preserve">
+    <value>POWER METER</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>ACTIVE</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>COST</value>
+  </data>
+  <data name="PowerConsumptionAndCosts" xml:space="preserve">
+    <value>Power consumption and running costs per day/month/year</value>
+  </data>
+  <data name="Resistance" xml:space="preserve">
+    <value>RESISTANCE</value>
+  </data>
+  <data name="OhmsLawDescription" xml:space="preserve">
+    <value>Ohm's Law: Relationship between voltage (U), current (I), resistance (R) and power (P)</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>Percentage</value>
+  </data>
+  <data name="StatusMaxThreePercent" xml:space="preserve">
+    <value>Status (max. 3%)</value>
+  </data>
+  <data name="ConsumptionPerDay" xml:space="preserve">
+    <value>Consumption/day</value>
+  </data>
+  <data name="CostPerDay" xml:space="preserve">
+    <value>Cost/day</value>
+  </data>
+  <data name="CostPerMonth" xml:space="preserve">
+    <value>Cost/month</value>
+  </data>
+  <data name="CostPerYear" xml:space="preserve">
+    <value>Cost/year</value>
+  </data>
+  <data name="VoltageULabel" xml:space="preserve">
+    <value>Voltage U</value>
+  </data>
+  <data name="CurrentILabel" xml:space="preserve">
+    <value>Current I</value>
+  </data>
+  <data name="ResistanceRLabel" xml:space="preserve">
+    <value>Resistance R</value>
+  </data>
+  <data name="PowerPLabel" xml:space="preserve">
+    <value>Power P</value>
+  </data>
+
+  <!-- Drywall Calculator Labels -->
+  <data name="DrywallCalculator" xml:space="preserve">
+    <value>Drywall Calculator</value>
+  </data>
+  <data name="Studs" xml:space="preserve">
+    <value>Studs</value>
+  </data>
+  <data name="Plates" xml:space="preserve">
+    <value>Drywall Panels</value>
+  </data>
+  <data name="Compound" xml:space="preserve">
+    <value>Joint Compound</value>
+  </data>
+  <data name="PricePerSqm" xml:space="preserve">
+    <value>Price per m² (€)</value>
+  </data>
+  <data name="DoublePlated" xml:space="preserve">
+    <value>Double layered</value>
+  </data>
+  <data name="WallDimensions" xml:space="preserve">
+    <value>Wall Dimensions</value>
+  </data>
+  <data name="EnterPricePerSqm" xml:space="preserve">
+    <value>Enter the price per m² to calculate total cost.</value>
+  </data>
+  <data name="CWProfilesStuds" xml:space="preserve">
+    <value>CW profiles (studs)</value>
+  </data>
+  <data name="UWProfilesTopBottom" xml:space="preserve">
+    <value>UW profiles (top/bottom)</value>
+  </data>
+  <data name="DrywallSheets" xml:space="preserve">
+    <value>Drywall sheets</value>
+  </data>
+  <data name="Screws" xml:space="preserve">
+    <value>Drywall screws</value>
+  </data>
+  <data name="StudsDescription" xml:space="preserve">
+    <value>Framing: CW profiles (vertical, 62.5cm spacing) with UW profiles (top/bottom) + drywall sheet + screws</value>
+  </data>
+  <data name="PlatesSize" xml:space="preserve">
+    <value>Panels: 250×125 cm standard</value>
+  </data>
+  <data name="LengthM" xml:space="preserve">
+    <value>Length (m)</value>
+  </data>
+  <data name="HeightM" xml:space="preserve">
+    <value>Height (m)</value>
+  </data>
+
+  <!-- PDF Export -->
+  <data name="ExportPdf" xml:space="preserve">
+    <value>Export as PDF</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="MaterialList" xml:space="preserve">
+    <value>Material List</value>
+  </data>
+  <data name="GeneratedBy" xml:space="preserve">
+    <value>Generated by HandwerkerRechner</value>
+  </data>
+  <data name="ShareMaterialList" xml:space="preserve">
+    <value>Share Material List</value>
+  </data>
+  <data name="PdfExportSuccess" xml:space="preserve">
+    <value>PDF exported successfully!</value>
+  </data>
+  <data name="PdfExportFailed" xml:space="preserve">
+    <value>PDF export failed.</value>
+  </data>
+
+  <!-- Semantic Properties for Accessibility -->
+  <data name="GoBackSemantic" xml:space="preserve">
+    <value>Go back to previous page</value>
+  </data>
+  <data name="OpenSettingsSemantic" xml:space="preserve">
+    <value>Open settings</value>
+  </data>
+  <data name="OpenProjectsSemantic" xml:space="preserve">
+    <value>Open saved projects</value>
+  </data>
+  <data name="CalculateButtonSemantic" xml:space="preserve">
+    <value>Start calculation</value>
+  </data>
+  <data name="ResetButtonSemantic" xml:space="preserve">
+    <value>Reset inputs</value>
+  </data>
+  <data name="SaveProjectButtonSemantic" xml:space="preserve">
+    <value>Save calculation as project</value>
+  </data>
+  <data name="FeedbackButtonSemantic" xml:space="preserve">
+    <value>Send feedback via email</value>
+  </data>
+  <data name="RestorePurchasesSemantic" xml:space="preserve">
+    <value>Restore previous purchases</value>
+  </data>
+  <data name="LoadProjectSemantic" xml:space="preserve">
+    <value>Open project</value>
+  </data>
+  <data name="DeleteProjectSemantic" xml:space="preserve">
+    <value>Delete project</value>
+  </data>
+  <data name="RoomLengthSemantic" xml:space="preserve">
+    <value>Enter room length in meters</value>
+  </data>
+  <data name="RoomWidthSemantic" xml:space="preserve">
+    <value>Enter room width in meters</value>
+  </data>
+  <data name="RoomHeightSemantic" xml:space="preserve">
+    <value>Enter room height in meters</value>
+  </data>
+  <data name="TileLengthSemantic" xml:space="preserve">
+    <value>Enter tile length in centimeters</value>
+  </data>
+  <data name="TileWidthSemantic" xml:space="preserve">
+    <value>Enter tile width in centimeters</value>
+  </data>
+  <data name="WasteSemantic" xml:space="preserve">
+    <value>Enter waste in percent</value>
+  </data>
+  <data name="PricePerTileSemantic" xml:space="preserve">
+    <value>Enter price per tile in euros</value>
+  </data>
+  <data name="WallHeightSemantic" xml:space="preserve">
+    <value>Enter wall height in meters</value>
+  </data>
+  <data name="PricePerSqmSemantic" xml:space="preserve">
+    <value>Enter price per square meter in euros</value>
+  </data>
+  <data name="VoltageSemantic" xml:space="preserve">
+    <value>Enter voltage in volts</value>
+  </data>
+  <data name="CurrentSemantic" xml:space="preserve">
+    <value>Enter current in amperes</value>
+  </data>
+  <data name="CableLengthSemantic" xml:space="preserve">
+    <value>Enter cable length in meters</value>
+  </data>
+  <data name="CrossSectionSemantic" xml:space="preserve">
+    <value>Enter cable cross-section in square millimeters</value>
+  </data>
+  <data name="PowerSemantic" xml:space="preserve">
+    <value>Enter power in watts</value>
+  </data>
+  <data name="HoursPerDaySemantic" xml:space="preserve">
+    <value>Enter operating hours per day</value>
+  </data>
+  <data name="PricePerKwhSemantic" xml:space="preserve">
+    <value>Enter electricity price per kilowatt hour in euros</value>
+  </data>
+  <data name="CategoryTilesSemantic" xml:space="preserve">
+    <value>Open tile calculator</value>
+  </data>
+  <data name="CategoryWallpaperSemantic" xml:space="preserve">
+    <value>Open wallpaper calculator</value>
+  </data>
+  <data name="CategoryPaintSemantic" xml:space="preserve">
+    <value>Open paint calculator</value>
+  </data>
+  <data name="CategoryFlooringSemantic" xml:space="preserve">
+    <value>Open flooring calculator</value>
+  </data>
+  <data name="CategoryDrywallSemantic" xml:space="preserve">
+    <value>Open drywall category</value>
+  </data>
+  <data name="CategoryElectricalSemantic" xml:space="preserve">
+    <value>Open electrical category</value>
+  </data>
+  <data name="CategoryMetalSemantic" xml:space="preserve">
+    <value>Open metal category</value>
+  </data>
+  <data name="CategoryGardenSemantic" xml:space="preserve">
+    <value>Open garden category</value>
+  </data>
+  <data name="CategoryRoofSolarSemantic" xml:space="preserve">
+    <value>Open roof and solar category</value>
+  </data>
+  <data name="SelectThemeVividSemantic" xml:space="preserve">
+    <value>Select Vivid theme</value>
+  </data>
+  <data name="SelectThemeClassicSemantic" xml:space="preserve">
+    <value>Select Classic theme</value>
+  </data>
+  <data name="SelectThemeGlassDarkSemantic" xml:space="preserve">
+    <value>Select Glass Dark theme</value>
+  </data>
+  <data name="SelectThemeSoftLightSemantic" xml:space="preserve">
+    <value>Select Soft Light theme</value>
+  </data>
+  <data name="SelectLanguageGermanSemantic" xml:space="preserve">
+    <value>Switch language to German</value>
+  </data>
+  <data name="SelectLanguageEnglishSemantic" xml:space="preserve">
+    <value>Switch language to English</value>
+  </data>
+  <data name="SelectLanguageSpanishSemantic" xml:space="preserve">
+    <value>Switch language to Spanish</value>
+  </data>
+  <data name="SelectLanguageFrenchSemantic" xml:space="preserve">
+    <value>Switch language to French</value>
+  </data>
+  <data name="SelectLanguageItalianSemantic" xml:space="preserve">
+    <value>Switch language to Italian</value>
+  </data>
+  <data name="SelectLanguagePortugueseSemantic" xml:space="preserve">
+    <value>Switch language to Portuguese</value>
+  </data>
+  <data name="SelectMetricSemantic" xml:space="preserve">
+    <value>Select metric unit system</value>
+  </data>
+  <data name="SelectImperialSemantic" xml:space="preserve">
+    <value>Select imperial unit system</value>
+  </data>
+  <data name="PurchasePremiumSemantic" xml:space="preserve">
+    <value>Purchase premium version</value>
+  </data>
+  <data name="PurchaseAllCategoriesSemantic" xml:space="preserve">
+    <value>Purchase all categories for 3.99 euros</value>
+  </data>
+
+  <!-- History & Cost Labels (Localized) -->
+  <data name="HistoryThreadSize" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="CableCostLabel" xml:space="preserve">
+    <value>Cable cost</value>
+  </data>
+  <data name="HistoryHoursPerDay" xml:space="preserve">
+    <value>h/day</value>
+  </data>
+  <data name="HistorySoilDepth" xml:space="preserve">
+    <value>{0} m², {1} cm deep</value>
+  </data>
+  <data name="HistoryYears" xml:space="preserve">
+    <value>years</value>
+  </data>
+  <data name="HistoryRoofPitch" xml:space="preserve">
+    <value>Span {0}m, Height {1}m</value>
+  </data>
+  <data name="HistoryRoofArea" xml:space="preserve">
+    <value>roof area</value>
+  </data>
+  <data name="HistoryDoubleLayered" xml:space="preserve">
+    <value>double layered</value>
+  </data>
+  <data name="HistoryWallHeight" xml:space="preserve">
+    <value>{0} m wall, {1} m height</value>
+  </data>
+  <data name="HistoryPaintCoats" xml:space="preserve">
+    <value>{0} m², {1}x coat</value>
+  </data>
+</root>

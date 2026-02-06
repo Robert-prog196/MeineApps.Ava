@@ -1,0 +1,261 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:models="using:ZeitManager.Models"
+             xmlns:views="using:ZeitManager.Views"
+             xmlns:controls="using:MeineApps.UI.Controls"
+             x:Class="ZeitManager.Views.AlarmView"
+             x:DataType="vm:AlarmViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Text="{Binding TitleText}" Classes="HeadlineMedium"
+               Margin="16,16,16,8" />
+
+    <!-- Toggle Bar: Alarm | Shift Schedule -->
+    <Border Grid.Row="1" Margin="16,0,16,8">
+      <Grid ColumnDefinitions="*,*" Height="44">
+        <Button Grid.Column="0" Classes="Primary" Content="{Binding TitleText}"
+                IsVisible="{Binding !IsShiftScheduleMode}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                CornerRadius="8,0,0,8" Padding="8,4"
+                Command="{Binding ToggleViewModeCommand}" />
+        <Button Grid.Column="0" Classes="Outlined" Content="{Binding TitleText}"
+                IsVisible="{Binding IsShiftScheduleMode}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                CornerRadius="8,0,0,8" Padding="8,4"
+                Command="{Binding ToggleViewModeCommand}" />
+        <Button Grid.Column="1" Classes="Primary" Content="{Binding ShiftText}"
+                IsVisible="{Binding IsShiftScheduleMode}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                CornerRadius="0,8,8,0" Padding="8,4"
+                Command="{Binding ToggleViewModeCommand}" />
+        <Button Grid.Column="1" Classes="Outlined" Content="{Binding ShiftText}"
+                IsVisible="{Binding !IsShiftScheduleMode}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                CornerRadius="0,8,8,0" Padding="8,4"
+                Command="{Binding ToggleViewModeCommand}" />
+      </Grid>
+    </Border>
+
+    <!-- Alarm Content -->
+    <Panel Grid.Row="2" IsVisible="{Binding !IsShiftScheduleMode}">
+
+      <!-- Empty State -->
+      <StackPanel IsVisible="{Binding !HasAlarms}"
+                  VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+        <mi:MaterialIcon Kind="AlarmOff" Width="64" Height="64"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding NoAlarmsText}" Classes="TitleMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding CreateAlarmText}" Classes="BodyMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" TextWrapping="Wrap"
+                   TextAlignment="Center" />
+      </StackPanel>
+
+      <!-- Alarm List -->
+      <ScrollViewer IsVisible="{Binding HasAlarms}">
+        <ItemsControl ItemsSource="{Binding Alarms}" Margin="16,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:AlarmItem">
+              <Border Classes="Card" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                  <!-- Alarm Icon -->
+                  <Panel Grid.Column="0" Margin="0,0,12,0" VerticalAlignment="Center">
+                    <mi:MaterialIcon Kind="Alarm" Width="28" Height="28"
+                                     Foreground="{DynamicResource PrimaryBrush}"
+                                     IsVisible="{Binding IsEnabled}" />
+                    <mi:MaterialIcon Kind="AlarmOff" Width="28" Height="28"
+                                     Foreground="{DynamicResource TextMutedBrush}"
+                                     IsVisible="{Binding !IsEnabled}" />
+                  </Panel>
+
+                  <!-- Alarm Info -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding TimeFormatted}" FontSize="28" FontWeight="Light"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding Name}" FontSize="13"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="{Binding RepeatDaysFormatted}" FontSize="12"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding RepeatDaysFormatted, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                  </StackPanel>
+
+                  <!-- Toggle -->
+                  <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsEnabled}"
+                                VerticalAlignment="Center" Margin="8,0"
+                                Command="{Binding $parent[ItemsControl].((vm:AlarmViewModel)DataContext).ToggleAlarmCommand}"
+                                CommandParameter="{Binding}" />
+
+                  <!-- Actions -->
+                  <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                              VerticalAlignment="Center">
+                    <Button Classes="Text" MinWidth="48" MinHeight="48" Padding="6"
+                            Command="{Binding $parent[ItemsControl].((vm:AlarmViewModel)DataContext).EditAlarmCommand}"
+                            CommandParameter="{Binding}">
+                      <mi:MaterialIcon Kind="Pencil" Width="18" Height="18" />
+                    </Button>
+                    <Button Classes="Text" MinWidth="48" MinHeight="48" Padding="6"
+                            Command="{Binding $parent[ItemsControl].((vm:AlarmViewModel)DataContext).DeleteAlarmCommand}"
+                            CommandParameter="{Binding}">
+                      <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                       Foreground="{DynamicResource ErrorBrush}" />
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+      <!-- FAB: New Alarm -->
+      <Button Classes="Primary"
+              Command="{Binding NewAlarmCommand}"
+              IsVisible="{Binding !IsEditMode}"
+              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0,0,24,24" Width="56" Height="56"
+              CornerRadius="28" Padding="0">
+        <mi:MaterialIcon Kind="Plus" Width="28" Height="28" />
+      </Button>
+
+    </Panel>
+
+    <!-- Shift Schedule View -->
+    <Panel Grid.Row="2" IsVisible="{Binding IsShiftScheduleMode}">
+      <views:ShiftScheduleView DataContext="{Binding ShiftScheduleViewModel}" />
+    </Panel>
+
+    <!-- Alarm Editor Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsEditMode}"
+            Background="#80000000">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Classes="Card" Margin="16,32"
+                VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                MaxWidth="450">
+          <StackPanel Spacing="16">
+
+            <!-- Editor Title -->
+            <TextBlock Text="{Binding NewAlarmText}" Classes="HeadlineMedium" />
+
+            <!-- Time Picker (Drum Wheel) -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+              <StackPanel Spacing="2">
+                <controls:WheelPicker Value="{Binding AlarmHour}" Minimum="0" Maximum="23" FormatString="D2" />
+                <TextBlock Text="{Binding HoursShortText}" Classes="Caption" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+              </StackPanel>
+              <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
+              <StackPanel Spacing="2">
+                <controls:WheelPicker Value="{Binding AlarmMinute}" Minimum="0" Maximum="59" FormatString="D2" />
+                <TextBlock Text="{Binding MinutesShortText}" Classes="Caption" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Alarm Name -->
+            <TextBox Text="{Binding AlarmName, Mode=TwoWay}"
+                     Watermark="{Binding AlarmNamePlaceholderText}" />
+
+            <!-- Weekday Toggles -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding RepeatText}" Classes="TitleSmall"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+              <WrapPanel Orientation="Horizontal">
+                <Button Classes="Outlined Small" Content="{Binding MondayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Monday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding TuesdayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Tuesday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding WednesdayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Wednesday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding ThursdayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Thursday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding FridayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Friday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding SaturdayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Saturday"
+                        Margin="0,0,4,4" />
+                <Button Classes="Outlined Small" Content="{Binding SundayShortText}"
+                        Command="{Binding ToggleDayCommand}" CommandParameter="Sunday"
+                        Margin="0,0,4,4" />
+              </WrapPanel>
+            </StackPanel>
+
+            <!-- Sound Selection -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding AlarmSoundText}" Classes="TitleSmall"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableSounds}"
+                          SelectedValue="{Binding SelectedAlarmTone}"
+                          SelectedValueBinding="{Binding Id}"
+                          DisplayMemberBinding="{Binding Name}"
+                          HorizontalAlignment="Stretch" />
+                <Button Grid.Column="1" Classes="Outlined" MinWidth="48" MinHeight="48" Padding="8"
+                        Command="{Binding PreviewSoundCommand}"
+                        ToolTip.Tip="{Binding TestText}">
+                  <mi:MaterialIcon Kind="Play" Width="20" Height="20" />
+                </Button>
+              </Grid>
+            </StackPanel>
+
+            <!-- Vibrate Toggle -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <mi:MaterialIcon Grid.Column="0" Kind="Vibrate" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               VerticalAlignment="Center" Margin="0,0,8,0" />
+              <TextBlock Grid.Column="1" Text="{Binding VibrateText}" Classes="BodyMedium"
+                         VerticalAlignment="Center" />
+              <ToggleSwitch Grid.Column="2" IsChecked="{Binding Vibrate, Mode=TwoWay}" />
+            </Grid>
+
+            <!-- Dialog Buttons -->
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="Text" Content="{Binding CancelText}"
+                      Command="{Binding CancelEditCommand}" />
+              <Button Classes="Primary" Content="{Binding SaveText}"
+                      Command="{Binding SaveAlarmCommand}" />
+            </StackPanel>
+
+          </StackPanel>
+        </Border>
+      </ScrollViewer>
+    </Border>
+
+    <!-- Delete Confirmation Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsDeleteConfirmVisible}"
+            Background="#80000000">
+      <Border Classes="Card" Margin="32"
+              VerticalAlignment="Center" HorizontalAlignment="Stretch"
+              MaxWidth="350">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeleteMessageText}" Classes="BodyMedium"
+                     TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="Text" Content="{Binding NoText}"
+                    Command="{Binding CancelDeleteAlarmCommand}" />
+            <Button Classes="Primary" Content="{Binding YesText}"
+                    Command="{Binding ConfirmDeleteAlarmCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

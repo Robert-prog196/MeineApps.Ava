@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels"
+             xmlns:models="using:HandwerkerRechner.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerRechner.Views.ProjectsView"
+             x:DataType="vm:ProjectsViewModel">
+
+  <Grid RowDefinitions="Auto,*" Margin="16">
+
+    <!-- Header -->
+    <TextBlock Grid.Row="0"
+               Text="{loc:Translate MyProjects}"
+               FontSize="24" FontWeight="Bold"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               Margin="0,8,0,16" />
+
+    <!-- Content -->
+    <Panel Grid.Row="1">
+
+      <!-- Loading Indicator -->
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding IsLoading}">
+        <ProgressBar IsIndeterminate="True"
+                     Width="120"
+                     HorizontalAlignment="Center" />
+      </StackPanel>
+
+      <!-- Empty State -->
+      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Spacing="12"
+                  IsVisible="{Binding ShowEmptyState}">
+        <mi:MaterialIcon Kind="FolderOpen" Width="64" Height="64"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+        <TextBlock Text="{loc:Translate NoProjectsSaved}"
+                   FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   HorizontalAlignment="Center" />
+        <TextBlock Text="{loc:Translate SaveProjectsDescription}"
+                   FontSize="13"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" />
+      </StackPanel>
+
+      <!-- Project List -->
+      <ScrollViewer IsVisible="{Binding HasProjects}">
+        <ItemsControl ItemsSource="{Binding Projects}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:Project">
+              <Border Classes="Card" Margin="0,0,0,12" CornerRadius="12">
+                <Grid ColumnDefinitions="*,Auto">
+
+                  <!-- Project Info (Clickable) -->
+                  <Button Grid.Column="0"
+                          Command="{Binding $parent[UserControl].((vm:ProjectsViewModel)DataContext).LoadProjectCommand}"
+                          CommandParameter="{Binding}"
+                          Background="Transparent" BorderThickness="0"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          Padding="16" CornerRadius="12">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="{Binding Name}"
+                                 FontSize="16" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding DisplayName}"
+                                 FontSize="13"
+                                 Foreground="{DynamicResource PrimaryBrush}" />
+                      <TextBlock Text="{Binding Description}"
+                                 FontSize="13"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 TextTrimming="CharacterEllipsis"
+                                 MaxLines="2" />
+                      <TextBlock Text="{Binding LastModifiedDisplay}"
+                                 FontSize="11"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Button>
+
+                  <!-- Delete Button -->
+                  <Button Grid.Column="1"
+                          Command="{Binding $parent[UserControl].((vm:ProjectsViewModel)DataContext).DeleteProjectCommand}"
+                          CommandParameter="{Binding}"
+                          Classes="Text"
+                          VerticalAlignment="Top"
+                          Padding="12"
+                          Margin="0,4,4,0">
+                    <mi:MaterialIcon Kind="Delete" Width="20" Height="20"
+                                     Foreground="{DynamicResource TextMutedBrush}" />
+                  </Button>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+    </Panel>
+
+    <!-- Delete Confirmation Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="2"
+            ZIndex="100"
+            Background="#80000000"
+            IsVisible="{Binding ShowDeleteConfirmation}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <mi:MaterialIcon Kind="AlertCircleOutline" Width="48" Height="48"
+                           Foreground="{DynamicResource ErrorBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate DeleteProjectTitle}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate DeleteProjectMessage}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextAlignment="Center"
+                     TextWrapping="Wrap" />
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Grid.Column="0"
+                    Classes="Outlined"
+                    Command="{Binding CancelDeleteProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Cancel}" />
+            <Button Grid.Column="2"
+                    Classes="Primary"
+                    Command="{Binding ConfirmDeleteProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Delete}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,253 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="WorkTimePro.Views.YearOverviewView"
+             x:DataType="vm:YearOverviewViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Back + Year Navigation Header -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            Padding="8,4">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+        <Button Grid.Column="1" Classes="Text"
+                Command="{Binding PreviousYearCommand}">
+          <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding GoToCurrentYearCommand}"
+                HorizontalAlignment="Center">
+          <TextBlock Text="{Binding SelectedYear}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <Button Grid.Column="3" Classes="Text"
+                Command="{Binding NextYearCommand}">
+          <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Loading Overlay -->
+    <ProgressBar Grid.Row="1"
+                 IsIndeterminate="True"
+                 IsVisible="{Binding IsLoading}"
+                 VerticalAlignment="Top"
+                 ZIndex="100" />
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Spacing="16" Margin="16">
+
+        <!-- ==================== Year Summary Card ==================== -->
+        <Border Classes="CardElevated">
+          <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                ColumnDefinitions="*,*"
+                RowSpacing="12">
+
+            <!-- Work Time -->
+            <StackPanel Grid.Row="0" Grid.Column="0">
+              <TextBlock Text="{loc:Translate ActualTime}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding TotalWorkTimeDisplay}"
+                         FontSize="24" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <!-- Target Time -->
+            <StackPanel Grid.Row="0" Grid.Column="1">
+              <TextBlock Text="{loc:Translate TargetTime}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding TotalTargetTimeDisplay}"
+                         FontSize="24" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <!-- Balance -->
+            <StackPanel Grid.Row="1" Grid.Column="0">
+              <TextBlock Text="{loc:Translate Balance}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding TotalBalanceDisplay}"
+                         FontSize="24" FontWeight="Bold"
+                         Foreground="{Binding BalanceColor}" />
+            </StackPanel>
+
+            <!-- Work Days -->
+            <StackPanel Grid.Row="1" Grid.Column="1">
+              <TextBlock Text="{loc:Translate WorkDaysTotal}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding TotalWorkDays}"
+                         FontSize="24" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <!-- Average -->
+            <StackPanel Grid.Row="2" Grid.Column="0">
+              <TextBlock Text="{loc:Translate AvgPerDayShort}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="{Binding AverageHoursPerDayDisplay}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+
+            <!-- Vacation / Sick -->
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="16">
+              <StackPanel>
+                <TextBlock Text="{loc:Translate VacationLabel}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Beach" Width="14" Height="14"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding VacationDaysTakenDisplay}"
+                             FontSize="14"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </StackPanel>
+              <StackPanel>
+                <TextBlock Text="{loc:Translate SickLabel}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Thermometer" Width="14" Height="14"
+                                   Foreground="{DynamicResource ErrorBrush}"
+                                   VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding SickDaysDisplay}"
+                             FontSize="14"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Export Button -->
+            <Button Grid.Row="3" Grid.ColumnSpan="2"
+                    Content="{loc:Translate PdfExport}"
+                    Classes="Primary"
+                    Command="{Binding ExportPdfCommand}"
+                    IsVisible="{Binding IsPremium}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center" />
+
+          </Grid>
+        </Border>
+
+        <!-- ==================== Chart: Monthly Work Hours ==================== -->
+        <Border Classes="Card"
+                IsVisible="{Binding IsPremium}">
+          <StackPanel>
+            <TextBlock Text="{loc:Translate WorkHoursPerMonth}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,0,0,8" />
+            <lvc:CartesianChart Series="{Binding MonthlyChart}"
+                                XAxes="{Binding XAxes}"
+                                YAxes="{Binding YAxes}"
+                                Height="200" />
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Chart: Cumulative Balance ==================== -->
+        <Border Classes="Card"
+                IsVisible="{Binding IsPremium}">
+          <StackPanel>
+            <TextBlock Text="{loc:Translate OvertimeDevelopment}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,0,0,8" />
+            <lvc:CartesianChart Series="{Binding BalanceChart}"
+                                XAxes="{Binding XAxes}"
+                                Height="180" />
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Months List ==================== -->
+        <TextBlock Text="{loc:Translate MonthsOverviewTitle}"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <ItemsControl ItemsSource="{Binding Months}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:MonthSummary">
+              <Button Classes="Text"
+                      Command="{Binding $parent[UserControl].((vm:YearOverviewViewModel)DataContext).NavigateToMonthCommand}"
+                      CommandParameter="{Binding .}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Padding="0" Margin="0,2">
+                <Border Classes="Card" Padding="12" Margin="0">
+                  <Grid ColumnDefinitions="*,Auto,Auto,60" ColumnSpacing="12">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding MonthName}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                      <mi:MaterialIcon Kind="Lock" Width="14" Height="14"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       IsVisible="{Binding IsLocked}"
+                                       VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                      <TextBlock Text="{loc:Translate Actual}"
+                                 FontSize="11"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 HorizontalAlignment="Right" />
+                      <TextBlock Text="{Binding WorkTimeDisplay}"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 HorizontalAlignment="Right" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                      <TextBlock Text="{loc:Translate TargetShort}"
+                                 FontSize="11"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 HorizontalAlignment="Right" />
+                      <TextBlock Text="{Binding TargetTimeDisplay}"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 HorizontalAlignment="Right" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" HorizontalAlignment="Right">
+                      <TextBlock Text="{loc:Translate Balance}"
+                                 FontSize="11"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 HorizontalAlignment="Right" />
+                      <TextBlock Text="{Binding BalanceDisplay}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{Binding BalanceColor}"
+                                 HorizontalAlignment="Right" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Bottom Spacer -->
+        <Border Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

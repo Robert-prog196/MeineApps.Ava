@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML://headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">[base64 mime encoded string representing a byte array form of the .NET Framework object]</data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    temporary ResX resource reader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Navigation -->
+  <data name="NavCalculator" xml:space="preserve">
+    <value>Calculator</value>
+  </data>
+  <data name="NavConverter" xml:space="preserve">
+    <value>Converter</value>
+  </data>
+  <data name="NavSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+
+  <!-- Calculator Modes -->
+  <data name="ModeBasic" xml:space="preserve">
+    <value>Basic</value>
+  </data>
+  <data name="ModeScientific" xml:space="preserve">
+    <value>Scientific</value>
+  </data>
+
+  <!-- Calculator -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="HistoryTitle" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+  </data>
+  <data name="NoCalculationsYet" xml:space="preserve">
+    <value>No calculations yet</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>Copied to clipboard</value>
+  </data>
+  <data name="CopyFailed" xml:space="preserve">
+    <value>Copy failed</value>
+  </data>
+  <data name="PasteSuccess" xml:space="preserve">
+    <value>Pasted</value>
+  </data>
+  <data name="PasteFailed" xml:space="preserve">
+    <value>Paste failed</value>
+  </data>
+  <data name="PasteInvalidNumber" xml:space="preserve">
+    <value>Invalid number</value>
+  </data>
+  <data name="ClipboardEmpty" xml:space="preserve">
+    <value>Clipboard empty</value>
+  </data>
+  <data name="ExpressionTooLong" xml:space="preserve">
+    <value>Expression too long</value>
+  </data>
+  <data name="FactorialRangeError" xml:space="preserve">
+    <value>Factorial: Value must be between 0 and 170</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsChooseDesign" xml:space="preserve">
+    <value>Choose Design</value>
+  </data>
+  <data name="SettingsLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="SettingsAboutApp" xml:space="preserve">
+    <value>About the App</value>
+  </data>
+  <data name="FeedbackButton" xml:space="preserve">
+    <value>Send Feedback</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="PrivacyPolicyUrl" xml:space="preserve">
+    <value>https://sites.google.com/rs-digital.org/rechnerplus/startseite</value>
+  </data>
+  <data name="BrowserError" xml:space="preserve">
+    <value>Could not open browser. Please check your internet connection.</value>
+  </data>
+
+  <!-- Theme Names -->
+  <data name="ThemeMidnight" xml:space="preserve">
+    <value>Midnight</value>
+  </data>
+  <data name="ThemeMidnightDesc" xml:space="preserve">
+    <value>Modern dark</value>
+  </data>
+  <data name="ThemeAurora" xml:space="preserve">
+    <value>Aurora</value>
+  </data>
+  <data name="ThemeAuroraDesc" xml:space="preserve">
+    <value>Colorful dark</value>
+  </data>
+  <data name="ThemeDaylight" xml:space="preserve">
+    <value>Daylight</value>
+  </data>
+  <data name="ThemeDaylightDesc" xml:space="preserve">
+    <value>Clean and light</value>
+  </data>
+  <data name="ThemeForest" xml:space="preserve">
+    <value>Forest</value>
+  </data>
+  <data name="ThemeForestDesc" xml:space="preserve">
+    <value>Natural dark</value>
+  </data>
+
+  <!-- App Info -->
+  <data name="AppName" xml:space="preserve">
+    <value>RechnerPlus</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>The modern calculator for Android, Windows and Linux with Scientific mode and Unit Converter.</value>
+  </data>
+  <data name="VersionFormat" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+
+  <!-- Converter -->
+  <data name="ConverterTitle" xml:space="preserve">
+    <value>Unit Converter</value>
+  </data>
+  <data name="ConverterCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ConverterFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ConverterTo" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="CategoryLength" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="CategoryWeight" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="CategoryTemperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="CategoryArea" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="CategoryVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="CategorySpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="CategoryTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="CategoryData" xml:space="preserve">
+    <value>Data</value>
+  </data>
+
+  <data name="ConverterEnterValue" xml:space="preserve">
+    <value>Enter value</value>
+  </data>
+  <data name="ConverterSwapUnits" xml:space="preserve">
+    <value>Swap units</value>
+  </data>
+  <data name="ConverterInvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
+  <data name="QuartUS" xml:space="preserve">
+    <value>Quart (US)</value>
+  </data>
+
+  <!-- Unit Names - Length -->
+  <data name="UnitMillimeter" xml:space="preserve">
+    <value>Millimeter</value>
+  </data>
+  <data name="UnitCentimeter" xml:space="preserve">
+    <value>Centimeter</value>
+  </data>
+  <data name="UnitMeter" xml:space="preserve">
+    <value>Meter</value>
+  </data>
+  <data name="UnitKilometer" xml:space="preserve">
+    <value>Kilometer</value>
+  </data>
+  <data name="UnitInch" xml:space="preserve">
+    <value>Inch</value>
+  </data>
+  <data name="UnitFoot" xml:space="preserve">
+    <value>Foot</value>
+  </data>
+  <data name="UnitYard" xml:space="preserve">
+    <value>Yard</value>
+  </data>
+  <data name="UnitMile" xml:space="preserve">
+    <value>Mile</value>
+  </data>
+
+  <!-- Unit Names - Weight -->
+  <data name="UnitMilligram" xml:space="preserve">
+    <value>Milligram</value>
+  </data>
+  <data name="UnitGram" xml:space="preserve">
+    <value>Gram</value>
+  </data>
+  <data name="UnitKilogram" xml:space="preserve">
+    <value>Kilogram</value>
+  </data>
+  <data name="UnitTonne" xml:space="preserve">
+    <value>Tonne</value>
+  </data>
+  <data name="UnitOunce" xml:space="preserve">
+    <value>Ounce</value>
+  </data>
+  <data name="UnitPound" xml:space="preserve">
+    <value>Pound</value>
+  </data>
+
+  <!-- Unit Names - Temperature -->
+  <data name="UnitCelsius" xml:space="preserve">
+    <value>Celsius</value>
+  </data>
+  <data name="UnitFahrenheit" xml:space="preserve">
+    <value>Fahrenheit</value>
+  </data>
+  <data name="UnitKelvin" xml:space="preserve">
+    <value>Kelvin</value>
+  </data>
+
+  <!-- Unit Names - Volume -->
+  <data name="UnitMilliliter" xml:space="preserve">
+    <value>Milliliter</value>
+  </data>
+  <data name="UnitLiter" xml:space="preserve">
+    <value>Liter</value>
+  </data>
+  <data name="UnitCubicMeter" xml:space="preserve">
+    <value>Cubic Meter</value>
+  </data>
+  <data name="UnitGallonUS" xml:space="preserve">
+    <value>Gallon (US)</value>
+  </data>
+  <data name="UnitPintUS" xml:space="preserve">
+    <value>Pint (US)</value>
+  </data>
+  <data name="UnitCup" xml:space="preserve">
+    <value>Cup</value>
+  </data>
+
+  <!-- Unit Names - Speed -->
+  <data name="UnitMetersPerSecond" xml:space="preserve">
+    <value>Meters per Second</value>
+  </data>
+  <data name="UnitKilometersPerHour" xml:space="preserve">
+    <value>Kilometers per Hour</value>
+  </data>
+  <data name="UnitMilesPerHour" xml:space="preserve">
+    <value>Miles per Hour</value>
+  </data>
+  <data name="UnitKnots" xml:space="preserve">
+    <value>Knots</value>
+  </data>
+
+  <!-- Unit Names - Time -->
+  <data name="UnitMilliseconds" xml:space="preserve">
+    <value>Milliseconds</value>
+  </data>
+  <data name="UnitSeconds" xml:space="preserve">
+    <value>Seconds</value>
+  </data>
+  <data name="UnitMinutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="UnitHours" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="UnitDays" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="UnitWeeks" xml:space="preserve">
+    <value>Weeks</value>
+  </data>
+
+  <!-- Unit Names - Area -->
+  <data name="UnitSquareMeter" xml:space="preserve">
+    <value>Square Meter</value>
+  </data>
+  <data name="UnitSquareKilometer" xml:space="preserve">
+    <value>Square Kilometer</value>
+  </data>
+  <data name="UnitHectare" xml:space="preserve">
+    <value>Hectare</value>
+  </data>
+  <data name="UnitSquareFoot" xml:space="preserve">
+    <value>Square Foot</value>
+  </data>
+  <data name="UnitAcre" xml:space="preserve">
+    <value>Acre</value>
+  </data>
+
+  <!-- Unit Names - Data -->
+  <data name="UnitByte" xml:space="preserve">
+    <value>Byte</value>
+  </data>
+  <data name="UnitKilobyte" xml:space="preserve">
+    <value>Kilobyte</value>
+  </data>
+  <data name="UnitMegabyte" xml:space="preserve">
+    <value>Megabyte</value>
+  </data>
+  <data name="UnitGigabyte" xml:space="preserve">
+    <value>Gigabyte</value>
+  </data>
+  <data name="UnitTerabyte" xml:space="preserve">
+    <value>Terabyte</value>
+  </data>
+  <data name="UnitBit" xml:space="preserve">
+    <value>Bit</value>
+  </data>
+
+</root>

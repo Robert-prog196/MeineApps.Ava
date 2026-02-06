@@ -1,0 +1,401 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels"
+             xmlns:floorVm="using:HandwerkerRechner.ViewModels.Floor"
+             xmlns:premVm="using:HandwerkerRechner.ViewModels.Premium"
+             xmlns:views="using:HandwerkerRechner.Views"
+             xmlns:floorViews="using:HandwerkerRechner.Views.Floor"
+             xmlns:premViews="using:HandwerkerRechner.Views.Premium"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="HandwerkerRechner.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <UserControl.DataTemplates>
+    <!-- Floor Calculator VMs → Views -->
+    <DataTemplate DataType="floorVm:TileCalculatorViewModel">
+      <floorViews:TileCalculatorView />
+    </DataTemplate>
+    <DataTemplate DataType="floorVm:WallpaperCalculatorViewModel">
+      <floorViews:WallpaperCalculatorView />
+    </DataTemplate>
+    <DataTemplate DataType="floorVm:PaintCalculatorViewModel">
+      <floorViews:PaintCalculatorView />
+    </DataTemplate>
+    <DataTemplate DataType="floorVm:FlooringCalculatorViewModel">
+      <floorViews:FlooringCalculatorView />
+    </DataTemplate>
+    <!-- Premium Calculator VMs → Views -->
+    <DataTemplate DataType="premVm:DrywallViewModel">
+      <premViews:DrywallView />
+    </DataTemplate>
+    <DataTemplate DataType="premVm:ElectricalViewModel">
+      <premViews:ElectricalView />
+    </DataTemplate>
+    <DataTemplate DataType="premVm:MetalViewModel">
+      <premViews:MetalView />
+    </DataTemplate>
+    <DataTemplate DataType="premVm:GardenViewModel">
+      <premViews:GardenView />
+    </DataTemplate>
+    <DataTemplate DataType="premVm:RoofSolarViewModel">
+      <premViews:RoofSolarView />
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- Content Area -->
+    <Panel Grid.Row="0">
+
+      <!-- Tab 0: Home -->
+      <Border IsVisible="{Binding IsHomeTab}"
+              Classes="TabContent">
+        <ScrollViewer>
+          <StackPanel Spacing="16" Margin="16">
+            <!-- App Header -->
+            <StackPanel Spacing="4" Margin="0,8,0,16">
+              <TextBlock Text="{Binding AppTitle}"
+                         FontSize="28" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{Binding AppDescription}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- Floor & Wall Section (FREE) -->
+            <TextBlock Text="{Binding CategoryFloorWallLabel}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,0,0,8" />
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+              <!-- Tiles -->
+              <Button Grid.Row="0" Grid.Column="0"
+                      Command="{Binding NavigateToTilesCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="16" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="ViewGrid" Width="32" Height="32"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{Binding CalcTilesLabel}"
+                             FontSize="13" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcTilesDescLabel}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Wallpaper -->
+              <Button Grid.Row="0" Grid.Column="1"
+                      Command="{Binding NavigateToWallpaperCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="16" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Wallpaper" Width="32" Height="32"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{Binding CalcWallpaperLabel}"
+                             FontSize="13" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcWallpaperDescLabel}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Paint -->
+              <Button Grid.Row="1" Grid.Column="0"
+                      Command="{Binding NavigateToPaintCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="16" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="FormatPaint" Width="32" Height="32"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{Binding CalcPaintLabel}"
+                             FontSize="13" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcPaintDescLabel}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Flooring -->
+              <Button Grid.Row="1" Grid.Column="1"
+                      Command="{Binding NavigateToFlooringCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="16" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Layers" Width="32" Height="32"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{Binding CalcFlooringLabel}"
+                             FontSize="13" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcFlooringDescLabel}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+            <!-- Premium Categories -->
+            <TextBlock Text="{Binding MoreCategoriesLabel}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Margin="0,16,0,8" />
+
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+              <!-- Drywall -->
+              <Button Grid.Row="0" Grid.Column="0"
+                      Command="{Binding NavigateToDrywallCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="12" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Wall" Width="28" Height="28"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Text="{Binding CategoryDrywallLabel}"
+                             FontSize="11" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CategoryDrywallDescLabel}"
+                             FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Electrical -->
+              <Button Grid.Row="0" Grid.Column="1"
+                      Command="{Binding NavigateToElectricalCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="12" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Flash" Width="28" Height="28"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Text="{Binding CategoryElectricalLabel}"
+                             FontSize="11" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CategoryElectricalDescLabel}"
+                             FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Metal -->
+              <Button Grid.Row="0" Grid.Column="2"
+                      Command="{Binding NavigateToMetalCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="12" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Wrench" Width="28" Height="28"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Text="{Binding CategoryMetalLabel}"
+                             FontSize="11" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CategoryMetalDescLabel}"
+                             FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Garden -->
+              <Button Grid.Row="1" Grid.Column="0"
+                      Command="{Binding NavigateToGardenCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="12" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="Flower" Width="28" Height="28"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Text="{Binding CategoryGardenLabel}"
+                             FontSize="11" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CategoryGardenDescLabel}"
+                             FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+
+              <!-- Roof & Solar -->
+              <Button Grid.Row="1" Grid.Column="1"
+                      Command="{Binding NavigateToRoofSolarCommand}"
+                      Background="{DynamicResource CardBrush}"
+                      Padding="12" CornerRadius="12" HorizontalContentAlignment="Center">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="SolarPanel" Width="28" Height="28"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                  <TextBlock Text="{Binding CategoryRoofSolarLabel}"
+                             FontSize="11" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CategoryRoofSolarDescLabel}"
+                             FontSize="10"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Tab 1: Projects -->
+      <Border IsVisible="{Binding IsProjectsTab}"
+              Classes="TabContent">
+        <views:ProjectsView DataContext="{Binding ProjectsViewModel}" />
+      </Border>
+
+      <!-- Tab 2: Settings -->
+      <Border IsVisible="{Binding IsSettingsTab}"
+              Classes="TabContent">
+        <views:SettingsView DataContext="{Binding SettingsViewModel}" />
+      </Border>
+
+      <!-- Calculator Overlay -->
+      <Panel IsVisible="{Binding IsCalculatorOpen}"
+             ZIndex="50"
+             Background="{DynamicResource BackgroundBrush}">
+        <ContentControl Content="{Binding CurrentCalculatorVm}" />
+      </Panel>
+
+    </Panel>
+
+    <!-- Bottom Tab Bar -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            IsVisible="{Binding !IsCalculatorOpen}">
+      <Grid ColumnDefinitions="*,*,*" Margin="0,2">
+        <!-- Home Tab -->
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding SelectHomeTabCommand}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0" Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsHomeTab}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsHomeTab}" />
+            <Panel>
+              <mi:MaterialIcon Kind="Home" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsHomeTab}" />
+              <mi:MaterialIcon Kind="HomeOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsHomeTab}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding TabHomeText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsHomeTab}" />
+              <TextBlock Text="{Binding TabHomeText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsHomeTab}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+        <!-- Projects Tab -->
+        <Button Grid.Column="1" Classes="Text"
+                Command="{Binding SelectProjectsTabCommand}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0" Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsProjectsTab}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsProjectsTab}" />
+            <Panel>
+              <mi:MaterialIcon Kind="FolderOpen" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsProjectsTab}" />
+              <mi:MaterialIcon Kind="FolderOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsProjectsTab}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding TabProjectsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsProjectsTab}" />
+              <TextBlock Text="{Binding TabProjectsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsProjectsTab}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+
+        <!-- Settings Tab -->
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding SelectSettingsTabCommand}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="0" Height="56">
+          <StackPanel Spacing="2">
+            <Border Height="3" CornerRadius="2" Margin="12,0"
+                    IsVisible="{Binding IsSettingsTab}">
+              <Border.Background>
+                <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+              </Border.Background>
+            </Border>
+            <Border Height="3" IsVisible="{Binding !IsSettingsTab}" />
+            <Panel>
+              <mi:MaterialIcon Kind="Cog" Width="24" Height="24"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               IsVisible="{Binding IsSettingsTab}" />
+              <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               IsVisible="{Binding !IsSettingsTab}" />
+            </Panel>
+            <Panel>
+              <TextBlock Text="{Binding TabSettingsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource PrimaryBrush}"
+                         FontWeight="Medium"
+                         IsVisible="{Binding IsSettingsTab}" />
+              <TextBlock Text="{Binding TabSettingsText}" FontSize="11"
+                         HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         IsVisible="{Binding !IsSettingsTab}" />
+            </Panel>
+          </StackPanel>
+        </Button>
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

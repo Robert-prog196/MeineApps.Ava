@@ -1,0 +1,661 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="8" Margin="16">
+
+      <!-- ==================== Premium Status ==================== -->
+      <Border Classes="CardElevated"
+              Background="{DynamicResource SecondaryBrush}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate PremiumStatus}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Status Badge -->
+          <Border Background="{Binding PremiumStatusColor}"
+                  CornerRadius="12" Padding="12,6"
+                  HorizontalAlignment="Center">
+            <TextBlock Text="{Binding PremiumStatusText}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="White" />
+          </Border>
+
+          <!-- Trial Progress -->
+          <StackPanel Spacing="4" IsVisible="{Binding IsInTrial}">
+            <TextBlock Text="{Binding TrialProgressText}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <ProgressBar Value="{Binding TrialProgress}"
+                         Maximum="1"
+                         Foreground="{DynamicResource WarningBrush}"
+                         Height="8" />
+          </StackPanel>
+
+          <Button Content="{Binding BuyPremiumButtonText}"
+                  Classes="Primary"
+                  Command="{Binding PurchasePremiumCommand}"
+                  IsVisible="{Binding !IsPremium}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+
+          <Button Content="{loc:Translate RestorePurchases}"
+                  Classes="Secondary"
+                  Command="{Binding RestorePurchasesCommand}"
+                  IsVisible="{Binding !IsPremium}"
+                  FontSize="12"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Work Time Settings ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="ClockOutline" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate WorkTimeSettings}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Daily Hours -->
+          <Grid ColumnDefinitions="*,120">
+            <TextBlock Text="{loc:Translate DailyTarget}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding DailyHours}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <!-- Weekly Hours -->
+          <Grid ColumnDefinitions="*,120">
+            <TextBlock Text="{loc:Translate WeeklyTarget}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding WeeklyHours}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <Separator />
+
+          <!-- Work Days -->
+          <TextBlock Text="{loc:Translate WorkDays}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,4,0,0" />
+
+          <WrapPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding MondayEnabled}" />
+              <TextBlock Text="{loc:Translate Monday}" FontSize="13"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding TuesdayEnabled}" />
+              <TextBlock Text="{loc:Translate Tuesday}" FontSize="13"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding WednesdayEnabled}" />
+              <TextBlock Text="{loc:Translate Wednesday}" FontSize="13"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding ThursdayEnabled}" />
+              <TextBlock Text="{loc:Translate Thursday}" FontSize="13"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding FridayEnabled}" />
+              <TextBlock Text="{loc:Translate Friday}" FontSize="13"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding SaturdayEnabled}" />
+              <TextBlock Text="{loc:Translate Saturday}" FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+              <CheckBox IsChecked="{Binding SundayEnabled}" />
+              <TextBlock Text="{loc:Translate Sunday}" FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </WrapPanel>
+
+          <Separator />
+
+          <!-- Individual Hours per Day -->
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+            <ToggleSwitch IsChecked="{Binding UseIndividualHours}" />
+            <TextBlock Text="{loc:Translate IndividualHoursPerDay}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <StackPanel Spacing="8" IsVisible="{Binding UseIndividualHours}">
+            <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                  ColumnSpacing="8" RowSpacing="4">
+              <TextBlock Grid.Row="0" Text="{loc:Translate Monday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MondayHours}" />
+
+              <TextBlock Grid.Row="1" Text="{loc:Translate Tuesday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TuesdayHours}" />
+
+              <TextBlock Grid.Row="2" Text="{loc:Translate Wednesday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WednesdayHours}" />
+
+              <TextBlock Grid.Row="3" Text="{loc:Translate Thursday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ThursdayHours}" />
+
+              <TextBlock Grid.Row="4" Text="{loc:Translate Friday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding FridayHours}" />
+
+              <TextBlock Grid.Row="5" Text="{loc:Translate Saturday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SaturdayHours}" />
+
+              <TextBlock Grid.Row="6" Text="{loc:Translate Sunday}" FontSize="13" VerticalAlignment="Center"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding SundayHours}" />
+            </Grid>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Auto-Pause ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Kind="Coffee" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Translate AutoPause}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,0" />
+            <ToggleSwitch Grid.Column="2"
+                          IsChecked="{Binding AutoPauseEnabled}" />
+          </Grid>
+
+          <TextBlock Text="{loc:Translate AutoPauseDescription}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+
+          <Grid ColumnDefinitions="*,100" IsVisible="{Binding AutoPauseEnabled}">
+            <TextBlock Text="{loc:Translate AutoPauseAfterHours}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding AutoPauseAfterHours}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <Grid ColumnDefinitions="*,100" IsVisible="{Binding AutoPauseEnabled}">
+            <TextBlock Text="{loc:Translate PauseMinutes}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding AutoPauseMinutes}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Reminders ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Bell" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Reminders}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Morning -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <ToggleSwitch IsChecked="{Binding MorningReminderEnabled}" />
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Translate MorningReminder}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="2" Width="80"
+                     Text="{Binding MorningReminderTimeDisplay}"
+                     IsEnabled="{Binding MorningReminderEnabled}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <!-- Evening -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <ToggleSwitch IsChecked="{Binding EveningReminderEnabled}" />
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Translate EveningReminder}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="2" Width="80"
+                     Text="{Binding EveningReminderTimeDisplay}"
+                     IsEnabled="{Binding EveningReminderEnabled}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <!-- Break -->
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <ToggleSwitch IsChecked="{Binding PauseReminderEnabled}" />
+            <TextBlock Text="{loc:Translate BreakReminder}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Vacation ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Beach" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Vacation}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,100">
+            <TextBlock Text="{loc:Translate VacationDaysPerYear}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding VacationDaysPerYear}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+
+          <TextBlock Text="{loc:Translate VacationDefault}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Holidays ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="PartyPopper" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Holidays}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <TextBlock Text="{loc:Translate Region}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+
+          <ComboBox ItemsSource="{Binding GermanRegions}"
+                    SelectedIndex="{Binding SelectedRegionIndex}"
+                    HorizontalAlignment="Stretch" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Legal Compliance ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Kind="Shield" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Translate LegalCompliance}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,0" />
+            <ToggleSwitch Grid.Column="2"
+                          IsChecked="{Binding LegalComplianceEnabled}" />
+          </Grid>
+
+          <TextBlock Text="{loc:Translate LegalComplianceDescription}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Overtime Warning ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Kind="TrendingUp" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Translate OvertimeWarning}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,0" />
+            <ToggleSwitch Grid.Column="2"
+                          IsChecked="{Binding OvertimeWarningEnabled}" />
+          </Grid>
+
+          <Grid ColumnDefinitions="*,100" IsVisible="{Binding OvertimeWarningEnabled}">
+            <TextBlock Text="{loc:Translate OvertimeWarningHours}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding OvertimeWarningHours}"
+                     HorizontalContentAlignment="Center" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Theme Selection ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Palette" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Theme}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                ColumnSpacing="8" RowSpacing="8">
+
+            <!-- Theme 1: Midnight -->
+            <Panel Grid.Row="0" Grid.Column="0">
+              <Button IsVisible="{Binding IsMidnightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Midnight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#1E293B"
+                        BorderThickness="2" BorderBrush="{DynamicResource PrimaryBrush}">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="{DynamicResource PrimaryBrush}"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    <TextBlock Text="Midnight" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsMidnightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Midnight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#1E293B"
+                        BorderThickness="2" BorderBrush="#334155">
+                  <TextBlock Text="Midnight" HorizontalAlignment="Center"
+                             FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Theme 2: Aurora -->
+            <Panel Grid.Row="0" Grid.Column="1">
+              <Button IsVisible="{Binding IsAuroraSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Aurora"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#18181B"
+                        BorderThickness="2" BorderBrush="#EC4899">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#EC4899"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    <TextBlock Text="Aurora" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsAuroraSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Aurora"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#18181B"
+                        BorderThickness="2" BorderBrush="#3F3F46">
+                  <TextBlock Text="Aurora" HorizontalAlignment="Center"
+                             FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Theme 3: Daylight -->
+            <Panel Grid.Row="1" Grid.Column="0">
+              <Button IsVisible="{Binding IsDaylightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Daylight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#2563EB">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#2563EB"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    <TextBlock Text="Daylight" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsDaylightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Daylight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#CBD5E1">
+                  <TextBlock Text="Daylight" HorizontalAlignment="Center"
+                             FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Theme 4: Forest -->
+            <Panel Grid.Row="1" Grid.Column="1">
+              <Button IsVisible="{Binding IsForestSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Forest"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#022C22"
+                        BorderThickness="2" BorderBrush="#10B981">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#10B981"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top" />
+                    <TextBlock Text="Forest" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsForestSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Forest"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12" Background="#022C22"
+                        BorderThickness="2" BorderBrush="#065F46">
+                  <TextBlock Text="Forest" HorizontalAlignment="Center"
+                             FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                </Border>
+              </Button>
+            </Panel>
+
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Language Selection ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Translate" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Language}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <WrapPanel Orientation="Horizontal">
+            <Panel>
+              <Button Classes="Primary Small" Content="Deutsch"
+                      IsVisible="{Binding IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Deutsch"
+                      IsVisible="{Binding !IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small" Content="English"
+                      IsVisible="{Binding IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="English"
+                      IsVisible="{Binding !IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small" Content="Espa&#241;ol"
+                      IsVisible="{Binding IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Espa&#241;ol"
+                      IsVisible="{Binding !IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small" Content="Fran&#231;ais"
+                      IsVisible="{Binding IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Fran&#231;ais"
+                      IsVisible="{Binding !IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small" Content="Italiano"
+                      IsVisible="{Binding IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Italiano"
+                      IsVisible="{Binding !IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+            </Panel>
+            <Panel>
+              <Button Classes="Primary Small" Content="Portugu&#234;s"
+                      IsVisible="{Binding IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Portugu&#234;s"
+                      IsVisible="{Binding !IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+            </Panel>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Save Button ==================== -->
+      <Button Content="{loc:Translate SaveSettings}"
+              Classes="Primary"
+              Command="{Binding SaveSettingsCommand}"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center"
+              Margin="0,8" />
+
+      <!-- ==================== Legal Sources ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="BookOpen" Width="20" Height="20"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate LegalSources}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <TextBlock Text="{loc:Translate LegalSourcesDescription}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+
+          <Button Content="{loc:Translate LegalSourceArbZG}"
+                  Classes="Secondary"
+                  Command="{Binding OpenArbZGCommand}"
+                  FontSize="13"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+
+          <Button Content="{loc:Translate LegalSourceHolidays}"
+                  Classes="Secondary"
+                  Command="{Binding OpenHolidaysSourceCommand}"
+                  FontSize="13"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <!-- App Version -->
+      <TextBlock Text="{Binding AppVersion}"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 HorizontalAlignment="Center"
+                 Margin="0,8" />
+
+      <!-- Bottom Spacer -->
+      <Border Height="32" />
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

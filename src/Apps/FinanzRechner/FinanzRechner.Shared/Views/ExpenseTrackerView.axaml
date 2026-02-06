@@ -1,0 +1,584 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FinanzRechner.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:conv="using:FinanzRechner.Converters"
+             x:Class="FinanzRechner.Views.ExpenseTrackerView"
+             x:DataType="vm:ExpenseTrackerViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="16">
+
+    <!-- Header -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,8,0,16">
+      <TextBlock Grid.Column="0"
+                 Text="{Binding FinanceTrackerText}"
+                 Classes="PageTitle"
+                 VerticalAlignment="Center" />
+
+      <!-- Recurring Transactions Button -->
+      <Button Grid.Column="1" Classes="Text"
+              Command="{Binding ShowRecurringTransactionsCommand}"
+              Width="48" Height="48" Padding="0">
+        <mi:MaterialIcon Kind="CalendarClock" Width="22" Height="22"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Button>
+
+      <!-- Budgets Button -->
+      <Button Grid.Column="2" Classes="Text"
+              Command="{Binding ShowBudgetsCommand}"
+              Width="48" Height="48" Padding="0">
+        <mi:MaterialIcon Kind="Target" Width="22" Height="22"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Button>
+
+      <!-- Export Button -->
+      <Button Grid.Column="3" Classes="Text"
+              Command="{Binding ExportToCsvCommand}"
+              Width="48" Height="48" Padding="0">
+        <mi:MaterialIcon Kind="Export" Width="22" Height="22"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Button>
+    </Grid>
+
+    <!-- Search & Filter Controls -->
+    <StackPanel Grid.Row="1" Spacing="8" Margin="0,0,0,16"
+                IsVisible="{Binding !IsAddingExpense}">
+
+      <!-- SearchBar -->
+      <TextBox Watermark="{Binding SearchTransactionsText}"
+               Text="{Binding SearchTerm}"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               Background="{DynamicResource InputBackgroundBrush}" />
+
+      <!-- Sort & Filter Row -->
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+        <!-- Sort Picker -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource CardBrush}"
+                CornerRadius="8"
+                Padding="8,4">
+          <ComboBox ItemsSource="{Binding SortOptions}"
+                    SelectedItem="{Binding SelectedSort}"
+                    PlaceholderText="{Binding SortText}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    HorizontalAlignment="Stretch">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Converter={x:Static conv:SortOptionToStringConverter.Instance}}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </Border>
+
+        <!-- Filter Type Picker -->
+        <Border Grid.Column="1"
+                Background="{DynamicResource CardBrush}"
+                CornerRadius="8"
+                Padding="8,4">
+          <ComboBox ItemsSource="{Binding FilterTypeOptions}"
+                    SelectedItem="{Binding SelectedFilter}"
+                    PlaceholderText="{Binding FilterText}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    HorizontalAlignment="Stretch">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Converter={x:Static conv:FilterTypeToStringConverter.Instance}}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </Border>
+      </Grid>
+
+      <!-- Category & Amount Filters (Collapsible) -->
+      <Border IsVisible="{Binding IsFilterActive}"
+              Background="{DynamicResource CardBrush}"
+              CornerRadius="8"
+              Padding="12">
+        <StackPanel Spacing="8">
+
+          <!-- Category Filter -->
+          <StackPanel Spacing="4">
+            <TextBlock Text="{Binding FilterByCategoryText}"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       FontSize="12" />
+            <ComboBox ItemsSource="{Binding CategoryFilterOptions}"
+                      SelectedItem="{Binding SelectedCategoryFilter}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      HorizontalAlignment="Stretch" />
+          </StackPanel>
+
+          <!-- Amount Range Filter -->
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+            <StackPanel Grid.Column="0" Spacing="4">
+              <TextBlock Text="{Binding MinAmountText}"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         FontSize="12" />
+              <TextBox Text="{Binding MinAmountFilter}"
+                       Watermark="0"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource InputBackgroundBrush}" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Spacing="4">
+              <TextBlock Text="{Binding MaxAmountText}"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         FontSize="12" />
+              <TextBox Text="{Binding MaxAmountFilter}"
+                       Watermark="0"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource InputBackgroundBrush}" />
+            </StackPanel>
+          </Grid>
+
+          <!-- Reset Filters Button -->
+          <Button Content="{Binding ResetFiltersText}"
+                  Command="{Binding ResetFiltersCommand}"
+                  Classes="Secondary"
+                  Padding="8,4"
+                  Margin="0,4,0,0" />
+        </StackPanel>
+      </Border>
+
+      <!-- Filter Status Display -->
+      <TextBlock Text="{Binding FilteredCountDisplay}"
+                 IsVisible="{Binding IsFilterActive}"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 HorizontalAlignment="Center"
+                 Margin="0,4,0,0" />
+    </StackPanel>
+
+    <!-- Month Navigation -->
+    <Border Grid.Row="2"
+            Background="{DynamicResource CardBrush}"
+            CornerRadius="12"
+            Padding="16"
+            Margin="0,0,0,16">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Button Grid.Column="0"
+                Classes="Text"
+                Command="{Binding PreviousMonthCommand}"
+                Padding="8">
+          <mi:MaterialIcon Kind="ChevronLeft" Width="20" Height="20"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="8">
+          <TextBlock Text="{Binding MonthYearDisplay}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+
+          <!-- Income -->
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding IncomeLabelText}" FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding TotalIncomeDisplay}" FontSize="14" FontWeight="Bold"
+                       Foreground="{DynamicResource IncomeBrush}" />
+          </StackPanel>
+
+          <!-- Expenses -->
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding ExpensesLabelText}" FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="14" FontWeight="Bold"
+                       Foreground="{DynamicResource ExpenseBrush}" />
+          </StackPanel>
+
+          <!-- Balance -->
+          <Border Background="{DynamicResource AccentBrush}"
+                  CornerRadius="8"
+                  Padding="8,4"
+                  HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="{Binding BalanceLabelText}" FontSize="16" FontWeight="Bold" Foreground="White" />
+              <TextBlock Text="{Binding BalanceDisplay}" FontSize="16" FontWeight="Bold" Foreground="White" />
+            </StackPanel>
+          </Border>
+
+          <!-- Go to Today -->
+          <Button Classes="Text"
+                  Command="{Binding GoToCurrentMonthCommand}"
+                  Padding="4,2"
+                  HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TodayText}"
+                       FontSize="12"
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       TextDecorations="Underline" />
+          </Button>
+        </StackPanel>
+
+        <Button Grid.Column="2"
+                Classes="Text"
+                Command="{Binding NextMonthCommand}"
+                Padding="8">
+          <mi:MaterialIcon Kind="ChevronRight" Width="20" Height="20"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Add/Edit Form (Dialog Overlay) -->
+    <Border Grid.Row="0" Grid.RowSpan="5"
+            IsVisible="{Binding IsAddingExpense}"
+            Background="#80000000"
+            ZIndex="10">
+      <ScrollViewer VerticalAlignment="Center" MaxHeight="600" Margin="20">
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="16"
+                Padding="24"
+                MaxWidth="420"
+                HorizontalAlignment="Center">
+          <StackPanel Spacing="20">
+
+            <!-- HEADER: Title + Close -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0"
+                         Text="{Binding DialogTitleText}"
+                         Classes="SectionHeader" />
+              <Button Grid.Column="1" Classes="Text"
+                      Command="{Binding CancelAddExpenseCommand}"
+                      Width="48" Height="48" Padding="0">
+                <mi:MaterialIcon Kind="Close" Width="22" Height="22"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Button>
+            </Grid>
+
+            <!-- AMOUNT -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="CurrencyEur" Width="18" Height="18"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AmountText}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="14" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBox Text="{Binding NewExpenseAmount}"
+                       FontSize="32" FontWeight="Bold"
+                       TextAlignment="Center"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Watermark="0.00"
+                       Background="{DynamicResource InputBackgroundBrush}" />
+            </StackPanel>
+
+            <!-- TYPE: Expense / Income -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="CashMinus" Width="18" Height="18"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                <TextBlock Text="{Binding TypeText}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="14" VerticalAlignment="Center" />
+              </StackPanel>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Grid.Column="0"
+                        Command="{Binding SetTransactionTypeExpenseCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Padding="12,16">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="CashMinus" Width="20" Height="20" />
+                    <TextBlock Text="{Binding ExpenseText}" FontSize="16" />
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="1"
+                        Command="{Binding SetTransactionTypeIncomeCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Padding="12,16">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="CashPlus" Width="20" Height="20" />
+                    <TextBlock Text="{Binding IncomeText}" FontSize="16" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </StackPanel>
+
+            <!-- CATEGORY -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Filter" Width="18" Height="18"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                <TextBlock Text="{Binding CategoryText}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="14" VerticalAlignment="Center" />
+              </StackPanel>
+              <!-- Category chips as WrapPanel with ItemsControl -->
+              <ItemsControl ItemsSource="{Binding CategoryItems}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Panel Margin="0,0,6,6">
+                      <!-- Selected state -->
+                      <Button CornerRadius="16"
+                              Padding="10,6"
+                              MinHeight="40"
+                              Cursor="Hand"
+                              Background="{DynamicResource PrimaryBrush}"
+                              BorderThickness="0"
+                              IsVisible="{Binding IsSelected}"
+                              Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).SelectCategoryCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center"
+                                     Foreground="White" />
+                          <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center"
+                                     Foreground="White" />
+                        </StackPanel>
+                      </Button>
+                      <!-- Unselected state -->
+                      <Button CornerRadius="16"
+                              Padding="10,6"
+                              MinHeight="40"
+                              Cursor="Hand"
+                              Background="{DynamicResource SurfaceBrush}"
+                              BorderThickness="0"
+                              IsVisible="{Binding !IsSelected}"
+                              Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).SelectCategoryCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" />
+                          <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center"
+                                     Foreground="{DynamicResource TextPrimaryBrush}" />
+                        </StackPanel>
+                      </Button>
+                    </Panel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <!-- DETAILS: Description + Date + Note -->
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="ClipboardText" Width="18" Height="18"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                <TextBlock Text="{Binding DescriptionText}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="14" VerticalAlignment="Center" />
+              </StackPanel>
+
+              <TextBox Text="{Binding NewExpenseDescription}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource InputBackgroundBrush}" />
+
+              <!-- Date -->
+              <CalendarDatePicker SelectedDate="{Binding NewExpenseDate}"
+                                  Foreground="{DynamicResource TextPrimaryBrush}"
+                                  HorizontalAlignment="Stretch" />
+
+              <!-- Note (optional) -->
+              <TextBox Text="{Binding NewExpenseNote}"
+                       Watermark="{Binding NoteText}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource InputBackgroundBrush}" />
+            </StackPanel>
+
+            <!-- RECURRING (only for new entries) -->
+            <StackPanel Spacing="8"
+                        IsVisible="{Binding ShowRecurringSection}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                <TextBlock Text="{Binding RecurringText}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="14" VerticalAlignment="Center" />
+              </StackPanel>
+
+              <!-- Toggle -->
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="{Binding MakeRecurringText}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           FontSize="15" VerticalAlignment="Center" />
+                <ToggleSwitch Grid.Column="1"
+                              IsChecked="{Binding IsRecurring}" />
+              </Grid>
+            </StackPanel>
+
+            <!-- BUTTONS -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0">
+              <Button Grid.Column="0"
+                      Content="{Binding CancelText}"
+                      Classes="Secondary"
+                      Command="{Binding CancelAddExpenseCommand}" />
+              <Button Grid.Column="1"
+                      Content="{Binding SaveText}"
+                      Classes="Primary"
+                      Command="{Binding SaveExpenseCommand}" />
+            </Grid>
+
+          </StackPanel>
+        </Border>
+      </ScrollViewer>
+    </Border>
+
+    <!-- Transactions List -->
+    <ScrollViewer Grid.Row="3"
+                  IsVisible="{Binding !IsAddingExpense}">
+      <StackPanel Spacing="0">
+
+        <!-- Empty State -->
+        <StackPanel IsVisible="{Binding !HasExpenses}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="8" Margin="0,40,0,0">
+          <mi:MaterialIcon Kind="Wallet" Width="48" Height="48"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding NoTransactionsText}"
+                     FontSize="16" FontWeight="Bold"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding NoTransactionsHintText}"
+                     FontSize="13"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Transaction Items -->
+        <ItemsControl ItemsSource="{Binding Expenses}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Background="{DynamicResource CardBrush}"
+                      CornerRadius="8"
+                      Padding="12"
+                      Margin="0,0,0,8">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                  <!-- Category Icon -->
+                  <Border Grid.Column="0"
+                          Background="{DynamicResource AccentBrush}"
+                          CornerRadius="20"
+                          Width="40" Height="40">
+                    <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
+                                     Foreground="White"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+
+                  <!-- Details -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Description}"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+
+                  <!-- Amount -->
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding Amount, StringFormat='{}{0:N2} \u20ac'}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+
+                  <!-- Edit Button -->
+                  <Button Grid.Column="3" Classes="Text"
+                          Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).EditExpenseCommand}"
+                          CommandParameter="{Binding}"
+                          Width="36" Height="36" Padding="0"
+                          VerticalAlignment="Center">
+                    <mi:MaterialIcon Kind="Pencil" Width="18" Height="18"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </Button>
+
+                  <!-- Delete Button -->
+                  <Button Grid.Column="4" Classes="Text"
+                          Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).DeleteExpenseCommand}"
+                          CommandParameter="{Binding}"
+                          Width="36" Height="36" Padding="0"
+                          VerticalAlignment="Center">
+                    <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </Button>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Loading Indicator -->
+    <ProgressBar Grid.Row="3"
+                 IsIndeterminate="True"
+                 IsVisible="{Binding IsLoading}"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center" />
+
+    <!-- Undo Delete Snackbar -->
+    <Border Grid.Row="3" Grid.RowSpan="2"
+            IsVisible="{Binding ShowUndoDelete}"
+            Background="{DynamicResource CardBrush}"
+            CornerRadius="12"
+            Padding="16,12"
+            Margin="16"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            ZIndex="100">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+        <TextBlock Grid.Column="0"
+                   Text="{Binding UndoMessage}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   FontSize="14"
+                   VerticalAlignment="Center"
+                   TextTrimming="CharacterEllipsis" />
+        <Button Grid.Column="1"
+                Content="{Binding UndoText}"
+                Command="{Binding UndoDeleteCommand}"
+                Classes="Primary"
+                Padding="16,8" />
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding DismissUndoCommand}"
+                Width="36" Height="36" Padding="0">
+          <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Floating Add Button (FAB) -->
+    <Button Grid.Row="4"
+            Background="{DynamicResource AccentBrush}"
+            CornerRadius="28"
+            Width="56" Height="56"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,8,8"
+            IsVisible="{Binding !IsAddingExpense}"
+            Cursor="Hand"
+            Command="{Binding ShowAddExpenseFormCommand}"
+            Padding="0">
+      <mi:MaterialIcon Kind="Plus" Width="24" Height="24"
+                       Foreground="White"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Button>
+
+    <!-- Export Status Toast -->
+    <Border Grid.Row="4"
+            IsVisible="{Binding IsExportStatusVisible}"
+            Background="{DynamicResource CardBrush}"
+            CornerRadius="8"
+            Padding="12,8"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Margin="0,0,0,72"
+            ZIndex="200">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                         Foreground="{DynamicResource PrimaryBrush}" />
+        <TextBlock Text="{Binding ExportStatusMessage}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   FontSize="13" VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+
+  </Grid>
+
+</UserControl>

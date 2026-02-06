@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ZeitManager.ViewModels"
+        xmlns:views="using:ZeitManager.Views"
+        xmlns:splash="using:MeineApps.UI.Controls"
+        x:Class="ZeitManager.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="ZeitManager"
+        Icon="avares://ZeitManager.Shared/Assets/icon.png"
+        Width="400"
+        Height="750"
+        MinWidth="360"
+        MinHeight="500"
+        Background="{DynamicResource BackgroundBrush}">
+
+  <Panel>
+    <views:MainView />
+    <splash:SplashOverlay AppName="ZeitManager"
+                          IconSource="avares://ZeitManager.Shared/Assets/icon.png" />
+  </Panel>
+
+</Window>

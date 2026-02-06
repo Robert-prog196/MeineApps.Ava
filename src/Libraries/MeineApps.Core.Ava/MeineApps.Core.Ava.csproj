@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Shared Core Library for Avalonia Apps - Themes, Localization, Converters, Behaviors</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia Core -->
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+
+    <!-- UI Frameworks -->
+    <PackageReference Include="Material.Avalonia" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="DialogHost.Avalonia" />
+
+    <!-- Behaviors -->
+    <PackageReference Include="Xaml.Behaviors.Avalonia" />
+
+    <!-- MVVM -->
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+
+    <!-- DI -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Themes\**\*.axaml" />
+    <AvaloniaResource Include="Styles\**\*.axaml" />
+  </ItemGroup>
+
+</Project>

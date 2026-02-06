@@ -1,0 +1,184 @@
+using BomberBlast.Services;
+using MeineApps.Core.Ava.Services;
+
+namespace BomberBlast.Core;
+
+/// <summary>
+/// Manages game audio (sound effects and music).
+/// Uses ISoundService abstraction instead of Plugin.Maui.Audio.
+/// Uses IPreferencesService instead of MAUI Preferences.
+/// </summary>
+public class SoundManager : IDisposable
+{
+    private readonly ISoundService _soundService;
+    private readonly IPreferencesService _preferences;
+
+    // Current music state
+    private string? _currentMusic;
+
+    // Volume settings
+    private float _sfxVolume = 1.0f;
+    private float _musicVolume = 0.7f;
+    private bool _sfxEnabled = true;
+    private bool _musicEnabled = true;
+
+    // Sound effect keys
+    public const string SFX_EXPLOSION = "explosion";
+    public const string SFX_PLACE_BOMB = "place_bomb";
+    public const string SFX_FUSE = "fuse";
+    public const string SFX_POWERUP = "powerup";
+    public const string SFX_PLAYER_DEATH = "player_death";
+    public const string SFX_ENEMY_DEATH = "enemy_death";
+    public const string SFX_EXIT_APPEAR = "exit_appear";
+    public const string SFX_LEVEL_COMPLETE = "level_complete";
+    public const string SFX_GAME_OVER = "game_over";
+    public const string SFX_TIME_WARNING = "time_warning";
+    public const string SFX_MENU_SELECT = "menu_select";
+    public const string SFX_MENU_CONFIRM = "menu_confirm";
+
+    // Music keys
+    public const string MUSIC_MENU = "menu";
+    public const string MUSIC_GAMEPLAY = "gameplay";
+    public const string MUSIC_BOSS = "boss";
+    public const string MUSIC_VICTORY = "victory";
+
+    public float SfxVolume
+    {
+        get => _sfxVolume;
+        set => _sfxVolume = Math.Clamp(value, 0f, 1f);
+    }
+
+    public float MusicVolume
+    {
+        get => _musicVolume;
+        set
+        {
+            _musicVolume = Math.Clamp(value, 0f, 1f);
+            // Volume change takes effect on next PlayMusic call
+        }
+    }
+
+    public bool SfxEnabled
+    {
+        get => _sfxEnabled;
+        set => _sfxEnabled = value;
+    }
+
+    public bool MusicEnabled
+    {
+        get => _musicEnabled;
+        set
+        {
+            _musicEnabled = value;
+            if (!_musicEnabled)
+            {
+                StopMusic();
+            }
+            else if (_currentMusic != null)
+            {
+                PlayMusic(_currentMusic);
+            }
+        }
+    }
+
+    public SoundManager(ISoundService soundService, IPreferencesService preferences)
+    {
+        _soundService = soundService;
+        _preferences = preferences;
+        LoadSettings();
+    }
+
+    /// <summary>
+    /// Load audio settings from preferences
+    /// </summary>
+    private void LoadSettings()
+    {
+        _sfxVolume = (float)_preferences.Get("SfxVolume", 1.0);
+        _musicVolume = (float)_preferences.Get("MusicVolume", 0.7);
+        _sfxEnabled = _preferences.Get("SfxEnabled", true);
+        _musicEnabled = _preferences.Get("MusicEnabled", true);
+    }
+
+    /// <summary>
+    /// Save audio settings to preferences
+    /// </summary>
+    public void SaveSettings()
+    {
+        _preferences.Set("SfxVolume", (double)_sfxVolume);
+        _preferences.Set("MusicVolume", (double)_musicVolume);
+        _preferences.Set("SfxEnabled", _sfxEnabled);
+        _preferences.Set("MusicEnabled", _musicEnabled);
+    }
+
+    /// <summary>
+    /// Preload all sound effects for instant playback
+    /// </summary>
+    public async Task PreloadSoundsAsync()
+    {
+        await _soundService.PreloadSoundsAsync();
+    }
+
+    /// <summary>
+    /// Play a sound effect
+    /// </summary>
+    public void PlaySound(string soundKey)
+    {
+        if (!_sfxEnabled)
+            return;
+
+        _soundService.PlaySound(soundKey, _sfxVolume);
+    }
+
+    /// <summary>
+    /// Play background music (loops continuously)
+    /// </summary>
+    public void PlayMusic(string musicKey)
+    {
+        if (!_musicEnabled)
+        {
+            _currentMusic = musicKey;
+            return;
+        }
+
+        // Don't restart if already playing this music
+        if (_currentMusic == musicKey)
+            return;
+
+        StopMusic();
+        _soundService.PlayMusic(musicKey, _musicVolume);
+        _currentMusic = musicKey;
+    }
+
+    /// <summary>
+    /// Stop background music
+    /// </summary>
+    public void StopMusic()
+    {
+        _soundService.StopMusic();
+    }
+
+    /// <summary>
+    /// Pause background music
+    /// </summary>
+    public void PauseMusic()
+    {
+        _soundService.PauseMusic();
+    }
+
+    /// <summary>
+    /// Resume background music
+    /// </summary>
+    public void ResumeMusic()
+    {
+        if (_musicEnabled)
+        {
+            _soundService.ResumeMusic();
+        }
+    }
+
+    public void Dispose()
+    {
+        StopMusic();
+        _soundService.Dispose();
+    }
+}

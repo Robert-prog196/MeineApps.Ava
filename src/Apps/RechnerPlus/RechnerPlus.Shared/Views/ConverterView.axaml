@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RechnerPlus.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="RechnerPlus.Views.ConverterView"
+             x:DataType="vm:ConverterViewModel">
+
+  <ScrollViewer>
+    <StackPanel Margin="16" Spacing="16">
+
+      <!-- Header -->
+      <TextBlock Text="{Binding TitleText}"
+                 Classes="HeadlineMedium" />
+
+      <!-- Category Selection -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Shape"
+                             Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding CategoryText}"
+                       Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+          <ComboBox ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding SelectedCategory}"
+                    HorizontalAlignment="Stretch" />
+        </StackPanel>
+      </Border>
+
+      <!-- From Section -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <TextBlock Text="{Binding FromText}"
+                     Classes="LabelLarge" />
+          <ComboBox ItemsSource="{Binding AvailableUnits}"
+                    SelectedItem="{Binding FromUnit}"
+                    HorizontalAlignment="Stretch" />
+          <TextBox Text="{Binding InputValue}"
+                   Watermark="{Binding EnterValueText}"
+                   FontSize="18"
+                   HorizontalAlignment="Stretch" />
+        </StackPanel>
+      </Border>
+
+      <!-- Swap Button -->
+      <Button Classes="FAB Mini"
+              HorizontalAlignment="Center"
+              Command="{Binding SwapUnitsCommand}"
+              ToolTip.Tip="{Binding SwapUnitsText}">
+        <mi:MaterialIcon Kind="SwapVertical" Width="20" Height="20" />
+      </Button>
+
+      <!-- To Section -->
+      <Border Classes="Card">
+        <StackPanel Spacing="12">
+          <TextBlock Text="{Binding ToText}"
+                     Classes="LabelLarge" />
+          <ComboBox ItemsSource="{Binding AvailableUnits}"
+                    SelectedItem="{Binding ToUnit}"
+                    HorizontalAlignment="Stretch" />
+
+          <!-- Result Display -->
+          <TextBlock Text="{Binding OutputValue}"
+                     FontSize="28"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,8,0,4"
+                     TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+      </Border>
+
+      <!-- Bottom spacer for scroll comfort -->
+      <Border Height="32" />
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

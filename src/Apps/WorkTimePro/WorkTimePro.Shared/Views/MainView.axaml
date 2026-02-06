@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:views="using:WorkTimePro.Views"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.MainView"
+             x:DataType="vm:MainViewModel">
+
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Content Area (switches based on tab)  -->
+    <!-- ============================================ -->
+    <Panel Grid.Row="0">
+      <!-- Today Tab (uses MainViewModel directly) -->
+      <views:TodayView IsVisible="{Binding IsTodayActive}" />
+
+      <!-- Week Tab -->
+      <views:WeekOverviewView DataContext="{Binding WeekVm}"
+                               IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsWeekActive}" />
+
+      <!-- Calendar Tab -->
+      <views:CalendarView DataContext="{Binding CalendarVm}"
+                           IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsCalendarActive}" />
+
+      <!-- Statistics Tab -->
+      <views:StatisticsView DataContext="{Binding StatisticsVm}"
+                             IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsStatisticsActive}" />
+
+      <!-- Settings Tab -->
+      <views:SettingsView DataContext="{Binding SettingsVm}"
+                           IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsSettingsActive}" />
+
+      <!-- ============================================ -->
+      <!-- Sub-Pages (overlays, higher z-index)         -->
+      <!-- ============================================ -->
+      <views:DayDetailView DataContext="{Binding DayDetailVm}"
+                            IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsDayDetailActive}" />
+
+      <views:MonthOverviewView DataContext="{Binding MonthVm}"
+                                IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsMonthActive}" />
+
+      <views:YearOverviewView DataContext="{Binding YearVm}"
+                               IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsYearActive}" />
+
+      <views:VacationView DataContext="{Binding VacationVm}"
+                           IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsVacationActive}" />
+
+      <views:ShiftPlanView DataContext="{Binding ShiftPlanVm}"
+                            IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsShiftPlanActive}" />
+    </Panel>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Bottom Tab Bar                        -->
+    <!-- ============================================ -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            Padding="0,8"
+            IsVisible="{Binding !IsSubPageActive}">
+      <Grid ColumnDefinitions="*,*,*,*,*">
+
+        <!-- Today -->
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding SelectTodayTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="ClockOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Today}"
+                       FontSize="10" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Button>
+
+        <!-- Week -->
+        <Button Grid.Column="1" Classes="Text"
+                Command="{Binding SelectWeekTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="CalendarWeek" Width="24" Height="24"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Week}"
+                       FontSize="10" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Button>
+
+        <!-- Calendar -->
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding SelectCalendarTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="CalendarMonth" Width="24" Height="24"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Calendar}"
+                       FontSize="10" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Button>
+
+        <!-- Statistics -->
+        <Button Grid.Column="3" Classes="Text"
+                Command="{Binding SelectStatisticsTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="ChartBar" Width="24" Height="24"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Statistics}"
+                       FontSize="10" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Button>
+
+        <!-- Settings -->
+        <Button Grid.Column="4" Classes="Text"
+                Command="{Binding SelectSettingsTabCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{loc:Translate Settings}"
+                       FontSize="10" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Button>
+
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

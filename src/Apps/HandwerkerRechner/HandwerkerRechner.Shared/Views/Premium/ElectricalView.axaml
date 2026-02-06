@@ -1,0 +1,396 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels.Premium"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:conv="using:HandwerkerRechner.Converters"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerRechner.Views.Premium.ElectricalView"
+             x:DataType="vm:ElectricalViewModel">
+
+  <UserControl.Resources>
+    <conv:IntEqualsConverter x:Key="IntEquals" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Header -->
+    <Border Grid.Row="0" Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding GoBackCommand}"
+                Padding="8">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="1" Text="{loc:Translate CategoryElectrical}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- Content -->
+    <ScrollViewer Grid.Row="1" Padding="16,0">
+      <StackPanel Spacing="16">
+
+        <!-- Calculator Selector -->
+        <Border Classes="Card" Padding="16">
+          <ComboBox ItemsSource="{Binding Calculators}"
+                    SelectedIndex="{Binding SelectedCalculator}"
+                    HorizontalAlignment="Stretch" />
+        </Border>
+
+        <!-- Calculator 0: Voltage Drop -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=0}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate VoltageDropCalculator}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate Voltage}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding Voltage}" Watermark="V" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate Current}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding Current}" Watermark="A" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CableLength}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding CableLength}" Watermark="m" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CrossSection}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding CrossSection}" Watermark="mm²" />
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate CopperCable}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                IsChecked="{Binding IsCopper}"
+                                OnContent="" OffContent="" />
+                </Grid>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CostCalculation}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding CablePrice}"
+                           Watermark="EUR" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate Voltage}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.VoltageDrop}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate Percentage}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.PercentDrop}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate StatusMaxThreePercent}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.IsAcceptable}"
+                             FontSize="15" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto"
+                      IsVisible="{Binding ShowCableCost}">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate TotalCost}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding CableCostDisplay}"
+                             FontSize="17" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Calculator 1: Power Cost -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=1}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate PowerCostCalculator}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate Power}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding Watts}" Watermark="W" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate HoursPerDay}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding HoursPerDay}" Watermark="h" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate PricePerKwh}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PricePerKwh}" Watermark="€/kWh" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate CostPerDay}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerDay}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate CostPerMonth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerMonth}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate CostPerYear}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerYear}"
+                             FontSize="17" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Calculator 2: Ohm's Law -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=2}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate OhmsLawCalculator}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <TextBlock Text="{loc:Translate EnterAtLeastTwoValues}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate VoltageU}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding OhmsVoltage}" Watermark="V" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CurrentI}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding OhmsCurrent}" Watermark="A" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate ResistanceR}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding OhmsResistance}" Watermark="Ω" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate PowerP}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding OhmsPower}" Watermark="W" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate VoltageU}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Voltage}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate CurrentI}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Current}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate ResistanceR}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Resistance}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate PowerP}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Power}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Bottom spacing -->
+        <Panel Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Buttons -->
+    <Border Grid.Row="2" Padding="16,12"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}">
+      <Grid ColumnDefinitions="*,8,*,8,*">
+        <Button Grid.Column="0" Content="{loc:Translate Reset}"
+                Command="{Binding ResetCommand}"
+                Classes="Outlined"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <Button Grid.Column="2" Content="{loc:Translate Calculate}"
+                Command="{Binding CalculateCommand}"
+                Classes="Primary"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <!-- Save Project -->
+        <Button Grid.Column="4"
+                Classes="Secondary"
+                Command="{Binding SaveProjectCommand}"
+                IsVisible="{Binding HasResult}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
+            <TextBlock Text="{loc:Translate Save}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Save Project Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            ZIndex="100"
+            Background="#80000000"
+            IsVisible="{Binding ShowSaveDialog}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate SaveProject}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBox Text="{Binding SaveProjectName}"
+                   Watermark="{loc:Translate ProjectName}"
+                   Classes="Outlined" />
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Grid.Column="0"
+                    Classes="Outlined"
+                    Command="{Binding CancelSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Cancel}" />
+            <Button Grid.Column="2"
+                    Classes="Primary"
+                    Command="{Binding ConfirmSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Save}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

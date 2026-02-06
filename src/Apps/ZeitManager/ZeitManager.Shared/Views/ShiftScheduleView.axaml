@@ -1,0 +1,212 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:controls="using:MeineApps.UI.Controls"
+             x:Class="ZeitManager.Views.ShiftScheduleView"
+             x:DataType="vm:ShiftScheduleViewModel">
+
+  <Grid RowDefinitions="*">
+
+    <Panel>
+      <!-- Empty State (no active schedule) -->
+      <StackPanel IsVisible="{Binding !HasActiveSchedule}"
+                  VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12"
+                  Margin="16">
+        <mi:MaterialIcon Kind="CalendarClock" Width="64" Height="64"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding NoScheduleText}" Classes="TitleMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" TextAlignment="Center" />
+        <TextBlock Text="{Binding SetupScheduleText}" Classes="BodyMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" TextWrapping="Wrap"
+                   TextAlignment="Center" MaxWidth="300" />
+        <Button Classes="Primary" Content="{Binding ConfigureText}"
+                Command="{Binding ShowEditorCommand}"
+                HorizontalAlignment="Center" Margin="0,8,0,0" />
+      </StackPanel>
+
+      <!-- Calendar View (active schedule) -->
+      <ScrollViewer IsVisible="{Binding HasActiveSchedule}">
+        <StackPanel Margin="16" Spacing="16">
+
+          <!-- Month Navigation -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <Button Grid.Column="0" Classes="Text" MinWidth="48" MinHeight="48" Padding="8"
+                    Command="{Binding PreviousMonthCommand}">
+              <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24" />
+            </Button>
+            <TextBlock Grid.Column="1" Text="{Binding DisplayMonthName}"
+                       Classes="TitleLarge" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="2" Classes="Text" MinWidth="48" MinHeight="48" Padding="8"
+                    Command="{Binding NextMonthCommand}">
+              <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24" />
+            </Button>
+          </Grid>
+
+          <!-- Weekday Headers (localized) -->
+          <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+            <TextBlock Grid.Column="0" Text="{Binding MondayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="1" Text="{Binding TuesdayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="2" Text="{Binding WednesdayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="3" Text="{Binding ThursdayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="4" Text="{Binding FridayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="5" Text="{Binding SaturdayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="6" Text="{Binding SundayShortText}" Classes="Caption" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </Grid>
+
+          <!-- Calendar Grid -->
+          <ItemsControl ItemsSource="{Binding CalendarDays}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel ItemWidth="46" ItemHeight="46" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CalendarDay">
+                <Border CornerRadius="8" Margin="2" Background="{Binding BackgroundColor}">
+                  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="1">
+                    <TextBlock Text="{Binding DayText}" FontSize="14" FontWeight="Medium"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding ShiftLabel}" FontSize="10" FontWeight="Bold"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Legend -->
+          <Border Classes="Card">
+            <WrapPanel Orientation="Horizontal" Margin="4">
+              <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,16,4">
+                <Border Width="16" Height="16" CornerRadius="4" Background="#FBBF24" />
+                <TextBlock Text="{Binding EarlyShiftShortText}" Classes="Caption" VerticalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,16,4">
+                <Border Width="16" Height="16" CornerRadius="4" Background="#FB923C" />
+                <TextBlock Text="{Binding LateShiftShortText}" Classes="Caption" VerticalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,16,4">
+                <Border Width="16" Height="16" CornerRadius="4" Background="#60A5FA" />
+                <TextBlock Text="{Binding NightShiftShortText}" Classes="Caption" VerticalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,16,4">
+                <Border Width="16" Height="16" CornerRadius="4"
+                        Background="{DynamicResource SurfaceBrush}" />
+                <TextBlock Text="{Binding DayOffShortText}" Classes="Caption" VerticalAlignment="Center" />
+              </StackPanel>
+            </WrapPanel>
+          </Border>
+
+          <!-- Actions -->
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+            <Button Classes="Outlined" Content="{Binding EditText}"
+                    Command="{Binding ShowEditorCommand}" />
+            <Button Classes="Text" Content="{Binding DeactivateText}"
+                    Command="{Binding DeactivateScheduleCommand}"
+                    Foreground="{DynamicResource ErrorBrush}" />
+          </StackPanel>
+
+        </StackPanel>
+      </ScrollViewer>
+
+    </Panel>
+
+    <!-- Deactivate Confirmation Overlay -->
+    <Border IsVisible="{Binding IsDeactivateConfirmVisible}" Background="#80000000">
+      <Border Classes="Card" Margin="32"
+              VerticalAlignment="Center" HorizontalAlignment="Stretch"
+              MaxWidth="350">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding ConfirmDeactivateTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeactivateMessageText}" Classes="BodyMedium"
+                     TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="Text" Content="{Binding NoText}"
+                    Command="{Binding CancelDeactivateScheduleCommand}" />
+            <Button Classes="Primary" Content="{Binding YesText}"
+                    Command="{Binding ConfirmDeactivateScheduleCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Editor Overlay -->
+    <Border IsVisible="{Binding IsEditing}" Background="#80000000">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Classes="Card" Margin="16,32"
+                VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                MaxWidth="450">
+          <StackPanel Spacing="16">
+
+            <TextBlock Text="{Binding ConfigureText}" Classes="HeadlineMedium" />
+
+            <!-- Shift Model Selection -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding ShiftModelText}" Classes="TitleSmall"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+              <StackPanel Spacing="4">
+                <Panel>
+                  <Button Classes="Primary" Content="{Binding FifteenShiftText}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          IsVisible="{Binding IsFifteenShift}" />
+                  <Button Classes="Outlined" Content="{Binding FifteenShiftText}"
+                          Command="{Binding SelectFifteenShiftCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          IsVisible="{Binding !IsFifteenShift}" />
+                </Panel>
+                <Panel>
+                  <Button Classes="Primary" Content="{Binding TwentyOneShiftText}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          IsVisible="{Binding IsTwentyOneShift}" />
+                  <Button Classes="Outlined" Content="{Binding TwentyOneShiftText}"
+                          Command="{Binding SelectTwentyOneShiftCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          IsVisible="{Binding !IsTwentyOneShift}" />
+                </Panel>
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Group Selection -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding ShiftGroupText}" Classes="TitleSmall"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+              <controls:WheelPicker Value="{Binding SelectedGroup}" Minimum="1" Maximum="{Binding MaxGroup}"
+                                    FormatString="0" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Start Date -->
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding StartDateText}" Classes="TitleSmall"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+              <CalendarDatePicker SelectedDate="{Binding SelectedStartDate}"
+                                  HorizontalAlignment="Stretch" />
+            </StackPanel>
+
+            <!-- Dialog Buttons -->
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="Text" Content="{Binding CancelText}"
+                      Command="{Binding HideEditorCommand}" />
+              <Button Classes="Primary" Content="{Binding SaveText}"
+                      Command="{Binding SaveScheduleCommand}" />
+            </StackPanel>
+
+          </StackPanel>
+        </Border>
+      </ScrollViewer>
+    </Border>
+
+  </Grid>
+
+</UserControl>

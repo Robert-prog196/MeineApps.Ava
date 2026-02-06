@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RechnerPlus.ViewModels"
+        xmlns:views="using:RechnerPlus.Views"
+        xmlns:splash="using:MeineApps.UI.Controls"
+        x:Class="RechnerPlus.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="RechnerPlus"
+        Icon="avares://RechnerPlus.Shared/Assets/icon.png"
+        Width="400"
+        Height="700"
+        MinWidth="360"
+        MinHeight="500"
+        Background="{DynamicResource BackgroundBrush}">
+
+  <Panel>
+    <views:MainView />
+    <splash:SplashOverlay AppName="RechnerPlus"
+                          IconSource="avares://RechnerPlus.Shared/Assets/icon.png" />
+  </Panel>
+
+</Window>

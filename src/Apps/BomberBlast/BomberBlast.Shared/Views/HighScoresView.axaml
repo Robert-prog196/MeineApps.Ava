@@ -1,0 +1,128 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.HighScoresView"
+             x:DataType="vm:HighScoresViewModel">
+
+  <!-- Gradient Background -->
+  <Panel>
+    <Border>
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="{DynamicResource GradientStartColor}" Offset="0" />
+          <GradientStop Color="{DynamicResource GradientMidColor}" Offset="0.5" />
+          <GradientStop Color="{DynamicResource GradientEndColor}" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+      <!-- Header -->
+      <Border Grid.Row="0"
+              Classes="CardElevated"
+              Padding="16,12"
+              CornerRadius="0,0,12,12">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Back Button -->
+          <Button Classes="Text"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+          </Button>
+
+          <!-- Title -->
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="Trophy" Width="24" Height="24"
+                             Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Text="{loc:Translate HighScores}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{DynamicResource AccentBrush}" />
+          </StackPanel>
+
+          <!-- Spacer -->
+          <Border Grid.Column="2" Width="44" />
+        </Grid>
+      </Border>
+
+      <!-- Score List -->
+      <Panel Grid.Row="1" Margin="12">
+        <!-- Scores List -->
+        <ItemsControl ItemsSource="{Binding Scores}"
+                      IsVisible="{Binding HasScores}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ScoreDisplayItem">
+              <Border Classes="Card" Margin="0,4">
+                <Grid ColumnDefinitions="48,*,Auto">
+                  <!-- Rank -->
+                  <TextBlock Text="{Binding Rank}"
+                             FontSize="24"
+                             FontWeight="Bold"
+                             Foreground="{Binding RankBrush}"
+                             VerticalAlignment="Center" />
+
+                  <!-- Name and Wave -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding WaveText}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+
+                  <!-- Score -->
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding ScoreText}"
+                             FontSize="20"
+                             FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}"
+                             VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Empty State -->
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding !HasScores}">
+          <mi:MaterialIcon Kind="TrophyBroken" Width="64" Height="64"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate NoHighScoresYet}"
+                     FontSize="20"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,12,0,0" />
+          <TextBlock Text="{loc:Translate PlayArcadeToScore}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,4,0,0" />
+        </StackPanel>
+      </Panel>
+
+      <!-- Ad Banner placeholder -->
+      <Border Grid.Row="2"
+              Height="50"
+              IsVisible="{Binding ShowAds}"
+              Background="{DynamicResource SurfaceBrush}"
+              Padding="12,4">
+        <TextBlock Text="Ad Banner"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   FontSize="12" />
+      </Border>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

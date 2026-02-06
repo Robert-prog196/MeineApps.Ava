@@ -1,0 +1,948 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- App Info -->
+  <data name="AppName" xml:space="preserve">
+    <value>FinanzRechner</value>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Finanzrechner für Sparen, Kredit und Investitionen</value>
+  </data>
+
+  <!-- Calculator Names -->
+  <data name="CalcCompoundInterest" xml:space="preserve">
+    <value>Zinseszins</value>
+  </data>
+  <data name="CalcCompoundInterestDesc" xml:space="preserve">
+    <value>Kapitalwachstum mit Zinseszins berechnen</value>
+  </data>
+  <data name="CalcSavingsPlan" xml:space="preserve">
+    <value>Sparplan</value>
+  </data>
+  <data name="CalcSavingsPlanDesc" xml:space="preserve">
+    <value>Regelmäßiges Sparen planen</value>
+  </data>
+  <data name="CalcLoan" xml:space="preserve">
+    <value>Kredit</value>
+  </data>
+  <data name="CalcLoanDesc" xml:space="preserve">
+    <value>Monatliche Kreditrate berechnen</value>
+  </data>
+  <data name="CalcAmortization" xml:space="preserve">
+    <value>Tilgungsplan</value>
+  </data>
+  <data name="CalcAmortizationDesc" xml:space="preserve">
+    <value>Vollständigen Rückzahlungsplan anzeigen</value>
+  </data>
+  <data name="CalcYield" xml:space="preserve">
+    <value>Rendite</value>
+  </data>
+  <data name="CalcYieldDesc" xml:space="preserve">
+    <value>Investitionsrendite berechnen</value>
+  </data>
+
+  <!-- Common Labels -->
+  <data name="Calculate" xml:space="preserve">
+    <value>Berechnen</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Zurücksetzen</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+
+  <!-- Input Labels -->
+  <data name="Principal" xml:space="preserve">
+    <value>Startkapital (EUR)</value>
+  </data>
+  <data name="AnnualRate" xml:space="preserve">
+    <value>Jahreszins (%)</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value>Jahre</value>
+  </data>
+  <data name="CompoundingsPerYear" xml:space="preserve">
+    <value>Verzinsungen/Jahr</value>
+  </data>
+  <data name="MonthlyDeposit" xml:space="preserve">
+    <value>Monatliche Sparrate (EUR)</value>
+  </data>
+  <data name="InitialDeposit" xml:space="preserve">
+    <value>Anfangseinzahlung (EUR)</value>
+  </data>
+  <data name="LoanAmount" xml:space="preserve">
+    <value>Kreditsumme (EUR)</value>
+  </data>
+  <data name="InitialInvestment" xml:space="preserve">
+    <value>Anfangsinvestition (EUR)</value>
+  </data>
+  <data name="FinalValue" xml:space="preserve">
+    <value>Endwert (EUR)</value>
+  </data>
+
+  <!-- Result Labels -->
+  <data name="FinalAmount" xml:space="preserve">
+    <value>Endkapital</value>
+  </data>
+  <data name="InterestEarned" xml:space="preserve">
+    <value>Zinsertrag</value>
+  </data>
+  <data name="TotalDeposits" xml:space="preserve">
+    <value>Einzahlungen gesamt</value>
+  </data>
+  <data name="MonthlyPayment" xml:space="preserve">
+    <value>Monatliche Rate</value>
+  </data>
+  <data name="TotalPayment" xml:space="preserve">
+    <value>Gesamtzahlung</value>
+  </data>
+  <data name="TotalInterest" xml:space="preserve">
+    <value>Zinsen gesamt</value>
+  </data>
+  <data name="TotalReturn" xml:space="preserve">
+    <value>Gesamtertrag</value>
+  </data>
+  <data name="TotalReturnPercent" xml:space="preserve">
+    <value>Gesamtertrag (%)</value>
+  </data>
+  <data name="EffectiveAnnualRate" xml:space="preserve">
+    <value>Effektiver Jahreszins</value>
+  </data>
+
+  <!-- Amortization Schedule -->
+  <data name="AmortizationSchedule" xml:space="preserve">
+    <value>Zahlungsplan</value>
+  </data>
+  <data name="Interest" xml:space="preserve">
+    <value>Zinsen</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>Restschuld</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="SettingsChooseDesign" xml:space="preserve">
+    <value>Design wählen</value>
+  </data>
+  <data name="SettingsLanguage" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="SettingsAboutApp" xml:space="preserve">
+    <value>Über die App</value>
+  </data>
+  <data name="FeedbackButton" xml:space="preserve">
+    <value>Feedback senden</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Datenschutzerklaerung</value>
+  </data>
+
+  <!-- Themes -->
+  <data name="ThemeMidnight" xml:space="preserve">
+    <value>Mitternacht</value>
+  </data>
+  <data name="ThemeMidnightDesc" xml:space="preserve">
+    <value>Dunkles Indigo-Thema</value>
+  </data>
+  <data name="ThemeAurora" xml:space="preserve">
+    <value>Aurora</value>
+  </data>
+  <data name="ThemeAuroraDesc" xml:space="preserve">
+    <value>Dunkler Pink-Verlauf</value>
+  </data>
+  <data name="ThemeDaylight" xml:space="preserve">
+    <value>Tageslicht</value>
+  </data>
+  <data name="ThemeDaylightDesc" xml:space="preserve">
+    <value>Helles Blau-Thema</value>
+  </data>
+  <data name="ThemeForest" xml:space="preserve">
+    <value>Wald</value>
+  </data>
+  <data name="ThemeForestDesc" xml:space="preserve">
+    <value>Dunkles Gruen-Thema</value>
+  </data>
+
+  <!-- Expense Tracker -->
+  <data name="ExpenseTracker" xml:space="preserve">
+    <value>Finanz-Tracker</value>
+  </data>
+  <data name="ExpenseTrackerDesc" xml:space="preserve">
+    <value>Einnahmen und Ausgaben verfolgen</value>
+  </data>
+
+  <!-- Transaction Types -->
+  <data name="Expense" xml:space="preserve">
+    <value>Ausgabe</value>
+  </data>
+  <data name="Income" xml:space="preserve">
+    <value>Einnahme</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+
+  <!-- Categories - Expenses -->
+  <data name="CategoryFood" xml:space="preserve">
+    <value>Lebensmittel</value>
+  </data>
+  <data name="CategoryTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="CategoryHousing" xml:space="preserve">
+    <value>Wohnen</value>
+  </data>
+  <data name="CategoryEntertainment" xml:space="preserve">
+    <value>Unterhaltung</value>
+  </data>
+  <data name="CategoryShopping" xml:space="preserve">
+    <value>Einkaufen</value>
+  </data>
+  <data name="CategoryHealth" xml:space="preserve">
+    <value>Gesundheit</value>
+  </data>
+  <data name="CategoryEducation" xml:space="preserve">
+    <value>Bildung</value>
+  </data>
+  <data name="CategoryBills" xml:space="preserve">
+    <value>Rechnungen</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Sonstiges</value>
+  </data>
+
+  <!-- Categories - Income -->
+  <data name="CategorySalary" xml:space="preserve">
+    <value>Gehalt</value>
+  </data>
+  <data name="CategoryFreelance" xml:space="preserve">
+    <value>Freiberuflich</value>
+  </data>
+  <data name="CategoryInvestment" xml:space="preserve">
+    <value>Kapitalerträge</value>
+  </data>
+  <data name="CategoryGift" xml:space="preserve">
+    <value>Geschenk</value>
+  </data>
+  <data name="CategoryOtherIncome" xml:space="preserve">
+    <value>Sonstiges Einkommen</value>
+  </data>
+
+  <!-- Tracker Labels -->
+  <data name="TotalExpenses" xml:space="preserve">
+    <value>Ausgaben</value>
+  </data>
+  <data name="TotalIncome" xml:space="preserve">
+    <value>Einnahmen</value>
+  </data>
+  <data name="BalanceLabel" xml:space="preserve">
+    <value>Bilanz</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Betrag</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Notiz</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="NewTransaction" xml:space="preserve">
+    <value>Neue Transaktion</value>
+  </data>
+  <data name="EditTransaction" xml:space="preserve">
+    <value>Transaktion bearbeiten</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Gestern</value>
+  </data>
+
+  <!-- Charts -->
+  <data name="Statistics" xml:space="preserve">
+    <value>Statistiken</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>Diagramme</value>
+  </data>
+  <data name="ChartCapital" xml:space="preserve">
+    <value>Kapital</value>
+  </data>
+  <data name="ChartDeposits" xml:space="preserve">
+    <value>Einzahlungen</value>
+  </data>
+  <data name="ChartRepayment" xml:space="preserve">
+    <value>Tilgung</value>
+  </data>
+  <data name="ChartInterest" xml:space="preserve">
+    <value>Zinsen</value>
+  </data>
+  <data name="ChartRemainingDebt" xml:space="preserve">
+    <value>Restschuld</value>
+  </data>
+  <data name="ChartInitialValue" xml:space="preserve">
+    <value>Anfangswert</value>
+  </data>
+  <data name="ChartFinalValue" xml:space="preserve">
+    <value>Endwert</value>
+  </data>
+  <data name="ChartYears" xml:space="preserve">
+    <value>Jahre</value>
+  </data>
+  <data name="ChartMonths" xml:space="preserve">
+    <value>Monate</value>
+  </data>
+  <data name="FilteredCountFormat" xml:space="preserve">
+    <value>{0} von {1}</value>
+  </data>
+  <data name="TimePeriod" xml:space="preserve">
+    <value>Zeitraum</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Woche</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Monat</value>
+  </data>
+  <data name="Quarter" xml:space="preserve">
+    <value>Quartal</value>
+  </data>
+  <data name="HalfYear" xml:space="preserve">
+    <value>Halbjahr</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Jahr</value>
+  </data>
+  <data name="ByCategory" xml:space="preserve">
+    <value>Nach Kategorie</value>
+  </data>
+  <data name="Trend" xml:space="preserve">
+    <value>Verlauf</value>
+  </data>
+  <data name="TrendOverview" xml:space="preserve">
+    <value>6-Monats-Verlauf</value>
+  </data>
+  <data name="LastMonth" xml:space="preserve">
+    <value>Letzter Monat</value>
+  </data>
+
+  <!-- Premium -->
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="PremiumDescription" xml:space="preserve">
+    <value>Werbung entfernen und Entwickler unterstützen</value>
+  </data>
+  <data name="PurchasePremium" xml:space="preserve">
+    <value>Premium kaufen</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Käufe wiederherstellen</value>
+  </data>
+
+  <!-- Backup & Restore -->
+  <data name="BackupRestore" xml:space="preserve">
+    <value>Backup &amp; Wiederherstellung</value>
+  </data>
+  <data name="BackupRestoreDesc" xml:space="preserve">
+    <value>Exportiere deine Daten oder stelle sie aus einem Backup wieder her</value>
+  </data>
+  <data name="CreateBackup" xml:space="preserve">
+    <value>Backup erstellen</value>
+  </data>
+  <data name="RestoreBackup" xml:space="preserve">
+    <value>Wiederherstellen</value>
+  </data>
+  <data name="ShareBackup" xml:space="preserve">
+    <value>Backup teilen</value>
+  </data>
+  <data name="SelectBackupFile" xml:space="preserve">
+    <value>Backup-Datei auswählen</value>
+  </data>
+  <data name="RestoreBackupQuestion" xml:space="preserve">
+    <value>Möchtest du die Daten zusammenführen oder alle Daten ersetzen?</value>
+  </data>
+  <data name="Merge" xml:space="preserve">
+    <value>Zusammenführen</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Ersetzen</value>
+  </data>
+  <data name="RestoreSuccess" xml:space="preserve">
+    <value>{0} Einträge erfolgreich wiederhergestellt.</value>
+  </data>
+  <data name="BackupError" xml:space="preserve">
+    <value>Backup fehlgeschlagen</value>
+  </data>
+  <data name="RestoreError" xml:space="preserve">
+    <value>Wiederherstellung fehlgeschlagen</value>
+  </data>
+
+  <!-- MainPage -->
+  <data name="TrialRemaining" xml:space="preserve">
+    <value>Testversion: noch</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Tage</value>
+  </data>
+  <data name="SectionCalculators" xml:space="preserve">
+    <value>RECHNER</value>
+  </data>
+  <data name="CalculatorsTitle" xml:space="preserve">
+    <value>Finanzberechnungen</value>
+  </data>
+  <data name="SectionPremium" xml:space="preserve">
+    <value>PREMIUM</value>
+  </data>
+  <data name="SectionTracker" xml:space="preserve">
+    <value>TRACKER</value>
+  </data>
+  <data name="RemoveAds" xml:space="preserve">
+    <value>Werbung entfernen</value>
+  </data>
+  <data name="RemoveAdsDesc" xml:space="preserve">
+    <value>Werbefreie App mit Premium genießen</value>
+  </data>
+  <data name="QuickAddExpense" xml:space="preserve">
+    <value>Schnell Ausgabe hinzufügen</value>
+  </data>
+  <data name="ExpenseTrackerTitle" xml:space="preserve">
+    <value>Ausgaben-Tracker</value>
+  </data>
+  <data name="PremiumBenefits" xml:space="preserve">
+    <value>Premium-Vorteile:</value>
+  </data>
+  <data name="BenefitCategoryTracking" xml:space="preserve">
+    <value>Ausgaben nach Kategorien erfassen</value>
+  </data>
+  <data name="BenefitMonthlyReports" xml:space="preserve">
+    <value>Monatsberichte und Statistiken</value>
+  </data>
+  <data name="BenefitNoAds" xml:space="preserve">
+    <value>Keine Werbung mehr</value>
+  </data>
+
+  <!-- ExpenseTrackerPage -->
+  <data name="FinanceTracker" xml:space="preserve">
+    <value>Finanz-Tracker</value>
+  </data>
+  <data name="IncomeTotalLabel" xml:space="preserve">
+    <value>Einnahmen:</value>
+  </data>
+  <data name="ExpensesTotalLabel" xml:space="preserve">
+    <value>Ausgaben:</value>
+  </data>
+  <data name="BalanceTotalLabel" xml:space="preserve">
+    <value>Bilanz:</value>
+  </data>
+  <data name="NoTransactions" xml:space="preserve">
+    <value>Keine Transaktionen</value>
+  </data>
+  <data name="NoTransactionsHint" xml:space="preserve">
+    <value>Füge deine erste Transaktion mit dem + Button hinzu</value>
+  </data>
+
+  <!-- StatisticsPage -->
+  <data name="StatisticsTitle" xml:space="preserve">
+    <value>Statistiken</value>
+  </data>
+  <data name="ExpensesByCategory" xml:space="preserve">
+    <value>Ausgaben nach Kategorie</value>
+  </data>
+  <data name="IncomeByCategory" xml:space="preserve">
+    <value>Einnahmen nach Kategorie</value>
+  </data>
+
+  <!-- BudgetsPage -->
+  <data name="Budgets" xml:space="preserve">
+    <value>Budgets</value>
+  </data>
+  <data name="BudgetLimits" xml:space="preserve">
+    <value>Budget-Limits</value>
+  </data>
+  <data name="NoBudgets" xml:space="preserve">
+    <value>Keine Budgets festgelegt</value>
+  </data>
+  <data name="NoBudgetsHint" xml:space="preserve">
+    <value>Setze monatliche Ausgaben-Limits für deine Kategorien.</value>
+  </data>
+  <data name="MonthlyLimit" xml:space="preserve">
+    <value>Monatliches Limit</value>
+  </data>
+  <data name="Spent" xml:space="preserve">
+    <value>Ausgegeben</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Verbleibend</value>
+  </data>
+  <data name="Exceeded" xml:space="preserve">
+    <value>Überschritten</value>
+  </data>
+
+  <!-- RecurringTransactionsPage -->
+  <data name="RecurringTransactions" xml:space="preserve">
+    <value>Wiederkehrende Transaktionen</value>
+  </data>
+  <data name="RecurringTransaction" xml:space="preserve">
+    <value>Wiederkehrende Transaktion</value>
+  </data>
+  <data name="NoRecurringTransactions" xml:space="preserve">
+    <value>Keine wiederkehrenden Transaktionen</value>
+  </data>
+  <data name="NoRecurringTransactionsHint" xml:space="preserve">
+    <value>Erstelle automatische Einträge für regelmäßige Ausgaben wie Miete oder Gehalt.</value>
+  </data>
+  <data name="Pattern" xml:space="preserve">
+    <value>Muster</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Täglich</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Wöchentlich</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Monatlich</value>
+  </data>
+  <data name="Yearly" xml:space="preserve">
+    <value>Jährlich</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Startdatum</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Enddatum</value>
+  </data>
+  <data name="SetEndDate" xml:space="preserve">
+    <value>Enddatum festlegen</value>
+  </data>
+  <data name="NextDue" xml:space="preserve">
+    <value>Nächste:</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inaktiv</value>
+  </data>
+
+  <!-- Dialog Messages -->
+  <data name="Error" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Erfolg</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Bestätigen</value>
+  </data>
+  <data name="DeleteTransactionTitle" xml:space="preserve">
+    <value>Transaktion löschen</value>
+  </data>
+  <data name="DeleteTransactionMessage" xml:space="preserve">
+    <value>Möchtest du diese Transaktion wirklich löschen?</value>
+  </data>
+  <data name="DeleteBudgetTitle" xml:space="preserve">
+    <value>Budget löschen</value>
+  </data>
+  <data name="DeleteBudgetMessage" xml:space="preserve">
+    <value>Möchtest du das Budget für {0} wirklich löschen?</value>
+  </data>
+  <data name="DeleteRecurringTitle" xml:space="preserve">
+    <value>Wiederkehrende Transaktion löschen</value>
+  </data>
+  <data name="DeleteRecurringMessage" xml:space="preserve">
+    <value>Möchtest du {0} wirklich löschen?</value>
+  </data>
+  <data name="ErrorInvalidBudget" xml:space="preserve">
+    <value>Bitte gib ein gültiges Budget ein.</value>
+  </data>
+  <data name="ErrorInvalidTransaction" xml:space="preserve">
+    <value>Bitte Beschreibung und Betrag eingeben.</value>
+  </data>
+  <data name="PremiumRequired" xml:space="preserve">
+    <value>Premium erforderlich</value>
+  </data>
+  <data name="PremiumRequiredMessage" xml:space="preserve">
+    <value>Diese Funktion erfordert Premium oder eine aktive Testversion.</value>
+  </data>
+
+  <!-- Language Names -->
+  <data name="LangGerman" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="LangEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="LangSpanish" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="LangFrench" xml:space="preserve">
+    <value>Français</value>
+  </data>
+  <data name="LangItalian" xml:space="preserve">
+    <value>Italiano</value>
+  </data>
+  <data name="LangPortuguese" xml:space="preserve">
+    <value>Português</value>
+  </data>
+
+  <!-- Sorting and Filtering -->
+  <data name="Sort" xml:space="preserve">
+    <value>Sortieren</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtern</value>
+  </data>
+  <data name="SortDateDescending" xml:space="preserve">
+    <value>Neueste zuerst</value>
+  </data>
+  <data name="SortDateAscending" xml:space="preserve">
+    <value>Älteste zuerst</value>
+  </data>
+  <data name="SortAmountDescending" xml:space="preserve">
+    <value>Höchster Betrag</value>
+  </data>
+  <data name="SortAmountAscending" xml:space="preserve">
+    <value>Niedrigster Betrag</value>
+  </data>
+  <data name="SortDescription" xml:space="preserve">
+    <value>A-Z</value>
+  </data>
+  <data name="FilterAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="FilterExpenses" xml:space="preserve">
+    <value>Nur Ausgaben</value>
+  </data>
+  <data name="FilterIncome" xml:space="preserve">
+    <value>Nur Einnahmen</value>
+  </data>
+  <data name="FilterByCategory" xml:space="preserve">
+    <value>Nach Kategorie filtern</value>
+  </data>
+  <data name="FilterByAmount" xml:space="preserve">
+    <value>Nach Betrag filtern</value>
+  </data>
+  <data name="MinAmount" xml:space="preserve">
+    <value>Mindestbetrag</value>
+  </data>
+  <data name="MaxAmount" xml:space="preserve">
+    <value>Höchstbetrag</value>
+  </data>
+  <data name="ResetFilters" xml:space="preserve">
+    <value>Filter zurücksetzen</value>
+  </data>
+  <data name="ActiveFilters" xml:space="preserve">
+    <value>Aktive Filter</value>
+  </data>
+  <data name="ShowingResults" xml:space="preserve">
+    <value>{0} von {1} Transaktionen</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>Alle Kategorien</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Suche</value>
+  </data>
+  <data name="SearchTransactions" xml:space="preserve">
+    <value>Transaktionen durchsuchen...</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ExportTitle" xml:space="preserve">
+    <value>Transaktionen exportieren</value>
+  </data>
+  <data name="ExportAllTitle" xml:space="preserve">
+    <value>Alle Transaktionen exportieren</value>
+  </data>
+  <data name="ExportError" xml:space="preserve">
+    <value>Export fehlgeschlagen</value>
+  </data>
+  <data name="ExportSuccess" xml:space="preserve">
+    <value>Export erfolgreich</value>
+  </data>
+  <data name="TransactionDeleted" xml:space="preserve">
+    <value>Transaktion gelöscht</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Rückgängig</value>
+  </data>
+  <data name="PremiumFeature" xml:space="preserve">
+    <value>Premium-Funktion</value>
+  </data>
+  <data name="TrackerPremiumMessage" xml:space="preserve">
+    <value>Der Ausgaben-Tracker ist eine Premium-Funktion.\n\nMit Premium erhalten Sie:\n• Ausgaben-Tracker\n• Keine Werbung\n\nPreis: 3,99 €</value>
+  </data>
+  <data name="Purchase" xml:space="preserve">
+    <value>Kaufen</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Zusammenfassung</value>
+  </data>
+  <data name="GeneratedBy" xml:space="preserve">
+    <value>Erstellt von</value>
+  </data>
+  <data name="ExportStatistics" xml:space="preserve">
+    <value>Statistiken exportieren</value>
+  </data>
+  <data name="SaveError" xml:space="preserve">
+    <value>Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="DeleteError" xml:space="preserve">
+    <value>Löschen fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warnung</value>
+  </data>
+  <data name="SetBudget" xml:space="preserve">
+    <value>Budget festlegen</value>
+  </data>
+  <data name="MonthlyLimitEuro" xml:space="preserve">
+    <value>Monatliches Limit (€)</value>
+  </data>
+  <data name="WarningThreshold" xml:space="preserve">
+    <value>Warnschwelle (%)</value>
+  </data>
+  <data name="WarningThresholdHint" xml:space="preserve">
+    <value>Bei diesem Prozentsatz wird eine Warnung angezeigt.</value>
+  </data>
+  <data name="BudgetExceeded" xml:space="preserve">
+    <value>Budget überschritten!</value>
+  </data>
+  <data name="Budget90Percent" xml:space="preserve">
+    <value>90% Budget erreicht</value>
+  </data>
+  <data name="Budget80Percent" xml:space="preserve">
+    <value>80% Budget erreicht</value>
+  </data>
+
+  <!-- Chart Labels -->
+  <data name="CapitalGrowth" xml:space="preserve">
+    <value>Kapitalwachstum</value>
+  </data>
+  <data name="SavingsGrowth" xml:space="preserve">
+    <value>Sparentwicklung</value>
+  </data>
+  <data name="DebtReduction" xml:space="preserve">
+    <value>Schuldenabbau</value>
+  </data>
+  <data name="CostBreakdown" xml:space="preserve">
+    <value>Kostenaufschlüsselung</value>
+  </data>
+  <data name="InvestmentComparison" xml:space="preserve">
+    <value>Anlage-Vergleich</value>
+  </data>
+  <data name="Deposits" xml:space="preserve">
+    <value>Einzahlungen</value>
+  </data>
+  <data name="Capital" xml:space="preserve">
+    <value>Kapital</value>
+  </data>
+  <data name="RemainingDebt" xml:space="preserve">
+    <value>Restschuld</value>
+  </data>
+  <data name="PrincipalPortion" xml:space="preserve">
+    <value>Tilgung</value>
+  </data>
+  <data name="InterestPortion" xml:space="preserve">
+    <value>Zinsen</value>
+  </data>
+  <data name="Initial" xml:space="preserve">
+    <value>Anfang</value>
+  </data>
+  <data name="Final" xml:space="preserve">
+    <value>Ende</value>
+  </data>
+
+  <!-- Trial Offer -->
+  <data name="TrialOfferTitle" xml:space="preserve">
+    <value>Premium kostenlos testen?</value>
+  </data>
+  <data name="TrialOfferStart" xml:space="preserve">
+    <value>14 Tage kostenlos testen</value>
+  </data>
+  <data name="TrialOfferBuyNow" xml:space="preserve">
+    <value>Jetzt kaufen</value>
+  </data>
+  <data name="TrialStartedTitle" xml:space="preserve">
+    <value>Testversion gestartet!</value>
+  </data>
+  <data name="TrialStartedMessage" xml:space="preserve">
+    <value>Du hast jetzt {0} Tage Premium ohne Werbung. Viel Spaß!</value>
+  </data>
+
+  <!-- Description Suggestions - Expenses -->
+  <data name="SuggestionGroceries" xml:space="preserve">
+    <value>Einkaufen</value>
+  </data>
+  <data name="SuggestionOnlineOrder" xml:space="preserve">
+    <value>Bestellung</value>
+  </data>
+  <data name="SuggestionGas" xml:space="preserve">
+    <value>Tanken</value>
+  </data>
+  <data name="SuggestionRestaurant" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="SuggestionRent" xml:space="preserve">
+    <value>Miete</value>
+  </data>
+  <data name="SuggestionElectricity" xml:space="preserve">
+    <value>Strom</value>
+  </data>
+  <data name="SuggestionInternet" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="SuggestionInsurance" xml:space="preserve">
+    <value>Versicherung</value>
+  </data>
+
+  <!-- Description Suggestions - Income -->
+  <data name="SuggestionSalary" xml:space="preserve">
+    <value>Gehalt</value>
+  </data>
+  <data name="SuggestionBonus" xml:space="preserve">
+    <value>Bonus</value>
+  </data>
+  <data name="SuggestionContract" xml:space="preserve">
+    <value>Auftrag</value>
+  </data>
+  <data name="SuggestionInterest" xml:space="preserve">
+    <value>Zinsen</value>
+  </data>
+  <data name="SuggestionDividend" xml:space="preserve">
+    <value>Dividende</value>
+  </data>
+  <data name="SuggestionGift" xml:space="preserve">
+    <value>Geschenk</value>
+  </data>
+
+  <!-- Recurrence Pattern Names -->
+  <data name="PatternDaily" xml:space="preserve">
+    <value>Täglich</value>
+  </data>
+  <data name="PatternWeekly" xml:space="preserve">
+    <value>Wöchentlich</value>
+  </data>
+  <data name="PatternMonthly" xml:space="preserve">
+    <value>Monatlich</value>
+  </data>
+  <data name="PatternYearly" xml:space="preserve">
+    <value>Jährlich</value>
+  </data>
+
+  <!-- Undo Messages -->
+  <data name="BudgetDeleted" xml:space="preserve">
+    <value>Budget gelöscht</value>
+  </data>
+  <data name="RecurringDeleted" xml:space="preserve">
+    <value>Wiederkehrende Transaktion gelöscht</value>
+  </data>
+
+  <!-- Budget Notifications -->
+  <data name="Expenses" xml:space="preserve">
+    <value>Ausgaben</value>
+  </data>
+
+  <!-- Premium Price -->
+  <data name="PremiumPrice" xml:space="preserve">
+    <value>3,99 €</value>
+  </data>
+
+  <!-- Tab Bar Titles -->
+  <data name="TabHome" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="TabTracker" xml:space="preserve">
+    <value>Tracker</value>
+  </data>
+  <data name="TabStatistics" xml:space="preserve">
+    <value>Statistik</value>
+  </data>
+  <data name="TabSettings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+
+  <!-- Empty State Messages -->
+  <data name="EmptyTransactionsTitle" xml:space="preserve">
+    <value>Keine Transaktionen</value>
+  </data>
+  <data name="EmptyTransactionsDesc" xml:space="preserve">
+    <value>Beginne deine Einnahmen und Ausgaben zu erfassen mit dem + Button</value>
+  </data>
+  <data name="EmptyStatsTitle" xml:space="preserve">
+    <value>Keine Statistiken</value>
+  </data>
+  <data name="EmptyStatsDesc" xml:space="preserve">
+    <value>Fuege zuerst Transaktionen hinzu, um deine Finanzuebersicht zu sehen</value>
+  </data>
+  <data name="EmptyBudgetsTitle" xml:space="preserve">
+    <value>Keine Budgets</value>
+  </data>
+  <data name="EmptyBudgetsDesc" xml:space="preserve">
+    <value>Setze monatliche Ausgabenlimits fuer deine Kategorien</value>
+  </data>
+  <data name="EmptyRecurringTitle" xml:space="preserve">
+    <value>Keine wiederkehrenden Buchungen</value>
+  </data>
+  <data name="EmptyRecurringDesc" xml:space="preserve">
+    <value>Fuege wiederkehrende Einnahmen oder Ausgaben hinzu, die sich automatisch wiederholen</value>
+  </data>
+
+  <!-- Recurring (Add Dialog) -->
+  <data name="Recurring" xml:space="preserve">
+    <value>Wiederkehrend</value>
+  </data>
+  <data name="MakeRecurring" xml:space="preserve">
+    <value>Wiederkehrend machen</value>
+  </data>
+  <data name="RecurringHint" xml:space="preserve">
+    <value>Wird auch als wiederkehrend gespeichert</value>
+  </data>
+
+</root>

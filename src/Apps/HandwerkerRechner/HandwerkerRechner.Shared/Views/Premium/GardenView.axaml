@@ -1,0 +1,390 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels.Premium"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:conv="using:HandwerkerRechner.Converters"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerRechner.Views.Premium.GardenView"
+             x:DataType="vm:GardenViewModel">
+
+  <UserControl.Resources>
+    <conv:IntEqualsConverter x:Key="IntEquals" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Header -->
+    <Border Grid.Row="0" Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding GoBackCommand}"
+                Padding="8">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="1" Text="{loc:Translate CategoryGarden}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- Content -->
+    <ScrollViewer Grid.Row="1" Padding="16,0">
+      <StackPanel Spacing="16">
+
+        <!-- Calculator Selector -->
+        <Border Classes="Card" Padding="16">
+          <ComboBox ItemsSource="{Binding Calculators}"
+                    SelectedIndex="{Binding SelectedCalculator}"
+                    HorizontalAlignment="Stretch" />
+        </Border>
+
+        <!-- Calculator 0: Paving -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=0}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate Paving}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate UnitSquareMeters}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PavingArea}" Watermark="m²" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate StoneLength}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding StoneLength}" Watermark="cm" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate StoneWidth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding StoneWidth}" Watermark="cm" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate JointWidth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding JointWidth}" Watermark="mm" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CostCalculation}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PricePerStone}"
+                           Watermark="EUR" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate UnitPieces}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PavingResult.StonesNeeded}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate StonesWithReserve}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PavingResult.StonesWithReserve}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto"
+                      IsVisible="{Binding ShowPavingCost}">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate TotalCost}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PavingCostDisplay}"
+                             FontSize="17" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Calculator 1: Soil -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=1}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate Soil}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate UnitSquareMeters}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding SoilArea}" Watermark="m²" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate Depth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding SoilDepth}" Watermark="cm" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate UnitLiters}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding BagLiters}" Watermark="L" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CostCalculation}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PricePerBag}"
+                           Watermark="EUR" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate UnitLiters}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding SoilResult.VolumeLiters}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate BagsNeeded}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding SoilResult.BagsNeeded}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto"
+                      IsVisible="{Binding ShowSoilCost}">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate TotalCost}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding SoilCostDisplay}"
+                             FontSize="17" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Calculator 2: Pond Liner -->
+        <Panel IsVisible="{Binding SelectedCalculator, Converter={StaticResource IntEquals}, ConverterParameter=2}">
+          <StackPanel Spacing="16">
+
+            <!-- Input -->
+            <Border Classes="Card" Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{loc:Translate PondLiner}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate PondLength}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PondLength}" Watermark="m" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate PondWidth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PondWidth}" Watermark="m" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate PondDepth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PondDepth}" Watermark="m" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate Overlap}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding Overlap}" Watermark="m" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{loc:Translate CostCalculation}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBox Text="{Binding PricePerSqmLiner}"
+                           Watermark="EUR/m²" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Results -->
+            <Border Classes="Card Elevated" Padding="16"
+                    IsVisible="{Binding HasResult}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="{loc:Translate Result}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate LinerLength}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerLength}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate LinerWidth}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerWidth}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate UnitSquareMeters}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerArea}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto"
+                      IsVisible="{Binding ShowLinerCost}">
+                  <TextBlock Grid.Column="0" Text="{loc:Translate TotalCost}"
+                             FontSize="13"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Grid.Column="1" Text="{Binding LinerCostDisplay}"
+                             FontSize="17" FontWeight="Bold"
+                             Foreground="{DynamicResource AccentBrush}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+          </StackPanel>
+        </Panel>
+
+        <!-- Bottom spacing -->
+        <Panel Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Buttons -->
+    <Border Grid.Row="2" Padding="16,12"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}">
+      <Grid ColumnDefinitions="*,8,*,8,*">
+        <Button Grid.Column="0" Content="{loc:Translate Reset}"
+                Command="{Binding ResetCommand}"
+                Classes="Outlined"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <Button Grid.Column="2" Content="{loc:Translate Calculate}"
+                Command="{Binding CalculateCommand}"
+                Classes="Primary"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <!-- Save Project -->
+        <Button Grid.Column="4"
+                Classes="Secondary"
+                Command="{Binding SaveProjectCommand}"
+                IsVisible="{Binding HasResult}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
+            <TextBlock Text="{loc:Translate Save}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Save Project Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            ZIndex="100"
+            Background="#80000000"
+            IsVisible="{Binding ShowSaveDialog}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate SaveProject}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBox Text="{Binding SaveProjectName}"
+                   Watermark="{loc:Translate ProjectName}"
+                   Classes="Outlined" />
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Grid.Column="0"
+                    Classes="Outlined"
+                    Command="{Binding CancelSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Cancel}" />
+            <Button Grid.Column="2"
+                    Classes="Primary"
+                    Command="{Binding ConfirmSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Save}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

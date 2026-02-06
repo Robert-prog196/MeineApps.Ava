@@ -1,0 +1,997 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+
+  <!-- App Info -->
+  <data name="AppName" xml:space="preserve">
+    <value>Impero dell'Artigiano</value>
+  </data>
+
+  <!-- Navigation -->
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Stats" xml:space="preserve">
+    <value>Statistiche</value>
+  </data>
+  <data name="Shop" xml:space="preserve">
+    <value>Negozio</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+
+  <!-- Workshops -->
+  <data name="Carpenter" xml:space="preserve">
+    <value>Falegname</value>
+  </data>
+  <data name="Plumber" xml:space="preserve">
+    <value>Idraulico</value>
+  </data>
+  <data name="Electrician" xml:space="preserve">
+    <value>Elettricista</value>
+  </data>
+  <data name="Painter" xml:space="preserve">
+    <value>Imbianchino</value>
+  </data>
+  <data name="Roofer" xml:space="preserve">
+    <value>Copritetto</value>
+  </data>
+  <data name="Contractor" xml:space="preserve">
+    <value>Imprenditore</value>
+  </data>
+
+  <!-- Game UI -->
+  <data name="Level" xml:space="preserve">
+    <value>Livello</value>
+  </data>
+  <data name="Upgrade" xml:space="preserve">
+    <value>Potenzia</value>
+  </data>
+  <data name="Workers" xml:space="preserve">
+    <value>Lavoratori</value>
+  </data>
+  <data name="HireWorker" xml:space="preserve">
+    <value>Assumi lavoratore</value>
+  </data>
+  <data name="PerSecond" xml:space="preserve">
+    <value>/sec</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>Bloccato</value>
+  </data>
+  <data name="UnlocksAtLevel" xml:space="preserve">
+    <value>Si sblocca al livello {0}</value>
+  </data>
+
+  <!-- Orders -->
+  <data name="Orders" xml:space="preserve">
+    <value>Ordini</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>Nuovo ordine</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Inizia</value>
+  </data>
+  <data name="Reward" xml:space="preserve">
+    <value>Ricompensa</value>
+  </data>
+  <data name="Difficulty" xml:space="preserve">
+    <value>Difficoltà</value>
+  </data>
+
+  <!-- Mini-Games -->
+  <data name="Sawing" xml:space="preserve">
+    <value>Segare</value>
+  </data>
+  <data name="Planing" xml:space="preserve">
+    <value>Piallare</value>
+  </data>
+  <data name="TileLaying" xml:space="preserve">
+    <value>Posare tegole</value>
+  </data>
+  <data name="Measuring" xml:space="preserve">
+    <value>Misurare</value>
+  </data>
+  <data name="PipePuzzle" xml:space="preserve">
+    <value>Puzzle tubi</value>
+  </data>
+  <data name="WiringGame" xml:space="preserve">
+    <value>Cablaggio</value>
+  </data>
+  <data name="PaintingGame" xml:space="preserve">
+    <value>Pittura</value>
+  </data>
+  <data name="SawNow" xml:space="preserve">
+    <value>SEGA ORA!</value>
+  </data>
+  <data name="Perfect" xml:space="preserve">
+    <value>PERFETTO!</value>
+  </data>
+  <data name="Good" xml:space="preserve">
+    <value>Bene!</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Miss" xml:space="preserve">
+    <value>Mancato</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continua</value>
+  </data>
+  <data name="WatchAdForDouble" xml:space="preserve">
+    <value>Guarda annuncio = 2x</value>
+  </data>
+
+  <!-- Results -->
+  <data name="Bonus" xml:space="preserve">
+    <value>Bonus</value>
+  </data>
+  <data name="PerfectTiming" xml:space="preserve">
+    <value>Tempismo perfetto!</value>
+  </data>
+
+  <!-- Offline Progress -->
+  <data name="WelcomeBack" xml:space="preserve">
+    <value>Bentornato!</value>
+  </data>
+  <data name="WhileYouWereAway" xml:space="preserve">
+    <value>Mentre eri via, i tuoi lavoratori hanno guadagnato:</value>
+  </data>
+  <data name="Collect" xml:space="preserve">
+    <value>Raccogli</value>
+  </data>
+  <data name="DoubleWithAd" xml:space="preserve">
+    <value>2x con annuncio</value>
+  </data>
+
+  <!-- Premium -->
+  <data name="RemoveAds" xml:space="preserve">
+    <value>Rimuovi annunci</value>
+  </data>
+  <data name="Premium" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="RestorePurchases" xml:space="preserve">
+    <value>Ripristina acquisti</value>
+  </data>
+
+
+  <!-- Achievements -->
+  <data name="Achievements" xml:space="preserve">
+    <value>Obiettivi</value>
+  </data>
+  <data name="AchievementProgress" xml:space="preserve">
+    <value>Il Tuo Progresso</value>
+  </data>
+  <data name="AchievementUnlocked" xml:space="preserve">
+    <value>Obiettivo sbloccato!</value>
+  </data>
+
+  <!-- Daily Rewards -->
+  <data name="DailyReward" xml:space="preserve">
+    <value>Ricompensa giornaliera</value>
+  </data>
+  <data name="DailyStreak" xml:space="preserve">
+    <value>Serie di {0} giorni</value>
+  </data>
+  <data name="DayReward" xml:space="preserve">
+    <value>Ricompensa del giorno {0}</value>
+  </data>
+  <data name="ClaimReward" xml:space="preserve">
+    <value>Riscuoti!</value>
+  </data>
+  <data name="SpeedBoost1h" xml:space="preserve">
+    <value>2x velocità per 1 ora</value>
+  </data>
+  <data name="XpBoost1h" xml:space="preserve">
+    <value>50% XP in più per 1 ora</value>
+  </data>
+  <data name="FreeWorker" xml:space="preserve">
+    <value>Lavoratore gratis</value>
+  </data>
+
+  <!-- Tutorial -->
+  <data name="TutorialSkip" xml:space="preserve">
+    <value>Salta</value>
+  </data>
+  <data name="TutorialNext" xml:space="preserve">
+    <value>Avanti</value>
+  </data>
+  <data name="TutorialDone" xml:space="preserve">
+    <value>Iniziamo!</value>
+  </data>
+  <data name="TutorialWelcomeTitle" xml:space="preserve">
+    <value>Benvenuto!</value>
+  </data>
+  <data name="TutorialWelcomeDesc" xml:space="preserve">
+    <value>Costruisci il tuo impero artigianale da zero! Ti mostriamo come funziona.</value>
+  </data>
+  <data name="TutorialWorkshopsTitle" xml:space="preserve">
+    <value>Le Tue Officine</value>
+  </data>
+  <data name="TutorialWorkshopsDesc" xml:space="preserve">
+    <value>Queste sono le tue officine. Tocca una per vedere i dettagli e i potenziamenti.</value>
+  </data>
+  <data name="TutorialOrdersTitle" xml:space="preserve">
+    <value>Ordini</value>
+  </data>
+  <data name="TutorialOrdersDesc" xml:space="preserve">
+    <value>Accetta ordini per guadagnare soldi e XP. Ogni ordine ha dei minigiochi.</value>
+  </data>
+  <data name="TutorialMiniGameTitle" xml:space="preserve">
+    <value>Minigiochi</value>
+  </data>
+  <data name="TutorialMiniGameDesc" xml:space="preserve">
+    <value>Completa i minigiochi per finire gli ordini. I punteggi perfetti danno bonus!</value>
+  </data>
+  <data name="TutorialUpgradeTitle" xml:space="preserve">
+    <value>Potenziamenti</value>
+  </data>
+  <data name="TutorialUpgradeDesc" xml:space="preserve">
+    <value>Potenzia le tue officine per aumentare i guadagni. Il pulsante ↑ mostra il costo.</value>
+  </data>
+  <data name="TutorialWorkersTitle" xml:space="preserve">
+    <value>Lavoratori</value>
+  </data>
+  <data name="TutorialWorkersDesc" xml:space="preserve">
+    <value>Assumi lavoratori per guadagnare automaticamente, anche quando sei offline!</value>
+  </data>
+  <data name="TutorialShopTitle" xml:space="preserve">
+    <value>Negozio</value>
+  </data>
+  <data name="TutorialShopDesc" xml:space="preserve">
+    <value>Visita il negozio per boost e bonus. Con Premium giochi senza pubblicità!</value>
+  </data>
+  <data name="TutorialCompleteTitle" xml:space="preserve">
+    <value>Sei pronto!</value>
+  </data>
+  <data name="TutorialCompleteDesc" xml:space="preserve">
+    <value>È tutto! Accetta ordini e costruisci il tuo impero. Buona fortuna!</value>
+  </data>
+
+  <!-- Statistics Page -->
+  <data name="TotalXP" xml:space="preserve">
+    <value>XP Totale</value>
+  </data>
+  <data name="PlayTime" xml:space="preserve">
+    <value>Tempo di gioco</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>Saldo</value>
+  </data>
+  <data name="TotalEarned" xml:space="preserve">
+    <value>Totale guadagnato</value>
+  </data>
+  <data name="TotalSpent" xml:space="preserve">
+    <value>Speso</value>
+  </data>
+  <data name="MiniGames" xml:space="preserve">
+    <value>Minigiochi</value>
+  </data>
+  <data name="PerfectRate" xml:space="preserve">
+    <value>Tasso Perfect</value>
+  </data>
+  <data name="CurrentStreak" xml:space="preserve">
+    <value>Serie attuale</value>
+  </data>
+  <data name="BestStreak" xml:space="preserve">
+    <value>Miglior serie</value>
+  </data>
+  <data name="PrestigeLevel" xml:space="preserve">
+    <value>Livello Prestige</value>
+  </data>
+  <data name="IncomeBonus" xml:space="preserve">
+    <value>Bonus entrate</value>
+  </data>
+  <data name="NextPrestigeBonus" xml:space="preserve">
+    <value>Prossimo bonus:</value>
+  </data>
+  <data name="Workshops" xml:space="preserve">
+    <value>Officine</value>
+  </data>
+  <data name="Income" xml:space="preserve">
+    <value>Entrate</value>
+  </data>
+  <data name="LevelProgress" xml:space="preserve">
+    <value>Progresso livello</value>
+  </data>
+  <data name="MaxLevelReached" xml:space="preserve">
+    <value>Livello max raggiunto!</value>
+  </data>
+  <data name="NoWorkersYet" xml:space="preserve">
+    <value>Nessun lavoratore. Assumine!</value>
+  </data>
+  <data name="MaxWorkersReached" xml:space="preserve">
+    <value>Max lavoratori. Potenzia!</value>
+  </data>
+  <data name="YouArePremium" xml:space="preserve">
+    <value>Sei Premium!</value>
+  </data>
+  <data name="PremiumBenefits" xml:space="preserve">
+    <value>Senza pubblicità + 8h offline</value>
+  </data>
+  <data name="Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="Sound" xml:space="preserve">
+    <value>Suono</value>
+  </data>
+  <data name="Vibration" xml:space="preserve">
+    <value>Vibrazione</value>
+  </data>
+  <data name="WarningDataLoss" xml:space="preserve">
+    <value>Attenzione: Tutto sarà perso!</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versione</value>
+  </data>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>Sviluppato da RS-Digital</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="Prestige" xml:space="preserve">
+    <value>Prestigio</value>
+  </data>
+  <data name="PrestigeDescription" xml:space="preserve">
+    <value>Resetta e ottieni un bonus permanente!</value>
+  </data>
+  <data name="CurrentBonus" xml:space="preserve">
+    <value>Bonus attuale:</value>
+  </data>
+  <data name="NewBonus" xml:space="preserve">
+    <value>Nuovo bonus:</value>
+  </data>
+  <data name="ConnectSameColors" xml:space="preserve">
+    <value>Collega gli stessi colori!</value>
+  </data>
+  <data name="SelectLeftThenRight" xml:space="preserve">
+    <value>Sinistra, poi destra</value>
+  </data>
+  <data name="ConnectPipes" xml:space="preserve">
+    <value>Collega 🚰 a 🚿!</value>
+  </data>
+  <data name="TapToRotate" xml:space="preserve">
+    <value>Tocca per ruotare</value>
+  </data>
+  <data name="PipesConnected" xml:space="preserve">
+    <value>Tubi collegati!</value>
+  </data>
+  <data name="TimeUp" xml:space="preserve">
+    <value>Tempo scaduto!</value>
+  </data>
+
+  <!-- Settings Page - Additional -->
+  <data name="Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="RemoveAdsPrice" xml:space="preserve">
+    <value>Rimuovi annunci (4,99 €)</value>
+  </data>
+  <data name="PremiumBenefitNoAds" xml:space="preserve">
+    <value>Senza pubblicità</value>
+  </data>
+  <data name="PremiumBenefitOffline" xml:space="preserve">
+    <value>8 ore di guadagni offline</value>
+  </data>
+  <data name="PremiumBenefitSupport" xml:space="preserve">
+    <value>Supporta lo sviluppo</value>
+  </data>
+  <data name="Data" xml:space="preserve">
+    <value>Dati</value>
+  </data>
+  <data name="DeleteSaveGame" xml:space="preserve">
+    <value>Elimina salvataggio</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Informazioni</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Informativa sulla privacy</value>
+  </data>
+  <data name="SendFeedback" xml:space="preserve">
+    <value>Invia feedback</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>Tutti i diritti riservati</value>
+  </data>
+
+  <!-- Order Page - Additional -->
+  <data name="OrderDetails" xml:space="preserve">
+    <value>Ordine</value>
+  </data>
+  <data name="MiniGamesRequiredFormat" xml:space="preserve">
+    <value>Minigioco/i richiesto/i</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progresso</value>
+  </data>
+  <data name="StartOrder" xml:space="preserve">
+    <value>Inizia ordine</value>
+  </data>
+  <data name="ContinuePlaying" xml:space="preserve">
+    <value>Continua a giocare</value>
+  </data>
+  <data name="CancelOrder" xml:space="preserve">
+    <value>Annulla ordine</value>
+  </data>
+  <data name="OrderTip" xml:space="preserve">
+    <value>Suggerimento: Più sei bravo nei minigiochi, più bonus ottieni!</value>
+  </data>
+
+  <!-- Difficulty -->
+  <data name="DifficultyEasy" xml:space="preserve">
+    <value>Facile</value>
+  </data>
+  <data name="DifficultyMedium" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="DifficultyHard" xml:space="preserve">
+    <value>Difficile</value>
+  </data>
+  <data name="DifficultyUnknown" xml:space="preserve">
+    <value>Sconosciuto</value>
+  </data>
+
+  <!-- Shop Items -->
+  <data name="ShopPremiumName" xml:space="preserve">
+    <value>Premium</value>
+  </data>
+  <data name="ShopPremiumDesc" xml:space="preserve">
+    <value>Rimuovi tutti gli annunci permanentemente + 8h di guadagni offline</value>
+  </data>
+  <data name="ShopBooster30MinName" xml:space="preserve">
+    <value>Boost 2x (30 min)</value>
+  </data>
+  <data name="ShopBooster30MinDesc" xml:space="preserve">
+    <value>Raddoppia tutti i guadagni per 30 minuti</value>
+  </data>
+  <data name="ShopBooster2hName" xml:space="preserve">
+    <value>Boost 2x (2 ore)</value>
+  </data>
+  <data name="ShopBooster2hDesc" xml:space="preserve">
+    <value>Raddoppia tutti i guadagni per 2 ore</value>
+  </data>
+  <data name="ShopCashSmallName" xml:space="preserve">
+    <value>Soldi Istantanei (Piccolo)</value>
+  </data>
+  <data name="ShopCashSmallDesc" xml:space="preserve">
+    <value>Ottieni 1.000 € istantaneamente</value>
+  </data>
+  <data name="ShopCashLargeName" xml:space="preserve">
+    <value>Soldi Istantanei (Grande)</value>
+  </data>
+  <data name="ShopCashLargeDesc" xml:space="preserve">
+    <value>Ottieni 10.000 € istantaneamente</value>
+  </data>
+  <data name="ShopSkipTimeName" xml:space="preserve">
+    <value>Salta Tempo (1h)</value>
+  </data>
+  <data name="ShopSkipTimeDesc" xml:space="preserve">
+    <value>Ottieni 1 ora di guadagni offline istantaneamente</value>
+  </data>
+  <data name="WatchVideo" xml:space="preserve">
+    <value>Guarda video</value>
+  </data>
+
+  <!-- Dialog Texts -->
+  <data name="AlreadyPurchased" xml:space="preserve">
+    <value>Già acquistato</value>
+  </data>
+  <data name="AlreadyPurchasedDesc" xml:space="preserve">
+    <value>Possiedi già questo articolo.</value>
+  </data>
+  <data name="WatchVideoQuestion" xml:space="preserve">
+    <value>Vuoi guardare un video per ricevere questo bonus?</value>
+  </data>
+  <data name="Buy" xml:space="preserve">
+    <value>Acquista</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Prezzo</value>
+  </data>
+  <data name="BoosterActivated" xml:space="preserve">
+    <value>Boost attivato!</value>
+  </data>
+  <data name="BoosterActivatedDesc" xml:space="preserve">
+    <value>2x guadagni per 30 minuti!</value>
+  </data>
+  <data name="MoneyReceived" xml:space="preserve">
+    <value>Soldi ricevuti!</value>
+  </data>
+  <data name="MoneyReceivedFormat" xml:space="preserve">
+    <value>Hai ricevuto {0}!</value>
+  </data>
+  <data name="TimeSkipped" xml:space="preserve">
+    <value>Tempo saltato!</value>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>Prossimamente</value>
+  </data>
+  <data name="ComingSoonDesc" xml:space="preserve">
+    <value>Questo acquisto sarà disponibile in un futuro aggiornamento!</value>
+  </data>
+  <data name="ThankYou" xml:space="preserve">
+    <value>Grazie!</value>
+  </data>
+  <data name="ThankYouPremiumDesc" xml:space="preserve">
+    <value>Sei ora un giocatore Premium! Niente più annunci e 8 ore di guadagni offline.</value>
+  </data>
+  <data name="Great" xml:space="preserve">
+    <value>Fantastico!</value>
+  </data>
+  <data name="PurchasesRestored" xml:space="preserve">
+    <value>Ripristinato!</value>
+  </data>
+  <data name="PurchasesRestoredDesc" xml:space="preserve">
+    <value>I tuoi acquisti sono stati ripristinati con successo.</value>
+  </data>
+  <data name="NoPurchasesFound" xml:space="preserve">
+    <value>Nessun acquisto trovato</value>
+  </data>
+  <data name="NoPurchasesFoundDesc" xml:space="preserve">
+    <value>Non è stato possibile trovare acquisti precedenti.</value>
+  </data>
+  <data name="PrestigeNotAvailable" xml:space="preserve">
+    <value>Prestigio non disponibile</value>
+  </data>
+  <data name="PrestigeNotAvailableDesc" xml:space="preserve">
+    <value>Hai bisogno di almeno il Livello {0} per prestigiare. Attualmente sei al Livello {1}.</value>
+  </data>
+  <data name="ConfirmCancelOrder" xml:space="preserve">
+    <value>Annulla ordine</value>
+  </data>
+  <data name="ConfirmCancelOrderDesc" xml:space="preserve">
+    <value>Vuoi davvero annullare questo ordine? Non riceverai alcuna ricompensa.</value>
+  </data>
+  <data name="YesCancel" xml:space="preserve">
+    <value>Sì, annulla</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="FairPlayInfo" xml:space="preserve">
+    <value>Fair Play: Nessun annuncio forzato, solo video opzionali per bonus.</value>
+  </data>
+
+  <!-- Additional Localization Keys -->
+  <data name="WatchAdFree" xml:space="preserve">
+    <value>Gratis</value>
+  </data>
+  <data name="Purchased" xml:space="preserve">
+    <value>Acquistato</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>Avviso</value>
+  </data>
+  <data name="TaskCount" xml:space="preserve">
+    <value>{0} compiti</value>
+  </data>
+  <data name="Player" xml:space="preserve">
+    <value>Giocatore</value>
+  </data>
+  <data name="MinLevelRequired" xml:space="preserve">
+    <value>Richiesto livello minimo {0}</value>
+  </data>
+  <data name="WorkshopDetails" xml:space="preserve">
+    <value>Dettagli officina</value>
+  </data>
+
+  <!-- Mini-Game Page Titles & Instructions -->
+  <data name="PipePuzzleTitle" xml:space="preserve">
+    <value>PUZZLE TUBI</value>
+  </data>
+  <data name="PipePuzzleInstructions" xml:space="preserve">
+    <value>Collega i tubi dalla fonte allo scarico!</value>
+  </data>
+  <data name="WiringTitle" xml:space="preserve">
+    <value>COLLEGARE I CAVI</value>
+  </data>
+  <data name="WiringInstructions" xml:space="preserve">
+    <value>Collega gli stessi colori da sinistra a destra!</value>
+  </data>
+  <data name="PaintingTitle" xml:space="preserve">
+    <value>PITTURARE PARETE</value>
+  </data>
+  <data name="PaintingInstructions" xml:space="preserve">
+    <value>Dipingi tutti i campi contrassegnati!</value>
+  </data>
+  <data name="PaintingPlayInstructions" xml:space="preserve">
+    <value>Tocca per dipingere - non sbagliare!</value>
+  </data>
+  <data name="PaintColor" xml:space="preserve">
+    <value>Colore:</value>
+  </data>
+  <data name="Errors" xml:space="preserve">
+    <value>Errori: {0}</value>
+  </data>
+  <data name="StartGame" xml:space="preserve">
+    <value>INIZIA</value>
+  </data>
+  <data name="Entrance" xml:space="preserve">
+    <value>ENTRATA</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>USCITA</value>
+  </data>
+  <data name="StartPuzzle" xml:space="preserve">
+    <value>INIZIA PUZZLE</value>
+  </data>
+  <data name="Efficiency" xml:space="preserve">
+    <value>Efficienza</value>
+  </data>
+  <data name="SawingTitle" xml:space="preserve">
+    <value>SEGATURA</value>
+  </data>
+  <data name="SawingInstructions" xml:space="preserve">
+    <value>Ferma il marcatore nella zona verde!</value>
+  </data>
+  <data name="PlaningTitle" xml:space="preserve">
+    <value>PIALLATURA</value>
+  </data>
+  <data name="TileLayingTitle" xml:space="preserve">
+    <value>POSA PIASTRELLE</value>
+  </data>
+  <data name="MeasuringTitle" xml:space="preserve">
+    <value>MISURARE</value>
+  </data>
+  <data name="ResetGameTitle" xml:space="preserve">
+    <value>Resetta il gioco</value>
+  </data>
+  <data name="ResetGameConfirmation" xml:space="preserve">
+    <value>Sei sicuro? Tutti i progressi andranno persi!</value>
+  </data>
+  <data name="YesReset" xml:space="preserve">
+    <value>Sì, resetta</value>
+  </data>
+  <data name="GameResetCompleteTitle" xml:space="preserve">
+    <value>Resettato</value>
+  </data>
+  <data name="GameResetComplete" xml:space="preserve">
+    <value>Il gioco è stato resettato.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="PrivacyPolicyOpenError" xml:space="preserve">
+    <value>Impossibile aprire l'informativa sulla privacy.</value>
+  </data>
+  <data name="EmailOpenError" xml:space="preserve">
+    <value>Impossibile aprire l'e-mail.</value>
+  </data>
+  <data name="FeedbackBody" xml:space="preserve">
+    <value>Il tuo feedback:
+
+</value>
+  </data>
+  <data name="RestoringPurchasesMessage" xml:space="preserve">
+    <value>Ripristino degli acquisti...</value>
+  </data>
+  <data name="MovesLabel" xml:space="preserve">
+    <value>Mosse:</value>
+  </data>
+  <data name="ConnectedLabel" xml:space="preserve">
+    <value>Collegati:</value>
+  </data>
+  <data name="MistakesLabel" xml:space="preserve">
+    <value>Errori:</value>
+  </data>
+  <data name="PlaneNow" xml:space="preserve">
+    <value>PIALLARE ORA!</value>
+  </data>
+  <data name="LayNow" xml:space="preserve">
+    <value>POSARE ORA!</value>
+  </data>
+  <data name="MeasureNow" xml:space="preserve">
+    <value>MISURARE ORA!</value>
+  </data>
+  <data name="StopInGreenZone" xml:space="preserve">
+    <value>Fermati nella zona verde!</value>
+  </data>
+  <data name="StopForSmoothSurface" xml:space="preserve">
+    <value>Fermati per una superficie liscia!</value>
+  </data>
+  <data name="StopAtPerfectMoment" xml:space="preserve">
+    <value>Fermati al momento perfetto!</value>
+  </data>
+  <data name="StopAtRightLength" xml:space="preserve">
+    <value>Fermati alla lunghezza giusta!</value>
+  </data>
+  <data name="LevelUpTitle" xml:space="preserve">
+    <value>Livello superiore!</value>
+  </data>
+
+  <!-- Achievement Titles & Descriptions -->
+  <data name="AchFirstOrder" xml:space="preserve">
+    <value>Primi passi</value>
+  </data>
+  <data name="AchFirstOrderDesc" xml:space="preserve">
+    <value>Completa il tuo primo ordine</value>
+  </data>
+  <data name="AchOrders10" xml:space="preserve">
+    <value>Buon inizio</value>
+  </data>
+  <data name="AchOrders10Desc" xml:space="preserve">
+    <value>Completa 10 ordini</value>
+  </data>
+  <data name="AchOrders50" xml:space="preserve">
+    <value>Lavoratore affidabile</value>
+  </data>
+  <data name="AchOrders50Desc" xml:space="preserve">
+    <value>Completa 50 ordini</value>
+  </data>
+  <data name="AchOrders100" xml:space="preserve">
+    <value>Maestro artigiano</value>
+  </data>
+  <data name="AchOrders100Desc" xml:space="preserve">
+    <value>Completa 100 ordini</value>
+  </data>
+  <data name="AchOrders500" xml:space="preserve">
+    <value>Leggenda del settore</value>
+  </data>
+  <data name="AchOrders500Desc" xml:space="preserve">
+    <value>Completa 500 ordini</value>
+  </data>
+  <data name="AchPerfectFirst" xml:space="preserve">
+    <value>Perfezione!</value>
+  </data>
+  <data name="AchPerfectFirstDesc" xml:space="preserve">
+    <value>Ottieni la tua prima valutazione Perfetta</value>
+  </data>
+  <data name="AchPerfect10" xml:space="preserve">
+    <value>Mani abili</value>
+  </data>
+  <data name="AchPerfect10Desc" xml:space="preserve">
+    <value>Ottieni 10 valutazioni Perfette</value>
+  </data>
+  <data name="AchPerfect50" xml:space="preserve">
+    <value>Maestro di precisione</value>
+  </data>
+  <data name="AchPerfect50Desc" xml:space="preserve">
+    <value>Ottieni 50 valutazioni Perfette</value>
+  </data>
+  <data name="AchStreak5" xml:space="preserve">
+    <value>In serie!</value>
+  </data>
+  <data name="AchStreak5Desc" xml:space="preserve">
+    <value>Ottieni 5 valutazioni Perfette di fila</value>
+  </data>
+  <data name="AchStreak10" xml:space="preserve">
+    <value>Inarrestabile</value>
+  </data>
+  <data name="AchStreak10Desc" xml:space="preserve">
+    <value>Ottieni 10 valutazioni Perfette di fila</value>
+  </data>
+  <data name="AchGames100" xml:space="preserve">
+    <value>Veterano dei minigiochi</value>
+  </data>
+  <data name="AchGames100Desc" xml:space="preserve">
+    <value>Gioca 100 minigiochi</value>
+  </data>
+  <data name="AchWorkshop10" xml:space="preserve">
+    <value>Potenziato</value>
+  </data>
+  <data name="AchWorkshop10Desc" xml:space="preserve">
+    <value>Migliora un laboratorio al livello 10</value>
+  </data>
+  <data name="AchWorkshop25" xml:space="preserve">
+    <value>Struttura esperta</value>
+  </data>
+  <data name="AchWorkshop25Desc" xml:space="preserve">
+    <value>Migliora un laboratorio al livello 25</value>
+  </data>
+  <data name="AchAllWorkshops" xml:space="preserve">
+    <value>Tutto esaurito</value>
+  </data>
+  <data name="AchAllWorkshopsDesc" xml:space="preserve">
+    <value>Sblocca tutti i 6 laboratori</value>
+  </data>
+  <data name="AchWorkerFirst" xml:space="preserve">
+    <value>Costruttore di squadra</value>
+  </data>
+  <data name="AchWorkerFirstDesc" xml:space="preserve">
+    <value>Assumi il tuo primo lavoratore</value>
+  </data>
+  <data name="AchWorkers10" xml:space="preserve">
+    <value>Squadra in crescita</value>
+  </data>
+  <data name="AchWorkers10Desc" xml:space="preserve">
+    <value>Assumi 10 lavoratori in totale</value>
+  </data>
+  <data name="AchWorkers25" xml:space="preserve">
+    <value>Grande impresa</value>
+  </data>
+  <data name="AchWorkers25Desc" xml:space="preserve">
+    <value>Assumi 25 lavoratori in totale</value>
+  </data>
+  <data name="AchMoney1k" xml:space="preserve">
+    <value>Primo migliaio</value>
+  </data>
+  <data name="AchMoney1kDesc" xml:space="preserve">
+    <value>Guadagna 1.000&#8364; in totale</value>
+  </data>
+  <data name="AchMoney10k" xml:space="preserve">
+    <value>Fare soldi</value>
+  </data>
+  <data name="AchMoney10kDesc" xml:space="preserve">
+    <value>Guadagna 10.000&#8364; in totale</value>
+  </data>
+  <data name="AchMoney100k" xml:space="preserve">
+    <value>Benestante</value>
+  </data>
+  <data name="AchMoney100kDesc" xml:space="preserve">
+    <value>Guadagna 100.000&#8364; in totale</value>
+  </data>
+  <data name="AchMoney1m" xml:space="preserve">
+    <value>Milionario</value>
+  </data>
+  <data name="AchMoney1mDesc" xml:space="preserve">
+    <value>Guadagna 1.000.000&#8364; in totale</value>
+  </data>
+  <data name="AchPlay1h" xml:space="preserve">
+    <value>Dedicato</value>
+  </data>
+  <data name="AchPlay1hDesc" xml:space="preserve">
+    <value>Gioca per 1 ora in totale</value>
+  </data>
+  <data name="AchPlay10h" xml:space="preserve">
+    <value>Impegnato</value>
+  </data>
+  <data name="AchPlay10hDesc" xml:space="preserve">
+    <value>Gioca per 10 ore in totale</value>
+  </data>
+  <data name="AchDaily7" xml:space="preserve">
+    <value>Guerriero settimanale</value>
+  </data>
+  <data name="AchDaily7Desc" xml:space="preserve">
+    <value>Accedi per 7 giorni consecutivi</value>
+  </data>
+  <data name="AchLevel10" xml:space="preserve">
+    <value>Stella nascente</value>
+  </data>
+  <data name="AchLevel10Desc" xml:space="preserve">
+    <value>Raggiungi il livello 10</value>
+  </data>
+  <data name="AchLevel25" xml:space="preserve">
+    <value>Esperto</value>
+  </data>
+  <data name="AchLevel25Desc" xml:space="preserve">
+    <value>Raggiungi il livello 25</value>
+  </data>
+  <data name="AchLevel50" xml:space="preserve">
+    <value>Veterano</value>
+  </data>
+  <data name="AchLevel50Desc" xml:space="preserve">
+    <value>Raggiungi il livello 50</value>
+  </data>
+  <data name="AchPrestige1" xml:space="preserve">
+    <value>Nuovo inizio</value>
+  </data>
+  <data name="AchPrestige1Desc" xml:space="preserve">
+    <value>Prestigia per la prima volta</value>
+  </data>
+
+  <!-- Order Titles -->
+  <data name="order_shelf" xml:space="preserve">
+    <value>Costruire uno scaffale</value>
+  </data>
+  <data name="order_cabinet" xml:space="preserve">
+    <value>Costruire un armadio</value>
+  </data>
+  <data name="order_table" xml:space="preserve">
+    <value>Costruire un tavolo</value>
+  </data>
+  <data name="order_deck" xml:space="preserve">
+    <value>Costruire una terrazza</value>
+  </data>
+  <data name="order_shed" xml:space="preserve">
+    <value>Costruire un capanno</value>
+  </data>
+  <data name="order_faucet" xml:space="preserve">
+    <value>Sostituire il rubinetto</value>
+  </data>
+  <data name="order_toilet" xml:space="preserve">
+    <value>Installare il WC</value>
+  </data>
+  <data name="order_shower" xml:space="preserve">
+    <value>Installare la doccia</value>
+  </data>
+  <data name="order_bathroom" xml:space="preserve">
+    <value>Ristrutturare il bagno</value>
+  </data>
+  <data name="order_outlet" xml:space="preserve">
+    <value>Installare una presa</value>
+  </data>
+  <data name="order_light" xml:space="preserve">
+    <value>Installare un lampadario</value>
+  </data>
+  <data name="order_panel" xml:space="preserve">
+    <value>Aggiornare il quadro elettrico</value>
+  </data>
+  <data name="order_smart_home" xml:space="preserve">
+    <value>Configurazione Smart Home</value>
+  </data>
+  <data name="order_room" xml:space="preserve">
+    <value>Dipingere una stanza</value>
+  </data>
+  <data name="order_exterior" xml:space="preserve">
+    <value>Dipingere l'esterno</value>
+  </data>
+  <data name="order_house" xml:space="preserve">
+    <value>Dipingere tutta la casa</value>
+  </data>
+  <data name="order_repair_roof" xml:space="preserve">
+    <value>Riparare una sezione del tetto</value>
+  </data>
+  <data name="order_new_roof" xml:space="preserve">
+    <value>Installare un tetto nuovo</value>
+  </data>
+  <data name="order_renovation" xml:space="preserve">
+    <value>Ristrutturazione casa</value>
+  </data>
+  <data name="order_addition" xml:space="preserve">
+    <value>Costruire un ampliamento</value>
+  </data>
+
+  <!-- Task Descriptions -->
+  <data name="task_sawing" xml:space="preserve">
+    <value>Segatura</value>
+  </data>
+  <data name="task_pipepuzzle" xml:space="preserve">
+    <value>Puzzle di tubi</value>
+  </data>
+  <data name="task_wiringgame" xml:space="preserve">
+    <value>Cablaggio</value>
+  </data>
+  <data name="task_paintinggame" xml:space="preserve">
+    <value>Pittura</value>
+  </data>
+  <data name="task_tilelaying" xml:space="preserve">
+    <value>Posa piastrelle</value>
+  </data>
+  <data name="task_measuring" xml:space="preserve">
+    <value>Misurazione</value>
+  </data>
+  <data name="task_planing" xml:space="preserve">
+    <value>Piallatura</value>
+  </data>
+  <data name="Input" xml:space="preserve">
+    <value>Ingresso</value>
+  </data>
+  <data name="Output" xml:space="preserve">
+    <value>Uscita</value>
+  </data>
+
+</root>

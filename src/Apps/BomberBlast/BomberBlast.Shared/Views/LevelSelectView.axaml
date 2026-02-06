@@ -1,0 +1,139 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.LevelSelectView"
+             x:DataType="vm:LevelSelectViewModel">
+
+  <!-- Gradient Background -->
+  <Panel>
+    <Border>
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="{DynamicResource GradientStartColor}" Offset="0" />
+          <GradientStop Color="{DynamicResource GradientMidColor}" Offset="0.5" />
+          <GradientStop Color="{DynamicResource GradientEndColor}" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+      <!-- Header -->
+      <Border Grid.Row="0"
+              Classes="CardElevated"
+              Padding="16,12"
+              CornerRadius="0,0,12,12">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Back Button -->
+          <Button Classes="Text"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+          </Button>
+
+          <!-- Title -->
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="ViewGrid" Width="24" Height="24"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="{loc:Translate SelectLevel}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+
+          <!-- Spacer -->
+          <Border Grid.Column="2" Width="44" />
+        </Grid>
+      </Border>
+
+      <!-- Level Grid -->
+      <ScrollViewer Grid.Row="1" Padding="12">
+        <ItemsControl ItemsSource="{Binding Levels}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal"
+                         HorizontalAlignment="Center" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:LevelDisplayItem">
+              <Button Command="{Binding SelectCommand}"
+                      IsEnabled="{Binding IsUnlocked}"
+                      Width="70" Height="85"
+                      Margin="5"
+                      Padding="0"
+                      CornerRadius="10"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch">
+                <Button.Background>
+                  <SolidColorBrush Color="{Binding BackgroundColor}" />
+                </Button.Background>
+                <Grid RowDefinitions="*,Auto">
+                  <!-- Level Number -->
+                  <TextBlock Grid.Row="0"
+                             Text="{Binding LevelNumber}"
+                             FontSize="24"
+                             FontWeight="Bold"
+                             Foreground="{Binding TextBrush}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center" />
+
+                  <!-- Stars or Lock -->
+                  <TextBlock Grid.Row="1"
+                             Text="{Binding StarsDisplay}"
+                             FontSize="12"
+                             Foreground="Gold"
+                             HorizontalAlignment="Center"
+                             Margin="0,0,0,5"
+                             IsVisible="{Binding IsCompleted}" />
+
+                  <mi:MaterialIcon Grid.Row="1"
+                                   Kind="Lock"
+                                   Width="14" Height="14"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,5"
+                                   IsVisible="{Binding IsLocked}" />
+                </Grid>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+      <!-- Footer: Progress + Ad Banner -->
+      <Border Grid.Row="2"
+              Background="{DynamicResource SurfaceBrush}"
+              Padding="12,8">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+            <TextBlock Text="{Binding ProgressText}"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding StarsText}"
+                       FontSize="13"
+                       Foreground="{DynamicResource AccentBrush}" />
+          </StackPanel>
+
+          <!-- Ad Banner placeholder -->
+          <Border Grid.Column="1"
+                  Height="50" Width="320"
+                  IsVisible="{Binding ShowAds}"
+                  Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="8">
+            <TextBlock Text="Ad Banner"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       FontSize="12" />
+          </Border>
+        </Grid>
+      </Border>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

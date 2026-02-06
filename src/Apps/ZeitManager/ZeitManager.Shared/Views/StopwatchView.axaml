@@ -1,0 +1,138 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:models="using:ZeitManager.Models"
+             x:Class="ZeitManager.Views.StopwatchView"
+             x:DataType="vm:StopwatchViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+    <!-- Header -->
+    <TextBlock Grid.Row="0" Text="{Binding TitleText}" Classes="HeadlineMedium"
+               Margin="16,16,16,8" />
+
+    <!-- Time Display with Circular Ring -->
+    <Border Grid.Row="1" Margin="16,8" HorizontalAlignment="Center">
+      <Grid Width="280" Height="280">
+        <!-- Outer Ring -->
+        <Border CornerRadius="140" BorderThickness="4" Width="280" Height="280"
+                BorderBrush="{DynamicResource BorderSubtleBrush}">
+          <Border.Styles>
+            <Style Selector="Border">
+              <Setter Property="Transitions">
+                <Transitions>
+                  <BrushTransition Property="BorderBrush" Duration="0:0:0.3" />
+                </Transitions>
+              </Setter>
+            </Style>
+          </Border.Styles>
+        </Border>
+        <!-- Active Ring (visible when running) -->
+        <Border CornerRadius="140" BorderThickness="4" Width="280" Height="280"
+                BorderBrush="{DynamicResource PrimaryBrush}"
+                IsVisible="{Binding IsRunning}" />
+
+        <!-- Time Text -->
+        <TextBlock Text="{Binding ElapsedTimeFormatted}"
+                   FontSize="48" FontWeight="Light"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <!-- Control Buttons -->
+    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="16"
+                HorizontalAlignment="Center" Margin="16,8">
+
+      <!-- Lap Button (when running) -->
+      <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              IsVisible="{Binding IsRunning}"
+              Command="{Binding LapCommand}">
+        <mi:MaterialIcon Kind="FlagCheckered" Width="24" Height="24" />
+      </Button>
+
+      <!-- Reset Button (when stopped) -->
+      <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              IsVisible="{Binding !IsRunning}"
+              Command="{Binding ResetCommand}">
+        <mi:MaterialIcon Kind="Refresh" Width="24" Height="24" />
+      </Button>
+
+      <!-- Start/Stop Button (larger) -->
+      <Panel>
+        <Button Classes="Primary" Width="72" Height="72" CornerRadius="36" Padding="0"
+                IsVisible="{Binding !IsRunning}"
+                Command="{Binding StartStopCommand}">
+          <mi:MaterialIcon Kind="Play" Width="32" Height="32" />
+        </Button>
+        <Button Classes="Primary" Width="72" Height="72" CornerRadius="36" Padding="0"
+                IsVisible="{Binding IsRunning}"
+                Command="{Binding StartStopCommand}">
+          <mi:MaterialIcon Kind="Stop" Width="32" Height="32" />
+        </Button>
+      </Panel>
+
+      <!-- Undo Button -->
+      <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              IsVisible="{Binding CanUndo}"
+              Command="{Binding UndoCommand}">
+        <mi:MaterialIcon Kind="Undo" Width="24" Height="24" />
+      </Button>
+      <Border Width="56" Height="56" IsVisible="{Binding !CanUndo}" />
+
+    </StackPanel>
+
+    <!-- Lap Times -->
+    <Panel Grid.Row="3" Margin="16,8,16,0">
+
+      <!-- Empty State -->
+      <StackPanel IsVisible="{Binding !HasLaps}"
+                  VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
+        <mi:MaterialIcon Kind="FlagCheckered" Width="48" Height="48"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding NoLapsText}" Classes="BodyMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" />
+      </StackPanel>
+
+      <!-- Lap List -->
+      <DockPanel IsVisible="{Binding HasLaps}">
+        <TextBlock DockPanel.Dock="Top" Text="{Binding LapTimesText}" Classes="TitleSmall"
+                   Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,8" />
+
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding Laps}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:StopwatchLap">
+                <Border Classes="Card" Margin="0,0,0,4" Padding="12,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0" Background="{DynamicResource PrimaryBrush}"
+                            CornerRadius="12" Padding="8,4" VerticalAlignment="Center"
+                            Margin="0,0,12,0">
+                      <TextBlock Text="{Binding LapNumber, StringFormat='#{0}'}"
+                                 FontSize="12" FontWeight="Bold" Foreground="White" />
+                    </Border>
+
+                    <TextBlock Grid.Column="1" Text="{Binding LapTimeFormatted}"
+                               FontSize="18" FontWeight="Medium"
+                               VerticalAlignment="Center" />
+
+                    <TextBlock Grid.Column="2" Text="{Binding TotalTimeFormatted}"
+                               FontSize="14"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+
+    </Panel>
+
+  </Grid>
+
+</UserControl>

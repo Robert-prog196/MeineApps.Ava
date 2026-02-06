@@ -1,0 +1,392 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RechnerPlus.ViewModels"
+             xmlns:services="using:MeineApps.Core.Ava.Services"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="RechnerPlus.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <ScrollViewer>
+    <StackPanel Margin="16" Spacing="16">
+
+      <!-- Header -->
+      <TextBlock Text="{Binding SettingsTitle}"
+                 Classes="HeadlineMedium" />
+
+      <!-- ==================== Theme Selection Card ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <!-- Card Header -->
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Palette" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding ChooseDesignText}" Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- 2x2 Theme Grid -->
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                RowSpacing="8" ColumnSpacing="8">
+
+            <!-- Midnight Theme -->
+            <Panel Grid.Row="0" Grid.Column="0">
+              <!-- Selected state: colored border -->
+              <Button IsVisible="{Binding IsMidnightSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Midnight}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#1E293B"
+                        BorderThickness="2" BorderBrush="#6366F1">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#6366F1"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
+                    <StackPanel Spacing="6">
+                      <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <Ellipse Width="20" Height="20" Fill="#6366F1" />
+                        <Ellipse Width="20" Height="20" Fill="#0F172A" StrokeThickness="1" Stroke="#334155" />
+                        <Ellipse Width="20" Height="20" Fill="#22D3EE" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding ThemeMidnightName}" HorizontalAlignment="Center"
+                                 FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                      <TextBlock Text="{Binding ThemeMidnightDescText}" HorizontalAlignment="Center"
+                                 FontSize="11" Foreground="#94A3B8" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </Button>
+              <!-- Unselected state: subtle border -->
+              <Button IsVisible="{Binding !IsMidnightSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Midnight}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#1E293B"
+                        BorderThickness="2" BorderBrush="#334155">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#6366F1" />
+                      <Ellipse Width="20" Height="20" Fill="#0F172A" StrokeThickness="1" Stroke="#334155" />
+                      <Ellipse Width="20" Height="20" Fill="#22D3EE" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ThemeMidnightName}" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                    <TextBlock Text="{Binding ThemeMidnightDescText}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#94A3B8" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Aurora Theme -->
+            <Panel Grid.Row="0" Grid.Column="1">
+              <Button IsVisible="{Binding IsAuroraSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Aurora}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#18181B"
+                        BorderThickness="2" BorderBrush="#EC4899">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#EC4899"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
+                    <StackPanel Spacing="6">
+                      <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <Ellipse Width="20" Height="20" Fill="#EC4899" />
+                        <Ellipse Width="20" Height="20" Fill="#18181B" StrokeThickness="1" Stroke="#3F3F46" />
+                        <Ellipse Width="20" Height="20" Fill="#06B6D4" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding ThemeAuroraName}" HorizontalAlignment="Center"
+                                 FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                      <TextBlock Text="{Binding ThemeAuroraDescText}" HorizontalAlignment="Center"
+                                 FontSize="11" Foreground="#A1A1AA" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsAuroraSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Aurora}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#18181B"
+                        BorderThickness="2" BorderBrush="#3F3F46">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#EC4899" />
+                      <Ellipse Width="20" Height="20" Fill="#18181B" StrokeThickness="1" Stroke="#3F3F46" />
+                      <Ellipse Width="20" Height="20" Fill="#06B6D4" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ThemeAuroraName}" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                    <TextBlock Text="{Binding ThemeAuroraDescText}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#A1A1AA" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Daylight Theme -->
+            <Panel Grid.Row="1" Grid.Column="0">
+              <Button IsVisible="{Binding IsDaylightSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Daylight}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#2563EB">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#2563EB"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
+                    <StackPanel Spacing="6">
+                      <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <Ellipse Width="20" Height="20" Fill="#2563EB" />
+                        <Ellipse Width="20" Height="20" Fill="#F8FAFC" StrokeThickness="1" Stroke="#CBD5E1" />
+                        <Ellipse Width="20" Height="20" Fill="#0891B2" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding ThemeDaylightName}" HorizontalAlignment="Center"
+                                 FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                      <TextBlock Text="{Binding ThemeDaylightDescText}" HorizontalAlignment="Center"
+                                 FontSize="11" Foreground="#64748B" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsDaylightSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Daylight}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#CBD5E1">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#2563EB" />
+                      <Ellipse Width="20" Height="20" Fill="#F8FAFC" StrokeThickness="1" Stroke="#CBD5E1" />
+                      <Ellipse Width="20" Height="20" Fill="#0891B2" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ThemeDaylightName}" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                    <TextBlock Text="{Binding ThemeDaylightDescText}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#64748B" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
+
+            <!-- Forest Theme -->
+            <Panel Grid.Row="1" Grid.Column="1">
+              <Button IsVisible="{Binding IsForestSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Forest}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#022C22"
+                        BorderThickness="2" BorderBrush="#10B981">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#10B981"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
+                    <StackPanel Spacing="6">
+                      <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <Ellipse Width="20" Height="20" Fill="#10B981" />
+                        <Ellipse Width="20" Height="20" Fill="#022C22" StrokeThickness="1" Stroke="#065F46" />
+                        <Ellipse Width="20" Height="20" Fill="#F59E0B" />
+                      </StackPanel>
+                      <TextBlock Text="{Binding ThemeForestName}" HorizontalAlignment="Center"
+                                 FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                      <TextBlock Text="{Binding ThemeForestDescText}" HorizontalAlignment="Center"
+                                 FontSize="11" Foreground="#6EE7B7" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsForestSelected}"
+                      Command="{Binding SetThemeCommand}"
+                      CommandParameter="{x:Static services:AppTheme.Forest}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Height="NaN" Padding="0" CornerRadius="10"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#022C22"
+                        BorderThickness="2" BorderBrush="#065F46">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#10B981" />
+                      <Ellipse Width="20" Height="20" Fill="#022C22" StrokeThickness="1" Stroke="#065F46" />
+                      <Ellipse Width="20" Height="20" Fill="#F59E0B" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ThemeForestName}" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                    <TextBlock Text="{Binding ThemeForestDescText}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#6EE7B7" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
+
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Language Selection Card ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <!-- Card Header -->
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Translate" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding LanguageText}" Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Language Buttons -->
+          <WrapPanel Orientation="Horizontal">
+
+            <!-- English -->
+            <Panel>
+              <Button Classes="Primary Small" Content="English"
+                      IsVisible="{Binding IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="English"
+                      IsVisible="{Binding !IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+            <!-- Deutsch -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Deutsch"
+                      IsVisible="{Binding IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Deutsch"
+                      IsVisible="{Binding !IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+            <!-- Espanol -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Español"
+                      IsVisible="{Binding IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Español"
+                      IsVisible="{Binding !IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+            <!-- Francais -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Français"
+                      IsVisible="{Binding IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Français"
+                      IsVisible="{Binding !IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+            <!-- Italiano -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Italiano"
+                      IsVisible="{Binding IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Italiano"
+                      IsVisible="{Binding !IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+            <!-- Portugues -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Português"
+                      IsVisible="{Binding IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Português"
+                      IsVisible="{Binding !IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+            </Panel>
+
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== About Card ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <!-- Card Header -->
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="InformationOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding AboutAppText}" Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- App Info -->
+          <StackPanel Spacing="8">
+            <TextBlock Text="RechnerPlus" Classes="TitleLarge" />
+            <TextBlock Text="{Binding VersionText}" Classes="BodyMedium"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Text="{Binding AppDescriptionText}" Classes="BodyMedium"
+                       TextWrapping="Wrap" />
+            <TextBlock Text="© 2026 RS Digital" Classes="Caption"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Action Buttons ==================== -->
+      <Button Classes="Outlined" HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center"
+              Command="{Binding SendFeedbackCommand}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <mi:MaterialIcon Kind="Email" Width="20" Height="20" />
+          <TextBlock Text="{Binding FeedbackText}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <Button Classes="Text" HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center"
+              Command="{Binding OpenPrivacyPolicyCommand}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <mi:MaterialIcon Kind="ShieldCheck" Width="20" Height="20" />
+          <TextBlock Text="{Binding PrivacyPolicyText}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+      <!-- Bottom Spacer -->
+      <Border Height="32" />
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

@@ -1,0 +1,326 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RechnerPlus.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="RechnerPlus.Views.CalculatorView"
+             x:DataType="vm:CalculatorViewModel">
+
+  <UserControl.Styles>
+    <!-- Base calculator button: fills grid cell, larger touch target, centered content -->
+    <Style Selector="Button.CalcButton">
+      <Setter Property="Height" Value="NaN"/>
+      <Setter Property="MinHeight" Value="52"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Digit button styling -->
+    <Style Selector="Button.Digit">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="FontSize" Value="24"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    <Style Selector="Button.Digit:pointerover">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
+    </Style>
+
+    <!-- Operator button styling -->
+    <Style Selector="Button.Operator">
+      <Setter Property="FontSize" Value="24"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <!-- Scientific function button styling -->
+    <Style Selector="Button.Function">
+      <Setter Property="FontSize" Value="13"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="16">
+
+    <!-- ============================================ -->
+    <!-- 1. Display Area                              -->
+    <!-- ============================================ -->
+    <Border Grid.Row="0"
+            Classes="Card"
+            Padding="16"
+            Margin="0,0,0,8">
+      <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+        <!-- Expression line -->
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Expression}"
+                   FontSize="14"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Right"
+                   MinHeight="20"
+                   TextTrimming="CharacterEllipsis"/>
+
+        <!-- Main display -->
+        <TextBlock Grid.Row="1"
+                   Text="{Binding Display}"
+                   FontSize="42"
+                   FontFamily="JetBrains Mono, Consolas, monospace"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   HorizontalAlignment="Right"
+                   Margin="0,4,0,4"
+                   TextTrimming="CharacterEllipsis"/>
+
+        <!-- Error message -->
+        <TextBlock Grid.Row="2"
+                   Text="{Binding ErrorMessage}"
+                   FontSize="12"
+                   Foreground="{DynamicResource ErrorBrush}"
+                   IsVisible="{Binding HasError}"
+                   HorizontalAlignment="Right"/>
+
+        <!-- Memory indicator -->
+        <TextBlock Grid.Row="3"
+                   Text="M"
+                   FontSize="13"
+                   FontWeight="Bold"
+                   Foreground="{DynamicResource PrimaryBrush}"
+                   IsVisible="{Binding HasMemory}"
+                   HorizontalAlignment="Left"/>
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- 2. Mode Selector + Angle Mode                -->
+    <!-- ============================================ -->
+    <Grid Grid.Row="1"
+          ColumnDefinitions="Auto,Auto,*,Auto"
+          Margin="0,0,0,8">
+
+      <!-- Basic mode button: Primary when active, Outlined when inactive -->
+      <Button Grid.Column="0"
+              Classes="Primary Small"
+              Content="{Binding ModeBasicText}"
+              IsVisible="{Binding IsBasicMode}"
+              Command="{Binding SetModeCommand}"
+              CommandParameter="{x:Static vm:CalculatorMode.Basic}"
+              Margin="0,0,6,0"/>
+      <Button Grid.Column="0"
+              Classes="Outlined Small"
+              Content="{Binding ModeBasicText}"
+              IsVisible="{Binding !IsBasicMode}"
+              Command="{Binding SetModeCommand}"
+              CommandParameter="{x:Static vm:CalculatorMode.Basic}"
+              Margin="0,0,6,0"/>
+
+      <!-- Scientific mode button: Primary when active, Outlined when inactive -->
+      <Button Grid.Column="1"
+              Classes="Primary Small"
+              Content="{Binding ModeScientificText}"
+              IsVisible="{Binding IsScientificMode}"
+              Command="{Binding SetModeCommand}"
+              CommandParameter="{x:Static vm:CalculatorMode.Scientific}"/>
+      <Button Grid.Column="1"
+              Classes="Outlined Small"
+              Content="{Binding ModeScientificText}"
+              IsVisible="{Binding !IsScientificMode}"
+              Command="{Binding SetModeCommand}"
+              CommandParameter="{x:Static vm:CalculatorMode.Scientific}"/>
+
+      <!-- Angle mode toggle (right-aligned) -->
+      <Button Grid.Column="3"
+              Classes="Text Small"
+              Content="{Binding AngleModeText}"
+              Command="{Binding ToggleAngleModeCommand}"/>
+    </Grid>
+
+    <!-- ============================================ -->
+    <!-- 3. Scientific Functions Panel                -->
+    <!-- ============================================ -->
+    <Grid Grid.Row="2"
+          RowDefinitions="Auto,Auto"
+          ColumnDefinitions="*,*,*,*,*"
+          RowSpacing="6"
+          ColumnSpacing="6"
+          Margin="0,0,0,8"
+          IsVisible="{Binding IsScientificMode}">
+
+      <!-- Row 0: sin, cos, tan, log, ln -->
+      <Button Grid.Row="0" Grid.Column="0" Content="sin"
+              Classes="Outlined Small Function"
+              Command="{Binding SinCommand}"/>
+      <Button Grid.Row="0" Grid.Column="1" Content="cos"
+              Classes="Outlined Small Function"
+              Command="{Binding CosCommand}"/>
+      <Button Grid.Row="0" Grid.Column="2" Content="tan"
+              Classes="Outlined Small Function"
+              Command="{Binding TanCommand}"/>
+      <Button Grid.Row="0" Grid.Column="3" Content="log"
+              Classes="Outlined Small Function"
+              Command="{Binding LogCommand}"/>
+      <Button Grid.Row="0" Grid.Column="4" Content="ln"
+              Classes="Outlined Small Function"
+              Command="{Binding LnCommand}"/>
+
+      <!-- Row 1: pi, e, x^2, sqrt(x), x! -->
+      <Button Grid.Row="1" Grid.Column="0" Content="&#x03C0;"
+              Classes="Outlined Small Function"
+              Command="{Binding PiCommand}"/>
+      <Button Grid.Row="1" Grid.Column="1" Content="e"
+              Classes="Outlined Small Function"
+              Command="{Binding EulerCommand}"/>
+      <Button Grid.Row="1" Grid.Column="2" Content="x&#x00B2;"
+              Classes="Outlined Small Function"
+              Command="{Binding SquareCommand}"/>
+      <Button Grid.Row="1" Grid.Column="3" Content="&#x221A;x"
+              Classes="Outlined Small Function"
+              Command="{Binding SquareRootCommand}"/>
+      <Button Grid.Row="1" Grid.Column="4" Content="x!"
+              Classes="Outlined Small Function"
+              Command="{Binding FactorialCommand}"/>
+    </Grid>
+
+    <!-- ============================================ -->
+    <!-- 4. Memory Row                                -->
+    <!-- ============================================ -->
+    <Grid Grid.Row="3"
+          ColumnDefinitions="*,*,*,*,*"
+          ColumnSpacing="6"
+          Margin="0,0,0,8">
+
+      <Button Grid.Column="0" Content="MC"
+              Classes="Text Small"
+              Command="{Binding MemoryClearCommand}"/>
+      <Button Grid.Column="1" Content="MR"
+              Classes="Text Small"
+              Command="{Binding MemoryRecallCommand}"/>
+      <Button Grid.Column="2" Content="M+"
+              Classes="Text Small"
+              Command="{Binding MemoryAddCommand}"/>
+      <Button Grid.Column="3" Content="M-"
+              Classes="Text Small"
+              Command="{Binding MemorySubtractCommand}"/>
+      <Button Grid.Column="4" Content="MS"
+              Classes="Text Small"
+              Command="{Binding MemoryStoreCommand}"/>
+    </Grid>
+
+    <!-- ============================================ -->
+    <!-- 5. Main Calculator Button Grid               -->
+    <!-- ============================================ -->
+    <Grid Grid.Row="4"
+          RowDefinitions="*,*,*,*,*"
+          ColumnDefinitions="*,*,*,*"
+          RowSpacing="6"
+          ColumnSpacing="6">
+
+      <!-- Row 0: C, CE, Backspace, Divide -->
+      <Button Grid.Row="0" Grid.Column="0"
+              Content="C"
+              Classes="Secondary CalcButton"
+              FontSize="18"
+              FontWeight="SemiBold"
+              Command="{Binding ClearCommand}"/>
+      <Button Grid.Row="0" Grid.Column="1"
+              Content="CE"
+              Classes="Outlined CalcButton"
+              FontSize="16"
+              Command="{Binding ClearEntryCommand}"/>
+      <Button Grid.Row="0" Grid.Column="2"
+              Classes="Outlined CalcButton"
+              Command="{Binding BackspaceCommand}">
+        <mi:MaterialIcon Kind="BackspaceOutline" Width="22" Height="22"/>
+      </Button>
+      <Button Grid.Row="0" Grid.Column="3"
+              Content="&#x00F7;"
+              Classes="Primary Operator CalcButton"
+              Command="{Binding InputOperatorCommand}"
+              CommandParameter="&#x00F7;"/>
+
+      <!-- Row 1: 7, 8, 9, Multiply -->
+      <Button Grid.Row="1" Grid.Column="0"
+              Content="7"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="7"/>
+      <Button Grid.Row="1" Grid.Column="1"
+              Content="8"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="8"/>
+      <Button Grid.Row="1" Grid.Column="2"
+              Content="9"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="9"/>
+      <Button Grid.Row="1" Grid.Column="3"
+              Content="&#x00D7;"
+              Classes="Primary Operator CalcButton"
+              Command="{Binding InputOperatorCommand}"
+              CommandParameter="&#x00D7;"/>
+
+      <!-- Row 2: 4, 5, 6, Subtract -->
+      <Button Grid.Row="2" Grid.Column="0"
+              Content="4"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="4"/>
+      <Button Grid.Row="2" Grid.Column="1"
+              Content="5"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="5"/>
+      <Button Grid.Row="2" Grid.Column="2"
+              Content="6"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="6"/>
+      <Button Grid.Row="2" Grid.Column="3"
+              Content="&#x2212;"
+              Classes="Primary Operator CalcButton"
+              Command="{Binding InputOperatorCommand}"
+              CommandParameter="&#x2212;"/>
+
+      <!-- Row 3: 1, 2, 3, Add -->
+      <Button Grid.Row="3" Grid.Column="0"
+              Content="1"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="1"/>
+      <Button Grid.Row="3" Grid.Column="1"
+              Content="2"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="2"/>
+      <Button Grid.Row="3" Grid.Column="2"
+              Content="3"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="3"/>
+      <Button Grid.Row="3" Grid.Column="3"
+              Content="+"
+              Classes="Primary Operator CalcButton"
+              Command="{Binding InputOperatorCommand}"
+              CommandParameter="+"/>
+
+      <!-- Row 4: Negate, 0, Decimal, Equals -->
+      <Button Grid.Row="4" Grid.Column="0"
+              Content="&#x00B1;"
+              Classes="Digit CalcButton"
+              Command="{Binding NegateCommand}"/>
+      <Button Grid.Row="4" Grid.Column="1"
+              Content="0"
+              Classes="Digit CalcButton"
+              Command="{Binding InputDigitCommand}"
+              CommandParameter="0"/>
+      <Button Grid.Row="4" Grid.Column="2"
+              Content="."
+              Classes="Digit CalcButton"
+              Command="{Binding InputDecimalCommand}"/>
+      <Button Grid.Row="4" Grid.Column="3"
+              Content="="
+              Classes="Primary Operator CalcButton"
+              Command="{Binding CalculateCommand}"/>
+    </Grid>
+
+  </Grid>
+
+</UserControl>

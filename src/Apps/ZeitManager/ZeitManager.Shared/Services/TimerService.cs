@@ -1,0 +1,182 @@
+using System.Timers;
+using Avalonia.Threading;
+using ZeitManager.Models;
+using Timer = System.Timers.Timer;
+
+namespace ZeitManager.Services;
+
+public class TimerService : ITimerService, IDisposable
+{
+    private readonly IDatabaseService _database;
+    private readonly List<TimerItem> _timers = [];
+    private readonly object _lock = new();
+    private Timer? _uiTimer;
+
+    public IReadOnlyList<TimerItem> Timers
+    {
+        get { lock (_lock) return _timers.ToList().AsReadOnly(); }
+    }
+
+    public IReadOnlyList<TimerItem> RunningTimers
+    {
+        get { lock (_lock) return _timers.Where(t => t.State == TimerState.Running).ToList().AsReadOnly(); }
+    }
+
+    public event EventHandler<TimerItem>? TimerFinished;
+    public event EventHandler<TimerItem>? TimerTick;
+    public event EventHandler? TimersChanged;
+
+    public TimerService(IDatabaseService database)
+    {
+        _database = database;
+    }
+
+    public async Task LoadTimersAsync()
+    {
+        var timers = await _database.GetTimersAsync();
+        lock (_lock)
+        {
+            _timers.Clear();
+            _timers.AddRange(timers);
+        }
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task<TimerItem> CreateTimerAsync(string name, TimeSpan duration)
+    {
+        var timer = new TimerItem
+        {
+            Name = string.IsNullOrWhiteSpace(name) ? $"Timer {Timers.Count + 1}" : name,
+            Duration = duration,
+            RemainingTime = duration,
+            State = TimerState.Stopped
+        };
+
+        await _database.SaveTimerAsync(timer);
+        lock (_lock) _timers.Add(timer);
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+        return timer;
+    }
+
+    public async Task StartTimerAsync(TimerItem timer)
+    {
+        timer.State = TimerState.Running;
+        timer.StartedAtDateTime = DateTime.UtcNow;
+        timer.PausedAt = null;
+        // Snapshot the remaining time at start, so tick updates don't cause drift
+        timer.RemainingAtStartTicks = timer.RemainingTimeTicks;
+        await _database.SaveTimerAsync(timer);
+        EnsureUiTimer();
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task PauseTimerAsync(TimerItem timer)
+    {
+        if (timer.State != TimerState.Running) return;
+
+        // Save remaining time
+        timer.RemainingTime = GetRemainingTime(timer);
+        timer.State = TimerState.Paused;
+        timer.PausedAtDateTime = DateTime.UtcNow;
+        await _database.SaveTimerAsync(timer);
+        CheckStopUiTimer();
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task StopTimerAsync(TimerItem timer)
+    {
+        lock (_lock) _timers.Remove(timer);
+        await _database.DeleteTimerAsync(timer);
+        CheckStopUiTimer();
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task SnoozeTimerAsync(TimerItem timer, int minutes = 1)
+    {
+        timer.RemainingTime = TimeSpan.FromMinutes(minutes);
+        timer.State = TimerState.Stopped;
+        timer.StartedAt = null;
+        timer.PausedAt = null;
+        // Re-add to list (was removed on finish)
+        lock (_lock)
+        {
+            if (!_timers.Contains(timer))
+                _timers.Add(timer);
+        }
+        await _database.SaveTimerAsync(timer);
+        await StartTimerAsync(timer);
+    }
+
+    public async Task DeleteTimerAsync(TimerItem timer)
+    {
+        lock (_lock) _timers.Remove(timer);
+        await _database.DeleteTimerAsync(timer);
+        CheckStopUiTimer();
+        TimersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public TimeSpan GetRemainingTime(TimerItem timer)
+    {
+        if (timer.State != TimerState.Running || timer.StartedAtDateTime == null)
+            return timer.RemainingTime;
+
+        var elapsed = DateTime.UtcNow - timer.StartedAtDateTime.Value;
+        // Use the snapshot from start, not the continuously-updated RemainingTimeTicks
+        var remaining = TimeSpan.FromTicks(timer.RemainingAtStartTicks) - elapsed;
+        return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+    }
+
+    private void EnsureUiTimer()
+    {
+        if (_uiTimer != null) return;
+        _uiTimer = new Timer(1000);
+        _uiTimer.Elapsed += OnUiTimerTick;
+        _uiTimer.Start();
+    }
+
+    private void CheckStopUiTimer()
+    {
+        if (RunningTimers.Count == 0 && _uiTimer != null)
+        {
+            _uiTimer.Stop();
+            _uiTimer.Elapsed -= OnUiTimerTick;
+            _uiTimer.Dispose();
+            _uiTimer = null;
+        }
+    }
+
+    private void OnUiTimerTick(object? sender, ElapsedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            foreach (var timer in RunningTimers.ToList())
+            {
+                var remaining = GetRemainingTime(timer);
+                if (remaining <= TimeSpan.Zero)
+                {
+                    timer.State = TimerState.Finished;
+                    timer.RemainingTimeTicks = 0;
+                    // Remove from list (hides from UI) but keep in DB for snooze
+                    lock (_lock) _timers.Remove(timer);
+                    TimersChanged?.Invoke(this, EventArgs.Empty);
+                    TimerFinished?.Invoke(this, timer);
+                }
+                else
+                {
+                    TimerTick?.Invoke(this, timer);
+                }
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        if (_uiTimer != null)
+        {
+            _uiTimer.Stop();
+            _uiTimer.Elapsed -= OnUiTimerTick;
+            _uiTimer.Dispose();
+            _uiTimer = null;
+        }
+    }
+}

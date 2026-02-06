@@ -1,0 +1,262 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkTimePro.ViewModels"
+             xmlns:models="using:WorkTimePro.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="WorkTimePro.Views.VacationView"
+             x:DataType="vm:VacationViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Year Navigation Header -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            Padding="8,4">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+        <Button Grid.Column="1" Classes="Text"
+                Command="{Binding PreviousYearCommand}">
+          <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="2"
+                   Text="{Binding SelectedYear}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <Button Grid.Column="3" Classes="Text"
+                Command="{Binding NextYearCommand}">
+          <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Spacing="16" Margin="16">
+
+        <!-- ==================== Quota Card ==================== -->
+        <Border Classes="CardElevated">
+          <Grid RowDefinitions="Auto,Auto,Auto"
+                ColumnDefinitions="*,Auto" RowSpacing="8">
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="{loc:Translate VacationAccount}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="1"
+                       Text="{Binding QuotaDisplay}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryBrush}" />
+
+            <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
+                         Value="{Binding ProgressPercent}"
+                         Maximum="1"
+                         Foreground="{DynamicResource PrimaryBrush}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Text="{Binding ProgressDisplay}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <Button Grid.Row="2" Grid.Column="1"
+                    Content="{loc:Translate Edit}"
+                    Classes="Outlined Small"
+                    Command="{Binding EditQuotaCommand}"
+                    IsVisible="{Binding IsPremium}" />
+          </Grid>
+        </Border>
+
+        <!-- ==================== Add New Vacation ==================== -->
+        <Border Classes="Card"
+                IsVisible="{Binding IsPremium}">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate AddNewVacation}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto">
+              <!-- From -->
+              <StackPanel Grid.Row="0" Grid.Column="0">
+                <TextBlock Text="{loc:Translate From}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <CalendarDatePicker SelectedDate="{Binding NewStartDate}"
+                                    HorizontalAlignment="Stretch" />
+              </StackPanel>
+
+              <!-- Arrow -->
+              <mi:MaterialIcon Grid.Row="0" Grid.Column="1"
+                               Kind="SwapHorizontal"
+                               Width="20" Height="20"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               VerticalAlignment="Center"
+                               Margin="8,16,8,0" />
+
+              <!-- To -->
+              <StackPanel Grid.Row="0" Grid.Column="2">
+                <TextBlock Text="{loc:Translate To}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <CalendarDatePicker SelectedDate="{Binding NewEndDate}"
+                                    HorizontalAlignment="Stretch" />
+              </StackPanel>
+
+              <TextBlock Grid.Row="1" Grid.ColumnSpan="3"
+                         Text="{Binding CalculatedDaysDisplay}"
+                         FontSize="14" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         HorizontalAlignment="Center"
+                         Margin="0,8,0,0" />
+            </Grid>
+
+            <!-- Type -->
+            <ComboBox ItemsSource="{Binding VacationTypes}"
+                      SelectedItem="{Binding NewType}"
+                      HorizontalAlignment="Stretch">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- Note -->
+            <TextBox Watermark="{loc:Translate NoteOptional}"
+                     Text="{Binding NewNote}" />
+
+            <!-- Add Button -->
+            <Button Content="{loc:Translate AddVacation}"
+                    Classes="Primary"
+                    Command="{Binding AddVacationCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Premium Notice ==================== -->
+        <Border Classes="CardElevated"
+                IsVisible="{Binding !IsPremium}">
+          <StackPanel Spacing="8" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Crown" Width="36" Height="36"
+                             Foreground="{DynamicResource PrimaryBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate PremiumVacationFeature}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate PremiumVacationDesc}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center" />
+            <Button Content="{loc:Translate UnlockPremium}"
+                    Classes="Primary"
+                    Command="{Binding GoBackCommand}"
+                    Margin="0,8,0,0"
+                    HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- ==================== Vacation List ==================== -->
+        <TextBlock Text="{loc:Translate RegisteredVacations}"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <ItemsControl ItemsSource="{Binding VacationEntries}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:VacationEntry">
+              <Border Classes="Card" Padding="12" Margin="0,2">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="{Binding TypeIconKind}"
+                                   Width="24" Height="24"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding DateRangeDisplay}"
+                               FontSize="14" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding Note}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               IsVisible="{Binding HasNote}" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding DaysDisplay}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource PrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <Button Grid.Column="3" Classes="Text"
+                          Command="{Binding $parent[UserControl].((vm:VacationViewModel)DataContext).DeleteVacationCommand}"
+                          CommandParameter="{Binding .}">
+                    <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
+                                     Foreground="{DynamicResource ErrorBrush}" />
+                  </Button>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Empty State for Vacations -->
+        <StackPanel IsVisible="{Binding HasNoVacations}"
+                    HorizontalAlignment="Center" Margin="0,16">
+          <mi:MaterialIcon Kind="Beach" Width="48" Height="48"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate NoVacationsRegistered}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,8,0,0" />
+        </StackPanel>
+
+        <!-- ==================== Holidays ==================== -->
+        <TextBlock Text="{loc:Translate Holidays}"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <ItemsControl ItemsSource="{Binding Holidays}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:HolidayEntry">
+              <Border Classes="Card" Padding="12" Margin="0,2">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <mi:MaterialIcon Grid.Column="0"
+                                   Kind="PartyPopper"
+                                   Width="20" Height="20"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0" />
+                  <StackPanel Grid.Column="1">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="14" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding WeekdayDisplay}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2"
+                             Text="{Binding DateDisplay}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Bottom Spacer -->
+        <Border Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>FinanzRechner</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Avalonia Core -->
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+
+    <!-- UI Frameworks -->
+    <PackageReference Include="Material.Avalonia" />
+    <PackageReference Include="Material.Icons.Avalonia" />
+    <PackageReference Include="DialogHost.Avalonia" />
+
+    <!-- Behaviors -->
+    <PackageReference Include="Xaml.Behaviors.Avalonia" />
+
+    <!-- MVVM -->
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+
+    <!-- DI -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+
+    <!-- Charts -->
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+
+    <!-- Export -->
+    <PackageReference Include="PdfSharpCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\MeineApps.Core.Ava\MeineApps.Core.Ava.csproj" />
+    <ProjectReference Include="..\..\..\Libraries\MeineApps.Core.Premium.Ava\MeineApps.Core.Premium.Ava.csproj" />
+    <ProjectReference Include="..\..\..\UI\MeineApps.UI\MeineApps.UI.csproj" />
+  </ItemGroup>
+
+  <!-- Localization -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings\AppStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Resources\Strings\AppStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:views="using:BomberBlast.Views"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.MainView"
+             x:DataType="vm:MainViewModel">
+
+  <Panel>
+    <!-- Main Menu -->
+    <views:MainMenuView DataContext="{Binding MenuVm}"
+                         IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsMainMenuActive}" />
+
+    <!-- Game -->
+    <views:GameView DataContext="{Binding GameVm}"
+                     IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsGameActive}" />
+
+    <!-- Level Select -->
+    <views:LevelSelectView DataContext="{Binding LevelSelectVm}"
+                            IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsLevelSelectActive}" />
+
+    <!-- Settings -->
+    <views:SettingsView DataContext="{Binding SettingsVm}"
+                         IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsSettingsActive}" />
+
+    <!-- High Scores -->
+    <views:HighScoresView DataContext="{Binding HighScoresVm}"
+                           IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsHighScoresActive}" />
+
+    <!-- Game Over -->
+    <views:GameOverView DataContext="{Binding GameOverVm}"
+                         IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsGameOverActive}" />
+
+    <!-- Help -->
+    <views:HelpView DataContext="{Binding HelpVm}"
+                     IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsHelpActive}" />
+  </Panel>
+
+</UserControl>

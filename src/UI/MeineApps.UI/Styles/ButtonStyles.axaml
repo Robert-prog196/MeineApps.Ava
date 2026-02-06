@@ -1,0 +1,143 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- BUTTON STYLES                                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Base Button Improvements -->
+  <Style Selector="Button">
+    <Setter Property="Height" Value="{DynamicResource ButtonHeightMd}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RadiusSm}" />
+    <Setter Property="Padding" Value="16,0" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <!-- Primary Button -->
+  <Style Selector="Button.Primary">
+    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryContrastBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.Primary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource PrimaryHoverBrush}" />
+  </Style>
+
+  <Style Selector="Button.Primary:pressed">
+    <Setter Property="Background" Value="{DynamicResource PrimaryPressedBrush}" />
+    <Setter Property="RenderTransform" Value="scale(0.98)" />
+  </Style>
+
+  <!-- Secondary Button -->
+  <Style Selector="Button.Secondary">
+    <Setter Property="Background" Value="{DynamicResource SecondaryBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryContrastBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.Secondary:pointerover">
+    <Setter Property="Background" Value="{DynamicResource SecondaryHoverBrush}" />
+  </Style>
+
+  <Style Selector="Button.Secondary:pressed">
+    <Setter Property="Background" Value="{DynamicResource SecondaryPressedBrush}" />
+    <Setter Property="RenderTransform" Value="scale(0.98)" />
+  </Style>
+
+  <!-- Outlined Button -->
+  <Style Selector="Button.Outlined">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <Style Selector="Button.Outlined:pointerover">
+    <Setter Property="Background" Value="{DynamicResource RippleBrush}" />
+  </Style>
+
+  <Style Selector="Button.Outlined:pressed">
+    <Setter Property="RenderTransform" Value="scale(0.98)" />
+  </Style>
+
+  <!-- Text Button (no background) -->
+  <Style Selector="Button.Text">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.Text:pointerover">
+    <Setter Property="Background" Value="{DynamicResource RippleBrush}" />
+  </Style>
+
+  <!-- Success Button -->
+  <Style Selector="Button.Success">
+    <Setter Property="Background" Value="{DynamicResource SuccessBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- Warning Button -->
+  <Style Selector="Button.Warning">
+    <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- Error/Danger Button -->
+  <Style Selector="Button.Error, Button.Danger">
+    <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <!-- Small Button -->
+  <Style Selector="Button.Small">
+    <Setter Property="Height" Value="{DynamicResource ButtonHeightSm}" />
+    <Setter Property="Padding" Value="12,0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabelMd}" />
+  </Style>
+
+  <!-- Large Button -->
+  <Style Selector="Button.Large">
+    <Setter Property="Height" Value="{DynamicResource ButtonHeightLg}" />
+    <Setter Property="Padding" Value="24,0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeBodyLg}" />
+  </Style>
+
+  <!-- Icon Button (circular) -->
+  <Style Selector="Button.Icon">
+    <Setter Property="Width" Value="{DynamicResource MinTouchTarget}" />
+    <Setter Property="Height" Value="{DynamicResource MinTouchTarget}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RadiusFull}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.Icon:pointerover">
+    <Setter Property="Background" Value="{DynamicResource RippleBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <!-- Disabled State -->
+  <Style Selector="Button:disabled">
+    <Setter Property="Opacity" Value="0.5" />
+    <Setter Property="Cursor" Value="Arrow" />
+  </Style>
+
+</Styles>

@@ -1,0 +1,332 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="BomberBlast.Views.HelpView"
+             x:DataType="vm:HelpViewModel">
+
+  <!-- Gradient Background -->
+  <Panel>
+    <Border>
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="{DynamicResource GradientStartColor}" Offset="0" />
+          <GradientStop Color="{DynamicResource GradientMidColor}" Offset="0.5" />
+          <GradientStop Color="{DynamicResource GradientEndColor}" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <Grid RowDefinitions="Auto,*">
+
+      <!-- Header -->
+      <Border Grid.Row="0"
+              Classes="CardElevated"
+              Padding="16,12"
+              CornerRadius="0,0,12,12">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Back Button -->
+          <Button Classes="Text"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+          </Button>
+
+          <!-- Title -->
+          <StackPanel Grid.Column="1"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="HelpCircleOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Help}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+
+          <!-- Spacer -->
+          <Border Grid.Column="2" Width="44" />
+        </Grid>
+      </Border>
+
+      <!-- Content -->
+      <ScrollViewer Grid.Row="1" Padding="12">
+        <StackPanel Spacing="12">
+
+          <!-- How to Play + Controls: Side by Side -->
+          <Grid ColumnDefinitions="*,*">
+
+            <!-- How to Play -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,6,0">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="GamepadVariantOutline" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate HowToPlay}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Text="{loc:Translate HowToPlayDesc}"
+                           FontSize="13" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </Border>
+
+            <!-- Controls -->
+            <Border Grid.Column="1" Classes="Card" Margin="6,0,0,0">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Gamepad" Width="20" Height="20"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                  <TextBlock Text="{loc:Translate ControlsHelp}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Text="{loc:Translate ControlsHelpDesc}"
+                           FontSize="13" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+          <!-- Power-Ups -->
+          <Border Classes="Card">
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="StarCircleOutline" Width="20" Height="20"
+                                 Foreground="Gold" />
+                <TextBlock Text="{loc:Translate PowerUps}"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <WrapPanel Orientation="Horizontal">
+                <!-- Bomb Up -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_BombUp}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_BombUp_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Fire -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Fire}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Fire_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Speed -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Speed}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Speed_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Wall Pass -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Wallpass}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Wallpass_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Detonator -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Detonator}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Detonator_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Bomb Pass -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Bombpass}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Bombpass_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Flame Pass -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Flamepass}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Flamepass_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+                <!-- Mystery -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{loc:Translate PowerUp_Mystery}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="{loc:Translate PowerUp_Mystery_Desc}"
+                               FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+                  </StackPanel>
+                </Border>
+              </WrapPanel>
+            </StackPanel>
+          </Border>
+
+          <!-- Enemies + Tips: Side by Side -->
+          <Grid ColumnDefinitions="*,Auto">
+
+            <!-- Enemies -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,6,0">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Ghost" Width="20" Height="20"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                  <TextBlock Text="{loc:Translate Enemies}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+
+                <WrapPanel Orientation="Horizontal">
+                  <!-- Ballom -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Ballom}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Ballom_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Onil -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Onil}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Onil_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Doll -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Doll}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Doll_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Minvo -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Minvo}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Minvo_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Kondoria -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Kondoria}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Kondoria_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Ovapi -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Ovapi}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Ovapi_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Pass -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Pass}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Pass_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                  <!-- Pontan -->
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{loc:Translate Enemy_Pontan}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate Enemy_Pontan_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </Border>
+                </WrapPanel>
+              </StackPanel>
+            </Border>
+
+            <!-- Tips -->
+            <Border Grid.Column="1" Classes="Card" Margin="6,0,0,0" Width="280">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="LightbulbOnOutline" Width="20" Height="20"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                  <TextBlock Text="{loc:Translate Tips}"
+                             FontSize="16" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Text="{loc:Translate TipsDesc}"
+                           FontSize="13" TextWrapping="Wrap"
+                           LineHeight="20"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </Border>
+
+          </Grid>
+
+          <!-- Bottom Spacer -->
+          <Border Height="16" />
+
+        </StackPanel>
+      </ScrollViewer>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

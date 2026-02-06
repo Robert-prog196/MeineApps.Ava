@@ -1,0 +1,629 @@
+using System.Reflection;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+using MeineApps.Core.Premium.Ava.Services;
+using WorkTimePro.Helpers;
+using WorkTimePro.Models;
+using WorkTimePro.Resources.Strings;
+using WorkTimePro.Services;
+
+namespace WorkTimePro.ViewModels;
+
+/// <summary>
+/// ViewModel for settings
+/// </summary>
+public partial class SettingsViewModel : ObservableObject, IDisposable
+{
+    public event Action<string>? MessageRequested;
+
+    private readonly IDatabaseService _database;
+    private readonly IThemeService _themeService;
+    private readonly ILocalizationService _localization;
+    private readonly ITrialService _trialService;
+    private readonly IPurchaseService _purchaseService;
+
+    private WorkSettings? _settings;
+    private bool _disposed;
+
+    public SettingsViewModel(
+        IDatabaseService database,
+        IThemeService themeService,
+        ILocalizationService localization,
+        ITrialService trialService,
+        IPurchaseService purchaseService)
+    {
+        _database = database;
+        _themeService = themeService;
+        _localization = localization;
+        _trialService = trialService;
+        _purchaseService = purchaseService;
+
+        _purchaseService.PremiumStatusChanged += OnPurchaseStatusChanged;
+    }
+
+    // === Work time settings ===
+
+    [ObservableProperty]
+    private double _dailyHours = 8.0;
+
+    [ObservableProperty]
+    private double _weeklyHours = 40.0;
+
+    [ObservableProperty]
+    private bool _mondayEnabled = true;
+
+    [ObservableProperty]
+    private bool _tuesdayEnabled = true;
+
+    [ObservableProperty]
+    private bool _wednesdayEnabled = true;
+
+    [ObservableProperty]
+    private bool _thursdayEnabled = true;
+
+    [ObservableProperty]
+    private bool _fridayEnabled = true;
+
+    [ObservableProperty]
+    private bool _saturdayEnabled = false;
+
+    [ObservableProperty]
+    private bool _sundayEnabled = false;
+
+    // === Individual daily hours ===
+
+    [ObservableProperty]
+    private bool _useIndividualHours = false;
+
+    [ObservableProperty]
+    private double _mondayHours = 8.0;
+
+    [ObservableProperty]
+    private double _tuesdayHours = 8.0;
+
+    [ObservableProperty]
+    private double _wednesdayHours = 8.0;
+
+    [ObservableProperty]
+    private double _thursdayHours = 8.0;
+
+    [ObservableProperty]
+    private double _fridayHours = 8.0;
+
+    [ObservableProperty]
+    private double _saturdayHours = 0.0;
+
+    [ObservableProperty]
+    private double _sundayHours = 0.0;
+
+    // === Auto-Pause ===
+
+    [ObservableProperty]
+    private bool _autoPauseEnabled = true;
+
+    [ObservableProperty]
+    private double _autoPauseAfterHours = 6.0;
+
+    [ObservableProperty]
+    private int _autoPauseMinutes = 30;
+
+    // === Reminders ===
+
+    [ObservableProperty]
+    private bool _morningReminderEnabled = true;
+
+    [ObservableProperty]
+    private TimeSpan _morningReminderTime = new(8, 0, 0);
+
+    [ObservableProperty]
+    private bool _eveningReminderEnabled = true;
+
+    [ObservableProperty]
+    private TimeSpan _eveningReminderTime = new(18, 0, 0);
+
+    [ObservableProperty]
+    private bool _pauseReminderEnabled = true;
+
+    // === Overtime ===
+
+    [ObservableProperty]
+    private bool _overtimeWarningEnabled = true;
+
+    [ObservableProperty]
+    private double _overtimeWarningHours = 10.0;
+
+    // === Vacation ===
+
+    [ObservableProperty]
+    private int _vacationDaysPerYear = 30;
+
+    // === Holidays ===
+
+    [ObservableProperty]
+    private int _selectedRegionIndex = 1; // Bayern
+
+    public string[] GermanRegions { get; } = new[]
+    {
+        "Baden-W\u00fcrttemberg", "Bayern", "Berlin", "Brandenburg", "Bremen",
+        "Hamburg", "Hessen", "Mecklenburg-Vorpommern", "Niedersachsen",
+        "Nordrhein-Westfalen", "Rheinland-Pfalz", "Saarland", "Sachsen",
+        "Sachsen-Anhalt", "Schleswig-Holstein", "Th\u00fcringen"
+    };
+
+    // === Work time law ===
+
+    [ObservableProperty]
+    private bool _legalComplianceEnabled = true;
+
+    // === Theme ===
+
+    [ObservableProperty]
+    private int _selectedThemeIndex;
+
+    public string[] ThemeNames { get; } = new[] { "Midnight (Standard)", "Aurora", "Daylight", "Forest" };
+
+    public bool IsMidnightSelected => SelectedThemeIndex == 0;
+    public bool IsAuroraSelected => SelectedThemeIndex == 1;
+    public bool IsDaylightSelected => SelectedThemeIndex == 2;
+    public bool IsForestSelected => SelectedThemeIndex == 3;
+
+    partial void OnSelectedThemeIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(IsMidnightSelected));
+        OnPropertyChanged(nameof(IsAuroraSelected));
+        OnPropertyChanged(nameof(IsDaylightSelected));
+        OnPropertyChanged(nameof(IsForestSelected));
+    }
+
+    [RelayCommand]
+    private void SelectTheme(string themeIndex)
+    {
+        if (int.TryParse(themeIndex, out var index))
+        {
+            SelectedThemeIndex = index;
+        }
+    }
+
+    // === Language ===
+
+    [ObservableProperty]
+    private int _selectedLanguageIndex;
+
+    public bool IsGermanSelected => SelectedLanguageIndex == 0;
+    public bool IsEnglishSelected => SelectedLanguageIndex == 1;
+    public bool IsSpanishSelected => SelectedLanguageIndex == 2;
+    public bool IsFrenchSelected => SelectedLanguageIndex == 3;
+    public bool IsItalianSelected => SelectedLanguageIndex == 4;
+    public bool IsPortugueseSelected => SelectedLanguageIndex == 5;
+
+    partial void OnSelectedLanguageIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(IsGermanSelected));
+        OnPropertyChanged(nameof(IsEnglishSelected));
+        OnPropertyChanged(nameof(IsSpanishSelected));
+        OnPropertyChanged(nameof(IsFrenchSelected));
+        OnPropertyChanged(nameof(IsItalianSelected));
+        OnPropertyChanged(nameof(IsPortugueseSelected));
+    }
+
+    [RelayCommand]
+    private void SelectLanguage(string langIndex)
+    {
+        if (int.TryParse(langIndex, out var index))
+        {
+            SelectedLanguageIndex = index;
+        }
+    }
+
+    // === Premium ===
+
+    [ObservableProperty]
+    private bool _isPremium;
+
+    [ObservableProperty]
+    private bool _isInTrial;
+
+    [ObservableProperty]
+    private int _trialDaysLeft;
+
+    [ObservableProperty]
+    private string _premiumStatusText = "";
+
+    [ObservableProperty]
+    private string _premiumStatusColor = "#9E9E9E";
+
+    [ObservableProperty]
+    private double _trialProgress;
+
+    [ObservableProperty]
+    private string _trialProgressText = "";
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    // Localized texts
+    public string AppVersion
+    {
+        get
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            return $"WorkTime Pro v{version?.Major ?? 2}.{version?.Minor ?? 0}.{version?.Build ?? 0}";
+        }
+    }
+
+    public string BuyPremiumButtonText => $"{Icons.Rocket} {AppStrings.BuyPremium}";
+
+    // Reminder time displays
+    public string MorningReminderTimeDisplay => MorningReminderTime.ToString(@"hh\:mm");
+    public string EveningReminderTimeDisplay => EveningReminderTime.ToString(@"hh\:mm");
+
+    partial void OnMorningReminderTimeChanged(TimeSpan value)
+    {
+        OnPropertyChanged(nameof(MorningReminderTimeDisplay));
+    }
+
+    partial void OnEveningReminderTimeChanged(TimeSpan value)
+    {
+        OnPropertyChanged(nameof(EveningReminderTimeDisplay));
+    }
+
+    // === Input Validation ===
+
+    partial void OnDailyHoursChanged(double value)
+    {
+        if (value < 0) DailyHours = 0;
+        if (value > 24) DailyHours = 24;
+    }
+
+    partial void OnWeeklyHoursChanged(double value)
+    {
+        if (value < 0) WeeklyHours = 0;
+        if (value > 168) WeeklyHours = 168; // 24*7
+    }
+
+    partial void OnAutoPauseMinutesChanged(int value)
+    {
+        if (value < 0) AutoPauseMinutes = 0;
+        if (value > 120) AutoPauseMinutes = 120;
+    }
+
+    partial void OnAutoPauseAfterHoursChanged(double value)
+    {
+        if (value < 0) AutoPauseAfterHours = 0;
+        if (value > 24) AutoPauseAfterHours = 24;
+    }
+
+    partial void OnVacationDaysPerYearChanged(int value)
+    {
+        if (value < 0) VacationDaysPerYear = 0;
+        if (value > 365) VacationDaysPerYear = 365;
+    }
+
+    partial void OnOvertimeWarningHoursChanged(double value)
+    {
+        if (value < 0) OvertimeWarningHours = 0;
+        if (value > 100) OvertimeWarningHours = 100;
+    }
+
+    // === Commands ===
+
+    [RelayCommand]
+    public async Task LoadDataAsync()
+    {
+        try
+        {
+            IsLoading = true;
+
+            _settings = await _database.GetSettingsAsync();
+
+            // Work time
+            DailyHours = _settings.DailyHours;
+            WeeklyHours = _settings.WeeklyHours;
+
+            var workDays = _settings.WorkDaysArray;
+            MondayEnabled = workDays.Contains(1);
+            TuesdayEnabled = workDays.Contains(2);
+            WednesdayEnabled = workDays.Contains(3);
+            ThursdayEnabled = workDays.Contains(4);
+            FridayEnabled = workDays.Contains(5);
+            SaturdayEnabled = workDays.Contains(6);
+            SundayEnabled = workDays.Contains(7);
+
+            // Individual hours
+            UseIndividualHours = !string.IsNullOrEmpty(_settings.DailyHoursPerDay);
+            MondayHours = _settings.GetHoursForDay(1);
+            TuesdayHours = _settings.GetHoursForDay(2);
+            WednesdayHours = _settings.GetHoursForDay(3);
+            ThursdayHours = _settings.GetHoursForDay(4);
+            FridayHours = _settings.GetHoursForDay(5);
+            SaturdayHours = _settings.GetHoursForDay(6);
+            SundayHours = _settings.GetHoursForDay(7);
+
+            // Vacation
+            VacationDaysPerYear = _settings.VacationDaysPerYear;
+
+            // Auto-Pause
+            AutoPauseEnabled = _settings.AutoPauseEnabled;
+            AutoPauseAfterHours = _settings.AutoPauseAfterHours;
+            AutoPauseMinutes = _settings.AutoPauseMinutes;
+
+            // Reminders
+            MorningReminderEnabled = _settings.MorningReminderEnabled;
+            MorningReminderTime = _settings.MorningReminderTime.ToTimeSpan();
+            EveningReminderEnabled = _settings.EveningReminderEnabled;
+            EveningReminderTime = _settings.EveningReminderTime.ToTimeSpan();
+            PauseReminderEnabled = _settings.PauseReminderEnabled;
+
+            // Overtime
+            OvertimeWarningEnabled = _settings.OvertimeWarningEnabled;
+            OvertimeWarningHours = _settings.OvertimeWarningHours;
+
+            // Holidays
+            var regionCode = _settings.HolidayRegion.Replace("DE-", "");
+            var regionIndex = Array.IndexOf(Enum.GetNames<GermanState>(), regionCode);
+            SelectedRegionIndex = regionIndex >= 0 ? regionIndex : 1;
+
+            // Work time law
+            LegalComplianceEnabled = _settings.LegalComplianceEnabled;
+
+            // Theme
+            SelectedThemeIndex = (int)_themeService.CurrentTheme;
+
+            // Premium
+            UpdatePremiumStatus();
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorLoading, ex.Message));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveSettingsAsync()
+    {
+        if (_settings == null) return;
+
+        try
+        {
+            // Work time
+            _settings.DailyHours = DailyHours;
+            _settings.WeeklyHours = WeeklyHours;
+
+            var workDays = new List<int>();
+            if (MondayEnabled) workDays.Add(1);
+            if (TuesdayEnabled) workDays.Add(2);
+            if (WednesdayEnabled) workDays.Add(3);
+            if (ThursdayEnabled) workDays.Add(4);
+            if (FridayEnabled) workDays.Add(5);
+            if (SaturdayEnabled) workDays.Add(6);
+            if (SundayEnabled) workDays.Add(7);
+            _settings.WorkDays = string.Join(",", workDays);
+
+            // Individual hours
+            if (UseIndividualHours)
+            {
+                _settings.SetHoursForDay(1, MondayHours);
+                _settings.SetHoursForDay(2, TuesdayHours);
+                _settings.SetHoursForDay(3, WednesdayHours);
+                _settings.SetHoursForDay(4, ThursdayHours);
+                _settings.SetHoursForDay(5, FridayHours);
+                _settings.SetHoursForDay(6, SaturdayHours);
+                _settings.SetHoursForDay(7, SundayHours);
+            }
+            else
+            {
+                _settings.DailyHoursPerDay = "";
+            }
+
+            // Vacation
+            _settings.VacationDaysPerYear = VacationDaysPerYear;
+
+            // Auto-Pause
+            _settings.AutoPauseEnabled = AutoPauseEnabled;
+            _settings.AutoPauseAfterHours = AutoPauseAfterHours;
+            _settings.AutoPauseMinutes = AutoPauseMinutes;
+
+            // Reminders
+            _settings.MorningReminderEnabled = MorningReminderEnabled;
+            _settings.MorningReminderTime = TimeOnly.FromTimeSpan(MorningReminderTime);
+            _settings.EveningReminderEnabled = EveningReminderEnabled;
+            _settings.EveningReminderTime = TimeOnly.FromTimeSpan(EveningReminderTime);
+            _settings.PauseReminderEnabled = PauseReminderEnabled;
+
+            // Overtime
+            _settings.OvertimeWarningEnabled = OvertimeWarningEnabled;
+            _settings.OvertimeWarningHours = OvertimeWarningHours;
+
+            // Holidays
+            var stateName = Enum.GetNames<GermanState>()[SelectedRegionIndex];
+            _settings.HolidayRegion = $"DE-{stateName}";
+
+            // Work time law
+            _settings.LegalComplianceEnabled = LegalComplianceEnabled;
+
+            await _database.SaveSettingsAsync(_settings);
+
+            // Theme
+            _themeService.SetTheme((AppTheme)SelectedThemeIndex);
+
+            MessageRequested?.Invoke(AppStrings.SettingsSaved);
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorSaving, ex.Message));
+        }
+    }
+
+    [RelayCommand]
+    private async Task PurchasePremiumAsync()
+    {
+        try
+        {
+            // If trial is active, go directly to purchase
+            // If trial not started and offer not seen, show dialog
+            if (!_trialService.IsTrialActive && !_trialService.HasSeenTrialOffer && !_trialService.IsTrialStarted)
+            {
+                // Start trial by default in Avalonia (no action sheet available)
+                _trialService.MarkTrialOfferAsSeen();
+                _trialService.StartTrial();
+                MessageRequested?.Invoke(string.Format(AppStrings.TrialStartedMessage, _trialService.DaysRemaining));
+                UpdatePremiumStatus();
+                return;
+            }
+
+            IsLoading = true;
+            bool success = await _purchaseService.PurchaseLifetimeAsync();
+
+            if (success)
+            {
+                MessageRequested?.Invoke(AppStrings.PurchaseSuccess);
+            }
+
+            UpdatePremiumStatus();
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorGeneric, ex.Message));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestorePurchasesAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            await _purchaseService.RestorePurchasesAsync();
+            UpdatePremiumStatus();
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorGeneric, ex.Message));
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private const string ARBZG_URL = "https://www.gesetze-im-internet.de/arbzg/";
+    private const string HOLIDAYS_URL = "https://www.bmi.bund.de/DE/themen/verfassung/staatliche-symbole/nationale-feiertage/nationale-feiertage-node.html";
+
+    [RelayCommand]
+    private void OpenArbZG()
+    {
+        try
+        {
+            // In Avalonia, use Process.Start for URL opening
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = ARBZG_URL,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorOpenUrl, ex.Message));
+        }
+    }
+
+    [RelayCommand]
+    private void OpenHolidaysSource()
+    {
+        try
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = HOLIDAYS_URL,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(psi);
+        }
+        catch (Exception ex)
+        {
+            MessageRequested?.Invoke(string.Format(AppStrings.ErrorOpenUrl, ex.Message));
+        }
+    }
+
+    // === Helper methods ===
+
+    private void OnPurchaseStatusChanged(object? sender, EventArgs e)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(UpdatePremiumStatus);
+    }
+
+    private void UpdatePremiumStatus()
+    {
+        IsPremium = _purchaseService.IsPremium;
+        IsInTrial = _trialService.IsTrialActive;
+        TrialDaysLeft = _trialService.DaysRemaining;
+
+        if (_purchaseService.HasLifetime)
+        {
+            // Lifetime Premium
+            PremiumStatusText = AppStrings.HasLifetime;
+            PremiumStatusColor = "#4CAF50"; // Green
+            TrialProgress = 1.0;
+            TrialProgressText = "";
+        }
+        else if (_purchaseService.HasActiveSubscription)
+        {
+            // Active subscription
+            PremiumStatusText = AppStrings.HasSubscription;
+            PremiumStatusColor = "#4CAF50"; // Green
+            TrialProgress = 1.0;
+            TrialProgressText = "";
+        }
+        else if (IsPremium)
+        {
+            // Legacy Premium (remove_ads)
+            PremiumStatusText = AppStrings.PremiumActive;
+            PremiumStatusColor = "#4CAF50"; // Green
+            TrialProgress = 1.0;
+            TrialProgressText = "";
+        }
+        else if (IsInTrial)
+        {
+            PremiumStatusText = string.Format(AppStrings.TrialDaysLeft, TrialDaysLeft);
+            PremiumStatusColor = "#FF9800"; // Orange
+            TrialProgress = TrialDaysLeft / 14.0;
+            TrialProgressText = $"{TrialDaysLeft} / 14";
+        }
+        else if (_trialService.IsTrialExpired)
+        {
+            // Trial was started and expired
+            PremiumStatusText = AppStrings.FreeVersion;
+            PremiumStatusColor = "#F44336"; // Red - expired
+            TrialProgress = 0;
+            TrialProgressText = "";
+        }
+        else
+        {
+            // Trial was never started
+            PremiumStatusText = AppStrings.FreeVersion;
+            PremiumStatusColor = "#9E9E9E"; // Gray
+            TrialProgress = 0;
+            TrialProgressText = "";
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+
+        _purchaseService.PremiumStatusChanged -= OnPurchaseStatusChanged;
+        GC.SuppressFinalize(this);
+    }
+}

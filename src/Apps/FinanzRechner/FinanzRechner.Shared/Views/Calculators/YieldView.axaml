@@ -1,0 +1,205 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FinanzRechner.ViewModels.Calculators"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="FinanzRechner.Views.Calculators.YieldView"
+             x:DataType="vm:YieldViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ═══════ Header Banner ═══════ -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource ExpenseBrush}"
+                Padding="16,12,16,20"
+                CornerRadius="0,0,24,24">
+          <Grid ColumnDefinitions="Auto,*">
+            <Button Command="{Binding GoBackCommand}"
+                    Background="#33FFFFFF"
+                    CornerRadius="20"
+                    Width="40" Height="40"
+                    Padding="0">
+              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
+            </Button>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                        Margin="12,0,0,0" VerticalAlignment="Center">
+              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+                <mi:MaterialIcon Kind="ChartArc" Width="22" Height="22"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <TextBlock Text="{Binding TitleText}"
+                         FontSize="20" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- ═══════ Content ═══════ -->
+        <ScrollViewer Grid.Row="1" Padding="16,16,16,0">
+            <StackPanel Spacing="16">
+
+                <!-- Input Card -->
+                <Border Classes="Card">
+                    <StackPanel Spacing="14">
+
+                        <!-- Initial Investment -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="CashMultiple" Width="16" Height="16"
+                                                 Foreground="{DynamicResource ExpenseBrush}" />
+                                <TextBlock Text="{Binding InitialInvestmentText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding InitialInvestment}"
+                                     Watermark="0.00"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Final Value -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="TrendingUp" Width="16" Height="16"
+                                                 Foreground="{DynamicResource ExpenseBrush}" />
+                                <TextBlock Text="{Binding FinalValueText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding FinalValue}"
+                                     Watermark="0.00"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Years -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="CalendarRange" Width="16" Height="16"
+                                                 Foreground="{DynamicResource ExpenseBrush}" />
+                                <TextBlock Text="{Binding YearsText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding Years}"
+                                     Watermark="1"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- Result Card -->
+                <Border Classes="Card Elevated"
+                        IsVisible="{Binding HasResult}">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                                             Foreground="{DynamicResource ExpenseBrush}" />
+                            <TextBlock Text="{Binding ResultText}"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Primary Result Highlight -->
+                        <Border Background="{DynamicResource ExpenseBrush}"
+                                CornerRadius="12"
+                                Padding="16,12">
+                          <StackPanel>
+                            <TextBlock Text="{Binding EffectiveAnnualRateText}"
+                                       FontSize="12" Foreground="#CCFFFFFF" />
+                            <TextBlock Text="{Binding EffectiveAnnualRateDisplay}"
+                                       FontSize="28" FontWeight="Bold" Foreground="White" />
+                          </StackPanel>
+                        </Border>
+
+                        <!-- Secondary Results -->
+                        <StackPanel Spacing="8" Margin="4,0">
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding TotalReturnText}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalReturnDisplay}"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                          </Grid>
+                          <Border Height="1" Background="{DynamicResource BorderSubtleBrush}" />
+                          <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="{Binding TotalReturnPercentText}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalReturnPercentDisplay}"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource IncomeBrush}"/>
+                          </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Chart Card -->
+                <Border Classes="Card Elevated"
+                        IsVisible="{Binding HasResult}">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="ChartBar" Width="20" Height="20"
+                                             Foreground="{DynamicResource ExpenseBrush}" />
+                            <TextBlock Text="{Binding InvestmentComparisonText}"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <lvc:CartesianChart Series="{Binding ChartSeries}"
+                                            XAxes="{Binding XAxes}"
+                                            YAxes="{Binding YAxes}"
+                                            Height="200"
+                                            ZoomMode="None"
+                                            TooltipPosition="Top"/>
+
+                        <!-- Legend -->
+                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#2196F3" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding InitialLegendText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#4CAF50" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding FinalLegendText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Height="16" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ═══════ Action Buttons ═══════ -->
+        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Command="{Binding ResetCommand}" Classes="Outlined"
+                    HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
+                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+                    HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />
+                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+        </Border>
+
+    </Grid>
+
+</UserControl>

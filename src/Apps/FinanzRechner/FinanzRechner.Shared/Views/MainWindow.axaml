@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FinanzRechner.ViewModels"
+        xmlns:views="using:FinanzRechner.Views"
+        xmlns:splash="using:MeineApps.UI.Controls"
+        x:Class="FinanzRechner.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="FinanzRechner"
+        Icon="avares://FinanzRechner.Shared/Assets/icon.png"
+        Width="400"
+        Height="750"
+        MinWidth="360"
+        MinHeight="500"
+        Background="{DynamicResource BackgroundBrush}">
+
+  <Panel>
+    <views:MainView />
+    <splash:SplashOverlay AppName="FinanzRechner"
+                          IconSource="avares://FinanzRechner.Shared/Assets/icon.png" />
+  </Panel>
+
+</Window>

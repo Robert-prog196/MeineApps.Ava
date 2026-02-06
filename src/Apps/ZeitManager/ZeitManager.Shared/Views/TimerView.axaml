@@ -1,0 +1,206 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:models="using:ZeitManager.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:controls="using:MeineApps.UI.Controls"
+             x:Class="ZeitManager.Views.TimerView"
+             x:DataType="vm:TimerViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Margin="16,16,16,8">
+      <TextBlock Text="{Binding TitleText}" Classes="HeadlineMedium" />
+    </StackPanel>
+
+    <!-- Quick Timer Chips -->
+    <Border Grid.Row="1" Classes="Card" Margin="16,0,16,8">
+      <StackPanel Spacing="8">
+        <TextBlock Text="{Binding QuickTimerText}" Classes="TitleSmall"
+                   Foreground="{DynamicResource TextMutedBrush}" />
+        <WrapPanel Orientation="Horizontal">
+          <Button Classes="Outlined Small" Content="1 min"
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="1"
+                  Margin="0,0,8,8" />
+          <Button Classes="Outlined Small" Content="5 min"
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="5"
+                  Margin="0,0,8,8" />
+          <Button Classes="Outlined Small" Content="10 min"
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="10"
+                  Margin="0,0,8,8" />
+          <Button Classes="Outlined Small" Content="15 min"
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="15"
+                  Margin="0,0,8,8" />
+          <Button Classes="Outlined Small" Content="30 min"
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="30"
+                  Margin="0,0,8,8" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- Timer List / Empty State -->
+    <Panel Grid.Row="2">
+
+      <!-- Empty State -->
+      <StackPanel IsVisible="{Binding !HasTimers}"
+                  VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+        <mi:MaterialIcon Kind="TimerSandEmpty" Width="64" Height="64"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding NoTimersText}" Classes="TitleMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding CreateTimerText}" Classes="BodyMedium"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   HorizontalAlignment="Center" TextWrapping="Wrap"
+                   TextAlignment="Center" />
+      </StackPanel>
+
+      <!-- Timer List -->
+      <ScrollViewer IsVisible="{Binding HasTimers}">
+        <ItemsControl ItemsSource="{Binding Timers}" Margin="16,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:TimerItem">
+              <Border Classes="Card" Margin="0,0,0,8">
+                <Grid RowDefinitions="Auto,Auto,Auto">
+                  <!-- Timer Name + State -->
+                  <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                    <mi:MaterialIcon Kind="TimerSand" Width="20" Height="20"
+                                     Foreground="{DynamicResource PrimaryBrush}" />
+                    <TextBlock Text="{Binding Name}" Classes="TitleMedium"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+
+                  <!-- Time Display -->
+                  <TextBlock Grid.Row="1" Text="{Binding RemainingTimeFormatted}"
+                             FontSize="40" FontWeight="Light"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center"
+                             Margin="0,4,0,12" />
+
+                  <!-- Controls -->
+                  <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8"
+                              HorizontalAlignment="Center">
+                    <Button Classes="Primary"
+                            IsVisible="{Binding IsNotRunning}"
+                            Command="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).StartTimerCommand}"
+                            CommandParameter="{Binding}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <mi:MaterialIcon Kind="Play" Width="18" Height="18" />
+                        <TextBlock Text="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).StartText}"
+                                   VerticalAlignment="Center" />
+                      </StackPanel>
+                    </Button>
+                    <Button Classes="Outlined"
+                            IsVisible="{Binding IsRunning}"
+                            Command="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).PauseTimerCommand}"
+                            CommandParameter="{Binding}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <mi:MaterialIcon Kind="Pause" Width="18" Height="18" />
+                        <TextBlock Text="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).PauseText}"
+                                   VerticalAlignment="Center" />
+                      </StackPanel>
+                    </Button>
+                    <Button Classes="Outlined"
+                            Command="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).StopTimerCommand}"
+                            CommandParameter="{Binding}">
+                      <mi:MaterialIcon Kind="Stop" Width="18" Height="18" />
+                    </Button>
+                    <Button Classes="Text" MinWidth="48" MinHeight="48"
+                            Command="{Binding $parent[ItemsControl].((vm:TimerViewModel)DataContext).DeleteTimerCommand}"
+                            CommandParameter="{Binding}">
+                      <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                       Foreground="{DynamicResource ErrorBrush}" />
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+      <!-- FAB: Create Timer -->
+      <Button Classes="Primary"
+              Command="{Binding ShowCreateTimerCommand}"
+              HorizontalAlignment="Right" VerticalAlignment="Bottom"
+              Margin="0,0,24,24" Width="56" Height="56"
+              CornerRadius="28" Padding="0">
+        <mi:MaterialIcon Kind="Plus" Width="28" Height="28" />
+      </Button>
+
+    </Panel>
+
+    <!-- Create Timer Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsCreatingTimer}"
+            Background="#80000000">
+      <Border Classes="Card" Margin="32"
+              VerticalAlignment="Center" HorizontalAlignment="Stretch"
+              MaxWidth="400">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding NewTimerTitleText}" Classes="HeadlineMedium" />
+
+          <TextBox Text="{Binding NewTimerName, Mode=TwoWay}"
+                   Watermark="{Binding $parent[UserControl].((vm:TimerViewModel)DataContext).CreateTimerText}" />
+
+          <!-- Time Pickers (Drum Wheel) -->
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+            <StackPanel Spacing="2">
+              <controls:WheelPicker Value="{Binding NewTimerHours}" Minimum="0" Maximum="23" FormatString="D2" />
+              <TextBlock Text="{Binding $parent[UserControl].((vm:TimerViewModel)DataContext).MinutesText, FallbackValue='h'}"
+                         Classes="Caption" HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+            </StackPanel>
+            <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
+            <StackPanel Spacing="2">
+              <controls:WheelPicker Value="{Binding NewTimerMinutes}" Minimum="0" Maximum="59" FormatString="D2" />
+              <TextBlock Text="min" Classes="Caption" HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+            </StackPanel>
+            <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
+            <StackPanel Spacing="2">
+              <controls:WheelPicker Value="{Binding NewTimerSeconds}" Minimum="0" Maximum="59" FormatString="D2" />
+              <TextBlock Text="s" Classes="Caption" HorizontalAlignment="Center"
+                         Foreground="{DynamicResource TextMutedBrush}" />
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Dialog Buttons -->
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="Text" Content="{Binding CancelText}"
+                    Command="{Binding HideCreateTimerCommand}" />
+            <Button Classes="Primary" Content="{Binding CreateText}"
+                    Command="{Binding CreateTimerCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Delete Confirmation Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            IsVisible="{Binding IsDeleteConfirmVisible}"
+            Background="#80000000">
+      <Border Classes="Card" Margin="32"
+              VerticalAlignment="Center" HorizontalAlignment="Stretch"
+              MaxWidth="350">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeleteMessageText}" Classes="BodyMedium"
+                     TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="Text" Content="{Binding NoText}"
+                    Command="{Binding CancelDeleteTimerCommand}" />
+            <Button Classes="Primary" Content="{Binding YesText}"
+                    Command="{Binding ConfirmDeleteTimerCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <!-- .NET Version - Default for libraries -->
+    <TargetFramework Condition="'$(TargetFramework)' == ''">net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Code Quality -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>5</WarningLevel>
+
+    <!-- Assembly Info -->
+    <Company>RS Digital</Company>
+    <Copyright>Copyright © 2026 RS Digital</Copyright>
+    <Authors>Robert</Authors>
+
+    <!-- Avalonia -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <!-- Android-specific settings are in Directory.Build.targets (evaluated AFTER project files) -->
+</Project>

@@ -1,0 +1,246 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FinanzRechner.ViewModels.Calculators"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="FinanzRechner.Views.Calculators.AmortizationView"
+             x:DataType="vm:AmortizationViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ═══════ Header Banner ═══════ -->
+        <Border Grid.Row="0"
+                Background="{DynamicResource SecondaryBrush}"
+                Padding="16,12,16,20"
+                CornerRadius="0,0,24,24">
+          <Grid ColumnDefinitions="Auto,*">
+            <Button Command="{Binding GoBackCommand}"
+                    Background="#33FFFFFF"
+                    CornerRadius="20"
+                    Width="40" Height="40"
+                    Padding="0">
+              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
+            </Button>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                        Margin="12,0,0,0" VerticalAlignment="Center">
+              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+                <mi:MaterialIcon Kind="ListStatus" Width="22" Height="22"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <TextBlock Text="{Binding TitleText}"
+                         FontSize="20" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- ═══════ Content ═══════ -->
+        <ScrollViewer Grid.Row="1" Padding="16,16,16,0">
+            <StackPanel Spacing="16">
+
+                <!-- Input Card -->
+                <Border Classes="Card">
+                    <StackPanel Spacing="14">
+
+                        <!-- Loan Amount -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="CashMultiple" Width="16" Height="16"
+                                                 Foreground="{DynamicResource SecondaryBrush}" />
+                                <TextBlock Text="{Binding LoanAmountText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding LoanAmount}"
+                                     Watermark="0.00"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Annual Rate -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="Percent" Width="16" Height="16"
+                                                 Foreground="{DynamicResource SecondaryBrush}" />
+                                <TextBlock Text="{Binding AnnualRateText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding AnnualRate}"
+                                     Watermark="0.00"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Years -->
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <mi:MaterialIcon Kind="CalendarRange" Width="16" Height="16"
+                                                 Foreground="{DynamicResource SecondaryBrush}" />
+                                <TextBlock Text="{Binding YearsText}"
+                                           FontSize="12" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding Years}"
+                                     Watermark="1"
+                                     Background="{DynamicResource ButtonFunctionBgBrush}"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- Summary Result Card -->
+                <Border Classes="Card Elevated"
+                        IsVisible="{Binding HasResult}">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                                             Foreground="{DynamicResource SecondaryBrush}" />
+                            <TextBlock Text="{Binding ResultText}"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Primary Result Highlight -->
+                        <Border Background="{DynamicResource SecondaryBrush}"
+                                CornerRadius="12"
+                                Padding="16,12">
+                          <StackPanel>
+                            <TextBlock Text="{Binding MonthlyPaymentText}"
+                                       FontSize="12" Foreground="#CCFFFFFF" />
+                            <TextBlock Text="{Binding MonthlyPaymentDisplay}"
+                                       FontSize="28" FontWeight="Bold" Foreground="White" />
+                          </StackPanel>
+                        </Border>
+
+                        <!-- Secondary Results -->
+                        <Grid ColumnDefinitions="*,Auto" Margin="4,0">
+                            <TextBlock Text="{Binding TotalInterestText}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalInterestDisplay}"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource ExpenseBrush}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Chart Card -->
+                <Border Classes="Card Elevated"
+                        IsVisible="{Binding HasResult}">
+                    <StackPanel Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="ChartLine" Width="20" Height="20"
+                                             Foreground="{DynamicResource SecondaryBrush}" />
+                            <TextBlock Text="{Binding DebtReductionText}"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <lvc:CartesianChart Series="{Binding ChartSeries}"
+                                            XAxes="{Binding XAxes}"
+                                            YAxes="{Binding YAxes}"
+                                            Height="200"
+                                            ZoomMode="None"
+                                            TooltipPosition="Top"/>
+
+                        <!-- Legend -->
+                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                            <Border Background="#E53935" Width="12" Height="12" CornerRadius="6"/>
+                            <TextBlock Text="{Binding RemainingDebtText}" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Amortization Schedule Table -->
+                <Border Classes="Card Elevated"
+                        IsVisible="{Binding HasResult}">
+                    <StackPanel Spacing="10">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="Table" Width="20" Height="20"
+                                             Foreground="{DynamicResource SecondaryBrush}" />
+                            <TextBlock Text="{Binding AmortizationScheduleText}"
+                                       FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        </StackPanel>
+
+                        <!-- Table Header -->
+                        <Border Background="{DynamicResource SecondaryBrush}"
+                                CornerRadius="8"
+                                Padding="8,6"
+                                Opacity="0.15">
+                          <Grid ColumnDefinitions="50,*,*,*" ColumnSpacing="8">
+                            <TextBlock Text="#" FontSize="11" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding PrincipalPortionText}"
+                                       FontSize="11" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding InterestPortionText}"
+                                       FontSize="11" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Grid.Column="3" Text="{Binding BalanceText}"
+                                       FontSize="11" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                          </Grid>
+                        </Border>
+
+                        <!-- Schedule Items -->
+                        <ItemsControl ItemsSource="{Binding Result.Schedule}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="8,5" CornerRadius="4">
+                                      <Grid ColumnDefinitions="50,*,*,*" ColumnSpacing="8">
+                                        <TextBlock Text="{Binding Month}" FontSize="11"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Principal, StringFormat='{}{0:N0}'}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Interest, StringFormat='{}{0:N0}'}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding RemainingBalance, StringFormat='{}{0:N0}'}"
+                                                   FontSize="11" FontWeight="Medium"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                      </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Height="16" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ═══════ Action Buttons ═══════ -->
+        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Command="{Binding ResetCommand}" Classes="Outlined"
+                    HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
+                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+                    HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />
+                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+        </Border>
+
+    </Grid>
+
+</UserControl>

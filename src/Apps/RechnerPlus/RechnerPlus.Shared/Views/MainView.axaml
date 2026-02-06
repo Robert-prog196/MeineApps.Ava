@@ -1,0 +1,317 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RechnerPlus.ViewModels"
+             xmlns:views="using:RechnerPlus.Views"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:calc="using:MeineApps.CalcLib"
+             x:Class="RechnerPlus.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <UserControl.Styles>
+    <!-- Fade transition for tab content switching -->
+    <Style Selector="Border.TabContent">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.TabContent:not(.Active)">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+    <Style Selector="Border.TabContent.Active">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="IsHitTestVisible" Value="True" />
+    </Style>
+
+    <!-- History backdrop fade -->
+    <Style Selector="Border.HistoryBackdrop">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <!-- History panel slide -->
+    <Style Selector="Border.HistoryPanel">
+      <Setter Property="RenderTransform" Value="translate(0px, 400px)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.HistoryPanel.Visible">
+      <Setter Property="RenderTransform" Value="translate(0px, 0px)"/>
+    </Style>
+
+    <!-- History entry hover -->
+    <Style Selector="Button.HistoryEntry:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Panel>
+    <Grid RowDefinitions="*,Auto">
+
+      <!-- Content Area -->
+      <Panel Grid.Row="0" Name="ContentPanel">
+        <Border Classes="TabContent"
+                Classes.Active="{Binding IsCalculatorActive}">
+          <views:CalculatorView DataContext="{Binding CalculatorViewModel}" />
+        </Border>
+        <Border Classes="TabContent"
+                Classes.Active="{Binding IsConverterActive}">
+          <views:ConverterView DataContext="{Binding ConverterViewModel}" />
+        </Border>
+        <Border Classes="TabContent"
+                Classes.Active="{Binding IsSettingsActive}">
+          <views:SettingsView DataContext="{Binding SettingsViewModel}" />
+        </Border>
+      </Panel>
+
+      <!-- Bottom Navigation Bar -->
+      <Border Grid.Row="1"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderSubtleBrush}"
+              BorderThickness="0,1,0,0">
+        <Grid ColumnDefinitions="*,*,*" Margin="0,2">
+
+          <!-- Calculator Tab -->
+          <Button Grid.Column="0"
+                  Classes="Text"
+                  Command="{Binding NavigateToCalculatorCommand}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="0"
+                  Height="56">
+            <StackPanel Spacing="2">
+              <Border Height="3" CornerRadius="2" Margin="12,0"
+                      IsVisible="{Binding IsCalculatorActive}">
+                <Border.Background>
+                  <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+                </Border.Background>
+              </Border>
+              <Border Height="3" IsVisible="{Binding !IsCalculatorActive}" />
+              <Panel>
+                <mi:MaterialIcon Kind="Calculator" Width="24" Height="24"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 IsVisible="{Binding IsCalculatorActive}" />
+                <mi:MaterialIcon Kind="CalculatorVariantOutline" Width="24" Height="24"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 IsVisible="{Binding !IsCalculatorActive}" />
+              </Panel>
+              <Panel>
+                <TextBlock Text="{Binding NavCalculatorText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           FontWeight="Medium"
+                           IsVisible="{Binding IsCalculatorActive}" />
+                <TextBlock Text="{Binding NavCalculatorText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           IsVisible="{Binding !IsCalculatorActive}" />
+              </Panel>
+            </StackPanel>
+          </Button>
+
+          <!-- Converter Tab -->
+          <Button Grid.Column="1"
+                  Classes="Text"
+                  Command="{Binding NavigateToConverterCommand}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="0"
+                  Height="56">
+            <StackPanel Spacing="2">
+              <Border Height="3" CornerRadius="2" Margin="12,0"
+                      IsVisible="{Binding IsConverterActive}">
+                <Border.Background>
+                  <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+                </Border.Background>
+              </Border>
+              <Border Height="3" IsVisible="{Binding !IsConverterActive}" />
+              <Panel>
+                <mi:MaterialIcon Kind="SwapHorizontalBold" Width="24" Height="24"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 IsVisible="{Binding IsConverterActive}" />
+                <mi:MaterialIcon Kind="SwapHorizontal" Width="24" Height="24"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 IsVisible="{Binding !IsConverterActive}" />
+              </Panel>
+              <Panel>
+                <TextBlock Text="{Binding NavConverterText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           FontWeight="Medium"
+                           IsVisible="{Binding IsConverterActive}" />
+                <TextBlock Text="{Binding NavConverterText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           IsVisible="{Binding !IsConverterActive}" />
+              </Panel>
+            </StackPanel>
+          </Button>
+
+          <!-- Settings Tab -->
+          <Button Grid.Column="2"
+                  Classes="Text"
+                  Command="{Binding NavigateToSettingsCommand}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="0"
+                  Height="56">
+            <StackPanel Spacing="2">
+              <Border Height="3" CornerRadius="2" Margin="12,0"
+                      IsVisible="{Binding IsSettingsActive}">
+                <Border.Background>
+                  <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+                </Border.Background>
+              </Border>
+              <Border Height="3" IsVisible="{Binding !IsSettingsActive}" />
+              <Panel>
+                <mi:MaterialIcon Kind="Cog" Width="24" Height="24"
+                                 Foreground="{DynamicResource PrimaryBrush}"
+                                 IsVisible="{Binding IsSettingsActive}" />
+                <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 IsVisible="{Binding !IsSettingsActive}" />
+              </Panel>
+              <Panel>
+                <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           FontWeight="Medium"
+                           IsVisible="{Binding IsSettingsActive}" />
+                <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           IsVisible="{Binding !IsSettingsActive}" />
+              </Panel>
+            </StackPanel>
+          </Button>
+
+        </Grid>
+      </Border>
+
+    </Grid>
+
+    <!-- ============================================ -->
+    <!-- History Bottom Sheet Overlay                  -->
+    <!-- ============================================ -->
+
+    <!-- Backdrop -->
+    <Border Classes="HistoryBackdrop"
+            Background="#80000000"
+            IsVisible="{Binding CalculatorViewModel.IsHistoryVisible}"
+            IsHitTestVisible="{Binding CalculatorViewModel.IsHistoryVisible}"
+            PointerPressed="OnHistoryBackdropTapped" />
+
+    <!-- History Panel -->
+    <Border Classes="HistoryPanel"
+            Classes.Visible="{Binding CalculatorViewModel.IsHistoryVisible}"
+            VerticalAlignment="Bottom"
+            MaxHeight="500"
+            CornerRadius="24,24,0,0"
+            Background="{DynamicResource CardBrush}"
+            BoxShadow="0 -4 16 0 #40000000"
+            IsHitTestVisible="{Binding CalculatorViewModel.IsHistoryVisible}">
+      <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Drag Handle -->
+        <Border Grid.Row="0"
+                Width="40" Height="4"
+                CornerRadius="2"
+                Background="{DynamicResource TextMutedBrush}"
+                Opacity="0.4"
+                HorizontalAlignment="Center"
+                Margin="0,12,0,8" />
+
+        <!-- Header -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="Auto,*,Auto"
+              Margin="20,0,12,12">
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+            <mi:MaterialIcon Kind="History" Width="22" Height="22"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding CalculatorViewModel.HistoryTitleText}"
+                       Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+          <Button Grid.Column="2"
+                  Classes="Text Small"
+                  Command="{Binding CalculatorViewModel.HideHistoryCommand}"
+                  Padding="8">
+            <mi:MaterialIcon Kind="Close" Width="20" Height="20" />
+          </Button>
+        </Grid>
+
+        <!-- History Entries -->
+        <ScrollViewer Grid.Row="2" Margin="0,0,0,0">
+          <Panel>
+            <!-- Empty State -->
+            <StackPanel IsVisible="{Binding !CalculatorViewModel.HasHistory}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="8"
+                        Margin="0,32">
+              <mi:MaterialIcon Kind="CalculatorVariantOutline" Width="48" Height="48"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center"
+                               Opacity="0.5" />
+              <TextBlock Text="{Binding CalculatorViewModel.NoCalculationsYetText}"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center"
+                         FontSize="14" />
+            </StackPanel>
+
+            <!-- Entries List -->
+            <ItemsControl ItemsSource="{Binding CalculatorViewModel.HistoryEntries}"
+                          IsVisible="{Binding CalculatorViewModel.HasHistory}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="calc:CalculationHistoryEntry">
+                  <Button Classes="Text HistoryEntry"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          Padding="20,14"
+                          CornerRadius="0"
+                          Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
+                          CommandParameter="{Binding}">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Grid.Column="0" Spacing="4">
+                        <TextBlock Text="{Binding Expression}"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Result}"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                      </StackPanel>
+                      <mi:MaterialIcon Grid.Column="1" Kind="ChevronRight"
+                                       Width="16" Height="16"
+                                       Foreground="{DynamicResource TextMutedBrush}"
+                                       VerticalAlignment="Center"
+                                       Opacity="0.5" />
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Panel>
+        </ScrollViewer>
+
+
+      </Grid>
+    </Border>
+
+  </Panel>
+
+</UserControl>

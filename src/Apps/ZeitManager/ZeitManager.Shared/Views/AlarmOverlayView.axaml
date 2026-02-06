@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ZeitManager.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="ZeitManager.Views.AlarmOverlayView"
+             x:DataType="vm:AlarmOverlayViewModel">
+
+  <UserControl.Styles>
+    <!-- Pulsing animation for the icon circle -->
+    <Style Selector="Border.PulseCircle">
+      <Style.Animations>
+        <Animation Duration="0:0:1.5" IterationCount="INFINITE"
+                   PlaybackDirection="Alternate" Easing="CubicEaseInOut">
+          <KeyFrame Cue="0%">
+            <Setter Property="ScaleTransform.ScaleX" Value="1.0" />
+            <Setter Property="ScaleTransform.ScaleY" Value="1.0" />
+            <Setter Property="Opacity" Value="0.8" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="ScaleTransform.ScaleX" Value="1.08" />
+            <Setter Property="ScaleTransform.ScaleY" Value="1.08" />
+            <Setter Property="Opacity" Value="1.0" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+  </UserControl.Styles>
+
+  <!-- Fullscreen dark overlay -->
+  <Border Background="#E0000000">
+    <Grid RowDefinitions="*,Auto,Auto,Auto,Auto,*" Margin="32">
+
+      <!-- Icon circle with pulse -->
+      <Border Grid.Row="1" Classes="PulseCircle"
+              Width="140" Height="140" CornerRadius="70"
+              Background="{DynamicResource PrimaryBrush}"
+              HorizontalAlignment="Center" Margin="0,0,0,24"
+              RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+          <ScaleTransform />
+        </Border.RenderTransform>
+        <Panel>
+          <mi:MaterialIcon Kind="TimerSand" Width="64" Height="64"
+                           Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           IsVisible="{Binding IsTimerSource}" />
+          <mi:MaterialIcon Kind="Alarm" Width="64" Height="64"
+                           Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           IsVisible="{Binding !IsTimerSource}" />
+        </Panel>
+      </Border>
+
+      <!-- Title -->
+      <StackPanel Grid.Row="2" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,16">
+        <TextBlock Text="{Binding Title}" Classes="HeadlineLarge"
+                   Foreground="White" HorizontalAlignment="Center"
+                   TextAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Subtitle}" Classes="TitleMedium"
+                   Foreground="#B0FFFFFF" HorizontalAlignment="Center"
+                   TextAlignment="Center" />
+      </StackPanel>
+
+      <!-- Current time display -->
+      <TextBlock Grid.Row="3" Text="{Binding CurrentTime}"
+                 FontSize="64" FontWeight="Light" Foreground="White"
+                 HorizontalAlignment="Center" Margin="0,0,0,48" />
+
+      <!-- Buttons -->
+      <StackPanel Grid.Row="4" Spacing="16" HorizontalAlignment="Center">
+        <!-- Dismiss button -->
+        <Button Classes="Primary" MinWidth="220" Height="56" CornerRadius="28"
+                HorizontalContentAlignment="Center"
+                Command="{Binding DismissCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Close" Width="24" Height="24" />
+            <TextBlock Text="{Binding DismissText}" FontSize="18" FontWeight="Medium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+
+        <!-- Snooze button -->
+        <Button Classes="Outlined" MinWidth="220" Height="48" CornerRadius="24"
+                HorizontalContentAlignment="Center"
+                IsVisible="{Binding CanSnooze}"
+                Command="{Binding SnoozeCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="AlarmSnooze" Width="20" Height="20"
+                             Foreground="White" />
+            <TextBlock FontSize="16" Foreground="White"
+                       VerticalAlignment="Center">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0} ({1})">
+                  <Binding Path="SnoozeLabel" />
+                  <Binding Path="SnoozeText" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+    </Grid>
+  </Border>
+
+</UserControl>

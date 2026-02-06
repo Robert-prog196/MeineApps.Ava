@@ -1,0 +1,343 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using HandwerkerRechner.Models;
+using HandwerkerRechner.Services;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+
+namespace HandwerkerRechner.ViewModels.Floor;
+
+public partial class TileCalculatorViewModel : ObservableObject
+{
+    private readonly CraftEngine _craftEngine;
+    private readonly IProjectService _projectService;
+    private readonly ILocalizationService _localization;
+    private readonly ICalculationHistoryService _historyService;
+    private readonly IUnitConverterService _unitConverter;
+    private string? _currentProjectId;
+
+    /// <summary>
+    /// Event to request navigation (replaces Shell.Current.GoToAsync)
+    /// </summary>
+    public event Action<string>? NavigationRequested;
+
+    /// <summary>
+    /// Event for showing alerts/messages to the user (title, message)
+    /// </summary>
+    public event Action<string, string>? MessageRequested;
+
+    [ObservableProperty]
+    private bool _showSaveDialog;
+
+    [ObservableProperty]
+    private string _saveProjectName = string.Empty;
+
+    private string DefaultProjectName => _localization.GetString("CalcTiles");
+
+    /// <summary>
+    /// Invoke navigation request
+    /// </summary>
+    private void NavigateTo(string route)
+    {
+        NavigationRequested?.Invoke(route);
+    }
+
+    public TileCalculatorViewModel(
+        CraftEngine craftEngine,
+        IProjectService projectService,
+        ILocalizationService localization,
+        ICalculationHistoryService historyService,
+        IUnitConverterService unitConverter)
+    {
+        _craftEngine = craftEngine;
+        _projectService = projectService;
+        _localization = localization;
+        _historyService = historyService;
+        _unitConverter = unitConverter;
+
+        // Subscribe to unit system changes
+        _unitConverter.UnitSystemChanged += OnUnitSystemChanged;
+    }
+
+    /// <summary>
+    /// Load project data from a project ID (replaces IQueryAttributable)
+    /// </summary>
+    public async Task LoadFromProjectIdAsync(string projectId)
+    {
+        if (string.IsNullOrEmpty(projectId))
+            return;
+
+        _currentProjectId = projectId;
+        try
+        {
+            await LoadProjectAsync(projectId);
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    #region Input Properties
+
+    [ObservableProperty]
+    private double _roomLength = 4.0;
+
+    [ObservableProperty]
+    private double _roomWidth = 3.0;
+
+    [ObservableProperty]
+    private double _tileLength = 30;
+
+    [ObservableProperty]
+    private double _tileWidth = 30;
+
+    [ObservableProperty]
+    private double _wastePercentage = 10;
+
+    #endregion
+
+    #region Unit Labels
+
+    public string LengthUnit => _unitConverter.GetLengthUnit();
+    public string AreaUnit => _unitConverter.GetAreaUnit();
+    public string TileSizeUnit => _unitConverter.CurrentSystem == UnitSystem.Metric ? "cm" : "in";
+
+    private void OnUnitSystemChanged(object? sender, EventArgs e)
+    {
+        // Refresh all unit-dependent display properties
+        OnPropertyChanged(nameof(LengthUnit));
+        OnPropertyChanged(nameof(AreaUnit));
+        OnPropertyChanged(nameof(TileSizeUnit));
+        OnPropertyChanged(nameof(AreaDisplay));
+        OnPropertyChanged(nameof(TilesNeededDisplay));
+        OnPropertyChanged(nameof(TilesWithWasteDisplay));
+        OnPropertyChanged(nameof(TotalCostDisplay));
+    }
+
+    #endregion
+
+    #region Cost Calculation
+
+    [ObservableProperty]
+    private double _pricePerTile = 0;
+
+    [ObservableProperty]
+    private bool _showCost = false;
+
+    public string TotalCostDisplay => (Result != null && ShowCost && PricePerTile > 0)
+        ? $"{(Result.TilesWithWaste * PricePerTile):F2} \u20ac"
+        : "";
+
+    public string PricePerDisplay => ShowCost ? $"{_localization.GetString("PricePerTile")}: {PricePerTile:F2} \u20ac" : "";
+
+    partial void OnPricePerTileChanged(double value)
+    {
+        ShowCost = value > 0;
+        OnPropertyChanged(nameof(TotalCostDisplay));
+        OnPropertyChanged(nameof(PricePerDisplay));
+    }
+
+    #endregion
+
+    #region Result Properties
+
+    [ObservableProperty]
+    private TileResult? _result;
+
+    [ObservableProperty]
+    private bool _hasResult;
+
+    [ObservableProperty]
+    private bool _isCalculating;
+
+    public string AreaDisplay => Result != null
+        ? _unitConverter.FormatArea(Result.RoomArea)
+        : "";
+
+    public string TilesNeededDisplay => Result != null
+        ? $"{Result.TilesNeeded} {_localization.GetString("UnitPieces")}"
+        : "";
+
+    public string TilesWithWasteDisplay => Result != null
+        ? $"{Result.TilesWithWaste} {_localization.GetString("UnitPieces")}"
+        : "";
+
+    partial void OnResultChanged(TileResult? value)
+    {
+        OnPropertyChanged(nameof(AreaDisplay));
+        OnPropertyChanged(nameof(TilesNeededDisplay));
+        OnPropertyChanged(nameof(TilesWithWasteDisplay));
+        OnPropertyChanged(nameof(TotalCostDisplay));
+    }
+
+    #endregion
+
+    [RelayCommand]
+    private async Task Calculate()
+    {
+        if (IsCalculating) return;
+
+        try
+        {
+            IsCalculating = true;
+
+            if (RoomLength <= 0 || RoomWidth <= 0 || TileLength <= 0 || TileWidth <= 0)
+            {
+                HasResult = false;
+                MessageRequested?.Invoke(_localization.GetString("InvalidInputTitle"), _localization.GetString("ValueMustBePositive"));
+                return;
+            }
+
+            Result = _craftEngine.CalculateTiles(RoomLength, RoomWidth, TileLength, TileWidth, WastePercentage);
+            HasResult = true;
+
+            // Save to history
+            await SaveToHistoryAsync();
+        }
+        finally
+        {
+            IsCalculating = false;
+        }
+    }
+
+    private async Task SaveToHistoryAsync()
+    {
+        try
+        {
+            var title = $"{RoomLength:F1} \u00d7 {RoomWidth:F1} m, {TileLength}\u00d7{TileWidth} cm";
+            var data = new Dictionary<string, object>
+            {
+                ["RoomLength"] = RoomLength,
+                ["RoomWidth"] = RoomWidth,
+                ["TileLength"] = TileLength,
+                ["TileWidth"] = TileWidth,
+                ["WastePercentage"] = WastePercentage,
+                ["PricePerTile"] = PricePerTile,
+                ["Result"] = Result != null ? new Dictionary<string, object>
+                {
+                    ["RoomArea"] = Result.RoomArea,
+                    ["TilesNeeded"] = Result.TilesNeeded,
+                    ["TilesWithWaste"] = Result.TilesWithWaste
+                } : new Dictionary<string, object>()
+            };
+
+            await _historyService.AddCalculationAsync("TileCalculator", title, data);
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    [RelayCommand]
+    private void Reset()
+    {
+        RoomLength = 4.0;
+        RoomWidth = 3.0;
+        TileLength = 30;
+        TileWidth = 30;
+        WastePercentage = 10;
+        PricePerTile = 0;
+        Result = null;
+        HasResult = false;
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        NavigateTo("..");
+    }
+
+    [RelayCommand]
+    private async Task SaveProject()
+    {
+        if (!HasResult) return;
+
+        SaveProjectName = _currentProjectId != null ? "" : DefaultProjectName;
+        ShowSaveDialog = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmSaveProject()
+    {
+        var name = SaveProjectName;
+        if (string.IsNullOrWhiteSpace(name))
+            name = DefaultProjectName;
+
+        ShowSaveDialog = false;
+
+        try
+        {
+            var project = new Project
+            {
+                Name = name,
+                CalculatorType = CalculatorType.Tiles
+            };
+
+            if (!string.IsNullOrEmpty(_currentProjectId))
+            {
+                project.Id = _currentProjectId;
+            }
+
+            var data = new Dictionary<string, object>
+            {
+                ["RoomLength"] = RoomLength,
+                ["RoomWidth"] = RoomWidth,
+                ["TileLength"] = TileLength,
+                ["TileWidth"] = TileWidth,
+                ["WastePercentage"] = WastePercentage,
+                ["PricePerTile"] = PricePerTile
+            };
+
+            project.SetData(data);
+            await _projectService.SaveProjectAsync(project);
+            _currentProjectId = project.Id;
+
+            MessageRequested?.Invoke(
+                _localization.GetString("Success"),
+                _localization.GetString("ProjectSaved"));
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("Error"),
+                _localization.GetString("ProjectSaveFailed"));
+        }
+    }
+
+    [RelayCommand]
+    private void CancelSaveProject()
+    {
+        ShowSaveDialog = false;
+        SaveProjectName = string.Empty;
+    }
+
+    private async Task LoadProjectAsync(string projectId)
+    {
+        try
+        {
+            var project = await _projectService.LoadProjectAsync(projectId);
+            if (project == null)
+                return;
+
+            RoomLength = project.GetValue("RoomLength", 4.0);
+            RoomWidth = project.GetValue("RoomWidth", 3.0);
+            TileLength = project.GetValue("TileLength", 30.0);
+            TileWidth = project.GetValue("TileWidth", 30.0);
+            WastePercentage = project.GetValue("WastePercentage", 10.0);
+            PricePerTile = project.GetValue("PricePerTile", 0.0);
+
+            await Calculate();
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Cleanup when ViewModel is disposed
+    /// </summary>
+    public void Cleanup()
+    {
+        _unitConverter.UnitSystemChanged -= OnUnitSystemChanged;
+    }
+}

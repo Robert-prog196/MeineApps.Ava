@@ -1,0 +1,466 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FitnessRechner.ViewModels"
+             xmlns:models="using:FitnessRechner.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:conv="using:FitnessRechner.Converters"
+             x:Class="FitnessRechner.Views.FoodSearchView"
+             x:DataType="vm:FoodSearchViewModel">
+
+  <UserControl.Resources>
+    <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
+    <conv:BoolToStringConverter x:Key="FavoriteIconConverter"
+                                TrueValue="StarFace"
+                                FalseValue="StarOutline" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+    <!-- ============================================ -->
+    <!-- Row 0: Header with Title + Barcode Button    -->
+    <!-- ============================================ -->
+    <Border Grid.Row="0"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            Padding="16,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{loc:Translate FoodSearch}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" />
+        <Button Grid.Column="1"
+                Classes="Primary Small"
+                Command="{Binding OpenBarcodeScannerCommand}">
+          <mi:MaterialIcon Kind="Barcode" Width="20" Height="20" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 1: Search Bar                            -->
+    <!-- ============================================ -->
+    <Border Grid.Row="1" Classes="Card" Margin="16,12,16,0" Padding="12">
+      <Grid ColumnDefinitions="Auto,*">
+        <mi:MaterialIcon Kind="Magnify" Width="20" Height="20"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         VerticalAlignment="Center"
+                         Margin="0,0,10,0" />
+        <TextBox Grid.Column="1"
+                 Text="{Binding SearchQuery}"
+                 Watermark="{loc:Translate SearchFoodPlaceholder}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Height="NaN" />
+      </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 2: Content Area (Scrollable)             -->
+    <!-- ============================================ -->
+    <ScrollViewer Grid.Row="2" Padding="16">
+      <StackPanel Spacing="16">
+
+        <!-- Favorites Section -->
+        <StackPanel IsVisible="{Binding HasFavorites}" Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Star" Width="16" Height="16"
+                             Foreground="{DynamicResource WarningBrush}"
+                             VerticalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Favorites}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+          <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Favorites}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:FavoriteFoodEntry">
+                  <Button Classes="Text" Padding="0" Height="NaN"
+                          Command="{Binding $parent[ItemsControl].((vm:FoodSearchViewModel)DataContext).SelectFavoriteCommand}"
+                          CommandParameter="{Binding .}">
+                    <Border Classes="Card Compact Interactive" Padding="12,8" MinWidth="100"
+                            Cursor="Hand">
+                      <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding Food.Name}" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" MaxWidth="120" />
+                        <TextBlock Text="{Binding Food.CaloriesPer100g, StringFormat='{}{0:F0} kcal'}"
+                                   FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
+                    </Border>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </StackPanel>
+
+        <!-- Add Food Panel (when food is selected) -->
+        <Border Classes="Card" Padding="16"
+                Background="{DynamicResource PrimaryBrush}"
+                IsVisible="{Binding ShowAddPanel}">
+          <StackPanel Spacing="12">
+
+            <!-- Food Name + Favorite Toggle -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Text="{Binding SelectedFood.Name}"
+                         FontSize="20" FontWeight="Bold" Foreground="White"
+                         TextWrapping="Wrap" />
+              <Button Grid.Column="1" Classes="Icon"
+                      Command="{Binding ToggleFavoriteCommand}">
+                <Panel>
+                  <mi:MaterialIcon Kind="Star" Width="24" Height="24"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   IsVisible="{Binding IsSelectedFoodFavorite}" />
+                  <mi:MaterialIcon Kind="StarOutline" Width="24" Height="24"
+                                   Foreground="White"
+                                   IsVisible="{Binding !IsSelectedFoodFavorite}" />
+                </Panel>
+              </Button>
+            </Grid>
+
+            <!-- Portion Input -->
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+              <NumericUpDown Grid.Column="0"
+                             Value="{Binding PortionGrams}"
+                             Minimum="1" Maximum="10000"
+                             Increment="10"
+                             FormatString="F0"
+                             Watermark="{loc:Translate AmountGrams}"
+                             HorizontalAlignment="Stretch" />
+              <TextBlock Grid.Column="1" Text="g" Foreground="White"
+                         VerticalAlignment="Center" FontSize="14" />
+              <Button Grid.Column="2"
+                      Command="{Binding UseDefaultPortionCommand}"
+                      Background="Transparent"
+                      Foreground="White"
+                      BorderBrush="White"
+                      BorderThickness="1"
+                      Padding="8,0"
+                      Height="{DynamicResource ButtonHeightSm}">
+                <TextBlock Text="{Binding SelectedFood.DefaultPortion}" FontSize="12" />
+              </Button>
+            </Grid>
+
+            <!-- Nutrition Preview -->
+            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+              <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CalculatedCalories, StringFormat='{}{0:F0}'}"
+                           FontSize="18" FontWeight="Bold" Foreground="White"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="kcal" FontSize="10" Foreground="White" Opacity="0.8"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CalculatedProtein, StringFormat='{}{0:F1}g'}"
+                           FontSize="14" Foreground="White"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Protein}" FontSize="10" Foreground="White" Opacity="0.8"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CalculatedCarbs, StringFormat='{}{0:F1}g'}"
+                           FontSize="14" Foreground="White"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Carbs}" FontSize="10" Foreground="White" Opacity="0.8"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CalculatedFat, StringFormat='{}{0:F1}g'}"
+                           FontSize="14" Foreground="White"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate Fat}" FontSize="10" Foreground="White" Opacity="0.8"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+            </Grid>
+
+            <!-- Meal Selection -->
+            <ComboBox ItemsSource="{Binding Meals}"
+                      SelectedIndex="{Binding SelectedMeal}"
+                      HorizontalAlignment="Stretch" />
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,8,*">
+              <Button Grid.Column="0"
+                      Command="{Binding CancelAddCommand}"
+                      Background="Transparent"
+                      Foreground="White"
+                      BorderBrush="White"
+                      BorderThickness="1"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center">
+                <TextBlock Text="{loc:Translate Cancel}" />
+              </Button>
+              <Button Grid.Column="2" Classes="Success"
+                      Command="{Binding AddToLogCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Plus" Width="18" Height="18" />
+                  <TextBlock Text="{loc:Translate Add}" VerticalAlignment="Center" />
+                </StackPanel>
+              </Button>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Search Results -->
+        <StackPanel IsVisible="{Binding HasResults}" Spacing="8">
+          <TextBlock Text="{loc:Translate SearchResults}"
+                     FontSize="16" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+
+          <ItemsControl ItemsSource="{Binding SearchResults}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:FoodSearchResult">
+                <Border Classes="Card Interactive Compact" Margin="0,4" Padding="12"
+                        Cursor="Hand">
+                  <Button Classes="Text" Padding="0" Height="NaN"
+                          Command="{Binding $parent[ItemsControl].((vm:FoodSearchViewModel)DataContext).SelectFoodCommand}"
+                          CommandParameter="{Binding .}"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding Food.Name}"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding Food.CaloriesPer100g, StringFormat='{}{0:F0} kcal / 100g'}"
+                                   Classes="Caption" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="P:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                          <TextBlock Text="{Binding Food.ProteinPer100g, StringFormat='{}{0:F1}g'}"
+                                     FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                          <TextBlock Text=" | C:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                          <TextBlock Text="{Binding Food.CarbsPer100g, StringFormat='{}{0:F1}g'}"
+                                     FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                          <TextBlock Text=" | F:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                          <TextBlock Text="{Binding Food.FatPer100g, StringFormat='{}{0:F1}g'}"
+                                     FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        </StackPanel>
+                      </StackPanel>
+                      <mi:MaterialIcon Grid.Column="1" Kind="Plus" Width="24" Height="24"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" />
+                    </Grid>
+                  </Button>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Load More Button -->
+          <Button Classes="Outlined"
+                  Command="{Binding LoadMoreResultsCommand}"
+                  IsVisible="{Binding HasMoreResults}"
+                  HorizontalAlignment="Center"
+                  Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <mi:MaterialIcon Kind="ChevronDown" Width="18" Height="18" />
+              <TextBlock Text="{loc:Translate LoadMore}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <!-- Search hint when no query -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="8" Margin="0,40"
+                    IsVisible="{Binding !HasResults}">
+          <mi:MaterialIcon Kind="FoodApple" Width="48" Height="48"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           HorizontalAlignment="Center"
+                           IsVisible="{Binding !IsSearching}" />
+          <TextBlock Text="{loc:Translate TapToSearch}" Classes="Caption"
+                     HorizontalAlignment="Center"
+                     IsVisible="{Binding !IsSearching}" />
+          <ProgressBar IsIndeterminate="True" Width="120"
+                       IsVisible="{Binding IsSearching}" />
+        </StackPanel>
+
+        <!-- Today's Food Log -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="{loc:Translate TodayLog}"
+                     FontSize="16" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+
+          <TextBlock Text="{loc:Translate NoFoodEntries}" Classes="Caption"
+                     HorizontalAlignment="Center" Margin="0,20"
+                     IsVisible="{Binding !HasLogEntries}" />
+
+          <ItemsControl ItemsSource="{Binding TodayLog}"
+                        IsVisible="{Binding HasLogEntries}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:FoodLogEntry">
+                <Border Classes="Card Compact" Margin="0,4" Padding="12">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <StackPanel>
+                      <TextBlock Text="{Binding FoodName}"
+                                 FontSize="14" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="{Binding Grams, StringFormat='{}{0:F0}g'}"
+                                   Classes="Caption" />
+                        <TextBlock Text=" P:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="{Binding Protein, StringFormat='{}{0:F0}'}"
+                                   FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text=" C:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="{Binding Carbs, StringFormat='{}{0:F0}'}"
+                                   FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text=" F:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="{Binding Fat, StringFormat='{}{0:F0}'}"
+                                   FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Calories, StringFormat='{}{0:F0} kcal'}"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource ErrorBrush}"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="2" Classes="Icon"
+                            Command="{Binding $parent[ItemsControl].((vm:FoodSearchViewModel)DataContext).DeleteLogEntryCommand}"
+                            CommandParameter="{Binding .}"
+                            Margin="4,0,0,0">
+                      <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                       Foreground="{DynamicResource ErrorBrush}" />
+                    </Button>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ============================================ -->
+    <!-- Row 3: Nutrition Summary Footer              -->
+    <!-- ============================================ -->
+    <Border Grid.Row="3"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource BorderSubtleBrush}"
+            Padding="16,12"
+            IsVisible="{Binding HasLogEntries}">
+      <StackPanel Spacing="8">
+
+        <!-- Macro Progress Bars (when macro goals set) -->
+        <StackPanel Spacing="4" IsVisible="{Binding HasMacroGoals}">
+          <!-- Protein -->
+          <Grid ColumnDefinitions="50,*,60" ColumnSpacing="8">
+            <TextBlock Text="{loc:Translate Protein}" FontSize="11"
+                       Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+            <ProgressBar Grid.Column="1"
+                         Value="{Binding DailyMacroSummary.ProteinProgress.PercentageComplete}"
+                         Maximum="100"
+                         Foreground="{DynamicResource SuccessBrush}"
+                         Height="6" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding DailyMacroSummary.ProteinProgress.PercentageComplete, StringFormat='{}{0:F0}%'}"
+                       FontSize="11" FontWeight="SemiBold"
+                       Foreground="{DynamicResource SuccessBrush}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+          </Grid>
+          <!-- Carbs -->
+          <Grid ColumnDefinitions="50,*,60" ColumnSpacing="8">
+            <TextBlock Text="{loc:Translate Carbs}" FontSize="11"
+                       Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
+            <ProgressBar Grid.Column="1"
+                         Value="{Binding DailyMacroSummary.CarbsProgress.PercentageComplete}"
+                         Maximum="100"
+                         Foreground="{DynamicResource WarningBrush}"
+                         Height="6" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding DailyMacroSummary.CarbsProgress.PercentageComplete, StringFormat='{}{0:F0}%'}"
+                       FontSize="11" FontWeight="SemiBold"
+                       Foreground="{DynamicResource WarningBrush}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+          </Grid>
+          <!-- Fat -->
+          <Grid ColumnDefinitions="50,*,60" ColumnSpacing="8">
+            <TextBlock Text="{loc:Translate Fat}" FontSize="11"
+                       Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+            <ProgressBar Grid.Column="1"
+                         Value="{Binding DailyMacroSummary.FatProgress.PercentageComplete}"
+                         Maximum="100"
+                         Foreground="{DynamicResource ErrorBrush}"
+                         Height="6" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding DailyMacroSummary.FatProgress.PercentageComplete, StringFormat='{}{0:F0}%'}"
+                       FontSize="11" FontWeight="SemiBold"
+                       Foreground="{DynamicResource ErrorBrush}"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+          </Grid>
+        </StackPanel>
+
+        <!-- Totals Summary Row -->
+        <Grid ColumnDefinitions="*,*,*,*">
+          <StackPanel HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TodaySummary.TotalCalories, StringFormat='{}{0:F0}'}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="kcal" Classes="Caption" HorizontalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TodaySummary.TotalProtein, StringFormat='{}{0:F0}g'}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Protein}" Classes="Caption" HorizontalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TodaySummary.TotalCarbs, StringFormat='{}{0:F0}g'}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Carbs}" Classes="Caption" HorizontalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding TodaySummary.TotalFat, StringFormat='{}{0:F0}g'}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate Fat}" Classes="Caption" HorizontalAlignment="Center" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Calorie Status Banner -->
+        <Border CornerRadius="8" Padding="8,6"
+                Background="{DynamicResource PrimaryBrush}"
+                IsVisible="{Binding HasCalorieGoal}">
+          <TextBlock Text="{Binding CalorieStatusText}"
+                     FontSize="13" FontWeight="SemiBold" Foreground="White"
+                     HorizontalAlignment="Center" />
+        </Border>
+      </StackPanel>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Row 4: Undo Banner                           -->
+    <!-- ============================================ -->
+    <Border Grid.Row="4"
+            Background="{DynamicResource SurfaceBrush}"
+            CornerRadius="8"
+            Padding="16,12"
+            Margin="16,8"
+            IsVisible="{Binding ShowUndoBanner}">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{Binding UndoMessage}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   FontSize="14" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Classes="Warning Small"
+                Command="{Binding UndoDeleteLogCommand}">
+          <TextBlock Text="{loc:Translate Undo}" FontWeight="Bold" />
+        </Button>
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

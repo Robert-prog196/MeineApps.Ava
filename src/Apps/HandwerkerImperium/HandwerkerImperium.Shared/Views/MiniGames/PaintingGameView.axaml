@@ -1,0 +1,254 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.MiniGames.PaintingGameView"
+             x:DataType="vm:PaintingGameViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            Classes="CardElevated"
+            Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <!-- Cancel Button -->
+        <Button Classes="Text"
+                Command="{Binding CancelCommand}">
+          <mi:MaterialIcon Kind="Close" Width="24" Height="24" />
+        </Button>
+
+        <!-- Title -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="6">
+            <mi:MaterialIcon Kind="FormatPaint" Width="22" Height="22" />
+            <TextBlock Text="{loc:Translate PaintingGame}"
+                       FontSize="18" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+          <TextBlock Text="{Binding DifficultyStars}"
+                     HorizontalAlignment="Center"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+
+        <!-- Timer -->
+        <Border Grid.Column="2"
+                Background="{DynamicResource SurfaceBrush}"
+                CornerRadius="8"
+                Padding="12,6">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="Clock" Width="16" Height="16" />
+            <TextBlock Text="{Binding TimeRemaining, StringFormat='{}{0}s'}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- GAME AREA                                                         -->
+    <!-- ================================================================= -->
+    <Grid Grid.Row="1" VerticalAlignment="Center" Margin="0,20">
+      <StackPanel Spacing="20">
+
+        <!-- Instructions -->
+        <TextBlock Text="{loc:Translate PaintAllMarkedCells}"
+                   FontSize="12"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   HorizontalAlignment="Center"
+                   IsVisible="{Binding !IsPlaying}" />
+
+        <TextBlock Text="{loc:Translate TapToPaint}"
+                   FontSize="12"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   HorizontalAlignment="Center"
+                   IsVisible="{Binding IsPlaying}" />
+
+        <!-- Progress Bar -->
+        <Grid ColumnDefinitions="Auto,*,Auto"
+              IsVisible="{Binding IsPlaying}"
+              Margin="0,0,0,8">
+          <mi:MaterialIcon Kind="FormatPaint" Width="20" Height="20" />
+          <ProgressBar Grid.Column="1"
+                       Value="{Binding PaintProgress}"
+                       Maximum="1"
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       Height="12"
+                       Margin="12,0" />
+          <TextBlock Grid.Column="2" FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     VerticalAlignment="Center">
+            <Run Text="{Binding PaintedTargetCount}" />
+            <Run Text="/" />
+            <Run Text="{Binding TargetCellCount}" />
+          </TextBlock>
+        </Grid>
+
+        <!-- Stats Bar -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="24"
+                    IsVisible="{Binding IsPlaying}">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="Close" Width="16" Height="16"
+                             Foreground="{DynamicResource ErrorBrush}" />
+            <TextBlock FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}">
+              <Run Text="{loc:Translate MistakesLabel}" />
+              <Run Text=" " />
+              <Run Text="{Binding MistakeCount}" />
+            </TextBlock>
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Canvas Grid -->
+        <Border Classes="Card" Padding="16"
+                HorizontalAlignment="Center">
+          <ItemsControl ItemsSource="{Binding Cells}"
+                        Width="{Binding PaintGridWidth}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:PaintCell">
+                <Button Classes="Text" Padding="0" Margin="2"
+                        Command="{Binding $parent[ItemsControl].((vm:PaintingGameViewModel)DataContext).PaintCellCommand}"
+                        CommandParameter="{Binding .}">
+                  <Border Width="50" Height="50"
+                          CornerRadius="4"
+                          BorderThickness="2"
+                          BorderBrush="{Binding BorderColor}"
+                          Background="{Binding DisplayColor}">
+                    <Panel>
+                      <!-- Target indicator -->
+                      <TextBlock Text="*"
+                                 FontSize="24"
+                                 Foreground="#40FFFFFF"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 IsVisible="{Binding IsTarget}" />
+
+                      <!-- Painted checkmark -->
+                      <mi:MaterialIcon Kind="Check" Width="20" Height="20"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding IsPaintedCorrectly}" />
+
+                      <!-- Error mark -->
+                      <mi:MaterialIcon Kind="Close" Width="20" Height="20"
+                                       Foreground="{DynamicResource ErrorBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding HasError}" />
+                    </Panel>
+                  </Border>
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Border>
+
+        <!-- Paint Color Display -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    IsVisible="{Binding !IsResultShown}">
+          <TextBlock Text="{loc:Translate Color}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     VerticalAlignment="Center" />
+          <Border Width="30" Height="30"
+                  CornerRadius="6"
+                  Background="{Binding SelectedColor}" />
+        </StackPanel>
+
+        <!-- Result Display -->
+        <Border Classes="Card"
+                IsVisible="{Binding IsResultShown}"
+                Padding="24">
+          <StackPanel Spacing="16" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding ResultEmoji}"
+                       FontSize="48"
+                       HorizontalAlignment="Center" />
+
+            <TextBlock Text="{Binding ResultText}"
+                       FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center" />
+
+            <!-- Rewards -->
+            <StackPanel Orientation="Horizontal" Spacing="20"
+                        HorizontalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
+                                 Foreground="{DynamicResource SuccessBrush}" />
+                <TextBlock Text="{Binding RewardAmount, StringFormat='+{0:N0} €'}"
+                           FontSize="14" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="Star" Width="20" Height="20"
+                                 Foreground="Gold" />
+                <TextBlock Text="{Binding XpAmount, StringFormat='+{0} XP'}"
+                           FontSize="14" FontWeight="Bold"
+                           Foreground="Gold"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </Grid>
+
+    <!-- ================================================================= -->
+    <!-- ACTION BUTTONS                                                    -->
+    <!-- ================================================================= -->
+    <StackPanel Grid.Row="2" Spacing="16">
+
+      <!-- Start Button -->
+      <Button Content="{loc:Translate StartPainting}"
+              Classes="Primary"
+              Command="{Binding StartGameCommand}"
+              IsVisible="{Binding !IsPlaying}"
+              IsEnabled="{Binding !IsResultShown}"
+              HorizontalAlignment="Center"
+              MinWidth="220" />
+
+      <!-- Continue Buttons -->
+      <Grid ColumnDefinitions="*,*"
+            ColumnSpacing="12"
+            IsVisible="{Binding IsResultShown}">
+
+        <Button Content="{loc:Translate WatchAdForDouble}"
+                Classes="Secondary"
+                IsEnabled="{Binding CanWatchAd}"
+                Command="{Binding WatchAdCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center" />
+
+        <Button Grid.Column="1"
+                Content="{loc:Translate Continue}"
+                Classes="Primary"
+                Command="{Binding ContinueCommand}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center" />
+      </Grid>
+
+    </StackPanel>
+
+  </Grid>
+
+</UserControl>

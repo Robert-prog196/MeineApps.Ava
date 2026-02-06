@@ -1,0 +1,205 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerRechner.ViewModels.Premium"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerRechner.Views.Premium.DrywallView"
+             x:DataType="vm:DrywallViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Header -->
+    <Border Grid.Row="0" Padding="16,12">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding GoBackCommand}"
+                Padding="8">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+        <TextBlock Grid.Column="1" Text="{loc:Translate DrywallCalculator}"
+                   FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   VerticalAlignment="Center" Margin="12,0,0,0" />
+      </Grid>
+    </Border>
+
+    <!-- Content -->
+    <ScrollViewer Grid.Row="1" Padding="16,0">
+      <StackPanel Spacing="16">
+
+        <!-- Input Card -->
+        <Border Classes="Card" Padding="16">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{loc:Translate WallDimensions}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <!-- Wall Length -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate LengthM}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding WallLength}"
+                       Watermark="m" />
+            </StackPanel>
+
+            <!-- Wall Height -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate HeightM}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding WallHeight}"
+                       Watermark="m" />
+            </StackPanel>
+
+            <!-- Double Plated -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" Text="{loc:Translate DoublePlated}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center" />
+              <ToggleSwitch Grid.Column="1"
+                            IsChecked="{Binding DoublePlated}"
+                            OnContent="" OffContent="" />
+            </Grid>
+
+            <!-- Price Per Sqm (optional) -->
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Translate PricePerSqm}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding PricePerSqm}"
+                       Watermark="EUR" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Results Card -->
+        <Border Classes="Card Elevated" Padding="16"
+                IsVisible="{Binding HasResult}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="{loc:Translate Result}"
+                       FontSize="16" FontWeight="SemiBold"
+                       Foreground="{DynamicResource PrimaryBrush}" />
+
+            <!-- Plates Needed -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" Text="{loc:Translate DrywallSheets}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding PlatesNeeded}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- CW Profiles Needed -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" Text="{loc:Translate CWProfilesStuds}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding CwProfilesNeeded}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- UW Length Needed -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" Text="{loc:Translate UWProfilesTopBottom}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding UwLengthNeeded}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Screws Needed -->
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" Text="{loc:Translate Screws}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding ScrewsNeeded}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </Grid>
+
+            <!-- Total Cost (when ShowCost) -->
+            <Grid ColumnDefinitions="*,Auto"
+                  IsVisible="{Binding ShowCost}">
+              <TextBlock Grid.Column="0" Text="{loc:Translate TotalCost}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{Binding TotalCostDisplay}"
+                         FontSize="17" FontWeight="Bold"
+                         Foreground="{DynamicResource AccentBrush}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Bottom spacing -->
+        <Panel Height="16" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Buttons -->
+    <Border Grid.Row="2" Padding="16,12"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource CardBorderBrush}">
+      <Grid ColumnDefinitions="*,8,*,8,*">
+        <Button Grid.Column="0" Content="{loc:Translate Reset}"
+                Command="{Binding ResetCommand}"
+                Classes="Outlined"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <Button Grid.Column="2" Content="{loc:Translate Calculate}"
+                Command="{Binding CalculateCommand}"
+                Classes="Primary"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+        <Button Grid.Column="4" Content="{loc:Translate Save}"
+                Command="{Binding SaveProjectCommand}"
+                Classes="Secondary"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <!-- Save Project Dialog Overlay -->
+    <Border Grid.Row="0" Grid.RowSpan="3"
+            ZIndex="100"
+            Background="#80000000"
+            IsVisible="{Binding ShowSaveDialog}">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate SaveProject}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBox Text="{Binding SaveProjectName}"
+                   Watermark="{loc:Translate ProjectName}"
+                   Classes="Outlined" />
+          <Grid ColumnDefinitions="*,12,*">
+            <Button Grid.Column="0"
+                    Classes="Outlined"
+                    Command="{Binding CancelSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Cancel}" />
+            <Button Grid.Column="2"
+                    Classes="Primary"
+                    Command="{Binding ConfirmSaveProjectCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Content="{loc:Translate Save}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+
+</UserControl>

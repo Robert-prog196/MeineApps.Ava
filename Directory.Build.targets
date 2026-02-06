@@ -1,0 +1,15 @@
+<Project>
+  <!-- Android-specific settings (evaluated AFTER project files, so TargetFramework is available) -->
+  <PropertyGroup Condition="$(TargetFramework.Contains('android'))">
+    <!-- Signing -->
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>$(MSBuildThisFileDirectory)Releases\meineapps.keystore</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>meineapps</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>MeineApps2025</AndroidSigningKeyPass>
+    <AndroidSigningStorePass>MeineApps2025</AndroidSigningStorePass>
+
+    <!-- Play Store requires AAB format -->
+    <AndroidPackageFormat>aab</AndroidPackageFormat>
+
+  </PropertyGroup>
+</Project>

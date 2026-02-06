@@ -1,0 +1,240 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FinanzRechner.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="FinanzRechner.Views.BudgetsView"
+             x:DataType="vm:BudgetsViewModel">
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Header -->
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,16">
+      <!-- Back Button -->
+      <Button Grid.Column="0" Classes="Text"
+              Command="{Binding GoBackCommand}"
+              Width="48" Height="48" Padding="0">
+        <mi:MaterialIcon Kind="ArrowLeft" Width="20" Height="20"
+                         Foreground="{DynamicResource PrimaryBrush}" />
+      </Button>
+      <TextBlock Grid.Column="1"
+                 Text="{Binding BudgetLimitsText}"
+                 Classes="PageTitle"
+                 VerticalAlignment="Center"
+                 Margin="8,0,0,0" />
+    </Grid>
+
+    <!-- Content -->
+    <Panel Grid.Row="1">
+
+      <!-- Budget List -->
+      <ScrollViewer>
+        <StackPanel Spacing="12" Margin="16,0">
+
+          <!-- Empty State -->
+          <StackPanel IsVisible="{Binding !HasBudgets}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                      Spacing="8" Margin="0,40,0,0">
+            <mi:MaterialIcon Kind="Target" Width="48" Height="48"
+                             Foreground="{DynamicResource TextMutedBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding NoBudgetsText}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding NoBudgetsHintText}"
+                       FontSize="13"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Budget Items -->
+          <ItemsControl ItemsSource="{Binding BudgetStatuses}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="Card" Margin="0,0,0,4" Cursor="Hand">
+                  <StackPanel Spacing="8">
+
+                    <!-- Category Header -->
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                      <TextBlock Text="{Binding CategoryIcon}" FontSize="24" />
+                      <TextBlock Text="{Binding CategoryName}"
+                                 FontSize="18" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center" />
+
+                      <!-- Alert Badge - Exceeded -->
+                      <Border Background="{DynamicResource ExpenseBrush}"
+                              CornerRadius="12"
+                              Padding="8,4"
+                              IsVisible="{Binding IsExceeded}">
+                        <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).ExceededText}"
+                                   FontSize="10" FontWeight="Bold" Foreground="White" />
+                      </Border>
+
+                      <!-- Alert Badge - Warning -->
+                      <Border Background="{DynamicResource WarningBrush}"
+                              CornerRadius="12"
+                              Padding="8,4"
+                              IsVisible="{Binding IsWarning}">
+                        <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).WarningLabelText}"
+                                   FontSize="10" FontWeight="Bold" Foreground="White" />
+                      </Border>
+                    </StackPanel>
+
+                    <!-- Progress Bar -->
+                    <Grid ColumnDefinitions="*,Auto">
+                      <ProgressBar Value="{Binding PercentageUsed}"
+                                   Maximum="100"
+                                   Height="8"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Grid.Column="1"
+                                 Text="{Binding PercentageUsed, StringFormat='{}{0:F0}%'}"
+                                 FontSize="12" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 Margin="8,0,0,0"
+                                 VerticalAlignment="Center" />
+                    </Grid>
+
+                    <!-- Budget Details -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                      <StackPanel>
+                        <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).SpentText}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Spent, StringFormat='{}{0:F2} \u20ac'}"
+                                   FontSize="14" FontWeight="Bold"
+                                   Foreground="{DynamicResource ExpenseBrush}" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).RemainingText}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Remaining, StringFormat='{}{0:F2} \u20ac'}"
+                                   FontSize="14" FontWeight="Bold"
+                                   Foreground="{DynamicResource IncomeBrush}" />
+                      </StackPanel>
+
+                      <StackPanel Grid.Column="2">
+                        <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).MonthlyLimitText}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Limit, StringFormat='{}{0:F2} \u20ac'}"
+                                   FontSize="14" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                    </Grid>
+
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- FAB (Add Button) -->
+      <Button Background="{DynamicResource AccentBrush}"
+              CornerRadius="28"
+              Width="56" Height="56"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Margin="16"
+              Cursor="Hand"
+              Command="{Binding ShowAddBudgetDialogCommand}"
+              Padding="0">
+        <mi:MaterialIcon Kind="Plus" Width="24" Height="24"
+                         Foreground="White"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Button>
+
+      <!-- Add/Edit Budget Dialog Overlay -->
+      <Border IsVisible="{Binding ShowAddBudget}"
+              Background="#80000000">
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="16"
+                Padding="24"
+                Margin="32"
+                VerticalAlignment="Center">
+          <StackPanel Spacing="16">
+            <TextBlock Text="{Binding SetBudgetText}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding CategoryText}" FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <ComboBox ItemsSource="{Binding AvailableCategories}"
+                        SelectedItem="{Binding SelectedCategory}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        HorizontalAlignment="Stretch" />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding MonthlyLimitEuroText}" FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding MonthlyLimit}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource SurfaceBrush}" />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+              <TextBlock Text="{Binding WarningThresholdText}" FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBox Text="{Binding WarningThreshold}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Background="{DynamicResource SurfaceBrush}" />
+              <TextBlock Text="{Binding WarningThresholdHintText}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Button Content="{Binding CancelText}"
+                      Command="{Binding CancelAddBudgetCommand}"
+                      Classes="Secondary" />
+              <Button Grid.Column="1"
+                      Content="{Binding SaveText}"
+                      Command="{Binding SaveBudgetCommand}"
+                      Classes="Primary" />
+            </Grid>
+          </StackPanel>
+        </Border>
+      </Border>
+
+      <!-- Undo Delete Snackbar -->
+      <Border IsVisible="{Binding ShowUndoDelete}"
+              Background="{DynamicResource CardBrush}"
+              CornerRadius="12"
+              Padding="16,12"
+              Margin="16"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Bottom"
+              ZIndex="100">
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+          <TextBlock Grid.Column="0"
+                     Text="{Binding UndoMessage}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     FontSize="14"
+                     VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis" />
+          <Button Grid.Column="1"
+                  Content="{Binding UndoText}"
+                  Command="{Binding UndoDeleteCommand}"
+                  Classes="Primary"
+                  Padding="16,8" />
+          <Button Grid.Column="2" Classes="Text"
+                  Command="{Binding DismissUndoCommand}"
+                  Width="36" Height="36" Padding="0">
+            <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+          </Button>
+        </Grid>
+      </Border>
+
+    </Panel>
+
+  </Grid>
+
+</UserControl>

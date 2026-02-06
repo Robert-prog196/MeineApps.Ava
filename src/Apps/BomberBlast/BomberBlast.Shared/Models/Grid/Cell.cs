@@ -1,0 +1,114 @@
+using BomberBlast.Models.Entities;
+
+namespace BomberBlast.Models.Grid;
+
+/// <summary>
+/// Represents a single cell in the game grid
+/// </summary>
+public class Cell
+{
+    /// <summary>X position in grid (column)</summary>
+    public int X { get; }
+
+    /// <summary>Y position in grid (row)</summary>
+    public int Y { get; }
+
+    /// <summary>Type of this cell</summary>
+    public CellType Type { get; set; }
+
+    /// <summary>Power-up hidden in this block (null if none)</summary>
+    public PowerUpType? HiddenPowerUp { get; set; }
+
+    /// <summary>Whether this cell is currently being destroyed (animation)</summary>
+    public bool IsDestroying { get; set; }
+
+    /// <summary>Destruction animation progress (0.0 to 1.0)</summary>
+    public float DestructionProgress { get; set; }
+
+    /// <summary>Bomb placed on this cell (null if none)</summary>
+    public Bomb? Bomb { get; set; }
+
+    /// <summary>Power-up on this cell (revealed after block destruction)</summary>
+    public PowerUp? PowerUp { get; set; }
+
+    /// <summary>Whether this cell is part of an active explosion</summary>
+    public bool IsExploding { get; set; }
+
+    /// <summary>Explosion animation progress (0.0 to 1.0)</summary>
+    public float ExplosionProgress { get; set; }
+
+    /// <summary>Direction of explosion passing through (for sprite selection)</summary>
+    public ExplosionDirection ExplosionDirection { get; set; }
+
+    public Cell(int x, int y, CellType type = CellType.Empty)
+    {
+        X = x;
+        Y = y;
+        Type = type;
+    }
+
+    /// <summary>
+    /// Check if player/enemy can walk through this cell
+    /// </summary>
+    public bool IsWalkable(bool canPassWalls = false, bool canPassBombs = false)
+    {
+        if (Type == CellType.Wall)
+            return false;
+
+        if (Type == CellType.Block && !canPassWalls)
+            return false;
+
+        // Bomb blocks movement unless:
+        // - canPassBombs is true (Bombpass power-up), OR
+        // - PlayerOnTop is true (player just placed this bomb and is still on it)
+        if (Bomb != null && !canPassBombs && !Bomb.PlayerOnTop)
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Check if explosion can pass through this cell
+    /// </summary>
+    public bool CanExplosionPass(bool hasFlamePass = false)
+    {
+        // Walls always block explosions
+        if (Type == CellType.Wall)
+            return false;
+
+        // Blocks stop explosions (but get destroyed)
+        if (Type == CellType.Block)
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Reset cell to empty state
+    /// </summary>
+    public void Clear()
+    {
+        Type = CellType.Empty;
+        HiddenPowerUp = null;
+        IsDestroying = false;
+        DestructionProgress = 0;
+        Bomb = null;
+        PowerUp = null;
+        IsExploding = false;
+        ExplosionProgress = 0;
+    }
+}
+
+/// <summary>
+/// Direction of explosion sprite
+/// </summary>
+public enum ExplosionDirection
+{
+    Center,
+    HorizontalMiddle,
+    VerticalMiddle,
+    LeftEnd,
+    RightEnd,
+    TopEnd,
+    BottomEnd
+}

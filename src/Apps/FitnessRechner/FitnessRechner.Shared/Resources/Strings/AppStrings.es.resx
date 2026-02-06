@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <!-- App Info -->
+  <data name="AppName" xml:space="preserve"><value>CalculadoraFitness</value></data>
+  <data name="AppDescription" xml:space="preserve"><value>Calculadora de fitness para salud y bienestar</value></data>
+
+  <!-- Calculator Names -->
+  <data name="CalcBmi" xml:space="preserve"><value>Calculadora de IMC</value></data>
+  <data name="CalcBmiDesc" xml:space="preserve"><value>Calcula tu Índice de Masa Corporal</value></data>
+  <data name="CalcCalories" xml:space="preserve"><value>Calculadora de calorías</value></data>
+  <data name="CalcCaloriesDesc" xml:space="preserve"><value>Calcula las necesidades calóricas diarias</value></data>
+  <data name="CalcWater" xml:space="preserve"><value>Calculadora de agua</value></data>
+  <data name="CalcWaterDesc" xml:space="preserve"><value>Calcula la ingesta diaria de agua</value></data>
+  <data name="CalcIdealWeight" xml:space="preserve"><value>Peso ideal</value></data>
+  <data name="CalcIdealWeightDesc" xml:space="preserve"><value>Calcula tu peso ideal</value></data>
+  <data name="CalcBodyFat" xml:space="preserve"><value>Grasa corporal</value></data>
+  <data name="CalcBodyFatDesc" xml:space="preserve"><value>Calcula el porcentaje de grasa corporal</value></data>
+
+  <!-- Common Labels -->
+  <data name="Calculate" xml:space="preserve"><value>Calcular</value></data>
+  <data name="Reset" xml:space="preserve"><value>Restablecer</value></data>
+  <data name="Result" xml:space="preserve"><value>Resultado</value></data>
+
+  <!-- Input Labels -->
+  <data name="Weight" xml:space="preserve"><value>Peso (kg)</value></data>
+  <data name="Height" xml:space="preserve"><value>Altura (cm)</value></data>
+  <data name="Age" xml:space="preserve"><value>Edad (años)</value></data>
+  <data name="Gender" xml:space="preserve"><value>Género</value></data>
+  <data name="Male" xml:space="preserve"><value>Masculino</value></data>
+  <data name="Female" xml:space="preserve"><value>Femenino</value></data>
+  <data name="ActivityLevel" xml:space="preserve"><value>Nivel de actividad</value></data>
+  <data name="ActivityMinutes" xml:space="preserve"><value>Deporte (min/día)</value></data>
+  <data name="HotWeather" xml:space="preserve"><value>Clima caluroso</value></data>
+  <data name="Neck" xml:space="preserve"><value>Cuello (cm)</value></data>
+  <data name="Waist" xml:space="preserve"><value>Cintura (cm)</value></data>
+  <data name="Hip" xml:space="preserve"><value>Cadera (cm)</value></data>
+
+  <!-- Result Labels -->
+  <data name="Category" xml:space="preserve"><value>Categoría</value></data>
+  <data name="HealthyRange" xml:space="preserve"><value>Rango saludable</value></data>
+  <data name="Bmr" xml:space="preserve"><value>TMB (Base)</value></data>
+  <data name="Tdee" xml:space="preserve"><value>TDEE (Total)</value></data>
+  <data name="WeightLoss" xml:space="preserve"><value>Pérdida de peso</value></data>
+  <data name="WeightGain" xml:space="preserve"><value>Ganancia de peso</value></data>
+  <data name="TotalWater" xml:space="preserve"><value>Agua diaria</value></data>
+  <data name="Glasses" xml:space="preserve"><value>Vasos (250ml)</value></data>
+  <data name="BaseWater" xml:space="preserve"><value>Necesidad base</value></data>
+  <data name="ActivityWater" xml:space="preserve"><value>Actividad</value></data>
+  <data name="HeatWater" xml:space="preserve"><value>Clima caluroso</value></data>
+  <data name="IdealWeight" xml:space="preserve"><value>Peso ideal</value></data>
+  <data name="BodyFat" xml:space="preserve"><value>Grasa corporal</value></data>
+
+  <!-- Settings -->
+  <data name="SettingsTitle" xml:space="preserve"><value>Ajustes</value></data>
+  <data name="SettingsChooseDesign" xml:space="preserve"><value>Elegir diseño</value></data>
+  <data name="SettingsLanguage" xml:space="preserve"><value>Idioma</value></data>
+  <data name="SettingsAboutApp" xml:space="preserve"><value>Acerca de la app</value></data>
+  <data name="FeedbackButton" xml:space="preserve"><value>Enviar comentarios</value></data>
+
+  <!-- Themes -->
+  <data name="ThemeVivid" xml:space="preserve"><value>Vivid</value></data>
+  <data name="ThemeVividDesc" xml:space="preserve"><value>Moderno y Vibrante</value></data>
+  <data name="ThemeClassic" xml:space="preserve"><value>Clásico</value></data>
+  <data name="ThemeClassicDesc" xml:space="preserve"><value>Limpio y Claro</value></data>
+  <data name="ThemeGlassDark" xml:space="preserve"><value>Glass Dark</value></data>
+  <data name="ThemeGlassDarkDesc" xml:space="preserve"><value>Elegante y Oscuro</value></data>
+  <data name="ThemeSoftLight" xml:space="preserve"><value>Soft Light</value></data>
+  <data name="ThemeSoftLightDesc" xml:space="preserve"><value>Suave y Claro</value></data>
+
+  <!-- Tracking -->
+  <data name="Tracking" xml:space="preserve"><value>Seguimiento</value></data>
+  <data name="TrackingDesc" xml:space="preserve"><value>Registra peso, IMC y agua</value></data>
+  <data name="TrackingTitle" xml:space="preserve"><value>Seguimiento</value></data>
+  <data name="TrackingWeight" xml:space="preserve"><value>Peso</value></data>
+  <data name="TrackingWater" xml:space="preserve"><value>Agua</value></data>
+  <data name="TrackingAddEntry" xml:space="preserve"><value>Agregar entrada</value></data>
+  <data name="TrackingDate" xml:space="preserve"><value>Fecha</value></data>
+  <data name="TrackingNote" xml:space="preserve"><value>Nota (opcional)</value></data>
+  <data name="TrackingNotePlaceholder" xml:space="preserve"><value>Información adicional</value></data>
+  <data name="TrackingNoEntries" xml:space="preserve"><value>Sin entradas aún</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancelar</value></data>
+  <data name="Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="Delete" xml:space="preserve"><value>Eliminar</value></data>
+
+  <!-- Premium -->
+  <data name="Premium" xml:space="preserve"><value>Premium</value></data>
+  <data name="PremiumDescription" xml:space="preserve"><value>Desbloquea funciones de seguimiento y elimina los anuncios</value></data>
+  <data name="PurchasePremium" xml:space="preserve"><value>Comprar Premium</value></data>
+  <data name="RestorePurchases" xml:space="preserve"><value>Restaurar compras</value></data>
+
+  <!-- Food Search -->
+  <data name="FoodSearch" xml:space="preserve"><value>Búsqueda de alimentos</value></data>
+  <data name="FoodSearchDesc" xml:space="preserve"><value>Busca alimentos y rastrea calorías</value></data>
+  <data name="FoodSearchPlaceholder" xml:space="preserve"><value>Buscar alimento...</value></data>
+  <data name="SearchResults" xml:space="preserve"><value>Resultados</value></data>
+  <data name="TodayLog" xml:space="preserve"><value>Comido hoy</value></data>
+  <data name="NoFoodEntries" xml:space="preserve"><value>Sin entradas. ¡Busca y añade alimentos!</value></data>
+  <data name="Add" xml:space="preserve"><value>Añadir</value></data>
+
+  <!-- Disclaimer -->
+  <data name="Disclaimer" xml:space="preserve"><value>Esta app no reemplaza el consejo médico. Todos los cálculos son solo informativos.</value></data>
+  <data name="DisclaimerTitle" xml:space="preserve"><value>Aviso importante</value></data>
+  <data name="DisclaimerFull" xml:space="preserve"><value>FitnessRechner proporciona cálculos de salud solo con fines informativos. Esta aplicación no es un dispositivo médico y no proporciona consejos médicos, diagnósticos ni tratamientos. Consulte siempre a un profesional de salud calificado. Sus datos de salud se almacenan solo localmente en su dispositivo y nunca se transmiten a servidores externos.</value></data>
+  <data name="Understood" xml:space="preserve"><value>Entendido</value></data>
+
+  <!-- History -->
+  <data name="History" xml:space="preserve"><value>Historial</value></data>
+  <data name="Current" xml:space="preserve"><value>Actual</value></data>
+  <data name="Average" xml:space="preserve"><value>Promedio</value></data>
+  <data name="Trend" xml:space="preserve"><value>Tendencia</value></data>
+  <data name="BmiStats30Days" xml:space="preserve"><value>Estadísticas IMC (30 días)</value></data>
+  <data name="BodyFatStats30Days" xml:space="preserve"><value>Estadísticas grasa corporal (30 días)</value></data>
+
+  <!-- Common -->
+  <data name="Calories" xml:space="preserve"><value>Calorías</value></data>
+  <data name="EatenToday" xml:space="preserve"><value>Comido hoy</value></data>
+  <data name="AddFood" xml:space="preserve"><value>Añadir alimento</value></data>
+  <data name="Macronutrients" xml:space="preserve"><value>Macronutrientes</value></data>
+  <data name="SetCalorieGoal" xml:space="preserve"><value>Establecer objetivo de calorías</value></data>
+  <data name="SearchFood" xml:space="preserve"><value>Buscar alimento</value></data>
+
+  <!-- Undo Messages -->
+  <data name="EntryDeletedOn" xml:space="preserve"><value>Entrada del {0} eliminada</value></data>
+  <data name="ItemDeleted" xml:space="preserve"><value>{0} eliminado</value></data>
+
+  <!-- Favorites -->
+  <data name="Favorites" xml:space="preserve"><value>Favoritos</value></data>
+  <data name="AddToFavorites" xml:space="preserve"><value>Añadir a favoritos</value></data>
+  <data name="RemoveFromFavorites" xml:space="preserve"><value>Eliminar de favoritos</value></data>
+
+  <!-- Errors -->
+  <data name="Error" xml:space="preserve"><value>Error</value></data>
+  <data name="ErrorSavingData" xml:space="preserve"><value>Error al guardar los datos</value></data>
+  <data name="InvalidValueEntered" xml:space="preserve"><value>Por favor, introduce un valor válido.</value></data>
+
+  <!-- Trial -->
+  <data name="OK" xml:space="preserve"><value>OK</value></data>
+  <data name="TrialOfferTitle" xml:space="preserve"><value>¿Probar Premium gratis?</value></data>
+  <data name="TrialOfferStart" xml:space="preserve"><value>14 días de prueba gratis</value></data>
+  <data name="TrialOfferBuyNow" xml:space="preserve"><value>Comprar ahora</value></data>
+  <data name="TrialStartedTitle" xml:space="preserve"><value>¡Prueba iniciada!</value></data>
+  <data name="TrialStartedMessage" xml:space="preserve"><value>Ahora tienes {0} días de Premium sin anuncios. ¡Disfruta!</value></data>
+  <data name="LoadMore" xml:space="preserve"><value>Cargar más</value></data>
+
+  <!-- Activity Levels (CaloriesPage) -->
+  <data name="ActivitySedentary" xml:space="preserve"><value>Sedentario (poco movimiento)</value></data>
+  <data name="ActivityLight" xml:space="preserve"><value>Ligeramente activo (1-2x deporte/semana)</value></data>
+  <data name="ActivityModerate" xml:space="preserve"><value>Moderadamente activo (3-5x deporte/semana)</value></data>
+  <data name="ActivityActive" xml:space="preserve"><value>Activo (6-7x deporte/semana)</value></data>
+  <data name="ActivityVeryActive" xml:space="preserve"><value>Muy activo (deporte diario)</value></data>
+  <data name="SetAsCalorieGoal" xml:space="preserve"><value>Establecer como meta de calorías</value></data>
+
+  <!-- Progress/Tracking Page -->
+  <data name="Progress" xml:space="preserve"><value>Progreso</value></data>
+  <data name="ProgressDesc" xml:space="preserve"><value>Sigue tu progreso a lo largo del tiempo</value></data>
+  <data name="TrackingCalories" xml:space="preserve"><value>Calorías</value></data>
+  <data name="WaterToday" xml:space="preserve"><value>Agua hoy</value></data>
+  <data name="TodayMeals" xml:space="preserve"><value>Comidas de hoy</value></data>
+  <data name="NoMealsYet" xml:space="preserve"><value>Aún no hay comidas registradas</value></data>
+  <data name="SearchFoodPlaceholder" xml:space="preserve"><value>ej. Manzana, pechuga de pollo...</value></data>
+  <data name="TapToSearch" xml:space="preserve"><value>Toca para buscar...</value></data>
+  <data name="AmountGrams" xml:space="preserve"><value>Cantidad (gramos)</value></data>
+  <data name="MealType" xml:space="preserve"><value>Comida</value></data>
+  <data name="Breakfast" xml:space="preserve"><value>Desayuno</value></data>
+  <data name="Lunch" xml:space="preserve"><value>Almuerzo</value></data>
+  <data name="Dinner" xml:space="preserve"><value>Cena</value></data>
+  <data name="Snack" xml:space="preserve"><value>Snack</value></data>
+
+  <!-- History Page -->
+  <data name="HistoryTitle" xml:space="preserve"><value>Historial</value></data>
+  <data name="AddBmi" xml:space="preserve"><value>Añadir IMC</value></data>
+  <data name="AddBodyFat" xml:space="preserve"><value>Añadir grasa corporal</value></data>
+  <data name="DateLabel" xml:space="preserve"><value>Fecha</value></data>
+  <data name="BmiValue" xml:space="preserve"><value>Valor de IMC</value></data>
+  <data name="BodyFatPercent" xml:space="preserve"><value>Grasa corporal (%)</value></data>
+  <data name="NoteOptional" xml:space="preserve"><value>Nota (opcional)</value></data>
+  <data name="NotePlaceholder" xml:space="preserve"><value>ej. después del entrenamiento</value></data>
+  <data name="BmiEntries" xml:space="preserve"><value>Entradas de IMC</value></data>
+  <data name="BodyFatEntries" xml:space="preserve"><value>Entradas de grasa corporal</value></data>
+  <data name="NoEntriesYet" xml:space="preserve"><value>Aún no hay entradas</value></data>
+  <data name="TapToAdd" xml:space="preserve"><value>Toca arriba para añadir</value></data>
+  <data name="HealthyBmiRange" xml:space="preserve"><value>Rango normal: 18.5 - 24.9</value></data>
+  <data name="HealthyBodyFatMale" xml:space="preserve"><value>Saludable (hombres): 10-20%</value></data>
+  <data name="HealthyBodyFatFemale" xml:space="preserve"><value>Saludable (mujeres): 18-28%</value></data>
+  <data name="Min" xml:space="preserve"><value>Mín</value></data>
+  <data name="Max" xml:space="preserve"><value>Máx</value></data>
+
+  <!-- Food Search Page -->
+  <data name="PortionAmount" xml:space="preserve"><value>Cantidad</value></data>
+  <data name="Macros" xml:space="preserve"><value>Macros</value></data>
+  <data name="TapToChange" xml:space="preserve"><value>Toca para cambiar</value></data>
+  <data name="GoalLabel" xml:space="preserve"><value>Objetivo</value></data>
+  <data name="Undo" xml:space="preserve"><value>Deshacer</value></data>
+  <data name="Protein" xml:space="preserve"><value>Proteína</value></data>
+  <data name="Carbohydrates" xml:space="preserve"><value>Carbohidratos</value></data>
+  <data name="Carbs" xml:space="preserve"><value>Carbs</value></data>
+  <data name="Fat" xml:space="preserve"><value>Grasa</value></data>
+  <data name="Consumed" xml:space="preserve"><value>Consumido</value></data>
+  <data name="Remaining" xml:space="preserve"><value>Restante</value></data>
+  <data name="Over" xml:space="preserve"><value>Sobre</value></data>
+  <data name="CaloriesRemaining" xml:space="preserve"><value>{0} kcal restantes</value></data>
+  <data name="CaloriesOver" xml:space="preserve"><value>{0} kcal sobre el objetivo</value></data>
+  <data name="GoalReached" xml:space="preserve"><value>¡Objetivo alcanzado!</value></data>
+  <data name="WaterRemaining" xml:space="preserve"><value>{0} ml restantes</value></data>
+  <data name="UnknownProduct" xml:space="preserve"><value>Producto desconocido</value></data>
+  <data name="Per100g" xml:space="preserve"><value>por 100g</value></data>
+  <data name="Kcal" xml:space="preserve"><value>kcal</value></data>
+
+  <!-- Main Page -->
+  <data name="TrialInfo" xml:space="preserve"><value>Prueba: {0} días restantes</value></data>
+  <data name="TrackingDescription" xml:space="preserve"><value>Registra peso, IMC, agua y calorías</value></data>
+  <data name="BarcodeScannerTitle" xml:space="preserve"><value>Calorías y comidas</value></data>
+  <data name="BarcodeScannerDescription" xml:space="preserve"><value>Buscar alimentos y registrar calorías</value></data>
+  <data name="PremiumBenefits" xml:space="preserve"><value>Beneficios Premium</value></data>
+  <data name="BenefitTracking" xml:space="preserve"><value>Seguimiento de calorías</value></data>
+  <data name="BenefitHistory" xml:space="preserve"><value>Historial de IMC</value></data>
+  <data name="BenefitScanner" xml:space="preserve"><value>Escáner de códigos</value></data>
+  <data name="BenefitNoAds" xml:space="preserve"><value>Sin anuncios</value></data>
+  <data name="TodayDashboard" xml:space="preserve"><value>Hoy</value></data>
+  <data name="MyProgress" xml:space="preserve"><value>Mi progreso</value></data>
+  <data name="Calculators" xml:space="preserve"><value>Calculadoras</value></data>
+  <data name="PremiumBenefitsTitle" xml:space="preserve"><value>Beneficios Premium (3,99 €)</value></data>
+
+  <!-- Weight Tracking -->
+  <data name="WeightStats30Days" xml:space="preserve"><value>Estadísticas de peso (30 días)</value></data>
+  <data name="AddWeight" xml:space="preserve"><value>Añadir peso</value></data>
+  <data name="WeightValue" xml:space="preserve"><value>Peso (kg)</value></data>
+  <data name="WeightEntries" xml:space="preserve"><value>Entradas de peso</value></data>
+  <data name="CurrentWeight" xml:space="preserve"><value>Actual</value></data>
+  <data name="AverageWeight" xml:space="preserve"><value>Promedio</value></data>
+
+  <!-- Water Tracking -->
+  <data name="WaterStats" xml:space="preserve"><value>Estadísticas de agua</value></data>
+  <data name="WaterGoal" xml:space="preserve"><value>Objetivo de agua</value></data>
+  <data name="SetWaterGoal" xml:space="preserve"><value>Establecer objetivo de agua</value></data>
+  <data name="WaterGoalMl" xml:space="preserve"><value>Objetivo de agua (ml)</value></data>
+  <data name="QuickAdd" xml:space="preserve"><value>Añadir rápido</value></data>
+
+  <!-- Common Progress -->
+  <data name="Days30" xml:space="preserve"><value>30 días</value></data>
+  <data name="TabWeight" xml:space="preserve"><value>Peso</value></data>
+  <data name="TabBody" xml:space="preserve"><value>Cuerpo</value></data>
+  <data name="TabWater" xml:space="preserve"><value>Agua</value></data>
+  <data name="TabCalories" xml:space="preserve"><value>Calorías</value></data>
+  <data name="BodyComposition" xml:space="preserve"><value>Composición corporal</value></data>
+
+  <!-- Barcode Scanner -->
+  <data name="ScanBarcode" xml:space="preserve"><value>Escanea un código de barras...</value></data>
+  <data name="SearchingBarcode" xml:space="preserve"><value>Buscando código de barras {0}...</value></data>
+  <data name="ProductFound" xml:space="preserve"><value>¡Producto encontrado!</value></data>
+  <data name="ProductNotFound" xml:space="preserve"><value>Producto no encontrado. Inténtalo de nuevo.</value></data>
+  <data name="NutritionDataIncomplete" xml:space="preserve"><value>Datos nutricionales incompletos</value></data>
+  <data name="CalorieDataMissing" xml:space="preserve"><value>Faltan datos de calorías</value></data>
+  <data name="ProductFoundIncomplete" xml:space="preserve"><value>Producto encontrado - ¡datos nutricionales incompletos!</value></data>
+  <data name="ProductFoundSomeDataMissing" xml:space="preserve"><value>Producto encontrado - ¡faltan algunos datos!</value></data>
+  <data name="SearchError" xml:space="preserve"><value>Error en la búsqueda. Inténtalo de nuevo.</value></data>
+
+  <!-- Calculator Actions -->
+  <data name="SaveToTracking" xml:space="preserve"><value>Guardar en seguimiento</value></data>
+  <data name="SaveWaterGoal" xml:space="preserve"><value>Guardar meta de agua</value></data>
+
+  <!-- Tab Bar -->
+  <data name="TabHome" xml:space="preserve"><value>Inicio</value></data>
+  <data name="TabProgress" xml:space="preserve"><value>Progreso</value></data>
+  <data name="TabFood" xml:space="preserve"><value>Comida</value></data>
+  <data name="TabSettings" xml:space="preserve"><value>Ajustes</value></data>
+
+  <!-- Empty States -->
+  <data name="EmptyNoEntries" xml:space="preserve"><value>Sin entradas</value></data>
+  <data name="EmptyNoEntriesDesc" xml:space="preserve"><value>Empieza a registrar para ver tu progreso aqu&#237;.</value></data>
+  <data name="EmptyNoResults" xml:space="preserve"><value>Sin resultados</value></data>
+  <data name="EmptyNoResultsDesc" xml:space="preserve"><value>Prueba con otro t&#233;rmino de b&#250;squeda.</value></data>
+  <data name="EmptyNoFavorites" xml:space="preserve"><value>Sin favoritos</value></data>
+  <data name="EmptyNoFavoritesDesc" xml:space="preserve"><value>Marca tus alimentos favoritos para acceso r&#225;pido.</value></data>
+
+  <!-- Dashboard -->
+  <data name="MyCalculators" xml:space="preserve"><value>Calculadoras</value></data>
+  <data name="ViewProgress" xml:space="preserve"><value>Ver progreso</value></data>
+  <data name="RemoveAdsDesc" xml:space="preserve"><value>Elimina los anuncios para una experiencia limpia</value></data>
+
+  <!-- BMI Categories -->
+  <data name="BmiSevereUnderweight" xml:space="preserve"><value>Bajo peso severo</value></data>
+  <data name="BmiModerateUnderweight" xml:space="preserve"><value>Bajo peso moderado</value></data>
+  <data name="BmiMildUnderweight" xml:space="preserve"><value>Bajo peso leve</value></data>
+  <data name="BmiNormal" xml:space="preserve"><value>Normal</value></data>
+  <data name="BmiOverweight" xml:space="preserve"><value>Sobrepeso</value></data>
+  <data name="BmiObeseClass1" xml:space="preserve"><value>Obesidad (Clase I)</value></data>
+  <data name="BmiObeseClass2" xml:space="preserve"><value>Obesidad (Clase II)</value></data>
+  <data name="BmiObeseClass3" xml:space="preserve"><value>Obesidad (Clase III)</value></data>
+
+  <!-- Body Fat Categories -->
+  <data name="BodyFatEssential" xml:space="preserve"><value>Grasa esencial</value></data>
+  <data name="BodyFatAthletes" xml:space="preserve"><value>Atletas</value></data>
+  <data name="BodyFatFitness" xml:space="preserve"><value>Fitness</value></data>
+  <data name="BodyFatAverage" xml:space="preserve"><value>Promedio</value></data>
+  <data name="BodyFatObese" xml:space="preserve"><value>Obeso</value></data>
+
+  <!-- Alert Messages -->
+  <data name="AlertError" xml:space="preserve"><value>Error</value></data>
+  <data name="AlertSuccess" xml:space="preserve"><value>&#201;xito</value></data>
+  <data name="AlertCalculateFirst" xml:space="preserve"><value>Por favor, calcula primero.</value></data>
+  <data name="AlertSavedToTracking" xml:space="preserve"><value>Guardado en seguimiento.</value></data>
+  <data name="AlertSaveError" xml:space="preserve"><value>Error al guardar: {0}</value></data>
+  <data name="AlertCalorieGoalSaved" xml:space="preserve"><value>Meta de calor&#237;as guardada.</value></data>
+  <data name="AlertWaterGoalSaved" xml:space="preserve"><value>Meta de agua guardada.</value></data>
+  <data name="AlertPurchaseSuccess" xml:space="preserve"><value>Compra exitosa - Anuncios eliminados.</value></data>
+  <data name="AlertPurchaseRestored" xml:space="preserve"><value>Compras restauradas.</value></data>
+  <data name="AlertNoPurchases" xml:space="preserve"><value>No se encontraron compras.</value></data>
+  <data name="Warning" xml:space="preserve"><value>Advertencia</value></data>
+  <data name="HighCalorieWarning" xml:space="preserve"><value>&#161;{0} kcal - es una porci&#243;n alta en calor&#237;as!</value></data>
+
+  <!-- Trend Charts -->
+  <data name="BmiTrend" xml:space="preserve"><value>Tendencia IMC</value></data>
+  <data name="BodyFatTrend" xml:space="preserve"><value>Tendencia de grasa corporal</value></data>
+  <data name="BmiNormalRange" xml:space="preserve"><value>Rango normal: 18.5 - 24.9</value></data>
+  <data name="BodyFatHealthyRange" xml:space="preserve"><value>Rango saludable: 10-20% (hombres) / 18-28% (mujeres)</value></data>
+</root>

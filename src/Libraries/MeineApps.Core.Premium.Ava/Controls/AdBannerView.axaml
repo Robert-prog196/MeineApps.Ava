@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="MeineApps.Core.Premium.Ava.Controls.AdBannerView">
+
+  <!-- Test ad placeholder (visible in debug / when ShowTestAd is true) -->
+  <Border x:Name="TestAdBorder"
+          Background="#2196F3" Height="50"
+          HorizontalAlignment="Stretch"
+          IsVisible="False">
+    <TextBlock Text="Test Ad Banner"
+               Foreground="White"
+               FontSize="14" FontWeight="Bold"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center" />
+  </Border>
+
+</UserControl>
