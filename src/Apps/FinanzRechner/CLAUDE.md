@@ -201,3 +201,39 @@ Tiefgehende Pruefung aller Dateien mit 5 parallelen Review-Agents:
 - **CategoryLocalizationHelper**: Freelance-Kategorie ES/FR/IT/PT Uebersetzungen hinzugefuegt
 
 #### Build: 0 Fehler
+
+### Recurring Transactions Fixes (07.02.2026)
+- **RecurringTransactionsView.axaml**: Edit (Pencil) + Delete (Trash) Buttons mit Ancestor-Bindings
+- **RecurringTransactionsView.axaml**: Pattern/Category Converter-Bindings statt rohe Enum-Namen
+- **PatternToStringConverter.cs** (NEU): IValueConverter fuer RecurrencePattern -> lokalisierter String
+- **RecurringTransactionsViewModel**: EditTooltipText, DeleteTooltipText Properties
+- **MainViewModel.OnAppearingAsync()**: Auto-Processing faelliger Dauerauftraege bei App-Start
+- Build: 0 Fehler
+
+### HomeView Redesign (07.02.2026)
+Komplettes Redesign der HomeView mit modernem Dashboard-Layout:
+- **Hero-Header**: Bilanz gross (28px), Einnahmen/Ausgaben als farbige Pill-Chips, Tipp oeffnet Tracker
+- **Budget-Status Sektion**: Gesamt-ProgressBar + Top-3 Kategorien mit AlertLevel-Farben (nur sichtbar wenn Budgets existieren)
+- **Letzte Transaktionen**: 3 neueste Buchungen mit Kategorie-Icon und farbigem Betrag, "Alle" Button
+- **Horizontale Calculator-ScrollView**: 5 kompakte Karten (100x90px) statt 2x3 Grid, farbiger Accent-Balken
+- **Premium-Card**: Gradient-Hintergrund (AccentColor->SecondaryColor), Stern-Icon, Preis, Pfeil
+- **Quick-Add FAB**: Rechts unten, Plus-Icon, AccentBrush, oeffnet Quick-Add Overlay
+- **Quick-Add Overlay**: Betrag, Beschreibung, Kategorie-Chips, Speichern/Abbrechen
+- **BudgetDisplayItem Model** (NEU): ObservableObject mit CategoryName (Sprachwechsel-faehig)
+- **TransactionTypeToPrefixConverter** (NEU): Vorzeichen-Converter (+/-)
+- **MainViewModel**: Budget-Status Properties (HasBudgets, OverallBudgetPercentage, TopBudgets), Recent Transactions (HasRecentTransactions, RecentTransactions), 6 neue lokalisierte Text-Properties
+- 6 neue Lokalisierungs-Keys in 6 Sprachen (SectionBudget, SectionRecent, ViewAll, GetPremium, SectionCalculatorsShort, QuickAddTitle)
+- Build: 0 Fehler
+
+### Android Export Fix (07.02.2026)
+- **IFileShareService** (NEU in MeineApps.Core.Ava): Interface fuer plattformuebergreifendes File-Sharing
+- **DesktopFileShareService** (NEU): Process.Start + MyDocuments
+- **AndroidFileShareService** (NEU in MeineApps.Core.Premium.Ava): FileProvider + Intent.ActionSend
+- **App.axaml.cs**: FileShareServiceFactory Pattern fuer plattformspezifische DI
+- **ExportService**: IFileShareService injiziert, GetExportDirectory statt hardcodiertem LocalApplicationData
+- **StatisticsViewModel + ExpenseTrackerViewModel**: ShareFileAsync nach Export, Fallback fuer Android
+- **AndroidManifest.xml**: FileProvider Konfiguration
+- **Resources/xml/file_paths.xml** (NEU): External-Files-Path fuer Exports
+- **FinanzRechner.Android.csproj**: Linked AndroidFileShareService.cs
+- **MainActivity.cs**: FileShareServiceFactory vor base.OnCreate gesetzt
+- Build: Desktop + Android 0 Fehler

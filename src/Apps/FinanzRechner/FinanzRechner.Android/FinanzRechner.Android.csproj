@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Libraries\MeineApps.Core.Premium.Ava\Android\AdMobHelper.cs" Link="Services\AdMobHelper.cs" />
+    <Compile Include="..\..\..\Libraries\MeineApps.Core.Premium.Ava\Android\AndroidFileShareService.cs" Link="Services\AndroidFileShareService.cs" />
   </ItemGroup>
 
 </Project>

@@ -68,7 +68,7 @@
         </Border>
 
         <!-- Achievement List -->
-        <ItemsControl ItemsSource="{Binding Achievements}">
+        <ItemsControl ItemsSource="{Binding Achievements}" Margin="0,0,0,60">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:AchievementDisplayModel">
               <Border Classes="Card"

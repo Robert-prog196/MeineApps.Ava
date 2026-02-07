@@ -4,6 +4,7 @@ using Android.OS;
 using Avalonia;
 using Avalonia.Android;
 using Microsoft.Extensions.DependencyInjection;
+using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Droid;
 using MeineApps.Core.Premium.Ava.Services;
 
@@ -27,6 +28,9 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
+        // FileShareService MUSS vor base.OnCreate (DI) registriert werden
+        App.FileShareServiceFactory = () => new AndroidFileShareService(this);
+
         base.OnCreate(savedInstanceState);
 
         // Google Mobile Ads + GDPR consent

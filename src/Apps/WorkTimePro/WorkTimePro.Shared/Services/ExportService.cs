@@ -1,37 +1,31 @@
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using MeineApps.Core.Ava.Services;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 using WorkTimePro.Models;
 using WorkTimePro.Resources.Strings;
 
 namespace WorkTimePro.Services;
 
 /// <summary>
-/// Export service for PDF, Excel and CSV
-/// PDF uses PdfSharpCore (Avalonia), Excel uses ClosedXML
+/// Export-Service fuer PDF, Excel und CSV.
+/// PDF via PdfSharpCore, Excel via ClosedXML, CSV manuell.
 /// </summary>
 public class ExportService : IExportService
 {
     private readonly IDatabaseService _database;
     private readonly ICalculationService _calculation;
+    private readonly IFileShareService _fileShareService;
 
-    private static string CacheDirectory
-    {
-        get
-        {
-            var dir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "WorkTimePro", "Cache");
-            Directory.CreateDirectory(dir);
-            return dir;
-        }
-    }
-
-    public ExportService(IDatabaseService database, ICalculationService calculation)
+    public ExportService(IDatabaseService database, ICalculationService calculation, IFileShareService fileShareService)
     {
         _database = database;
         _calculation = calculation;
+        _fileShareService = fileShareService;
     }
+
+    private string ExportDirectory => _fileShareService.GetExportDirectory("WorkTimePro");
 
     #region PDF Export
 
@@ -44,78 +38,225 @@ public class ExportService : IExportService
 
     public async Task<string> ExportRangeToPdfAsync(DateTime start, DateTime end)
     {
-        // TODO: Implement with PdfSharpCore
-        // The MAUI version uses Syncfusion.Pdf which is not available in Avalonia.
-        // Replace with PdfSharpCore equivalent:
-        //
-        // using PdfSharpCore.Pdf;
-        // using PdfSharpCore.Drawing;
-        //
-        // var document = new PdfDocument();
-        // var page = document.AddPage();
-        // var gfx = XGraphics.FromPdfPage(page);
-        // var titleFont = new XFont("Helvetica", 18, XFontStyleEx.Bold);
-        // gfx.DrawString("Arbeitszeitnachweis", titleFont, XBrushes.DarkBlue, new XPoint(20, 40));
-        //
-        // For now, export as CSV as a fallback and return that path.
-
         var workDays = await _database.GetWorkDaysAsync(start, end);
         var fileName = $"Arbeitszeit_{start:yyyy-MM-dd}_bis_{end:yyyy-MM-dd}.pdf";
-        var filePath = Path.Combine(CacheDirectory, fileName);
+        var filePath = Path.Combine(ExportDirectory, fileName);
 
-        // TODO: Full PdfSharpCore implementation
-        // Stub: Write a simple text file with .pdf extension as placeholder
-        var sb = new StringBuilder();
-        sb.AppendLine($"Arbeitszeitnachweis - {start:dd.MM.yyyy} bis {end:dd.MM.yyyy}");
-        sb.AppendLine($"Erstellt: {DateTime.Now:dd.MM.yyyy HH:mm}");
-        sb.AppendLine();
-        sb.AppendLine("Datum;Status;Arbeitszeit;Pause;Soll;Saldo");
+        var document = new PdfDocument();
+        document.Info.Title = $"Arbeitszeitnachweis - {start:dd.MM.yyyy} bis {end:dd.MM.yyyy}";
+        document.Info.Author = "WorkTimePro";
 
+        var page = document.AddPage();
+        var gfx = XGraphics.FromPdfPage(page);
+
+        var titleFont = new XFont("Arial", 18, XFontStyle.Bold);
+        var headerFont = new XFont("Arial", 10, XFontStyle.Bold);
+        var normalFont = new XFont("Arial", 9);
+        var smallFont = new XFont("Arial", 8);
+
+        double yPos = 40;
+        double leftMargin = 40;
+        double pageWidth = page.Width - 80;
+
+        // Titel
+        gfx.DrawString($"Arbeitszeitnachweis", titleFont, XBrushes.DarkBlue,
+            new XRect(leftMargin, yPos, pageWidth, 25), XStringFormats.TopLeft);
+        yPos += 22;
+        gfx.DrawString($"{start:dd.MM.yyyy} - {end:dd.MM.yyyy}", normalFont, XBrushes.Gray,
+            new XRect(leftMargin, yPos, pageWidth, 15), XStringFormats.TopLeft);
+        yPos += 25;
+
+        gfx.DrawLine(new XPen(XColors.DarkBlue, 1.5), leftMargin, yPos, page.Width - leftMargin, yPos);
+        yPos += 15;
+
+        // Tabellen-Header
+        double[] colWidths = [90, 80, 50, 50, 55, 55, 50, 55];
+        string[] headers = ["Datum", "Status", "Kommt", "Geht", "Arbeit", "Pause", "Soll", "Saldo"];
+
+        // Header-Hintergrund
+        gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(21, 101, 192)), leftMargin, yPos - 2, pageWidth, 16);
+        double xPos = leftMargin + 4;
+        for (int i = 0; i < headers.Length; i++)
+        {
+            gfx.DrawString(headers[i], headerFont, XBrushes.White, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[i];
+        }
+        yPos += 18;
+
+        // Daten
         int totalWork = 0, totalPause = 0, totalTarget = 0, totalBalance = 0;
+        bool alternate = false;
 
         foreach (var day in workDays.OrderBy(d => d.Date))
         {
-            sb.AppendLine($"{day.Date:ddd dd.MM.};{GetStatusText(day.Status)};{FormatMinutes(day.ActualWorkMinutes)};{FormatMinutes(day.ManualPauseMinutes + day.AutoPauseMinutes)};{FormatMinutes(day.TargetWorkMinutes)};{FormatBalance(day.BalanceMinutes)}");
+            // Neue Seite wenn noetig
+            if (yPos > page.Height - 60)
+            {
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                yPos = 40;
+            }
+
+            // Abwechselnder Hintergrund
+            if (alternate)
+                gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(240, 244, 248)), leftMargin, yPos - 2, pageWidth, 14);
+            alternate = !alternate;
+
+            var timeEntries = await _database.GetTimeEntriesAsync(day.Id);
+            var firstCheckIn = timeEntries.Where(e => e.Type == EntryType.CheckIn).OrderBy(e => e.Timestamp).FirstOrDefault();
+            var lastCheckOut = timeEntries.Where(e => e.Type == EntryType.CheckOut).OrderByDescending(e => e.Timestamp).FirstOrDefault();
+
+            xPos = leftMargin + 4;
+            var font = normalFont;
+            var brush = XBrushes.Black;
+
+            gfx.DrawString(day.Date.ToString("ddd dd.MM", CultureInfo.CurrentCulture), font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[0];
+            gfx.DrawString(GetStatusText(day.Status), smallFont, XBrushes.Gray, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[1];
+            gfx.DrawString(firstCheckIn?.Timestamp.ToString("HH:mm") ?? "-", font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[2];
+            gfx.DrawString(lastCheckOut?.Timestamp.ToString("HH:mm") ?? "-", font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[3];
+            gfx.DrawString(FormatMinutes(day.ActualWorkMinutes), font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[4];
+            gfx.DrawString(FormatMinutes(day.ManualPauseMinutes + day.AutoPauseMinutes), font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[5];
+            gfx.DrawString(FormatMinutes(day.TargetWorkMinutes), font, brush, xPos, yPos + 10, XStringFormats.BottomLeft);
+            xPos += colWidths[6];
+
+            var balanceBrush = day.BalanceMinutes >= 0 ? new XSolidBrush(XColor.FromArgb(76, 175, 80)) : new XSolidBrush(XColor.FromArgb(244, 67, 54));
+            gfx.DrawString(FormatBalance(day.BalanceMinutes), font, balanceBrush, xPos, yPos + 10, XStringFormats.BottomLeft);
+
             totalWork += day.ActualWorkMinutes;
             totalPause += day.ManualPauseMinutes + day.AutoPauseMinutes;
             totalTarget += day.TargetWorkMinutes;
             totalBalance += day.BalanceMinutes;
+            yPos += 14;
         }
 
-        sb.AppendLine($"GESAMT;;{FormatMinutes(totalWork)};{FormatMinutes(totalPause)};{FormatMinutes(totalTarget)};{FormatBalance(totalBalance)}");
+        // Summenzeile
+        yPos += 4;
+        gfx.DrawLine(new XPen(XColors.DarkBlue, 1), leftMargin, yPos, page.Width - leftMargin, yPos);
+        yPos += 4;
 
-        await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
+        gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(227, 236, 247)), leftMargin, yPos - 2, pageWidth, 16);
+        xPos = leftMargin + 4;
+        gfx.DrawString("GESAMT", headerFont, XBrushes.DarkBlue, xPos, yPos + 10, XStringFormats.BottomLeft);
+        xPos += colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3];
+        gfx.DrawString(FormatMinutes(totalWork), headerFont, XBrushes.DarkBlue, xPos, yPos + 10, XStringFormats.BottomLeft);
+        xPos += colWidths[4];
+        gfx.DrawString(FormatMinutes(totalPause), headerFont, XBrushes.DarkBlue, xPos, yPos + 10, XStringFormats.BottomLeft);
+        xPos += colWidths[5];
+        gfx.DrawString(FormatMinutes(totalTarget), headerFont, XBrushes.DarkBlue, xPos, yPos + 10, XStringFormats.BottomLeft);
+        xPos += colWidths[6];
+        var totalBalanceBrush = totalBalance >= 0 ? new XSolidBrush(XColor.FromArgb(76, 175, 80)) : new XSolidBrush(XColor.FromArgb(244, 67, 54));
+        gfx.DrawString(FormatBalance(totalBalance), headerFont, totalBalanceBrush, xPos, yPos + 10, XStringFormats.BottomLeft);
 
+        // Footer
+        var footerText = $"WorkTimePro - {DateTime.Now:dd.MM.yyyy HH:mm}";
+        gfx.DrawString(footerText, smallFont, XBrushes.Gray,
+            new XRect(0, page.Height - 30, page.Width, 20), XStringFormats.Center);
+
+        document.Save(filePath);
         return filePath;
     }
 
     public async Task<string> ExportYearToPdfAsync(int year)
     {
-        // TODO: Implement with PdfSharpCore (see ExportRangeToPdfAsync for pattern)
         var fileName = $"Jahresuebersicht_{year}.pdf";
-        var filePath = Path.Combine(CacheDirectory, fileName);
+        var filePath = Path.Combine(ExportDirectory, fileName);
 
-        var sb = new StringBuilder();
-        sb.AppendLine($"Jahresuebersicht {year}");
-        sb.AppendLine();
-        sb.AppendLine("Monat;Arbeitstage;Ist;Soll;Saldo");
+        var document = new PdfDocument();
+        document.Info.Title = $"Jahresuebersicht {year}";
+        document.Info.Author = "WorkTimePro";
+
+        var page = document.AddPage();
+        var gfx = XGraphics.FromPdfPage(page);
+
+        var titleFont = new XFont("Arial", 18, XFontStyle.Bold);
+        var headerFont = new XFont("Arial", 11, XFontStyle.Bold);
+        var normalFont = new XFont("Arial", 10);
+        var smallFont = new XFont("Arial", 8);
+
+        double yPos = 40;
+        double leftMargin = 40;
+        double pageWidth = page.Width - 80;
+
+        // Titel
+        gfx.DrawString($"Jahresuebersicht {year}", titleFont, XBrushes.DarkBlue,
+            new XRect(leftMargin, yPos, pageWidth, 25), XStringFormats.TopLeft);
+        yPos += 35;
+
+        gfx.DrawLine(new XPen(XColors.DarkBlue, 1.5), leftMargin, yPos, page.Width - leftMargin, yPos);
+        yPos += 15;
+
+        // Tabellen-Header
+        double[] colWidths = [110, 80, 80, 80, 80];
+        string[] headers = ["Monat", "Arbeitstage", "Ist", "Soll", "Saldo"];
+
+        gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(21, 101, 192)), leftMargin, yPos - 2, pageWidth, 18);
+        double xPos = leftMargin + 4;
+        for (int i = 0; i < headers.Length; i++)
+        {
+            gfx.DrawString(headers[i], headerFont, XBrushes.White, xPos, yPos + 12, XStringFormats.BottomLeft);
+            xPos += colWidths[i];
+        }
+        yPos += 22;
 
         int yearTotalWork = 0, yearTotalTarget = 0, yearTotalBalance = 0, yearWorkDays = 0;
 
         for (int month = 1; month <= 12; month++)
         {
             var monthData = await _calculation.CalculateMonthAsync(year, month);
-            sb.AppendLine($"{new DateTime(year, month, 1):MMMM};{monthData.WorkedDays};{FormatMinutes(monthData.ActualWorkMinutes)};{FormatMinutes(monthData.TargetWorkMinutes)};{FormatBalance(monthData.BalanceMinutes)}");
+
+            if (month % 2 == 0)
+                gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(240, 244, 248)), leftMargin, yPos - 2, pageWidth, 16);
+
+            xPos = leftMargin + 4;
+            gfx.DrawString(new DateTime(year, month, 1).ToString("MMMM"), normalFont, XBrushes.Black, xPos, yPos + 12, XStringFormats.BottomLeft);
+            xPos += colWidths[0];
+            gfx.DrawString(monthData.WorkedDays.ToString(), normalFont, XBrushes.Black, xPos, yPos + 12, XStringFormats.BottomLeft);
+            xPos += colWidths[1];
+            gfx.DrawString(FormatMinutes(monthData.ActualWorkMinutes), normalFont, XBrushes.Black, xPos, yPos + 12, XStringFormats.BottomLeft);
+            xPos += colWidths[2];
+            gfx.DrawString(FormatMinutes(monthData.TargetWorkMinutes), normalFont, XBrushes.Black, xPos, yPos + 12, XStringFormats.BottomLeft);
+            xPos += colWidths[3];
+
+            var balanceBrush = monthData.BalanceMinutes >= 0 ? new XSolidBrush(XColor.FromArgb(76, 175, 80)) : new XSolidBrush(XColor.FromArgb(244, 67, 54));
+            gfx.DrawString(FormatBalance(monthData.BalanceMinutes), normalFont, balanceBrush, xPos, yPos + 12, XStringFormats.BottomLeft);
+
             yearTotalWork += monthData.ActualWorkMinutes;
             yearTotalTarget += monthData.TargetWorkMinutes;
             yearTotalBalance += monthData.BalanceMinutes;
             yearWorkDays += monthData.WorkedDays;
+            yPos += 16;
         }
 
-        sb.AppendLine($"GESAMT;{yearWorkDays};{FormatMinutes(yearTotalWork)};{FormatMinutes(yearTotalTarget)};{FormatBalance(yearTotalBalance)}");
+        // Summenzeile
+        yPos += 4;
+        gfx.DrawLine(new XPen(XColors.DarkBlue, 1), leftMargin, yPos, page.Width - leftMargin, yPos);
+        yPos += 4;
 
-        await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
+        gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(227, 236, 247)), leftMargin, yPos - 2, pageWidth, 18);
+        xPos = leftMargin + 4;
+        gfx.DrawString("GESAMT", headerFont, XBrushes.DarkBlue, xPos, yPos + 12, XStringFormats.BottomLeft);
+        xPos += colWidths[0];
+        gfx.DrawString(yearWorkDays.ToString(), headerFont, XBrushes.DarkBlue, xPos, yPos + 12, XStringFormats.BottomLeft);
+        xPos += colWidths[1];
+        gfx.DrawString(FormatMinutes(yearTotalWork), headerFont, XBrushes.DarkBlue, xPos, yPos + 12, XStringFormats.BottomLeft);
+        xPos += colWidths[2];
+        gfx.DrawString(FormatMinutes(yearTotalTarget), headerFont, XBrushes.DarkBlue, xPos, yPos + 12, XStringFormats.BottomLeft);
+        xPos += colWidths[3];
+        var yearBalanceBrush = yearTotalBalance >= 0 ? new XSolidBrush(XColor.FromArgb(76, 175, 80)) : new XSolidBrush(XColor.FromArgb(244, 67, 54));
+        gfx.DrawString(FormatBalance(yearTotalBalance), headerFont, yearBalanceBrush, xPos, yPos + 12, XStringFormats.BottomLeft);
 
+        // Footer
+        var footerText = $"WorkTimePro - {DateTime.Now:dd.MM.yyyy HH:mm}";
+        gfx.DrawString(footerText, smallFont, XBrushes.Gray,
+            new XRect(0, page.Height - 30, page.Width, 20), XStringFormats.Center);
+
+        document.Save(filePath);
         return filePath;
     }
 
@@ -132,17 +273,10 @@ public class ExportService : IExportService
 
     public async Task<string> ExportRangeToExcelAsync(DateTime start, DateTime end)
     {
-        // TODO: Add ClosedXML NuGet package to WorkTimePro.Shared.csproj
-        // The implementation below is ready to use once ClosedXML is added.
-        //
-        // For now, fall back to CSV format with .xlsx extension as a stub.
-
         var workDays = await _database.GetWorkDaysAsync(start, end);
         var fileName = $"Arbeitszeit_{start:yyyy-MM-dd}_bis_{end:yyyy-MM-dd}.xlsx";
-        var filePath = Path.Combine(CacheDirectory, fileName);
+        var filePath = Path.Combine(ExportDirectory, fileName);
 
-        // TODO: Uncomment when ClosedXML is added to project
-        /*
         using var workbook = new ClosedXML.Excel.XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Arbeitszeiten");
 
@@ -187,7 +321,7 @@ public class ExportService : IExportService
                 worksheet.Cell(row, 9).Style.Font.FontColor = ClosedXML.Excel.XLColor.Green;
 
             totalWork += day.ActualWorkMinutes;
-            totalPause += (day.ManualPauseMinutes + day.AutoPauseMinutes);
+            totalPause += day.ManualPauseMinutes + day.AutoPauseMinutes;
             totalTarget += day.TargetWorkMinutes;
             totalBalance += day.BalanceMinutes;
             row++;
@@ -206,10 +340,8 @@ public class ExportService : IExportService
 
         worksheet.Columns().AdjustToContents();
         workbook.SaveAs(filePath);
-        */
 
-        // Stub: Write CSV as fallback
-        return await ExportRangeToCsvAsync(start, end);
+        return filePath;
     }
 
     #endregion
@@ -227,11 +359,9 @@ public class ExportService : IExportService
     {
         var workDays = await _database.GetWorkDaysAsync(start, end);
         var fileName = $"Arbeitszeit_{start:yyyy-MM-dd}_bis_{end:yyyy-MM-dd}.csv";
-        var filePath = Path.Combine(CacheDirectory, fileName);
+        var filePath = Path.Combine(ExportDirectory, fileName);
 
         var sb = new StringBuilder();
-
-        // Header (semicolon-separated for Excel compatibility)
         sb.AppendLine("Datum;Status;Check-In;Check-Out;Arbeitszeit (min);Pause (min);Auto-Pause (min);Soll (min);Saldo (min)");
 
         foreach (var day in workDays.OrderBy(d => d.Date))
@@ -263,30 +393,24 @@ public class ExportService : IExportService
 
     public async Task ShareFileAsync(string filePath)
     {
-        // TODO: Implement platform-specific sharing for Avalonia
-        // On Desktop: Could open file explorer / default application
-        // On Android: Use platform-specific share intent
+        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            return;
 
-        // For desktop, try to open the file with the default application
-        try
+        // MIME-Typ anhand der Dateiendung bestimmen
+        var mimeType = Path.GetExtension(filePath).ToLowerInvariant() switch
         {
-            var psi = new ProcessStartInfo
-            {
-                FileName = filePath,
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-        }
-        catch (Exception)
-        {
-        }
+            ".pdf" => "application/pdf",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".csv" => "text/csv",
+            _ => "application/octet-stream"
+        };
 
-        await Task.CompletedTask;
+        await _fileShareService.ShareFileAsync(filePath, "WorkTimePro Export", mimeType);
     }
 
     #endregion
 
-    #region Helper Methods
+    #region Helper
 
     private static string FormatMinutes(int minutes)
     {

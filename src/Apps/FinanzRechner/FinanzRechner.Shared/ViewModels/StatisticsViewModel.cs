@@ -20,16 +20,18 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IThemeService _themeService;
     private readonly IFileDialogService _fileDialogService;
+    private readonly IFileShareService _fileShareService;
 
     public event Action<string, string>? MessageRequested;
 
-    public StatisticsViewModel(IExpenseService expenseService, IExportService exportService, ILocalizationService localizationService, IThemeService themeService, IFileDialogService fileDialogService)
+    public StatisticsViewModel(IExpenseService expenseService, IExportService exportService, ILocalizationService localizationService, IThemeService themeService, IFileDialogService fileDialogService, IFileShareService fileShareService)
     {
         _expenseService = expenseService;
         _exportService = exportService;
         _localizationService = localizationService;
         _themeService = themeService;
         _fileDialogService = fileDialogService;
+        _fileShareService = fileShareService;
         _selectedPeriod = TimePeriod.Month;
     }
 
@@ -616,11 +618,20 @@ public partial class StatisticsViewModel : ObservableObject
             var title = _localizationService.GetString("ExportStatistics") ?? "Export Statistics";
             var suggestedName = $"statistics_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
 
+            // Desktop: FileDialog, Android: direkt in Export-Verzeichnis
             var targetPath = await _fileDialogService.SaveFileAsync(suggestedName, title, "PDF", "pdf");
-            if (targetPath == null) return;
+            if (targetPath == null)
+            {
+                // Fallback fuer Android (FileDialog gibt null zurueck)
+                var exportDir = _fileShareService.GetExportDirectory("FinanzRechner");
+                targetPath = Path.Combine(exportDir, suggestedName);
+            }
 
             IsExportingPdf = true;
             var filePath = await _exportService.ExportStatisticsToPdfAsync(PeriodLabel, targetPath);
+
+            // Datei teilen/oeffnen
+            await _fileShareService.ShareFileAsync(filePath, title, "application/pdf");
 
             var successMsg = _localizationService.GetString("ExportSuccess") ?? "Export successful";
             _ = ShowExportStatusAsync($"{successMsg}: {Path.GetFileName(filePath)}");

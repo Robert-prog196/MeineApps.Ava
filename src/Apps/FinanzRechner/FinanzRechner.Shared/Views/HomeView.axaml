@@ -1,241 +1,364 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FinanzRechner.ViewModels"
+             xmlns:models="using:FinanzRechner.Models"
+             xmlns:conv="using:FinanzRechner.Converters"
              xmlns:mi="using:Material.Icons.Avalonia"
              x:Class="FinanzRechner.Views.HomeView"
              x:DataType="vm:MainViewModel">
 
-  <Grid RowDefinitions="Auto,*">
+  <ScrollViewer>
+    <StackPanel Spacing="0">
 
-    <!-- Header -->
-    <Border Grid.Row="0"
-            Background="{DynamicResource DisplayBackgroundBrush}"
-            Padding="20,24,20,20">
-      <StackPanel Spacing="4">
-        <TextBlock Text="{Binding HomeTitleText}"
-                   Classes="PageTitle" />
-        <TextBlock Text="{Binding HomeSubtitleText}"
-                   Classes="Caption"
-                   TextWrapping="Wrap" />
-      </StackPanel>
-    </Border>
+      <!-- ========== A) Hero-Header mit Monats-Uebersicht ========== -->
+      <Button Padding="20,24,20,20"
+              Background="{DynamicResource DisplayBackgroundBrush}"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Left"
+              CornerRadius="0"
+              Command="{Binding NavigateToTrackerCommand}">
+        <StackPanel Spacing="8">
+          <!-- Monatsname -->
+          <TextBlock Text="{Binding CurrentMonthDisplay}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
 
-    <!-- Content -->
-    <ScrollViewer Grid.Row="1" Padding="16,16,16,0">
-      <StackPanel Spacing="16">
-
-        <!-- Section: Calculators -->
-        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
-          <Border Background="{DynamicResource AccentBrush}"
-                  CornerRadius="6"
-                  Padding="8,4">
-            <TextBlock Text="{Binding SectionCalculatorsText}" FontSize="11" FontWeight="Bold" Foreground="White" />
-          </Border>
-          <TextBlock Text="{Binding CalculatorsTitleText}"
-                     FontSize="18"
+          <!-- Bilanz gross -->
+          <TextBlock Text="{Binding MonthlyBalanceDisplay}"
+                     FontSize="28"
                      FontWeight="Bold"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     VerticalAlignment="Center" />
-        </StackPanel>
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
 
-        <!-- Calculator Grid (2 columns) -->
-        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+          <!-- Einnahmen / Ausgaben Chips -->
+          <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+            <!-- Einnahmen Chip -->
+            <Border Background="{DynamicResource IncomeBrush}"
+                    CornerRadius="16"
+                    Padding="12,6"
+                    Opacity="0.9">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="ArrowUpBold" Width="14" Height="14" Foreground="White" />
+                <TextBlock Text="{Binding MonthlyIncomeDisplay}"
+                           FontSize="13" FontWeight="SemiBold" Foreground="White" />
+              </StackPanel>
+            </Border>
 
-          <!-- Compound Interest -->
-          <Button Grid.Row="0" Grid.Column="0"
-                  Background="{DynamicResource CardBrush}"
-                  CornerRadius="12"
-                  Height="120"
-                  Padding="8"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Command="{Binding OpenCompoundInterestCommand}">
-            <StackPanel VerticalAlignment="Center" Spacing="8">
-              <Border Background="{DynamicResource IncomeBrush}"
-                      CornerRadius="12"
-                      Width="48" Height="48"
-                      HorizontalAlignment="Center">
-                <mi:MaterialIcon Kind="TrendingUp" Width="24" Height="24"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="{Binding CalcCompoundInterestText}"
-                         FontSize="13"
-                         FontWeight="Bold"
-                         TextAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-          <!-- Savings Plan -->
-          <Button Grid.Row="0" Grid.Column="1"
-                  Background="{DynamicResource CardBrush}"
-                  CornerRadius="12"
-                  Height="120"
-                  Padding="8"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Command="{Binding OpenSavingsPlanCommand}">
-            <StackPanel VerticalAlignment="Center" Spacing="8">
-              <Border Background="{DynamicResource InfoBrush}"
-                      CornerRadius="12"
-                      Width="48" Height="48"
-                      HorizontalAlignment="Center">
-                <mi:MaterialIcon Kind="Safe" Width="24" Height="24"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="{Binding CalcSavingsPlanText}"
-                         FontSize="13"
-                         FontWeight="Bold"
-                         TextAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-          <!-- Loan -->
-          <Button Grid.Row="1" Grid.Column="0"
-                  Background="{DynamicResource CardBrush}"
-                  CornerRadius="12"
-                  Height="120"
-                  Padding="8"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Command="{Binding OpenLoanCommand}">
-            <StackPanel VerticalAlignment="Center" Spacing="8">
-              <Border Background="{DynamicResource WarningBrush}"
-                      CornerRadius="12"
-                      Width="48" Height="48"
-                      HorizontalAlignment="Center">
-                <mi:MaterialIcon Kind="Bank" Width="24" Height="24"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="{Binding CalcLoanText}"
-                         FontSize="13"
-                         FontWeight="Bold"
-                         TextAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-          <!-- Amortization -->
-          <Button Grid.Row="1" Grid.Column="1"
-                  Background="{DynamicResource CardBrush}"
-                  CornerRadius="12"
-                  Height="120"
-                  Padding="8"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Command="{Binding OpenAmortizationCommand}">
-            <StackPanel VerticalAlignment="Center" Spacing="8">
-              <Border Background="{DynamicResource SecondaryBrush}"
-                      CornerRadius="12"
-                      Width="48" Height="48"
-                      HorizontalAlignment="Center">
-                <mi:MaterialIcon Kind="ListStatus" Width="24" Height="24"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="{Binding CalcAmortizationText}"
-                         FontSize="13"
-                         FontWeight="Bold"
-                         TextAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-          <!-- Yield -->
-          <Button Grid.Row="2" Grid.Column="0"
-                  Background="{DynamicResource CardBrush}"
-                  CornerRadius="12"
-                  Height="120"
-                  Padding="8"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Stretch"
-                  Command="{Binding OpenYieldCommand}">
-            <StackPanel VerticalAlignment="Center" Spacing="8">
-              <Border Background="{DynamicResource ExpenseBrush}"
-                      CornerRadius="12"
-                      Width="48" Height="48"
-                      HorizontalAlignment="Center">
-                <mi:MaterialIcon Kind="ChartArc" Width="24" Height="24"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="{Binding CalcYieldText}"
-                         FontSize="13"
-                         FontWeight="Bold"
-                         TextAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-        </Grid>
-
-        <!-- Monthly Overview Card -->
-        <Border Classes="Card" Padding="16" Margin="0,8,0,0">
-          <StackPanel Spacing="12">
-            <TextBlock Text="{Binding CurrentMonthDisplay}"
-                       FontSize="18" FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       HorizontalAlignment="Center" />
-
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-              <TextBlock Text="{Binding IncomeLabelText}" FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding MonthlyIncomeDisplay}" FontSize="14" FontWeight="Bold"
-                         Foreground="{DynamicResource IncomeBrush}" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-              <TextBlock Text="{Binding ExpensesLabelText}" FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding MonthlyExpensesDisplay}" FontSize="14" FontWeight="Bold"
-                         Foreground="{DynamicResource ExpenseBrush}" />
-            </StackPanel>
-
-            <Border Background="{DynamicResource AccentBrush}"
-                    CornerRadius="8"
-                    Padding="8,4"
-                    HorizontalAlignment="Center">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock Text="{Binding BalanceLabelText}" FontSize="16" FontWeight="Bold" Foreground="White" />
-                <TextBlock Text="{Binding MonthlyBalanceDisplay}" FontSize="16" FontWeight="Bold" Foreground="White" />
+            <!-- Ausgaben Chip -->
+            <Border Background="{DynamicResource ExpenseBrush}"
+                    CornerRadius="16"
+                    Padding="12,6"
+                    Opacity="0.9">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="ArrowDownBold" Width="14" Height="14" Foreground="White" />
+                <TextBlock Text="{Binding MonthlyExpensesDisplay}"
+                           FontSize="13" FontWeight="SemiBold" Foreground="White" />
               </StackPanel>
             </Border>
           </StackPanel>
-        </Border>
+        </StackPanel>
+      </Button>
 
-        <!-- Premium Card (only for non-premium users) -->
-        <Border Background="{DynamicResource SurfaceBrush}"
-                CornerRadius="12"
-                Padding="16"
-                Margin="0,8,0,0"
-                IsVisible="{Binding !IsPremium}"
-                Cursor="Hand">
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <Border Background="{DynamicResource AccentBrush}"
-                    CornerRadius="8"
-                    Width="40" Height="40">
-              <mi:MaterialIcon Kind="Star" Width="20" Height="20"
-                               Foreground="White"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
-            <StackPanel VerticalAlignment="Center" Spacing="2">
-              <TextBlock Text="{Binding RemoveAdsText}"
-                         FontSize="14" FontWeight="Bold"
+      <!-- ========== Content mit Padding ========== -->
+      <StackPanel Spacing="16" Margin="16,16,16,16">
+
+        <!-- ========== B) Budget-Status Sektion ========== -->
+        <Border Classes="Card" Padding="16"
+                IsVisible="{Binding HasBudgets}">
+          <StackPanel Spacing="12">
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="ChartDonut" Width="20" Height="20"
+                               Foreground="{DynamicResource AccentBrush}" />
+              <TextBlock Text="{Binding SectionBudgetText}"
+                         FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBlock Text="{Binding RemoveAdsDescText}"
-                         FontSize="12"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
+
+            <!-- Gesamt-ProgressBar -->
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+              <ProgressBar Grid.Row="0" Grid.ColumnSpan="2"
+                           Minimum="0" Maximum="100"
+                           Value="{Binding OverallBudgetPercentage}"
+                           Height="8"
+                           CornerRadius="4"
+                           Foreground="{DynamicResource AccentBrush}"
+                           Background="{DynamicResource SurfaceBrush}" />
+              <TextBlock Grid.Row="1" Grid.Column="1"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="0,4,0,0">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0:F0}%">
+                    <Binding Path="OverallBudgetPercentage" />
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+            </Grid>
+
+            <!-- Top-3 Kategorien -->
+            <ItemsControl ItemsSource="{Binding TopBudgets}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:BudgetDisplayItem">
+                  <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                    <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                      <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
+                                       Width="14" Height="14"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <TextBlock Text="{Binding CategoryName}"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding PercentageDisplay}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{Binding AlertLevel, Converter={x:Static conv:AlertLevelToColorConverter.Instance}}" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
           </StackPanel>
         </Border>
 
-      </StackPanel>
-    </ScrollViewer>
+        <!-- ========== C) Letzte Transaktionen ========== -->
+        <Border Classes="Card" Padding="16"
+                IsVisible="{Binding HasRecentTransactions}">
+          <StackPanel Spacing="10">
+            <!-- Header mit "Alle" Button -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="0">
+                <mi:MaterialIcon Kind="ClockOutline" Width="20" Height="20"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                <TextBlock Text="{Binding SectionRecentText}"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+              <Button Grid.Column="1"
+                      Classes="Flat"
+                      Content="{Binding ViewAllText}"
+                      FontSize="12"
+                      Command="{Binding NavigateToTrackerCommand}" />
+            </Grid>
 
-  </Grid>
+            <!-- Transaktions-Liste -->
+            <ItemsControl ItemsSource="{Binding RecentTransactions}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:Expense">
+                  <Border Padding="4,8" BorderThickness="0,0,0,1"
+                          BorderBrush="{DynamicResource SurfaceBrush}">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                      <!-- Kategorie-Icon -->
+                      <Border Grid.Column="0"
+                              Width="32" Height="32"
+                              CornerRadius="8"
+                              Background="{DynamicResource SurfaceBrush}"
+                              Margin="0,0,10,0">
+                        <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
+                                         Width="16" Height="16"
+                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </Border>
+
+                      <!-- Beschreibung -->
+                      <TextBlock Grid.Column="1"
+                                 Text="{Binding Description}"
+                                 FontSize="13"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center"
+                                 TextTrimming="CharacterEllipsis" />
+
+                      <!-- Betrag -->
+                      <TextBlock Grid.Column="2"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 VerticalAlignment="Center"
+                                 Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
+                        <TextBlock.Text>
+                          <MultiBinding StringFormat="{}{0}{1:N2} €">
+                            <Binding Path="Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
+                            <Binding Path="Amount" />
+                          </MultiBinding>
+                        </TextBlock.Text>
+                      </TextBlock>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- ========== D) Finanz-Rechner als horizontale ScrollView ========== -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="{Binding SectionCalculatorsShortText}"
+                     FontSize="16" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+
+          <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+
+              <!-- Zinseszins -->
+              <Button Background="{DynamicResource CardBrush}"
+                      CornerRadius="12"
+                      Width="100" Height="90"
+                      Padding="8"
+                      HorizontalContentAlignment="Center"
+                      Command="{Binding OpenCompoundInterestCommand}">
+                <StackPanel VerticalAlignment="Center" Spacing="6">
+                  <Border Background="{DynamicResource IncomeBrush}"
+                          Height="3" CornerRadius="2"
+                          HorizontalAlignment="Stretch" />
+                  <mi:MaterialIcon Kind="TrendingUp" Width="24" Height="24"
+                                   Foreground="{DynamicResource IncomeBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcCompoundInterestText}"
+                             FontSize="11" FontWeight="SemiBold"
+                             TextAlignment="Center" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Sparplan -->
+              <Button Background="{DynamicResource CardBrush}"
+                      CornerRadius="12"
+                      Width="100" Height="90"
+                      Padding="8"
+                      HorizontalContentAlignment="Center"
+                      Command="{Binding OpenSavingsPlanCommand}">
+                <StackPanel VerticalAlignment="Center" Spacing="6">
+                  <Border Background="{DynamicResource InfoBrush}"
+                          Height="3" CornerRadius="2"
+                          HorizontalAlignment="Stretch" />
+                  <mi:MaterialIcon Kind="Safe" Width="24" Height="24"
+                                   Foreground="{DynamicResource InfoBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcSavingsPlanText}"
+                             FontSize="11" FontWeight="SemiBold"
+                             TextAlignment="Center" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Kredit -->
+              <Button Background="{DynamicResource CardBrush}"
+                      CornerRadius="12"
+                      Width="100" Height="90"
+                      Padding="8"
+                      HorizontalContentAlignment="Center"
+                      Command="{Binding OpenLoanCommand}">
+                <StackPanel VerticalAlignment="Center" Spacing="6">
+                  <Border Background="{DynamicResource WarningBrush}"
+                          Height="3" CornerRadius="2"
+                          HorizontalAlignment="Stretch" />
+                  <mi:MaterialIcon Kind="Bank" Width="24" Height="24"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcLoanText}"
+                             FontSize="11" FontWeight="SemiBold"
+                             TextAlignment="Center" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Tilgungsplan -->
+              <Button Background="{DynamicResource CardBrush}"
+                      CornerRadius="12"
+                      Width="100" Height="90"
+                      Padding="8"
+                      HorizontalContentAlignment="Center"
+                      Command="{Binding OpenAmortizationCommand}">
+                <StackPanel VerticalAlignment="Center" Spacing="6">
+                  <Border Background="{DynamicResource SecondaryBrush}"
+                          Height="3" CornerRadius="2"
+                          HorizontalAlignment="Stretch" />
+                  <mi:MaterialIcon Kind="ListStatus" Width="24" Height="24"
+                                   Foreground="{DynamicResource SecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcAmortizationText}"
+                             FontSize="11" FontWeight="SemiBold"
+                             TextAlignment="Center" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Button>
+
+              <!-- Rendite -->
+              <Button Background="{DynamicResource CardBrush}"
+                      CornerRadius="12"
+                      Width="100" Height="90"
+                      Padding="8"
+                      HorizontalContentAlignment="Center"
+                      Command="{Binding OpenYieldCommand}">
+                <StackPanel VerticalAlignment="Center" Spacing="6">
+                  <Border Background="{DynamicResource ExpenseBrush}"
+                          Height="3" CornerRadius="2"
+                          HorizontalAlignment="Stretch" />
+                  <mi:MaterialIcon Kind="ChartArc" Width="24" Height="24"
+                                   Foreground="{DynamicResource ExpenseBrush}"
+                                   HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding CalcYieldText}"
+                             FontSize="11" FontWeight="SemiBold"
+                             TextAlignment="Center" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Button>
+
+            </StackPanel>
+          </ScrollViewer>
+        </StackPanel>
+
+        <!-- ========== E) Premium-Card ========== -->
+        <Button Background="Transparent"
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                IsVisible="{Binding !IsPremium}"
+                Command="{Binding NavigateToSettingsCommand}">
+          <Border CornerRadius="16"
+                  Padding="16"
+                  ClipToBounds="True">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
+                <GradientStop Color="{DynamicResource SecondaryColor}" Offset="1" />
+              </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <!-- Stern-Icon -->
+              <Border Grid.Column="0"
+                      Width="44" Height="44"
+                      CornerRadius="22"
+                      Background="#33FFFFFF"
+                      Margin="0,0,14,0">
+                <mi:MaterialIcon Kind="Star" Width="24" Height="24"
+                                 Foreground="White"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+
+              <!-- Texte -->
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="{Binding RemoveAdsText}"
+                           FontSize="15" FontWeight="Bold"
+                           Foreground="White" />
+                <TextBlock Text="{Binding PremiumPriceText}"
+                           FontSize="12"
+                           Foreground="#CCFFFFFF" />
+              </StackPanel>
+
+              <!-- Pfeil -->
+              <mi:MaterialIcon Grid.Column="2"
+                               Kind="ChevronRight" Width="20" Height="20"
+                               Foreground="#AAFFFFFF"
+                               VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+        </Button>
+
+        <!-- Bottom Spacer (fuer Tab-Bar + Ad-Banner) -->
+        <Border Height="16" />
+
+      </StackPanel>
+
+    </StackPanel>
+  </ScrollViewer>
 
 </UserControl>

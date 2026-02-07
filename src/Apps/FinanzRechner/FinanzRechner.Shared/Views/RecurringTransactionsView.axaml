@@ -3,6 +3,7 @@
              xmlns:vm="using:FinanzRechner.ViewModels"
              xmlns:models="using:FinanzRechner.Models"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:conv="using:FinanzRechner.Converters"
              x:Class="FinanzRechner.Views.RecurringTransactionsView"
              x:DataType="vm:RecurringTransactionsViewModel">
 
@@ -73,13 +74,15 @@
                                FontSize="15" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
 
-                    <!-- Pattern & Category -->
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                      <TextBlock Text="{Binding Pattern}" FontSize="12"
+                    <!-- Pattern & Category (lokalisiert) -->
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                      <TextBlock Text="{Binding Pattern, Converter={x:Static conv:PatternToStringConverter.Instance}}"
+                                 FontSize="12"
                                  Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="*" FontSize="12"
+                      <TextBlock Text="·" FontSize="12"
                                  Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="{Binding Category}" FontSize="12"
+                      <TextBlock Text="{Binding Category, Converter={x:Static conv:CategoryToStringConverter.Instance}}"
+                                 FontSize="12"
                                  Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
 
@@ -109,16 +112,30 @@
                       </Border>
                     </StackPanel>
 
-                    <!-- Toggle Active Button -->
-                    <Button Grid.Row="2" Grid.Column="2"
-                            FontSize="12"
-                            Padding="8,4"
-                            Classes="Secondary"
-                            Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ToggleActiveCommand}"
-                            CommandParameter="{Binding}"
-                            HorizontalAlignment="Right">
-                      <mi:MaterialIcon Kind="ToggleSwitch" Width="16" Height="16" />
-                    </Button>
+                    <!-- Action Buttons: Edit, Delete, Toggle -->
+                    <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                                HorizontalAlignment="Right">
+                      <Button Classes="Text" Padding="6" Width="32" Height="32"
+                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTransactionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTooltipText}">
+                        <mi:MaterialIcon Kind="Pencil" Width="16" Height="16"
+                                         Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </Button>
+                      <Button Classes="Text" Padding="6" Width="32" Height="32"
+                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTransactionCommand}"
+                              CommandParameter="{Binding}"
+                              ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTooltipText}">
+                        <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
+                                         Foreground="{DynamicResource ExpenseBrush}" />
+                      </Button>
+                      <Button Classes="Text" Padding="6" Width="32" Height="32"
+                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ToggleActiveCommand}"
+                              CommandParameter="{Binding}">
+                        <mi:MaterialIcon Kind="ToggleSwitch" Width="16" Height="16"
+                                         Foreground="{DynamicResource PrimaryBrush}" />
+                      </Button>
+                    </StackPanel>
                   </Grid>
                 </Border>
               </DataTemplate>
@@ -180,13 +197,25 @@
                         SelectedItem="{Binding SelectedCategory}"
                         PlaceholderText="{Binding CategoryText}"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        HorizontalAlignment="Stretch" />
+                        HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Converter={x:Static conv:CategoryToStringConverter.Instance}}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
 
               <ComboBox ItemsSource="{Binding Patterns}"
                         SelectedItem="{Binding SelectedPattern}"
                         PlaceholderText="{Binding PatternLabelText}"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        HorizontalAlignment="Stretch" />
+                        HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Converter={x:Static conv:PatternToStringConverter.Instance}}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
 
               <CalendarDatePicker SelectedDate="{Binding StartDate}"
                                   Foreground="{DynamicResource TextPrimaryBrush}"

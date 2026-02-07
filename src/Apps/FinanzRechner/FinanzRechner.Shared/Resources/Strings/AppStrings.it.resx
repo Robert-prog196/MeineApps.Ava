@@ -944,5 +944,23 @@
   <data name="RecurringHint" xml:space="preserve">
     <value>Viene salvato anche come voce ricorrente</value>
   </data>
+  <data name="SectionBudget" xml:space="preserve">
+    <value>Stato del budget</value>
+  </data>
+  <data name="SectionRecent" xml:space="preserve">
+    <value>Transazioni recenti</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>Mostra tutto</value>
+  </data>
+  <data name="GetPremium" xml:space="preserve">
+    <value>Ottieni Premium</value>
+  </data>
+  <data name="SectionCalculatorsShort" xml:space="preserve">
+    <value>Calcolatrici</value>
+  </data>
+  <data name="QuickAddTitle" xml:space="preserve">
+    <value>Inserimento rapido</value>
+  </data>
 
 </root>

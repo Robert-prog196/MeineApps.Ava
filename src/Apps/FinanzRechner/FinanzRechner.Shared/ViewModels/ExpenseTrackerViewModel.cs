@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using FinanzRechner.Models;
 using FinanzRechner.Services;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
 
 namespace FinanzRechner.ViewModels;
 
@@ -13,15 +14,17 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     private readonly ILocalizationService _localizationService;
     private readonly IExportService _exportService;
     private readonly IFileDialogService _fileDialogService;
+    private readonly IFileShareService _fileShareService;
 
     public event Action<string, string>? MessageRequested;
 
-    public ExpenseTrackerViewModel(IExpenseService expenseService, ILocalizationService localizationService, IExportService exportService, IFileDialogService fileDialogService)
+    public ExpenseTrackerViewModel(IExpenseService expenseService, ILocalizationService localizationService, IExportService exportService, IFileDialogService fileDialogService, IFileShareService fileShareService)
     {
         _expenseService = expenseService;
         _localizationService = localizationService;
         _exportService = exportService;
         _fileDialogService = fileDialogService;
+        _fileShareService = fileShareService;
 
         // Initialize to current month
         _selectedYear = DateTime.Today.Year;
@@ -846,11 +849,19 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
             var suggestedName = $"transactions_{SelectedYear}_{SelectedMonth:D2}.csv";
             var title = $"{_localizationService.GetString("ExportTitle") ?? "Export"} - {monthName}";
 
+            // Desktop: FileDialog, Android: direkt in Export-Verzeichnis
             var targetPath = await _fileDialogService.SaveFileAsync(suggestedName, title, "CSV", "csv");
-            if (targetPath == null) return;
+            if (targetPath == null)
+            {
+                var exportDir = _fileShareService.GetExportDirectory("FinanzRechner");
+                targetPath = Path.Combine(exportDir, suggestedName);
+            }
 
             IsLoading = true;
             var filePath = await _exportService.ExportToCsvAsync(SelectedYear, SelectedMonth, targetPath);
+
+            // Datei teilen/oeffnen
+            await _fileShareService.ShareFileAsync(filePath, title, "text/csv");
 
             var successMsg = _localizationService.GetString("ExportSuccess") ?? "Export successful";
             _ = ShowExportStatusAsync($"{successMsg}: {Path.GetFileName(filePath)}");
@@ -876,10 +887,17 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
             var title = _localizationService.GetString("ExportAllTitle") ?? "Export all transactions";
 
             var targetPath = await _fileDialogService.SaveFileAsync("transactions_all.csv", title, "CSV", "csv");
-            if (targetPath == null) return;
+            if (targetPath == null)
+            {
+                var exportDir = _fileShareService.GetExportDirectory("FinanzRechner");
+                targetPath = Path.Combine(exportDir, "transactions_all.csv");
+            }
 
             IsLoading = true;
             var filePath = await _exportService.ExportAllToCsvAsync(targetPath);
+
+            // Datei teilen/oeffnen
+            await _fileShareService.ShareFileAsync(filePath, title, "text/csv");
 
             var successMsg = _localizationService.GetString("ExportSuccess") ?? "Export successful";
             _ = ShowExportStatusAsync($"{successMsg}: {Path.GetFileName(filePath)}");

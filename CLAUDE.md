@@ -669,3 +669,31 @@ F:\Meine_Apps_Ava\
   - 3 neue Models (QuickJob, DailyChallenge, Tool), 2 neue Services (QuickJobService, DailyChallengeService)
   - 28 neue Lokalisierungs-Keys in 6 Sprachen
   - Build: Shared + Desktop + Android 0 Fehler, 0 Warnungen
+- **FinanzRechner Recurring Transactions Fixes (07.02.2026):**
+  - RecurringTransactionsView.axaml: Edit (Pencil) + Delete (Trash) Buttons mit Ancestor-Bindings
+  - RecurringTransactionsView.axaml: Pattern/Category Converter-Bindings statt rohe Enum-Namen
+  - PatternToStringConverter.cs (NEU): IValueConverter fuer RecurrencePattern → lokalisierter String
+  - RecurringTransactionsViewModel: EditTooltipText, DeleteTooltipText Properties
+  - MainViewModel.OnAppearingAsync(): Auto-Processing faelliger Dauerauftraege bei App-Start
+  - Build: 0 Fehler
+- **FinanzRechner HomeView Redesign (07.02.2026):**
+  - Hero-Header: Bilanz gross (28px), Einnahmen/Ausgaben als farbige Pill-Chips, Tipp oeffnet Tracker
+  - Budget-Status Sektion: Gesamt-ProgressBar + Top-3 Kategorien mit AlertLevel-Farben (nur sichtbar wenn Budgets existieren)
+  - Letzte Transaktionen: 3 neueste Buchungen mit Kategorie-Icon und farbigem Betrag, "Alle" Button
+  - Horizontale Calculator-ScrollView: 5 kompakte Karten (100x90px) statt 2x3 Grid, farbiger Accent-Balken
+  - Premium-Card: Gradient-Hintergrund (AccentColor→SecondaryColor), Stern-Icon, Preis, Pfeil
+  - Quick-Add FAB: Rechts unten, Plus-Icon, AccentBrush, oeffnet Quick-Add Overlay
+  - Quick-Add Overlay: Betrag, Beschreibung, Kategorie-Chips, Speichern/Abbrechen
+  - BudgetDisplayItem Model (NEU): ObservableObject mit CategoryName (Sprachwechsel-faehig)
+  - TransactionTypeToPrefixConverter (NEU): Vorzeichen-Converter (+/-)
+  - MainViewModel: Budget-Status Properties (HasBudgets, OverallBudgetPercentage, TopBudgets), Recent Transactions (HasRecentTransactions, RecentTransactions), IsBalancePositive, 6 neue lokalisierte Text-Properties
+  - 6 neue Lokalisierungs-Keys in 6 Sprachen (SectionBudget, SectionRecent, ViewAll, GetPremium, SectionCalculatorsShort, QuickAddTitle)
+  - Build: 0 Fehler
+- **IFileShareService - Plattformuebergreifender Export (07.02.2026):**
+  - MeineApps.Core.Ava: IFileShareService Interface + DesktopFileShareService (Process.Start + MyDocuments)
+  - MeineApps.Core.Premium.Ava: AndroidFileShareService (FileProvider + Intent.ActionSend, Linked File Pattern)
+  - FinanzRechner: ExportService mit IFileShareService, ShareFileAsync nach Export, FileShareServiceFactory DI
+  - FinanzRechner Android: FileProvider Konfiguration, file_paths.xml, Linked AndroidFileShareService
+  - WorkTimePro: ExportService komplett umgeschrieben (echtes PdfSharpCore PDF + ClosedXML Excel), IFileShareService injiziert
+  - WorkTimePro Android: FileProvider Konfiguration, file_paths.xml, Linked AndroidFileShareService
+  - Build: Core.Ava + FinanzRechner (Desktop+Android) + WorkTimePro (Shared+Android) 0 Fehler

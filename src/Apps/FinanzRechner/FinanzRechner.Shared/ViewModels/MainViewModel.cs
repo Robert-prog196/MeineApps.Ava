@@ -1,7 +1,9 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
+using FinanzRechner.Helpers;
 using FinanzRechner.Models;
 using FinanzRechner.Services;
 using FinanzRechner.ViewModels.Calculators;
@@ -273,6 +275,12 @@ public partial class MainViewModel : ObservableObject
     public string BalanceLabelText => _localizationService.GetString("BalanceTotalLabel") ?? "Balance:";
     public string RemoveAdsText => _localizationService.GetString("RemoveAds") ?? "Remove Ads";
     public string RemoveAdsDescText => _localizationService.GetString("RemoveAdsDesc") ?? "Enjoy ad-free experience with Premium";
+    public string GetPremiumText => _localizationService.GetString("GetPremium") ?? "Get Premium";
+    public string SectionBudgetText => _localizationService.GetString("SectionBudget") ?? "Budget Status";
+    public string SectionRecentText => _localizationService.GetString("SectionRecent") ?? "Recent Transactions";
+    public string ViewAllText => _localizationService.GetString("ViewAll") ?? "View all";
+    public string PremiumPriceText => _localizationService.GetString("PremiumPrice") ?? "From \u20ac3.99";
+    public string SectionCalculatorsShortText => _localizationService.GetString("SectionCalculatorsShort") ?? "Calculators";
 
     private void UpdateHomeTexts()
     {
@@ -290,6 +298,14 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(BalanceLabelText));
         OnPropertyChanged(nameof(RemoveAdsText));
         OnPropertyChanged(nameof(RemoveAdsDescText));
+        OnPropertyChanged(nameof(GetPremiumText));
+        OnPropertyChanged(nameof(SectionBudgetText));
+        OnPropertyChanged(nameof(SectionRecentText));
+        OnPropertyChanged(nameof(ViewAllText));
+        OnPropertyChanged(nameof(PremiumPriceText));
+        OnPropertyChanged(nameof(SectionCalculatorsShortText));
+        // Budget-Kategorie-Namen koennen sich bei Sprachwechsel aendern
+        UpdateBudgetDisplayNames();
     }
 
     #endregion
@@ -312,6 +328,36 @@ public partial class MainViewModel : ObservableObject
     public string MonthlyExpensesDisplay => $"-{MonthlyExpenses:N2} \u20ac";
     public string MonthlyBalanceDisplay => MonthlyBalance >= 0 ? $"+{MonthlyBalance:N2} \u20ac" : $"{MonthlyBalance:N2} \u20ac";
     public string CurrentMonthDisplay => DateTime.Today.ToString("MMMM yyyy");
+    public bool IsBalancePositive => MonthlyBalance >= 0;
+
+    #endregion
+
+    #region Budget Status
+
+    [ObservableProperty]
+    private bool _hasBudgets;
+
+    [ObservableProperty]
+    private double _overallBudgetPercentage;
+
+    [ObservableProperty]
+    private ObservableCollection<BudgetDisplayItem> _topBudgets = [];
+
+    private void UpdateBudgetDisplayNames()
+    {
+        foreach (var b in TopBudgets)
+            b.CategoryName = CategoryLocalizationHelper.GetLocalizedName(b.Category, _localizationService);
+    }
+
+    #endregion
+
+    #region Recent Transactions
+
+    [ObservableProperty]
+    private bool _hasRecentTransactions;
+
+    [ObservableProperty]
+    private ObservableCollection<Expense> _recentTransactions = [];
 
     #endregion
 
@@ -340,12 +386,35 @@ public partial class MainViewModel : ObservableObject
         ExpenseCategory.Other
     ];
 
+    public string QuickAddTitleText => _localizationService.GetString("QuickAddTitle") ?? "Quick Add";
+    public string QuickAddAmountPlaceholder => _localizationService.GetString("Amount") ?? "Amount";
+    public string QuickAddDescriptionPlaceholder => _localizationService.GetString("Description") ?? "Description";
+    public string CancelText => _localizationService.GetString("Cancel") ?? "Cancel";
+    public string SaveText => _localizationService.GetString("Save") ?? "Save";
+
+    [RelayCommand]
+    private void SelectQuickCategory(ExpenseCategory category)
+    {
+        QuickAddCategory = category;
+    }
+
     #endregion
 
     public async Task OnAppearingAsync()
     {
         IsPremium = _purchaseService.IsPremium;
         UpdateNavTexts();
+
+        // Faellige Dauerauftraege verarbeiten (bei jedem App-Start)
+        try
+        {
+            await _expenseService.ProcessDueRecurringTransactionsAsync();
+        }
+        catch (Exception)
+        {
+            // Fehler beim Verarbeiten der Dauerauftraege ignorieren
+        }
+
         await LoadMonthlyDataAsync();
     }
 
@@ -364,6 +433,13 @@ public partial class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(MonthlyIncomeDisplay));
             OnPropertyChanged(nameof(MonthlyExpensesDisplay));
             OnPropertyChanged(nameof(MonthlyBalanceDisplay));
+            OnPropertyChanged(nameof(IsBalancePositive));
+
+            // Budget-Status laden
+            await LoadBudgetStatusAsync();
+
+            // Letzte 3 Transaktionen laden
+            await LoadRecentTransactionsAsync(today);
         }
         catch (Exception ex)
         {
@@ -374,6 +450,62 @@ public partial class MainViewModel : ObservableObject
             MonthlyExpenses = 0;
             MonthlyBalance = 0;
             HasTransactions = false;
+        }
+    }
+
+    private async Task LoadBudgetStatusAsync()
+    {
+        try
+        {
+            var budgetStatuses = await _expenseService.GetAllBudgetStatusAsync();
+            HasBudgets = budgetStatuses.Count > 0;
+
+            if (HasBudgets)
+            {
+                OverallBudgetPercentage = budgetStatuses.Average(b => b.PercentageUsed);
+
+                var top3 = budgetStatuses
+                    .OrderByDescending(b => b.PercentageUsed)
+                    .Take(3)
+                    .Select(b => new BudgetDisplayItem
+                    {
+                        Category = b.Category,
+                        CategoryName = CategoryLocalizationHelper.GetLocalizedName(b.Category, _localizationService),
+                        Percentage = b.PercentageUsed,
+                        AlertLevel = b.AlertLevel
+                    });
+
+                TopBudgets = new ObservableCollection<BudgetDisplayItem>(top3);
+            }
+            else
+            {
+                TopBudgets.Clear();
+                OverallBudgetPercentage = 0;
+            }
+        }
+        catch (Exception)
+        {
+            HasBudgets = false;
+        }
+    }
+
+    private async Task LoadRecentTransactionsAsync(DateTime today)
+    {
+        try
+        {
+            var expenses = await _expenseService.GetExpensesByMonthAsync(today.Year, today.Month);
+            var recent = expenses
+                .OrderByDescending(e => e.Date)
+                .ThenByDescending(e => e.Id)
+                .Take(3)
+                .ToList();
+
+            HasRecentTransactions = recent.Count > 0;
+            RecentTransactions = new ObservableCollection<Expense>(recent);
+        }
+        catch (Exception)
+        {
+            HasRecentTransactions = false;
         }
     }
 

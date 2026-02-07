@@ -195,3 +195,14 @@ dotnet build src/Apps/WorkTimePro/WorkTimePro.Android/WorkTimePro.Android.csproj
 ## AppChecker Fixes (07.02.2026)
 - **MainViewModel**: `_localization.LanguageChanged += OnLanguageChanged` abonniert (StatusDisplay, PauseButtonText, ShowDayDetailsText, TodayDateDisplay aktualisieren)
 - **MainViewModel.Dispose()**: `_localization.LanguageChanged -= OnLanguageChanged` Unsubscribe ergaenzt
+
+## Android Export Fix (07.02.2026)
+- **ExportService**: Komplett umgeschrieben mit echtem PdfSharpCore PDF + ClosedXML Excel (waren Stubs)
+- **ExportService**: IFileShareService injiziert, ShareFileAsync() + GetExportDirectory() statt Process.Start
+- **IExportService**: ShareFileAsync(string filePath) Methode hinzugefuegt
+- **App.axaml.cs**: FileShareServiceFactory Pattern + IFileShareService DI + ExportService mit 3 Dependencies
+- **AndroidManifest.xml**: FileProvider Konfiguration (com.meineapps.worktimepro.fileprovider)
+- **Resources/xml/file_paths.xml** (NEU): External-Files-Path fuer Exports
+- **WorkTimePro.Android.csproj**: Linked AndroidFileShareService.cs
+- **MainActivity.cs**: FileShareServiceFactory vor base.OnCreate gesetzt
+- Build: Shared + Desktop + Android 0 Fehler

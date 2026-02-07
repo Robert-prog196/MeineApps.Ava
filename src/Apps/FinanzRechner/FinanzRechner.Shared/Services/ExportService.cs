@@ -2,23 +2,26 @@ using System.Text;
 using FinanzRechner.Helpers;
 using FinanzRechner.Models;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 
 namespace FinanzRechner.Services;
 
 /// <summary>
-/// Service for exporting transactions in various formats
+/// Service fuer den Export von Transaktionen (CSV + PDF).
 /// </summary>
 public class ExportService : IExportService
 {
     private readonly IExpenseService _expenseService;
     private readonly ILocalizationService _localizationService;
+    private readonly IFileShareService _fileShareService;
 
-    public ExportService(IExpenseService expenseService, ILocalizationService localizationService)
+    public ExportService(IExpenseService expenseService, ILocalizationService localizationService, IFileShareService fileShareService)
     {
         _expenseService = expenseService;
         _localizationService = localizationService;
+        _fileShareService = fileShareService;
     }
 
     public async Task<string> ExportToCsvAsync(int year, int month, string? targetPath = null)
@@ -59,10 +62,7 @@ public class ExportService : IExportService
         }
         else
         {
-            var exportDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "FinanzRechner", "exports");
-            Directory.CreateDirectory(exportDir);
+            var exportDir = _fileShareService.GetExportDirectory("FinanzRechner");
             filePath = Path.Combine(exportDir, $"{fileName}.csv");
         }
         await File.WriteAllTextAsync(filePath, csv.ToString(), Encoding.UTF8);
@@ -172,10 +172,7 @@ public class ExportService : IExportService
         }
         else
         {
-            var exportDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "FinanzRechner", "exports");
-            Directory.CreateDirectory(exportDir);
+            var exportDir = _fileShareService.GetExportDirectory("FinanzRechner");
             filePath = Path.Combine(exportDir, $"statistics_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
         }
         document.Save(filePath);

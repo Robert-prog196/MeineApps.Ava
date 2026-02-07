@@ -40,6 +40,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
     public string CancelText => _localizationService.GetString("Cancel") ?? "Cancel";
     public string SaveText => _localizationService.GetString("Save") ?? "Save";
     public string UndoText => _localizationService.GetString("Undo") ?? "Undo";
+    public string EditTooltipText => _localizationService.GetString("Edit") ?? "Edit";
+    public string DeleteTooltipText => _localizationService.GetString("Delete") ?? "Delete";
 
     public void UpdateLocalizedTexts()
     {
@@ -61,6 +63,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         OnPropertyChanged(nameof(CancelText));
         OnPropertyChanged(nameof(SaveText));
         OnPropertyChanged(nameof(UndoText));
+        OnPropertyChanged(nameof(EditTooltipText));
+        OnPropertyChanged(nameof(DeleteTooltipText));
     }
 
     #endregion

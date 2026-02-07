@@ -254,7 +254,7 @@
                       </StackPanel>
 
                       <!-- Unlock info (if locked) -->
-                      <TextBlock Text="{Binding UnlockLevel, StringFormat='Lvl {0}'}"
+                      <TextBlock Text="{Binding UnlockDisplay}"
                                  FontSize="10"
                                  HorizontalAlignment="Center"
                                  Foreground="{DynamicResource TextSecondaryBrush}"

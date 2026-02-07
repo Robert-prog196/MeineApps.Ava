@@ -442,6 +442,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _gameStateService.OrderCompleted += OnOrderCompleted;
         _gameStateService.StateLoaded += OnStateLoaded;
         _gameLoopService.OnTick += OnGameTick;
+        _localizationService.LanguageChanged += OnLanguageChanged;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -709,6 +710,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             HireWorkerCost = workshop?.HireWorkerCost ?? 50,
             IsUnlocked = isUnlocked,
             UnlockLevel = type.GetUnlockLevel(),
+            RequiredPrestige = type.GetRequiredPrestige(),
             CanUpgrade = workshop?.CanUpgrade ?? true,
             CanHireWorker = workshop?.CanHireWorker ?? false,
             CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100),
@@ -1183,6 +1185,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(ShowAds));
     }
 
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        // Alle lokalisierten Display-Texte aktualisieren
+        RefreshQuickJobs();
+        RefreshChallenges();
+        RefreshWorkshops();
+
+        // Child-VMs aktualisieren
+        WorkerMarketViewModel.UpdateLocalizedTexts();
+        ResearchViewModel.UpdateLocalizedTexts();
+        ShopViewModel.LoadTools();
+    }
+
     private void OnGameTick(object? sender, GameTickEventArgs e)
     {
         // Nur updaten wenn sich der Wert geaendert hat (vermeidet unnoetige UI-Updates)
@@ -1198,6 +1213,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         QuickJobTimerDisplay = remaining.TotalMinutes >= 1
             ? $"{(int)remaining.TotalMinutes}:{remaining.Seconds:D2}"
             : $"0:{remaining.Seconds:D2}";
+
+        // Forschungs-Timer aktualisieren (laeuft im Hintergrund weiter)
+        if (ResearchViewModel.HasActiveResearch)
+        {
+            ResearchViewModel.UpdateTimer();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1274,6 +1295,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _gameLoopService.OnTick -= OnGameTick;
         _achievementService.AchievementUnlocked -= OnAchievementUnlocked;
         _purchaseService.PremiumStatusChanged -= OnPremiumStatusChanged;
+        _localizationService.LanguageChanged -= OnLanguageChanged;
 
         _disposed = true;
         GC.SuppressFinalize(this);
@@ -1306,6 +1328,8 @@ public partial class WorkshopDisplayModel : ObservableObject
     [ObservableProperty]
     private bool _canAffordWorker;
 
+    public int RequiredPrestige { get; set; }
+    public string UnlockDisplay => RequiredPrestige > 0 ? $"Prestige {RequiredPrestige}" : $"Lvl {UnlockLevel}";
     public string WorkerDisplay => $"👷×{WorkerCount}";
     public string IncomeDisplay => IncomePerSecond > 0 ? $"{IncomePerSecond:N0}€/s" : "-";
     public string UpgradeCostDisplay => $"{UpgradeCost:N0}€";

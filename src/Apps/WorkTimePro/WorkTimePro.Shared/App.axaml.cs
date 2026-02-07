@@ -17,6 +17,12 @@ public partial class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
 
+    /// <summary>
+    /// Factory fuer plattformspezifischen IFileShareService.
+    /// Wird von Android-MainActivity gesetzt bevor DI gestartet wird.
+    /// </summary>
+    public static Func<IFileShareService>? FileShareServiceFactory { get; set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -68,11 +74,21 @@ public partial class App : Application
         services.AddSingleton<ILocalizationService>(sp =>
             new LocalizationService(AppStrings.ResourceManager, sp.GetRequiredService<IPreferencesService>()));
 
+        // Plattformspezifisch: Android setzt Factory, Desktop nutzt Default
+        if (FileShareServiceFactory != null)
+            services.AddSingleton(FileShareServiceFactory());
+        else
+            services.AddSingleton<IFileShareService, DesktopFileShareService>();
+
         // App Services
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<ICalculationService, CalculationService>();
         services.AddSingleton<ITimeTrackingService, TimeTrackingService>();
-        services.AddSingleton<IExportService, ExportService>();
+        services.AddSingleton<IExportService>(sp =>
+            new ExportService(
+                sp.GetRequiredService<IDatabaseService>(),
+                sp.GetRequiredService<ICalculationService>(),
+                sp.GetRequiredService<IFileShareService>()));
         services.AddSingleton<IVacationService, VacationService>();
         services.AddSingleton<IHolidayService, HolidayService>();
         services.AddSingleton<IProjectService, ProjectService>();

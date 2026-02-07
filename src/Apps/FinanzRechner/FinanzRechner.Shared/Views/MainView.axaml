@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:FinanzRechner.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:conv="using:FinanzRechner.Converters"
              xmlns:views="using:FinanzRechner.Views"
              xmlns:calcViews="using:FinanzRechner.Views.Calculators"
              x:Class="FinanzRechner.Views.MainView"
@@ -81,6 +82,90 @@
       </Border>
       <Border IsVisible="{Binding IsRecurringPageActive}">
         <views:RecurringTransactionsView DataContext="{Binding RecurringTransactionsViewModel}" />
+      </Border>
+    </Panel>
+
+    <!-- Quick-Add FAB (rechts unten ueber Tab-Bar) -->
+    <Button Grid.Row="0"
+            ZIndex="40"
+            Width="56" Height="56"
+            CornerRadius="28"
+            Background="{DynamicResource AccentBrush}"
+            Foreground="White"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,16,16"
+            Command="{Binding ToggleQuickAddCommand}"
+            IsVisible="{Binding IsHomeActive}">
+      <mi:MaterialIcon Kind="Plus" Width="28" Height="28" Foreground="White" />
+    </Button>
+
+    <!-- Quick-Add Overlay -->
+    <Panel Grid.Row="0"
+           ZIndex="45"
+           IsVisible="{Binding ShowQuickAdd}">
+      <!-- Backdrop -->
+      <Button Background="#80000000"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              CornerRadius="0"
+              Command="{Binding CancelQuickAddCommand}" />
+
+      <!-- Dialog -->
+      <Border Background="{DynamicResource CardBrush}"
+              CornerRadius="16"
+              Padding="20"
+              MaxWidth="360"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              Margin="24">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding QuickAddTitleText}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+
+          <!-- Betrag -->
+          <TextBox Text="{Binding QuickAddAmount}"
+                   Watermark="{Binding QuickAddAmountPlaceholder}"
+                   FontSize="18" />
+
+          <!-- Beschreibung -->
+          <TextBox Text="{Binding QuickAddDescription}"
+                   Watermark="{Binding QuickAddDescriptionPlaceholder}" />
+
+          <!-- Kategorie-Chips (Top-7) -->
+          <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <ItemsControl ItemsSource="{Binding QuickAddCategories}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Classes="Outlined"
+                          Margin="4"
+                          Padding="8,4"
+                          Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectQuickCategoryCommand}"
+                          CommandParameter="{Binding}">
+                    <mi:MaterialIcon Kind="{Binding Converter={x:Static conv:CategoryToIconConverter.Instance}}"
+                                     Width="16" Height="16" />
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </WrapPanel>
+
+          <!-- Buttons -->
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+            <Button Classes="Outlined"
+                    Content="{Binding CancelText}"
+                    Command="{Binding CancelQuickAddCommand}" />
+            <Button Classes="Primary"
+                    Content="{Binding SaveText}"
+                    Command="{Binding SaveQuickExpenseCommand}" />
+          </StackPanel>
+        </StackPanel>
       </Border>
     </Panel>
 
