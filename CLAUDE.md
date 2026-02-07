@@ -656,3 +656,16 @@ F:\Meine_Apps_Ava\
   - 45 Research Name Keys (3 Branches x 15 Levels: ResearchBetterSaws...ResearchMarketDomination)
   - 45 Research Description Keys (Effekt-Beschreibungen: "+5% Worker Efficiency", "-10% Costs", etc.)
   - Designer.cs: 92 neue Properties
+- **HandwerkerImperium UI Redesign + Neue Features (07.02.2026):**
+  - Tab-Bar: 7→5 Tabs (Home, Workers, Research, Shop, Settings), Stats+Achievements als Dashboard-Header-Icons
+  - Design: LinearGradientBrush Hintergrund, Workshop-Cards BoxShadow+RadialGradientBrush, kompaktere Research-Cards
+  - Quick Jobs: 5 Schnell-Auftraege mit 15min Rotation, direkt zu MiniGame, Level-skalierte Rewards
+  - Daily Challenges: 3 taegliche Aufgaben aus 7 Typen, Auto-Tracking, 500€ Komplett-Bonus
+  - Tool System: 4 Werkzeuge (Saege/Rohrzange/Schraubendreher/Pinsel), Level 0-5, MiniGame-Boni (ZoneBonus+TimeBonus)
+  - Tool-Shop: Werkzeuge-Sektion in ShopView mit Upgrade-Funktion
+  - Balancing: Startgeld 100→250€, Workshop Lv.1→2 Upgrade 200→100€
+  - Achievement Reset: Achievements werden beim Spielstand-Reset zurueckgesetzt
+  - Bugs: €-Bug in WorkerMarketView (\u20AC→€)
+  - 3 neue Models (QuickJob, DailyChallenge, Tool), 2 neue Services (QuickJobService, DailyChallengeService)
+  - 28 neue Lokalisierungs-Keys in 6 Sprachen
+  - Build: Shared + Desktop + Android 0 Fehler, 0 Warnungen

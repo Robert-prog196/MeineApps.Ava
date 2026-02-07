@@ -161,7 +161,9 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
             _ => (6, 5, 55)
         };
 
-        TimeRemaining = MaxTime;
+        // Tool-Bonus: Rohrzange gibt Extra-Sekunden
+        var tool = _gameStateService.State.Tools.FirstOrDefault(t => t.Type == Models.ToolType.PipeWrench);
+        TimeRemaining = MaxTime + (tool?.TimeBonus ?? 0);
         MovesCount = 0;
         IsPlaying = false;
         IsPuzzleSolved = false;

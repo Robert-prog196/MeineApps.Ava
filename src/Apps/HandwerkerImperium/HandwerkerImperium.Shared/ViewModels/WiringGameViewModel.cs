@@ -155,7 +155,9 @@ public partial class WiringGameViewModel : ObservableObject, IDisposable
             _ => (4, 15)
         };
 
-        TimeRemaining = MaxTime;
+        // Tool-Bonus: Schraubendreher gibt Extra-Sekunden
+        var tool = _gameStateService.State.Tools.FirstOrDefault(t => t.Type == Models.ToolType.Screwdriver);
+        TimeRemaining = MaxTime + (tool?.TimeBonus ?? 0);
         ConnectedCount = 0;
         IsPlaying = false;
         IsResultShown = false;

@@ -134,6 +134,7 @@ public class Workshop
         get
         {
             if (Level >= MaxLevel) return 0;
+            if (Level == 1) return 100m; // Erstes Upgrade guenstig
             return 200m * (decimal)Math.Pow(2.2, Level - 1);
         }
     }

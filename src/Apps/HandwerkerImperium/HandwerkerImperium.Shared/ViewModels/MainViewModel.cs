@@ -6,6 +6,7 @@ using HandwerkerImperium.Helpers;
 using HandwerkerImperium.Models;
 using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.Models.Events;
+using HandwerkerImperium.Services;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
@@ -46,8 +47,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ISaveGameService _saveGameService;
     private readonly IPurchaseService _purchaseService;
     private readonly IAdService _adService;
+    private readonly IQuickJobService _quickJobService;
+    private readonly IDailyChallengeService _dailyChallengeService;
     private bool _disposed;
     private decimal _pendingOfflineEarnings;
+    private QuickJob? _activeQuickJob;
 
     // Statisches Array vermeidet Allokation bei jedem RefreshWorkshops()-Aufruf
     private static readonly WorkshopType[] _workshopTypes = Enum.GetValues<WorkshopType>();
@@ -115,6 +119,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _hasDailyReward;
+
+    // Quick Jobs + Daily Challenges
+    [ObservableProperty]
+    private List<QuickJob> _quickJobs = [];
+
+    [ObservableProperty]
+    private List<DailyChallenge> _dailyChallenges = [];
+
+    [ObservableProperty]
+    private bool _hasDailyChallenges;
+
+    [ObservableProperty]
+    private bool _isChallengesExpanded = true;
+
+    [ObservableProperty]
+    private bool _canClaimAllBonus;
+
+    [ObservableProperty]
+    private string _quickJobTimerDisplay = string.Empty;
+
+    [ObservableProperty]
+    private string _challengesExpandIconKind = "ChevronUp";
 
     // ═══════════════════════════════════════════════════════════════════════
     // DIALOG STATE
@@ -317,6 +343,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IPurchaseService purchaseService,
         IAdService adService,
         ISaveGameService saveGameService,
+        IQuickJobService quickJobService,
+        IDailyChallengeService dailyChallengeService,
         ShopViewModel shopViewModel,
         StatisticsViewModel statisticsViewModel,
         AchievementsViewModel achievementsViewModel,
@@ -343,6 +371,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _purchaseService = purchaseService;
         _adService = adService;
         _saveGameService = saveGameService;
+        _quickJobService = quickJobService;
+        _dailyChallengeService = dailyChallengeService;
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
@@ -457,6 +487,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
             _orderGeneratorService.RefreshOrders();
             RefreshOrders();
         }
+
+        // Quick Jobs initialisieren
+        if (_gameStateService.State.QuickJobs.Count == 0)
+            _quickJobService.GenerateJobs();
+        RefreshQuickJobs();
+
+        // Daily Challenges initialisieren
+        _dailyChallengeService.CheckAndResetIfNewDay();
+        RefreshChallenges();
 
         IsLoading = false;
 
@@ -880,6 +919,56 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // QUICK JOB + DAILY CHALLENGE COMMANDS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void StartQuickJob(QuickJob? job)
+    {
+        if (job == null || job.IsCompleted) return;
+        _activeQuickJob = job;
+        var route = job.MiniGameType.GetRoute();
+        DeactivateAllTabs();
+        NavigateToMiniGame(route, "");
+        NotifyTabBarVisibility();
+    }
+
+    [RelayCommand]
+    private void ToggleChallengesExpanded()
+    {
+        IsChallengesExpanded = !IsChallengesExpanded;
+        ChallengesExpandIconKind = IsChallengesExpanded ? "ChevronUp" : "ChevronDown";
+    }
+
+    [RelayCommand]
+    private void ClaimChallengeReward(DailyChallenge? challenge)
+    {
+        if (challenge == null) return;
+        _dailyChallengeService.ClaimReward(challenge.Id);
+        RefreshChallenges();
+    }
+
+    [RelayCommand]
+    private void ClaimAllChallengesBonus()
+    {
+        _dailyChallengeService.ClaimAllCompletedBonus();
+        RefreshChallenges();
+    }
+
+    private void RefreshQuickJobs()
+    {
+        QuickJobs = _quickJobService.GetAvailableJobs();
+    }
+
+    private void RefreshChallenges()
+    {
+        var state = _dailyChallengeService.GetState();
+        DailyChallenges = state.Challenges;
+        HasDailyChallenges = state.Challenges.Count > 0;
+        CanClaimAllBonus = _dailyChallengeService.AreAllCompleted && !state.AllCompletedBonusClaimed;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // CHILD NAVIGATION HANDLER
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -895,6 +984,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Pure back navigation: ".." or "../.."
         if (route is ".." or "../..")
         {
+            // QuickJob-Rueckkehr: Belohnung vergeben
+            if (_activeQuickJob != null)
+            {
+                _activeQuickJob.IsCompleted = true;
+                _gameStateService.AddMoney(_activeQuickJob.Reward);
+                _gameStateService.AddXp(_activeQuickJob.XpReward);
+                _gameStateService.State.TotalQuickJobsCompleted++;
+                (_quickJobService as QuickJobService)?.NotifyJobCompleted(_activeQuickJob);
+                (_dailyChallengeService as DailyChallengeService)?.OnQuickJobCompleted();
+                _activeQuickJob = null;
+                RefreshQuickJobs();
+            }
+
             SelectDashboardTab();
             RefreshFromState();
             return;
@@ -1059,6 +1161,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnStateLoaded(object? sender, EventArgs e)
     {
+        _achievementService.Reset();
         RefreshFromState();
     }
 
@@ -1089,6 +1192,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             IncomePerSecond = newIncome;
             IncomeDisplay = $"{FormatMoney(IncomePerSecond)}/s";
         }
+
+        // QuickJob-Timer aktualisieren
+        var remaining = _quickJobService.TimeUntilNextRotation;
+        QuickJobTimerDisplay = remaining.TotalMinutes >= 1
+            ? $"{(int)remaining.TotalMinutes}:{remaining.Seconds:D2}"
+            : $"0:{remaining.Seconds:D2}";
     }
 
     // ═══════════════════════════════════════════════════════════════════════

@@ -42,4 +42,9 @@ public interface IAchievementService
     /// Gets a specific achievement by ID.
     /// </summary>
     Achievement? GetAchievement(string id);
+
+    /// <summary>
+    /// Setzt alle Achievements zurueck (bei Spielstand-Reset).
+    /// </summary>
+    void Reset();
 }

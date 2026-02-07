@@ -105,7 +105,7 @@
 
                   <!-- Row 0, Col 1: Wage -->
                   <TextBlock Grid.Column="1"
-                             Text="{Binding WagePerHour, StringFormat='{}{0:N0} \u20AC/h'}"
+                             Text="{Binding WagePerHour, StringFormat='{}{0:N0} €/h'}"
                              FontSize="13" FontWeight="SemiBold"
                              Foreground="{DynamicResource WarningBrush}"
                              VerticalAlignment="Center" />
@@ -156,7 +156,7 @@
                                 Spacing="6"
                                 HorizontalAlignment="Center">
                       <mi:MaterialIcon Kind="AccountPlus" Width="16" Height="16" />
-                      <TextBlock Text="{Binding HiringCost, StringFormat='{}{0:N0} \u20AC'}"
+                      <TextBlock Text="{Binding HiringCost, StringFormat='{}{0:N0} €'}"
                                  FontSize="13" FontWeight="SemiBold" />
                     </StackPanel>
                   </Button>

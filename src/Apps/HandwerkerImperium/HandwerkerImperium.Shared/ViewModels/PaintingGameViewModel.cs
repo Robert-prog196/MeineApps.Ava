@@ -170,7 +170,9 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
             _ => (5, 28)
         };
 
-        TimeRemaining = MaxTime;
+        // Tool-Bonus: Pinsel gibt Extra-Sekunden
+        var tool = _gameStateService.State.Tools.FirstOrDefault(t => t.Type == Models.ToolType.Paintbrush);
+        TimeRemaining = MaxTime + (tool?.TimeBonus ?? 0);
         PaintedTargetCount = 0;
         MistakeCount = 0;
         IsPlaying = false;

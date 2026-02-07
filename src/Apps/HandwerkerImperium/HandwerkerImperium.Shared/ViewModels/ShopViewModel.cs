@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HandwerkerImperium.Helpers;
+using HandwerkerImperium.Models;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
@@ -51,6 +51,9 @@ public partial class ShopViewModel : ObservableObject
     [ObservableProperty]
     private List<ShopItem> _shopItems = [];
 
+    [ObservableProperty]
+    private List<ToolDisplayItem> _tools = [];
+
     /// <summary>
     /// Indicates whether ads should be shown (not premium).
     /// </summary>
@@ -84,6 +87,7 @@ public partial class ShopViewModel : ObservableObject
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
 
         LoadShopData();
+        LoadTools();
         _rewardedAdService.InitializeAsync().FireAndForget();
     }
 
@@ -94,6 +98,7 @@ public partial class ShopViewModel : ObservableObject
         _rewardedAdService.Disable();
         OnPropertyChanged(nameof(ShowAds));
         LoadShopData();
+        LoadTools();
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -167,6 +172,74 @@ public partial class ShopViewModel : ObservableObject
         ];
     }
 
+    public void LoadTools()
+    {
+        var state = _gameStateService.State;
+
+        // Tools initialisieren falls leer (alte Spielstaende)
+        if (state.Tools.Count == 0)
+            state.Tools = Tool.CreateDefaults();
+
+        var toolItems = new List<ToolDisplayItem>();
+        foreach (var tool in state.Tools)
+        {
+            var name = _localizationService.GetString(tool.NameKey) ?? tool.NameKey;
+            var effect = tool.Type == ToolType.Saw
+                ? string.Format(_localizationService.GetString("ToolEffectZone") ?? "+{0}% target zone",
+                    tool.CanUpgrade ? $"{(tool.ZoneBonus + 0.05) * 100:N0}" : $"{tool.ZoneBonus * 100:N0}")
+                : string.Format(_localizationService.GetString("ToolEffectTime") ?? "+{0}s time bonus",
+                    tool.CanUpgrade ? tool.TimeBonus + (tool.Level == 0 ? 5 : 2) : tool.TimeBonus);
+
+            var iconKind = tool.Type switch
+            {
+                ToolType.Saw => "Saw",
+                ToolType.PipeWrench => "Pipe",
+                ToolType.Screwdriver => "Screwdriver",
+                ToolType.Paintbrush => "Brush",
+                _ => "Wrench"
+            };
+
+            toolItems.Add(new ToolDisplayItem
+            {
+                Type = tool.Type,
+                Name = name,
+                Level = tool.Level,
+                LevelDisplay = $"Lv.{tool.Level}",
+                UpgradeCost = tool.UpgradeCost,
+                UpgradeCostDisplay = $"{tool.UpgradeCost:N0} €",
+                CanUpgrade = tool.CanUpgrade,
+                CanAfford = state.Money >= tool.UpgradeCost && tool.CanUpgrade,
+                EffectDescription = effect,
+                IconKind = iconKind,
+                IsMaxLevel = !tool.CanUpgrade
+            });
+        }
+
+        Tools = toolItems;
+    }
+
+    [RelayCommand]
+    private void UpgradeTool(ToolDisplayItem? item)
+    {
+        if (item == null || !item.CanUpgrade || !item.CanAfford) return;
+
+        var tool = _gameStateService.State.Tools.FirstOrDefault(t => t.Type == item.Type);
+        if (tool == null) return;
+
+        if (!_gameStateService.TrySpendMoney(tool.UpgradeCost)) return;
+
+        tool.Level++;
+        _gameStateService.MarkDirty();
+        CurrentBalance = FormatMoney(_gameStateService.State.Money);
+        LoadTools();
+
+        var name = _localizationService.GetString(tool.NameKey) ?? tool.NameKey;
+        ShowAlert(
+            _localizationService.GetString("ToolUpgrade") ?? "Upgrade",
+            $"{name} → Lv.{tool.Level}",
+            "OK");
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // COMMANDS
     // ═══════════════════════════════════════════════════════════════════════
@@ -213,7 +286,6 @@ public partial class ShopViewModel : ObservableObject
             }
             else
             {
-                Debug.WriteLine($"[ShopVM] WatchAd requested for {item.Id}");
                 watchAd = true;
             }
 
@@ -239,7 +311,6 @@ public partial class ShopViewModel : ObservableObject
             }
             else
             {
-                Debug.WriteLine($"[ShopVM] Purchase requested for {item.Id}");
                 confirm = true;
             }
 
@@ -309,14 +380,7 @@ public partial class ShopViewModel : ObservableObject
 
     private void ShowAlert(string title, string message, string buttonText)
     {
-        if (AlertRequested != null)
-        {
-            AlertRequested.Invoke(title, message, buttonText);
-        }
-        else
-        {
-            Debug.WriteLine($"[ShopVM] Alert: {title} - {message}");
-        }
+        AlertRequested?.Invoke(title, message, buttonText);
     }
 
     private async Task ApplyReward(ShopItem item)
@@ -376,4 +440,22 @@ public class ShopItem
     public bool IsPremiumItem { get; set; }
     public bool IsAdReward { get; set; }
     public bool IsPurchased { get; set; }
+}
+
+/// <summary>
+/// Display-Model fuer Werkzeuge im Shop.
+/// </summary>
+public class ToolDisplayItem
+{
+    public ToolType Type { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int Level { get; set; }
+    public string LevelDisplay { get; set; } = string.Empty;
+    public decimal UpgradeCost { get; set; }
+    public string UpgradeCostDisplay { get; set; } = string.Empty;
+    public bool CanUpgrade { get; set; }
+    public bool CanAfford { get; set; }
+    public string EffectDescription { get; set; } = string.Empty;
+    public string IconKind { get; set; } = string.Empty;
+    public bool IsMaxLevel { get; set; }
 }

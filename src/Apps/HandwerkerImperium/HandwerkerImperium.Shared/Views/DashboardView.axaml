@@ -3,6 +3,7 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:models="using:HandwerkerImperium.Models"
              x:Class="HandwerkerImperium.Views.DashboardView"
              x:DataType="vm:MainViewModel">
 
@@ -27,11 +28,25 @@
                      Foreground="{DynamicResource TextSecondaryBrush}" />
         </StackPanel>
 
-        <!-- Level & XP + Daily Reward Badge -->
+        <!-- Header-Icons + Level & XP -->
         <StackPanel Grid.Column="1"
                     Orientation="Horizontal"
-                    Spacing="12"
+                    Spacing="8"
                     VerticalAlignment="Center">
+
+          <!-- Stats Button -->
+          <Button Classes="Text" Padding="6"
+                  Command="{Binding SelectStatisticsTabCommand}">
+            <mi:MaterialIcon Kind="ChartBar" Width="22" Height="22"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+          </Button>
+
+          <!-- Achievements Button -->
+          <Button Classes="Text" Padding="6"
+                  Command="{Binding SelectAchievementsTabCommand}">
+            <mi:MaterialIcon Kind="Trophy" Width="22" Height="22"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+          </Button>
 
           <!-- Daily Reward Badge -->
           <Button Classes="Primary"
@@ -65,6 +80,101 @@
     <ScrollViewer Grid.Row="1" Padding="16">
       <StackPanel Spacing="20">
 
+        <!-- DAILY CHALLENGES -->
+        <Border Classes="CardElevated" Padding="12" IsVisible="{Binding HasDailyChallenges}">
+          <StackPanel Spacing="8">
+            <!-- Header -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <mi:MaterialIcon Kind="CalendarCheck" Width="20" Height="20"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+              <TextBlock Grid.Column="1" Text="{loc:Translate DailyChallenges}"
+                         FontSize="16" FontWeight="Bold" Margin="8,0,0,0"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <Button Grid.Column="2" Classes="Text" Padding="4"
+                      Command="{Binding ToggleChallengesExpandedCommand}">
+                <mi:MaterialIcon Kind="{Binding ChallengesExpandIconKind}" Width="20" Height="20" />
+              </Button>
+            </Grid>
+            <!-- Challenge List -->
+            <ItemsControl ItemsSource="{Binding DailyChallenges}"
+                          IsVisible="{Binding IsChallengesExpanded}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:DailyChallenge">
+                  <Border Margin="0,4" Padding="8" CornerRadius="8"
+                          Background="{DynamicResource SurfaceBrush}">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="4">
+                      <TextBlock Text="{Binding DisplayDescription}" FontSize="12"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Grid.Column="1" Text="{Binding RewardDisplay}" FontSize="12"
+                                 Foreground="{DynamicResource SuccessBrush}" />
+                      <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <ProgressBar Value="{Binding Progress}" Maximum="1" Height="6"
+                                     Foreground="{DynamicResource PrimaryBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding ProgressText}" FontSize="10"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                      </Grid>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- All-Complete Bonus -->
+            <Button Classes="Secondary" HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding CanClaimAllBonus}"
+                    Command="{Binding ClaimAllChallengesBonusCommand}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Gift" Width="16" Height="16" />
+                <TextBlock Text="{loc:Translate AllChallengesBonus}" FontSize="13" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+        </Border>
+
+        <!-- QUICK JOBS -->
+        <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+          <TextBlock Text="{loc:Translate QuickJobs}" FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="TimerRefresh" Width="14" Height="14"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock Text="{Binding QuickJobTimerDisplay}" FontSize="12"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding QuickJobs}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:QuickJob">
+              <Border Classes="Card" Margin="0,4" Padding="12">
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding DisplayTitle}" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding DisplayWorkshopName}" FontSize="11"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <TextBlock Text="{Binding RewardDisplay}" FontSize="11"
+                                 Foreground="{DynamicResource SuccessBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+                  <Button Grid.Column="1" Classes="Primary" Padding="12,6"
+                          Content="{loc:Translate Start}"
+                          IsVisible="{Binding !IsCompleted}"
+                          Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).StartQuickJobCommand}"
+                          CommandParameter="{Binding .}" />
+                  <mi:MaterialIcon Grid.Column="1" Kind="Check" Width="20" Height="20"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   IsVisible="{Binding IsCompleted}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <!-- WORKSHOPS SECTION -->
         <TextBlock Text="{loc:Translate Home}"
                    FontSize="20" FontWeight="Bold"
@@ -88,14 +198,20 @@
                         Height="NaN"
                         Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).SelectWorkshopCommand}"
                         CommandParameter="{Binding .}">
-                  <Border Classes="Card" Padding="10" Width="120" MinHeight="140">
-                    <StackPanel Spacing="8" Width="100">
+                  <Border Classes="Card" Padding="10" Width="130" MinHeight="150"
+                          BoxShadow="0 2 8 0 #30000000">
+                    <StackPanel Spacing="8" Width="110">
 
                       <!-- Icon & Lock -->
                       <Grid Width="56" Height="56" HorizontalAlignment="Center">
-                        <Border Background="{DynamicResource PrimaryBrush}"
-                                Opacity="0.15"
-                                CornerRadius="28" />
+                        <Border CornerRadius="28">
+                          <Border.Background>
+                            <RadialGradientBrush>
+                              <GradientStop Color="#33686CF0" Offset="0" />
+                              <GradientStop Color="#11686CF0" Offset="1" />
+                            </RadialGradientBrush>
+                          </Border.Background>
+                        </Border>
                         <mi:MaterialIcon Kind="{Binding IconKind}"
                                          Width="28" Height="28"
                                          Foreground="{DynamicResource PrimaryBrush}"

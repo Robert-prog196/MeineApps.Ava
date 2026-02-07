@@ -151,6 +151,55 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <!-- TOOLS SECTION -->
+        <TextBlock Text="{loc:Translate Tools}"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   Margin="0,16,0,8" />
+
+        <ItemsControl ItemsSource="{Binding Tools}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ToolDisplayItem">
+              <Border Classes="Card" Margin="0,4" Padding="12">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                  <!-- Icon -->
+                  <Border Background="{DynamicResource SurfaceBrush}"
+                          CornerRadius="8" Width="48" Height="48"
+                          VerticalAlignment="Center">
+                    <mi:MaterialIcon Kind="{Binding IconKind}" Width="24" Height="24"
+                                     Foreground="{DynamicResource PrimaryBrush}"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                  <!-- Info -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding LevelDisplay}" FontSize="12"
+                                 Foreground="{DynamicResource PrimaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding EffectDescription}" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+                  <!-- Upgrade Button -->
+                  <Button Grid.Column="2" Classes="Primary" Padding="12,8"
+                          IsVisible="{Binding CanUpgrade}"
+                          IsEnabled="{Binding CanAfford}"
+                          Command="{Binding $parent[ItemsControl].((vm:ShopViewModel)DataContext).UpgradeToolCommand}"
+                          CommandParameter="{Binding .}">
+                    <TextBlock Text="{Binding UpgradeCostDisplay}" FontSize="12" FontWeight="SemiBold" />
+                  </Button>
+                  <!-- Max Level Badge -->
+                  <mi:MaterialIcon Grid.Column="2" Kind="CheckCircle" Width="24" Height="24"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   IsVisible="{Binding IsMaxLevel}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <!-- RESTORE PURCHASES -->
         <Button Content="{Binding RestorePurchasesText}"
                 Classes="Secondary"

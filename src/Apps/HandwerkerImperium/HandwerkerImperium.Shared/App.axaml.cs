@@ -92,6 +92,8 @@ public partial class App : Application
         services.AddSingleton<IBuildingService, BuildingService>();
         services.AddSingleton<IResearchService, ResearchService>();
         services.AddSingleton<IEventService, EventService>();
+        services.AddSingleton<IQuickJobService, QuickJobService>();
+        services.AddSingleton<IDailyChallengeService, DailyChallengeService>();
 
         // ViewModels (Singleton because MainViewModel holds references to child VMs)
         services.AddSingleton<MainViewModel>();

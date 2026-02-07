@@ -245,6 +245,9 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
     {
         // Get zone sizes based on difficulty
         double perfectSize = Difficulty.GetPerfectZoneSize();
+        // Tool-Bonus: Saege vergroessert die Zielzone
+        var sawTool = _gameStateService.State.Tools.FirstOrDefault(t => t.Type == Models.ToolType.Saw);
+        if (sawTool != null) perfectSize += perfectSize * sawTool.ZoneBonus;
         double goodSize = perfectSize * 2;
         double okSize = perfectSize * 3;
 

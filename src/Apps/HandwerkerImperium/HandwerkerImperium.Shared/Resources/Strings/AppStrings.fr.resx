@@ -1821,5 +1821,89 @@
   <data name="ResearchMarketDominationDesc" xml:space="preserve">
     <value>+20% R&#233;compenses, +2 Places de commande</value>
   </data>
+  <data name="QuickJobs" xml:space="preserve">
+    <value>Travaux rapides</value>
+  </data>
+  <data name="QuickRepair" xml:space="preserve">
+    <value>R&#233;paration rapide</value>
+  </data>
+  <data name="QuickFix" xml:space="preserve">
+    <value>Correction rapide</value>
+  </data>
+  <data name="ExpressService" xml:space="preserve">
+    <value>Service express</value>
+  </data>
+  <data name="SmallOrder" xml:space="preserve">
+    <value>Petite commande</value>
+  </data>
+  <data name="QuickMeasure" xml:space="preserve">
+    <value>Mesure rapide</value>
+  </data>
+  <data name="QuickInstall" xml:space="preserve">
+    <value>Installation rapide</value>
+  </data>
+  <data name="QuickPaint" xml:space="preserve">
+    <value>Peinture rapide</value>
+  </data>
+  <data name="QuickCheck" xml:space="preserve">
+    <value>V&#233;rification rapide</value>
+  </data>
+  <data name="DailyChallenges" xml:space="preserve">
+    <value>D&#233;fis quotidiens</value>
+  </data>
+  <data name="ChallengeCompleteOrders" xml:space="preserve">
+    <value>Termine {0} commandes</value>
+  </data>
+  <data name="ChallengeEarnMoney" xml:space="preserve">
+    <value>Gagne {0} &#8364;</value>
+  </data>
+  <data name="ChallengeUpgradeWorkshop" xml:space="preserve">
+    <value>Am&#233;liore un atelier</value>
+  </data>
+  <data name="ChallengeHireWorker" xml:space="preserve">
+    <value>Embauche un ouvrier</value>
+  </data>
+  <data name="ChallengeCompleteQuickJob" xml:space="preserve">
+    <value>Termine {0} travail rapide</value>
+  </data>
+  <data name="ChallengePlayMiniGames" xml:space="preserve">
+    <value>Joue &#224; {0} mini-jeux</value>
+  </data>
+  <data name="ChallengeAchieveScore" xml:space="preserve">
+    <value>Atteins {0}% dans un mini-jeu</value>
+  </data>
+  <data name="AllChallengesBonus" xml:space="preserve">
+    <value>Tout termin&#233; - r&#233;clame le bonus !</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Outils</value>
+  </data>
+  <data name="ToolSaw" xml:space="preserve">
+    <value>Scie</value>
+  </data>
+  <data name="ToolPipeWrench" xml:space="preserve">
+    <value>Cl&#233; &#224; tube</value>
+  </data>
+  <data name="ToolScrewdriver" xml:space="preserve">
+    <value>Tournevis</value>
+  </data>
+  <data name="ToolPaintbrush" xml:space="preserve">
+    <value>Pinceau</value>
+  </data>
+  <data name="ToolEffectZone" xml:space="preserve">
+    <value>+{0}% zone cible</value>
+  </data>
+  <data name="ToolEffectTime" xml:space="preserve">
+    <value>+{0}s bonus de temps</value>
+  </data>
+  <data name="ToolUpgrade" xml:space="preserve">
+    <value>Am&#233;lioration</value>
+  </data>
+  <data name="ToolMaxLevel" xml:space="preserve">
+    <value>Niveau max</value>
+  </data>
+  <data name="NextRotation" xml:space="preserve">
+    <value>Prochaine rotation</value>
+  </data>
 
 </root>

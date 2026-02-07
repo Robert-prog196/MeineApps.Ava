@@ -146,12 +146,12 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="vm:ResearchDisplayItem">
                 <Border Classes="Card"
-                        Margin="0,0,0,8"
-                        Padding="12"
+                        Margin="0,0,0,6"
+                        Padding="10"
                         Opacity="{Binding DisplayOpacity}">
                   <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                         ColumnDefinitions="Auto,*,Auto"
-                        RowSpacing="6" ColumnSpacing="10">
+                        RowSpacing="4" ColumnSpacing="10">
 
                     <!-- Row 0: Level Badge + Name + Status Icon -->
                     <Border Background="{DynamicResource PrimaryBrush}"
@@ -185,7 +185,7 @@
                     <!-- Row 1: Description -->
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="3"
                                Text="{Binding Description}"
-                               FontSize="12"
+                               FontSize="11"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                TextWrapping="Wrap" />
 

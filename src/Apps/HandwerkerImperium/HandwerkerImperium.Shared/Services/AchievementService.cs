@@ -56,6 +56,17 @@ public class AchievementService : IAchievementService, IDisposable
         return _achievements.FirstOrDefault(a => a.Id == id);
     }
 
+    public void Reset()
+    {
+        foreach (var achievement in _achievements)
+        {
+            achievement.IsUnlocked = false;
+            achievement.UnlockedAt = null;
+            achievement.CurrentValue = 0;
+        }
+        LoadFromGameState();
+    }
+
     public void CheckAchievements()
     {
         UpdateProgress();

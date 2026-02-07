@@ -851,5 +851,61 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string ResearchMonopolyDesc => ResourceManager.GetString("ResearchMonopolyDesc", resourceCulture) ?? "";
 
         public static string ResearchMarketDominationDesc => ResourceManager.GetString("ResearchMarketDominationDesc", resourceCulture) ?? "";
+
+        public static string QuickJobs => ResourceManager.GetString("QuickJobs", resourceCulture) ?? "";
+
+        public static string QuickRepair => ResourceManager.GetString("QuickRepair", resourceCulture) ?? "";
+
+        public static string QuickFix => ResourceManager.GetString("QuickFix", resourceCulture) ?? "";
+
+        public static string ExpressService => ResourceManager.GetString("ExpressService", resourceCulture) ?? "";
+
+        public static string SmallOrder => ResourceManager.GetString("SmallOrder", resourceCulture) ?? "";
+
+        public static string QuickMeasure => ResourceManager.GetString("QuickMeasure", resourceCulture) ?? "";
+
+        public static string QuickInstall => ResourceManager.GetString("QuickInstall", resourceCulture) ?? "";
+
+        public static string QuickPaint => ResourceManager.GetString("QuickPaint", resourceCulture) ?? "";
+
+        public static string QuickCheck => ResourceManager.GetString("QuickCheck", resourceCulture) ?? "";
+
+        public static string DailyChallenges => ResourceManager.GetString("DailyChallenges", resourceCulture) ?? "";
+
+        public static string ChallengeCompleteOrders => ResourceManager.GetString("ChallengeCompleteOrders", resourceCulture) ?? "";
+
+        public static string ChallengeEarnMoney => ResourceManager.GetString("ChallengeEarnMoney", resourceCulture) ?? "";
+
+        public static string ChallengeUpgradeWorkshop => ResourceManager.GetString("ChallengeUpgradeWorkshop", resourceCulture) ?? "";
+
+        public static string ChallengeHireWorker => ResourceManager.GetString("ChallengeHireWorker", resourceCulture) ?? "";
+
+        public static string ChallengeCompleteQuickJob => ResourceManager.GetString("ChallengeCompleteQuickJob", resourceCulture) ?? "";
+
+        public static string ChallengePlayMiniGames => ResourceManager.GetString("ChallengePlayMiniGames", resourceCulture) ?? "";
+
+        public static string ChallengeAchieveScore => ResourceManager.GetString("ChallengeAchieveScore", resourceCulture) ?? "";
+
+        public static string AllChallengesBonus => ResourceManager.GetString("AllChallengesBonus", resourceCulture) ?? "";
+
+        public static string Tools => ResourceManager.GetString("Tools", resourceCulture) ?? "";
+
+        public static string ToolSaw => ResourceManager.GetString("ToolSaw", resourceCulture) ?? "";
+
+        public static string ToolPipeWrench => ResourceManager.GetString("ToolPipeWrench", resourceCulture) ?? "";
+
+        public static string ToolScrewdriver => ResourceManager.GetString("ToolScrewdriver", resourceCulture) ?? "";
+
+        public static string ToolPaintbrush => ResourceManager.GetString("ToolPaintbrush", resourceCulture) ?? "";
+
+        public static string ToolEffectZone => ResourceManager.GetString("ToolEffectZone", resourceCulture) ?? "";
+
+        public static string ToolEffectTime => ResourceManager.GetString("ToolEffectTime", resourceCulture) ?? "";
+
+        public static string ToolUpgrade => ResourceManager.GetString("ToolUpgrade", resourceCulture) ?? "";
+
+        public static string ToolMaxLevel => ResourceManager.GetString("ToolMaxLevel", resourceCulture) ?? "";
+
+        public static string NextRotation => ResourceManager.GetString("NextRotation", resourceCulture) ?? "";
     }
 }

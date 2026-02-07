@@ -35,7 +35,7 @@ public class GameState
     public int TotalXp { get; set; }
 
     [JsonPropertyName("money")]
-    public decimal Money { get; set; } = 100m;
+    public decimal Money { get; set; } = 250m;
 
     [JsonPropertyName("totalMoneyEarned")]
     public decimal TotalMoneyEarned { get; set; }
@@ -242,6 +242,33 @@ public class GameState
     public List<string> UnlockedAchievements { get; set; } = [];
 
     // ═══════════════════════════════════════════════════════════════════════
+    // QUICK JOBS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [JsonPropertyName("quickJobs")]
+    public List<QuickJob> QuickJobs { get; set; } = [];
+
+    [JsonPropertyName("lastQuickJobRotation")]
+    public DateTime LastQuickJobRotation { get; set; } = DateTime.MinValue;
+
+    [JsonPropertyName("totalQuickJobsCompleted")]
+    public int TotalQuickJobsCompleted { get; set; }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // DAILY CHALLENGES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [JsonPropertyName("dailyChallengeState")]
+    public DailyChallengeState DailyChallengeState { get; set; } = new();
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // TOOLS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [JsonPropertyName("tools")]
+    public List<Tool> Tools { get; set; } = [];
+
+    // ═══════════════════════════════════════════════════════════════════════
     // TUTORIAL
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -389,6 +416,9 @@ public class GameState
 
         // Initialize research tree
         state.Researches = ResearchTree.CreateAll();
+
+        // Initialize tools
+        state.Tools = Tool.CreateDefaults();
 
         return state;
     }

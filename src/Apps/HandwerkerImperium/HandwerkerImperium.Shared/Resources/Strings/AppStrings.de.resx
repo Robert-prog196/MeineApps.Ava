@@ -1829,5 +1829,89 @@
   <data name="ResearchMarketDominationDesc" xml:space="preserve">
     <value>+20% Belohnungen, +2 Auftragspl&#228;tze</value>
   </data>
+  <data name="QuickJobs" xml:space="preserve">
+    <value>Schnell-Auftr&#228;ge</value>
+  </data>
+  <data name="QuickRepair" xml:space="preserve">
+    <value>Schnell-Reparatur</value>
+  </data>
+  <data name="QuickFix" xml:space="preserve">
+    <value>Sofort-Fix</value>
+  </data>
+  <data name="ExpressService" xml:space="preserve">
+    <value>Express-Service</value>
+  </data>
+  <data name="SmallOrder" xml:space="preserve">
+    <value>Kleiner Auftrag</value>
+  </data>
+  <data name="QuickMeasure" xml:space="preserve">
+    <value>Schnell-Messung</value>
+  </data>
+  <data name="QuickInstall" xml:space="preserve">
+    <value>Express-Einbau</value>
+  </data>
+  <data name="QuickPaint" xml:space="preserve">
+    <value>Schnell-Anstrich</value>
+  </data>
+  <data name="QuickCheck" xml:space="preserve">
+    <value>Express-Pr&#252;fung</value>
+  </data>
+  <data name="DailyChallenges" xml:space="preserve">
+    <value>T&#228;gliche Aufgaben</value>
+  </data>
+  <data name="ChallengeCompleteOrders" xml:space="preserve">
+    <value>Schlie&#223;e {0} Auftr&#228;ge ab</value>
+  </data>
+  <data name="ChallengeEarnMoney" xml:space="preserve">
+    <value>Verdiene {0} &#8364;</value>
+  </data>
+  <data name="ChallengeUpgradeWorkshop" xml:space="preserve">
+    <value>Upgrade einen Workshop</value>
+  </data>
+  <data name="ChallengeHireWorker" xml:space="preserve">
+    <value>Stelle einen Arbeiter ein</value>
+  </data>
+  <data name="ChallengeCompleteQuickJob" xml:space="preserve">
+    <value>Erledige {0} Schnell-Auftrag</value>
+  </data>
+  <data name="ChallengePlayMiniGames" xml:space="preserve">
+    <value>Spiele {0} Minispiele</value>
+  </data>
+  <data name="ChallengeAchieveScore" xml:space="preserve">
+    <value>Erreiche {0}% in einem Minispiel</value>
+  </data>
+  <data name="AllChallengesBonus" xml:space="preserve">
+    <value>Alle erledigt - Bonus abholen!</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Werkzeuge</value>
+  </data>
+  <data name="ToolSaw" xml:space="preserve">
+    <value>S&#228;ge</value>
+  </data>
+  <data name="ToolPipeWrench" xml:space="preserve">
+    <value>Rohrzange</value>
+  </data>
+  <data name="ToolScrewdriver" xml:space="preserve">
+    <value>Schraubendreher</value>
+  </data>
+  <data name="ToolPaintbrush" xml:space="preserve">
+    <value>Pinsel</value>
+  </data>
+  <data name="ToolEffectZone" xml:space="preserve">
+    <value>+{0}% Zielzone</value>
+  </data>
+  <data name="ToolEffectTime" xml:space="preserve">
+    <value>+{0}s Zeitbonus</value>
+  </data>
+  <data name="ToolUpgrade" xml:space="preserve">
+    <value>Upgrade</value>
+  </data>
+  <data name="ToolMaxLevel" xml:space="preserve">
+    <value>Max. Stufe</value>
+  </data>
+  <data name="NextRotation" xml:space="preserve">
+    <value>N&#228;chste Rotation</value>
+  </data>
 
 </root>

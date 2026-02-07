@@ -9,6 +9,12 @@
              x:DataType="vm:MainViewModel">
 
   <Grid RowDefinitions="*,Auto,Auto">
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0" />
+        <GradientStop Color="{DynamicResource SurfaceColor}" Offset="1" />
+      </LinearGradientBrush>
+    </Grid.Background>
 
     <!-- ============================================ -->
     <!-- Row 0: Content Area (switches based on tab)  -->
@@ -81,7 +87,7 @@
             BorderBrush="{DynamicResource CardBorderBrush}"
             Padding="0,8"
             IsVisible="{Binding IsTabBarVisible}">
-      <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+      <Grid ColumnDefinitions="*,*,*,*,*">
 
         <!-- Dashboard -->
         <Button Grid.Column="0" Classes="Text"
@@ -122,34 +128,8 @@
           </StackPanel>
         </Button>
 
-        <!-- Statistics -->
-        <Button Grid.Column="3" Classes="Text"
-                Command="{Binding SelectStatisticsTabCommand}"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <mi:MaterialIcon Kind="ChartBar" Width="24" Height="24" />
-            <TextBlock Text="{loc:Translate Stats}"
-                       FontSize="10" HorizontalAlignment="Center" />
-          </StackPanel>
-        </Button>
-
-        <!-- Achievements -->
-        <Button Grid.Column="4" Classes="Text"
-                Command="{Binding SelectAchievementsTabCommand}"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <mi:MaterialIcon Kind="Trophy" Width="24" Height="24" />
-            <TextBlock Text="{loc:Translate Achievements}"
-                       FontSize="10" HorizontalAlignment="Center" />
-          </StackPanel>
-        </Button>
-
         <!-- Shop -->
-        <Button Grid.Column="5" Classes="Text"
+        <Button Grid.Column="3" Classes="Text"
                 Command="{Binding SelectShopTabCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
@@ -162,7 +142,7 @@
         </Button>
 
         <!-- Settings -->
-        <Button Grid.Column="6" Classes="Text"
+        <Button Grid.Column="4" Classes="Text"
                 Command="{Binding SelectSettingsTabCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"

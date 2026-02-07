@@ -17,6 +17,8 @@ public class GameLoopService : IGameLoopService, IDisposable
     private readonly IWorkerService? _workerService;
     private readonly IResearchService? _researchService;
     private readonly IEventService? _eventService;
+    private readonly IQuickJobService? _quickJobService;
+    private readonly IDailyChallengeService? _dailyChallengeService;
     private DispatcherTimer? _timer;
     private DateTime _sessionStart;
     private bool _isPaused;
@@ -36,13 +38,17 @@ public class GameLoopService : IGameLoopService, IDisposable
         ISaveGameService saveGameService,
         IWorkerService? workerService = null,
         IResearchService? researchService = null,
-        IEventService? eventService = null)
+        IEventService? eventService = null,
+        IQuickJobService? quickJobService = null,
+        IDailyChallengeService? dailyChallengeService = null)
     {
         _gameStateService = gameStateService;
         _saveGameService = saveGameService;
         _workerService = workerService;
         _researchService = researchService;
         _eventService = eventService;
+        _quickJobService = quickJobService;
+        _dailyChallengeService = dailyChallengeService;
     }
 
     public void Start()
@@ -166,6 +172,13 @@ public class GameLoopService : IGameLoopService, IDisposable
         if (_tickCount % EventCheckIntervalTicks == 0)
         {
             _eventService?.CheckForNewEvent();
+        }
+
+        // 9b. Quick Job Rotation + Daily Challenge Reset (alle 60 Ticks = 1 Minute)
+        if (_tickCount % 60 == 0)
+        {
+            _quickJobService?.RotateIfNeeded();
+            _dailyChallengeService?.CheckAndResetIfNewDay();
         }
 
         // 10. Update last played time

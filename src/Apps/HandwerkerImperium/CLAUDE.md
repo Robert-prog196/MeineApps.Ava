@@ -6,18 +6,21 @@
 HandwerkerImperium/
 ├── HandwerkerImperium.Shared/     # net10.0 (Shared code)
 │   ├── App.axaml/.cs              # DI configuration
-│   ├── Models/                    # 13 model files
+│   ├── Models/                    # 16 model files
 │   │   ├── Enums/                 # WorkshopType, MiniGameType, MiniGameResult, OrderDifficulty, AchievementCategory
 │   │   ├── Events/                # GameEvents (all event args)
-│   │   ├── GameState.cs           # Main game state
+│   │   ├── GameState.cs           # Main game state (QuickJobs, DailyChallengeState, Tools)
 │   │   ├── Workshop.cs            # Workshop model
 │   │   ├── Worker.cs              # Worker model
 │   │   ├── Order.cs               # Order/contract model
+│   │   ├── QuickJob.cs            # Schnell-Auftraege (15min Rotation)
+│   │   ├── DailyChallenge.cs      # Taegliche Aufgaben (7 Typen + DailyChallengeState)
+│   │   ├── Tool.cs                # Werkzeuge (Saw/PipeWrench/Screwdriver/Paintbrush, 5 Level)
 │   │   ├── DailyReward.cs         # Daily reward config
 │   │   ├── Achievement.cs         # Achievement definitions
 │   │   └── TutorialStep.cs        # Tutorial step definitions
-│   ├── Services/                  # 30 files (15 interfaces + 15 implementations)
-│   │   ├── Interfaces/            # All service interfaces (incl. IWorkerService, IBuildingService, IResearchService, IEventService)
+│   ├── Services/                  # 34 files (17 interfaces + 17 implementations)
+│   │   ├── Interfaces/            # All service interfaces (incl. IWorkerService, IBuildingService, IResearchService, IEventService, IQuickJobService, IDailyChallengeService)
 │   │   ├── GameStateService.cs    # Central game state management
 │   │   ├── SaveGameService.cs     # JSON save/load
 │   │   ├── GameLoopService.cs     # Main game tick loop
@@ -28,7 +31,9 @@ HandwerkerImperium/
 │   │   ├── OrderGeneratorService.cs  # Order generation
 │   │   ├── PrestigeService.cs     # Prestige/rebirth system
 │   │   ├── RewardedAdService.cs   # Ad rewards (simulated on desktop)
-│   │   └── TutorialService.cs     # Tutorial system
+│   │   ├── TutorialService.cs     # Tutorial system
+│   │   ├── QuickJobService.cs     # Schnell-Auftraege (15min Rotation, 5 Jobs)
+│   │   └── DailyChallengeService.cs # Taegliche Aufgaben (3 pro Tag, 7 Typen)
 │   ├── ViewModels/                # 15 ViewModels
 │   │   ├── MainViewModel.cs       # Tab navigation, game init (7 tabs + overlays)
 │   │   ├── AchievementsViewModel.cs
@@ -75,14 +80,18 @@ HandwerkerImperium/
 - Building System (7 building types, level 0-5)
 - Research Tree (3 branches: Tools, Management, Marketing, 15 levels each)
 - Order/contract system with difficulty scaling
+- Quick Jobs (5 Schnell-Auftraege mit 15min Rotation, direkt zu MiniGame)
+- Daily Challenges (3 taegliche Aufgaben aus 7 Typen, Bonus bei Komplett-Abschluss)
+- Tool System (4 Werkzeuge: Saege/Rohrzange/Schraubendreher/Pinsel, Level 0-5, MiniGame-Boni)
 - 3-tier prestige system (Bronze/Silver/Gold) with permanent multipliers + prestige shop
-- Achievement system
+- Achievement system (58 achievements, Reset bei Spielstand-Reset)
 - Daily rewards
 - Offline earnings
 - Tutorial system
 - JSON save/load to LocalApplicationData
 - Premium (remove ads + extended offline)
 - 6 languages (DE, EN, ES, FR, IT, PT)
+- 5-Tab Navigation (Home, Workers, Research, Shop, Settings) + Stats/Achievements als Dashboard-Icons
 
 ## Dependencies
 - MeineApps.Core.Ava (themes, localization, preferences)
@@ -262,6 +271,42 @@ dotnet build HandwerkerImperium.Android/HandwerkerImperium.Android.csproj
 ## Game Reset Fix (07.02.2026)
 - **Generisches Alert/Confirm Dialog System**: MainViewModel nutzt ShowGenericAlert/ShowGenericConfirm fuer Child-VM Events
 - **Spielstand loeschen**: SettingsViewModel → ConfirmationRequested → MainViewModel zeigt Dialog → GameStateService.Reset() + Neu-Initialisierung
+
+## UI Redesign + Neue Features (07.02.2026)
+
+### Tab-Bar Redesign
+- **7→5 Tabs**: Home, Workers, Research, Shop, Settings
+- **Stats + Achievements**: Als Icon-Buttons im Dashboard-Header (ChartBar + Trophy Icons)
+- **Design**: LinearGradientBrush Hintergrund (BackgroundColor→SurfaceColor), Workshop-Cards mit BoxShadow + RadialGradientBrush, kompaktere Research-Cards
+
+### Quick Jobs
+- **QuickJob Model**: WorkshopType, MiniGameType, Reward, XP, 15min Rotation
+- **QuickJobService**: 5 Jobs generiert, Level-skalierte Rewards (20+Level*5 max 100€, 5+Level*2 max 25 XP)
+- **8 TitleKeys**: QuickRepair, QuickFix, ExpressService, SmallOrder, QuickMeasure, QuickInstall, QuickPaint, QuickCheck
+- **Dashboard**: Quick Jobs Sektion mit Timer-Display + Start-Buttons + Completed-Indicator
+- **MiniGame-Rueckkehr**: QuickJob als completed markiert, Reward+XP vergeben, DailyChallenge benachrichtigt
+
+### Daily Challenges
+- **DailyChallenge Model**: 7 Typen (CompleteOrders, EarnMoney, UpgradeWorkshop, HireWorker, CompleteQuickJob, PlayMiniGames, AchieveMinigameScore)
+- **DailyChallengeService**: 3 taegliche Challenges, Level-basierte Targets, Auto-Tracking via GameState Events, IDisposable
+- **500€ Bonus** bei Komplett-Abschluss aller 3 Challenges
+- **Dashboard**: Collapsible Challenge-Banner mit ProgressBars + Claim-Buttons
+
+### Tool System
+- **Tool Model**: 4 Typen (Saw/PipeWrench/Screwdriver/Paintbrush), Level 0-5
+- **ZoneBonus** (Saw): +5% bis +25% Zielzone in SawingGame
+- **TimeBonus** (PipeWrench/Screwdriver/Paintbrush): +5s bis +15s in PipePuzzle/WiringGame/PaintingGame
+- **UpgradeCost**: 50→150→400→1000→2500€
+- **ShopView**: Werkzeuge-Sektion mit Icon, Level, EffectDescription, Upgrade-Button
+- **ShopViewModel**: LoadTools() + UpgradeToolCommand
+
+### Balancing
+- **Startgeld**: 100€→250€
+- **Workshop Lv.1→2 Upgrade**: 200€→100€ (erstes Upgrade guenstiger)
+- **Achievement Reset**: Achievements werden beim Spielstand-Zuruecksetzen zurueckgesetzt
+
+### Lokalisierung
+- 28 neue Keys in 6 Sprachen (QuickJobs, DailyChallenges, Tools, etc.)
 
 ## Version
 - v2.0.2 (vc7) - Release mit Store Assets
