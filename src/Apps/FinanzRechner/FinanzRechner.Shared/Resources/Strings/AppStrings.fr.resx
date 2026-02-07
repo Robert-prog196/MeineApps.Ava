@@ -962,5 +962,8 @@
   <data name="QuickAddTitle" xml:space="preserve">
     <value>Ajout rapide</value>
   </data>
+  <data name="CategoryBreakdown" xml:space="preserve">
+    <value>Catégories</value>
+  </data>
 
 </root>

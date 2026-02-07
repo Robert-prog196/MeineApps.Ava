@@ -1,10 +1,15 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanzRechner.Helpers;
 using FinanzRechner.Models;
 using FinanzRechner.Services;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
+using SkiaSharp;
 
 namespace FinanzRechner.ViewModels;
 
@@ -15,16 +20,18 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     private readonly IExportService _exportService;
     private readonly IFileDialogService _fileDialogService;
     private readonly IFileShareService _fileShareService;
+    private readonly IThemeService _themeService;
 
     public event Action<string, string>? MessageRequested;
 
-    public ExpenseTrackerViewModel(IExpenseService expenseService, ILocalizationService localizationService, IExportService exportService, IFileDialogService fileDialogService, IFileShareService fileShareService)
+    public ExpenseTrackerViewModel(IExpenseService expenseService, ILocalizationService localizationService, IExportService exportService, IFileDialogService fileDialogService, IFileShareService fileShareService, IThemeService themeService)
     {
         _expenseService = expenseService;
         _localizationService = localizationService;
         _exportService = exportService;
         _fileDialogService = fileDialogService;
         _fileShareService = fileShareService;
+        _themeService = themeService;
 
         // Initialize to current month
         _selectedYear = DateTime.Today.Year;
@@ -62,6 +69,7 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     public string NoTransactionsText => _localizationService.GetString("EmptyTransactionsTitle") ?? "No Transactions";
     public string NoTransactionsHintText => _localizationService.GetString("EmptyTransactionsDesc") ?? "Start tracking your income and expenses by tapping the + button";
     public string UndoText => _localizationService.GetString("Undo") ?? "Undo";
+    public string CategoryBreakdownText => _localizationService.GetString("CategoryBreakdown") ?? "Categories";
 
     public void UpdateLocalizedTexts()
     {
@@ -94,6 +102,7 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(NoTransactionsText));
         OnPropertyChanged(nameof(NoTransactionsHintText));
         OnPropertyChanged(nameof(UndoText));
+        OnPropertyChanged(nameof(CategoryBreakdownText));
     }
 
     #endregion
@@ -315,6 +324,78 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
 
     #endregion
 
+    #region Category Chart
+
+    [ObservableProperty]
+    private IEnumerable<ISeries> _categoryChartSeries = [];
+
+    [ObservableProperty]
+    private bool _hasCategoryChartData;
+
+    private static readonly Dictionary<ExpenseCategory, SKColor> CategoryColors = new()
+    {
+        { ExpenseCategory.Food, new SKColor(0xFF, 0x98, 0x00) },
+        { ExpenseCategory.Transport, new SKColor(0x21, 0x96, 0xF3) },
+        { ExpenseCategory.Housing, new SKColor(0x9C, 0x27, 0xB0) },
+        { ExpenseCategory.Entertainment, new SKColor(0xE9, 0x1E, 0x63) },
+        { ExpenseCategory.Shopping, new SKColor(0x00, 0xBC, 0xD4) },
+        { ExpenseCategory.Health, new SKColor(0xF4, 0x43, 0x36) },
+        { ExpenseCategory.Education, new SKColor(0x3F, 0x51, 0xB5) },
+        { ExpenseCategory.Bills, new SKColor(0x60, 0x7D, 0x8B) },
+        { ExpenseCategory.Other, new SKColor(0x79, 0x55, 0x48) },
+        { ExpenseCategory.Salary, new SKColor(0x4C, 0xAF, 0x50) },
+        { ExpenseCategory.Freelance, new SKColor(0x00, 0x96, 0x88) },
+        { ExpenseCategory.Investment, new SKColor(0x8B, 0xC3, 0x4A) },
+        { ExpenseCategory.Gift, new SKColor(0xFF, 0xC1, 0x07) },
+        { ExpenseCategory.OtherIncome, new SKColor(0xCD, 0xDC, 0x39) }
+    };
+
+    private void UpdateCategoryChart()
+    {
+        if (_allExpenses.Count == 0)
+        {
+            HasCategoryChartData = false;
+            CategoryChartSeries = [];
+            return;
+        }
+
+        var labelColor = _themeService.IsDarkTheme
+            ? new SKColor(0xFF, 0xFF, 0xFF)
+            : new SKColor(0x21, 0x21, 0x21);
+
+        // Nur Ausgaben im Kreisdiagramm (Einnahmen wuerden es verzerren)
+        var expensesByCategory = _allExpenses
+            .Where(e => e.Type == TransactionType.Expense)
+            .GroupBy(e => e.Category)
+            .Select(g => new { Category = g.Key, Amount = g.Sum(e => e.Amount) })
+            .OrderByDescending(x => x.Amount)
+            .ToList();
+
+        if (expensesByCategory.Count == 0)
+        {
+            HasCategoryChartData = false;
+            CategoryChartSeries = [];
+            return;
+        }
+
+        var total = expensesByCategory.Sum(x => x.Amount);
+
+        CategoryChartSeries = expensesByCategory.Select(c => new PieSeries<double>
+        {
+            Values = [c.Amount],
+            Name = CategoryLocalizationHelper.GetLocalizedName(c.Category, _localizationService),
+            Fill = new SolidColorPaint(CategoryColors.TryGetValue(c.Category, out var color) ? color : new SKColor(0x9E, 0x9E, 0x9E)),
+            DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
+            DataLabelsPaint = new SolidColorPaint(labelColor),
+            DataLabelsFormatter = _ => total > 0 ? $"{c.Amount / total * 100:F0}%" : "",
+            DataLabelsSize = 11
+        }).ToArray();
+
+        HasCategoryChartData = true;
+    }
+
+    #endregion
+
     #region Undo Delete
 
     [ObservableProperty]
@@ -418,6 +499,9 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
 
             var expenses = await _expenseService.GetExpensesByMonthAsync(SelectedYear, SelectedMonth);
             _allExpenses = expenses.ToList();
+
+            // Kategorie-Chart aktualisieren
+            UpdateCategoryChart();
 
             // Apply filter and sort
             ApplyFilterAndSort();

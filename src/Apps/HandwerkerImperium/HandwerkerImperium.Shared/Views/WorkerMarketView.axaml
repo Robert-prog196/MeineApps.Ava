@@ -80,9 +80,10 @@
         </Border>
 
         <!-- KEINE FREIEN PLAETZE INFO -->
-        <Border Classes="CardElevated" Padding="16"
+        <Border Classes="CardElevated" Padding="16,24"
                 IsVisible="{Binding !HasAvailableSlots}">
-          <StackPanel HorizontalAlignment="Center" Spacing="8">
+          <StackPanel HorizontalAlignment="Center" Spacing="8"
+                      Margin="16,0">
             <mi:MaterialIcon Kind="AccountOff" Width="48" Height="48"
                              Foreground="{DynamicResource WarningBrush}"
                              HorizontalAlignment="Center" />
@@ -184,19 +185,8 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- EMPTY STATE (Pool leer aber Plätze frei) -->
-        <StackPanel IsVisible="{Binding !AvailableWorkers.Count}"
-                    HorizontalAlignment="Center"
-                    Spacing="8"
-                    Margin="0,32">
-          <mi:MaterialIcon Kind="AccountOff" Width="48" Height="48"
-                           Foreground="{DynamicResource TextSecondaryBrush}"
-                           HorizontalAlignment="Center" />
-          <TextBlock Text="{loc:Translate NoWorkersAvailable}"
-                     FontSize="14"
-                     Foreground="{DynamicResource TextSecondaryBrush}"
-                     HorizontalAlignment="Center" />
-        </StackPanel>
+        <!-- EMPTY STATE (Pool leer aber Plaetze frei → nur wenn HasAvailableSlots) -->
+        <!-- Wird NICHT angezeigt wenn "Keine freien Plaetze" Banner sichtbar ist -->
 
         <!-- Bottom Spacer -->
         <Border Height="20" />

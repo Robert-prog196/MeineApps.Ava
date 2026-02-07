@@ -284,6 +284,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
                                     !IsWorkerMarketActive && !IsWorkerProfileActive &&
                                     !IsBuildingsActive && !IsResearchActive;
 
+    // Zaehler fuer Seitenwechsel → Banner bei jedem 10. Aufruf
+    private int _pageViewCount;
+    private const int AdShowInterval = 10;
+
     private void DeactivateAllTabs()
     {
         IsDashboardActive = false;
@@ -301,6 +305,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsWorkerProfileActive = false;
         IsBuildingsActive = false;
         IsResearchActive = false;
+
+        // Seitenaufruf zaehlen → Banner bei jedem 10. Wechsel
+        _pageViewCount++;
+        if (_adService.AdsEnabled)
+        {
+            if (_pageViewCount % AdShowInterval == 0)
+                _adService.ShowBanner();
+            else
+                _adService.HideBanner();
+        }
     }
 
     private void NotifyTabBarVisibility()

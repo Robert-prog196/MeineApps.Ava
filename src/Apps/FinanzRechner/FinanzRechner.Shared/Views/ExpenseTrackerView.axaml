@@ -3,6 +3,7 @@
              xmlns:vm="using:FinanzRechner.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:conv="using:FinanzRechner.Converters"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:Class="FinanzRechner.Views.ExpenseTrackerView"
              x:DataType="vm:ExpenseTrackerViewModel">
 
@@ -89,6 +90,22 @@
         </Border>
       </Grid>
 
+      <!-- Kategorie-Verteilung (Kreisdiagramm) -->
+      <Border Background="{DynamicResource CardBrush}"
+              CornerRadius="12"
+              Padding="12"
+              IsVisible="{Binding HasCategoryChartData}">
+        <StackPanel Spacing="4">
+          <TextBlock Text="{Binding CategoryBreakdownText}"
+                     FontSize="13" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <lvc:PieChart Series="{Binding CategoryChartSeries}"
+                        Height="160"
+                        LegendPosition="Right"
+                        InitialRotation="-90" />
+        </StackPanel>
+      </Border>
+
       <!-- Category & Amount Filters (Collapsible) -->
       <Border IsVisible="{Binding IsFilterActive}"
               Background="{DynamicResource CardBrush}"
@@ -148,71 +165,51 @@
                  Margin="0,4,0,0" />
     </StackPanel>
 
-    <!-- Month Navigation -->
+    <!-- Monats-Navigation (kompakt) -->
     <Border Grid.Row="2"
             Background="{DynamicResource CardBrush}"
             CornerRadius="12"
-            Padding="16"
-            Margin="0,0,0,16">
+            Padding="12,8"
+            Margin="0,0,0,12">
       <Grid ColumnDefinitions="Auto,*,Auto">
-        <Button Grid.Column="0"
-                Classes="Text"
-                Command="{Binding PreviousMonthCommand}"
-                Padding="8">
-          <mi:MaterialIcon Kind="ChevronLeft" Width="20" Height="20"
+        <Button Grid.Column="0" Classes="Text"
+                Command="{Binding PreviousMonthCommand}" Padding="4">
+          <mi:MaterialIcon Kind="ChevronLeft" Width="18" Height="18"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
 
-        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="8">
-          <TextBlock Text="{Binding MonthYearDisplay}"
-                     FontSize="18" FontWeight="Bold"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
-
-          <!-- Income -->
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding IncomeLabelText}" FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
-            <TextBlock Text="{Binding TotalIncomeDisplay}" FontSize="14" FontWeight="Bold"
-                       Foreground="{DynamicResource IncomeBrush}" />
-          </StackPanel>
-
-          <!-- Expenses -->
-          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding ExpensesLabelText}" FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
-            <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="14" FontWeight="Bold"
-                       Foreground="{DynamicResource ExpenseBrush}" />
-          </StackPanel>
-
-          <!-- Balance -->
-          <Border Background="{DynamicResource AccentBrush}"
-                  CornerRadius="8"
-                  Padding="8,4"
-                  HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <TextBlock Text="{Binding BalanceLabelText}" FontSize="16" FontWeight="Bold" Foreground="White" />
-              <TextBlock Text="{Binding BalanceDisplay}" FontSize="16" FontWeight="Bold" Foreground="White" />
-            </StackPanel>
-          </Border>
-
-          <!-- Go to Today -->
-          <Button Classes="Text"
-                  Command="{Binding GoToCurrentMonthCommand}"
-                  Padding="4,2"
-                  HorizontalAlignment="Center">
-            <TextBlock Text="{Binding TodayText}"
-                       FontSize="12"
-                       Foreground="{DynamicResource PrimaryBrush}"
-                       TextDecorations="Underline" />
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="4">
+          <!-- Monatsname -->
+          <Button Classes="Text" Command="{Binding GoToCurrentMonthCommand}"
+                  HorizontalAlignment="Center" Padding="4,0">
+            <TextBlock Text="{Binding MonthYearDisplay}"
+                       FontSize="15" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
           </Button>
+
+          <!-- Einnahmen + Ausgaben + Bilanz kompakt -->
+          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="3">
+              <mi:MaterialIcon Kind="ArrowUpBold" Width="12" Height="12"
+                               Foreground="#22C55E" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding TotalIncomeDisplay}" FontSize="12" FontWeight="SemiBold"
+                         Foreground="#22C55E" VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="3">
+              <mi:MaterialIcon Kind="ArrowDownBold" Width="12" Height="12"
+                               Foreground="#EF4444" VerticalAlignment="Center" />
+              <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="12" FontWeight="SemiBold"
+                         Foreground="#EF4444" VerticalAlignment="Center" />
+            </StackPanel>
+            <Border Background="{DynamicResource AccentBrush}" CornerRadius="6" Padding="6,2">
+              <TextBlock Text="{Binding BalanceDisplay}" FontSize="12" FontWeight="Bold" Foreground="White" />
+            </Border>
+          </StackPanel>
         </StackPanel>
 
-        <Button Grid.Column="2"
-                Classes="Text"
-                Command="{Binding NextMonthCommand}"
-                Padding="8">
-          <mi:MaterialIcon Kind="ChevronRight" Width="20" Height="20"
+        <Button Grid.Column="2" Classes="Text"
+                Command="{Binding NextMonthCommand}" Padding="4">
+          <mi:MaterialIcon Kind="ChevronRight" Width="18" Height="18"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
       </Grid>
@@ -502,6 +499,9 @@
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <!-- Bottom Spacer -->
+        <Border Height="16" />
       </StackPanel>
     </ScrollViewer>
 

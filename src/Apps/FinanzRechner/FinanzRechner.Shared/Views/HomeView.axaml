@@ -366,35 +366,6 @@
                 </StackPanel>
               </Button>
 
-              <!-- Budgets -->
-              <Button Grid.Row="2" Grid.Column="1"
-                      CornerRadius="12" Height="120" Padding="8"
-                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                      Command="{Binding ShowBudgetsCommand}">
-                <Button.Background>
-                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
-                    <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
-                  </LinearGradientBrush>
-                </Button.Background>
-                <StackPanel VerticalAlignment="Center" Spacing="8">
-                  <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                    <Border.Background>
-                      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                        <GradientStop Color="#22D3EE" Offset="0" />
-                        <GradientStop Color="#06B6D4" Offset="1" />
-                      </LinearGradientBrush>
-                    </Border.Background>
-                    <mi:MaterialIcon Kind="ChartDonut" Width="24" Height="24"
-                                     Foreground="White"
-                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
-                  </Border>
-                  <TextBlock Text="{Binding BudgetsTitleText}"
-                             FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
-                </StackPanel>
-              </Button>
-
             </Grid>
           </StackPanel>
 

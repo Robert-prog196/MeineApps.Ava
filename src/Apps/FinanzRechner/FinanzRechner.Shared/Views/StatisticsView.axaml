@@ -334,6 +334,9 @@
           </StackPanel>
         </Border>
 
+        <!-- Bottom Spacer -->
+        <Border Height="16" />
+
       </StackPanel>
     </ScrollViewer>
 
