@@ -65,11 +65,11 @@ public static class OrderDifficultyExtensions
     /// </summary>
     public static double GetPerfectZoneSize(this OrderDifficulty difficulty) => difficulty switch
     {
-        OrderDifficulty.Easy => 0.25,
-        OrderDifficulty.Medium => 0.15,
-        OrderDifficulty.Hard => 0.12,
-        OrderDifficulty.Expert => 0.08,
-        _ => 0.15
+        OrderDifficulty.Easy => 0.20,
+        OrderDifficulty.Medium => 0.12,
+        OrderDifficulty.Hard => 0.09,
+        OrderDifficulty.Expert => 0.06,
+        _ => 0.12
     };
 
     /// <summary>
@@ -78,11 +78,11 @@ public static class OrderDifficultyExtensions
     /// </summary>
     public static double GetSpeedMultiplier(this OrderDifficulty difficulty) => difficulty switch
     {
-        OrderDifficulty.Easy => 0.8,
-        OrderDifficulty.Medium => 1.0,
-        OrderDifficulty.Hard => 1.4,
-        OrderDifficulty.Expert => 1.8,
-        _ => 1.0
+        OrderDifficulty.Easy => 0.9,
+        OrderDifficulty.Medium => 1.2,
+        OrderDifficulty.Hard => 1.6,
+        OrderDifficulty.Expert => 2.2,
+        _ => 1.2
     };
 
     /// <summary>

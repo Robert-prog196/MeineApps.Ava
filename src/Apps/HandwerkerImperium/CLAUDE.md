@@ -157,6 +157,13 @@ dotnet build HandwerkerImperium.Android/HandwerkerImperium.Android.csproj
 - 7 neue BuildingEffect Keys in 6 Sprachen (CanteenEffect, StorageEffect, OfficeEffect, ShowroomEffect, TrainingCenterEffect, VehicleFleetEffect, WorkshopExtensionEffect) - Fallback fuer ungebaute Gebaeude
 - 3 neue BranchDesc Keys in 6 Sprachen (BranchToolsDesc, BranchManagementDesc, BranchMarketingDesc)
 
+### Research Tree Localization (07.02.2026)
+- 92 neue Keys in 6 Sprachen (EN, DE, ES, FR, IT, PT) fuer Research Tree
+- 2 UI Keys: StartResearch, CurrentResearch
+- 45 Research Name Keys: ResearchBetterSaws, ResearchPrecisionTools, ..., ResearchMarketDomination (3 Branches x 15 Levels)
+- 45 Research Description Keys: ResearchBetterSawsDesc, ..., ResearchMarketDominationDesc (Effekt-Beschreibungen)
+- Designer.cs: 92 neue Properties eingefuegt
+
 ## Game Loop & Income Fix (06.02.2026)
 - **CRITICAL: Game Loop never started** - `_gameLoopService.Start()` was never called in `MainViewModel.Initialize()` → 0€/s passive income
 - **CRITICAL: No starting worker** - `GameState.CreateNew()` created Carpenter with 0 workers → income was 0 even if loop ran
@@ -216,6 +223,45 @@ dotnet build HandwerkerImperium.Android/HandwerkerImperium.Android.csproj
 - **MainView.axaml**: Tab-Bar von 5 auf 7 Tabs (Home, Workers, Research, Stats, Achievements, Shop, Settings)
 - **AVLN2000 Fixes**: BoolConverters.FalseIsVisible -> DisplayOpacity Property (Buildings+Research), Extension Method Bindings -> computed Properties (Worker.PersonalityIcon, Worker.HiringCost)
 - Build: 0 Fehler
+
+## MiniGame Difficulty Tuning (07.02.2026)
+
+### PipePuzzle
+- **CRITICAL: Corner Rotation Mapping komplett falsch** - Alle 4 Corner-Rotationen waren falsch zugeordnet
+  - Basis-Corner (Rotation 0) hat Oeffnungen: Right + Down
+  - Fix: (Right,Down)→0, (Left,Down)→90, (Left,Up)→180, (Right,Up)→270
+- **Tile-Groesse**: 60→52px (matching GridCols * 56 Berechnung mit 2px Margin)
+- **Pipe-Segmente**: 14→12px breit, 30→26px hoch
+- **Lock-Indicator**: Kleines Schloss-Icon (10x10) oben rechts bei Source/Drain Tiles
+- **Zeiten reduziert**: Easy 50→40s, Medium 70→55s, Hard 100→75s, Expert 120→95s
+
+### SawingGame
+- **MARKER_SPEED**: 0.015→0.022 (~47% schneller)
+
+### OrderDifficulty (alle Minispiele)
+- **Perfect Zones kleiner**: Easy 0.25→0.20, Medium 0.15→0.12, Hard 0.12→0.09, Expert 0.08→0.06
+- **Speed Multiplier hoeher**: Easy 0.8→0.9, Medium 1.0→1.2, Hard 1.4→1.6, Expert 1.8→2.2
+
+### WiringGame
+- **Zeiten reduziert**: Easy 15→12s, Medium 18→15s, Hard 22→18s
+- **Expert-Schwierigkeit**: 6 Kabel, 22s (neu hinzugefuegt)
+
+### PaintingGame
+- **Zeiten reduziert**: Easy 25→20s, Medium 35→28s, Hard 40→32s
+- **Expert-Schwierigkeit**: 6x6 Grid, 38s (neu hinzugefuegt)
+
+## Research View Redesign (07.02.2026)
+- **Layout**: 3-Spalten → Tabbed Single-Column (zu schmal auf Handys)
+- **Tab-Selector**: 3 Buttons (Tools/Management/Marketing) mit Opacity-basiertem Active-State (1.0 vs 0.5)
+- **Branch Description**: Text unter Tabs erklaert den ausgewaehlten Zweig
+- **Research Cards**: Level-Badge (Lv.X), Name (14px), Description, Kosten+Icon, Dauer+Icon, Progress Bar, Start-Button
+- **ResearchViewModel**: SelectedBranch, SelectedBranchDescription, SelectedTab Properties + 3 Tab-Commands + Tab-Opacity Computed Properties
+- **ResearchDisplayItem**: LevelDisplay Property ($"Lv.{Level}")
+- **MainViewModel Fix**: OrderViewModel.AlertRequested Subscription entfernt (existiert nicht, nur ConfirmationRequested)
+
+## Game Reset Fix (07.02.2026)
+- **Generisches Alert/Confirm Dialog System**: MainViewModel nutzt ShowGenericAlert/ShowGenericConfirm fuer Child-VM Events
+- **Spielstand loeschen**: SettingsViewModel → ConfirmationRequested → MainViewModel zeigt Dialog → GameStateService.Reset() + Neu-Initialisierung
 
 ## Version
 - v2.0.2 (vc7) - Release mit Store Assets

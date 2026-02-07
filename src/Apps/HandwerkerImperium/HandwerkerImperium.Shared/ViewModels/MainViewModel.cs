@@ -159,6 +159,36 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _achievementDescription = "";
 
+    // Generic Alert/Confirm Dialog
+    [ObservableProperty]
+    private bool _isAlertDialogVisible;
+
+    [ObservableProperty]
+    private string _alertDialogTitle = "";
+
+    [ObservableProperty]
+    private string _alertDialogMessage = "";
+
+    [ObservableProperty]
+    private string _alertDialogButtonText = "OK";
+
+    [ObservableProperty]
+    private bool _isConfirmDialogVisible;
+
+    [ObservableProperty]
+    private string _confirmDialogTitle = "";
+
+    [ObservableProperty]
+    private string _confirmDialogMessage = "";
+
+    [ObservableProperty]
+    private string _confirmDialogAcceptText = "OK";
+
+    [ObservableProperty]
+    private string _confirmDialogCancelText = "";
+
+    private TaskCompletionSource<bool>? _confirmDialogTcs;
+
     /// <summary>
     /// Indicates whether ads should be shown (not premium).
     /// </summary>
@@ -354,6 +384,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         BuildingsViewModel.NavigationRequested += _buildingsNavHandler;
         ResearchViewModel.NavigationRequested += _researchNavHandler;
 
+        // Wire up child VM alert/confirmation events
+        SettingsViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        SettingsViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        ShopViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        ShopViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        OrderViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        WorkerMarketViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        WorkerProfileViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        WorkerProfileViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        BuildingsViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        ResearchViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        ResearchViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+
         // Subscribe to premium status changes
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
 
@@ -510,6 +553,45 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void DismissAlertDialog()
+    {
+        IsAlertDialogVisible = false;
+    }
+
+    [RelayCommand]
+    private void ConfirmDialogAccept()
+    {
+        IsConfirmDialogVisible = false;
+        _confirmDialogTcs?.TrySetResult(true);
+    }
+
+    [RelayCommand]
+    private void ConfirmDialogCancel()
+    {
+        IsConfirmDialogVisible = false;
+        _confirmDialogTcs?.TrySetResult(false);
+    }
+
+    private void ShowAlertDialog(string title, string message, string buttonText)
+    {
+        AlertDialogTitle = title;
+        AlertDialogMessage = message;
+        AlertDialogButtonText = buttonText;
+        IsAlertDialogVisible = true;
+    }
+
+    private Task<bool> ShowConfirmDialog(string title, string message, string acceptText, string cancelText)
+    {
+        ConfirmDialogTitle = title;
+        ConfirmDialogMessage = message;
+        ConfirmDialogAcceptText = acceptText;
+        ConfirmDialogCancelText = cancelText;
+        _confirmDialogTcs = new TaskCompletionSource<bool>();
+        IsConfirmDialogVisible = true;
+        return _confirmDialogTcs.Task;
+    }
+
+    [RelayCommand]
     private void CollectOfflineEarningsNormal()
     {
         CollectOfflineEarnings(false);
@@ -552,34 +634,67 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void RefreshWorkshops()
     {
         var state = _gameStateService.State;
-        Workshops.Clear();
 
-        // Add all workshop types (locked and unlocked)
-        foreach (WorkshopType type in Enum.GetValues<WorkshopType>())
+        // Erste Initialisierung: Items erstellen
+        if (Workshops.Count == 0)
         {
-            var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
-            bool isUnlocked = state.IsWorkshopUnlocked(type);
-
-            Workshops.Add(new WorkshopDisplayModel
+            foreach (var type in _workshopTypes)
             {
-                Type = type,
-                Icon = type.GetIcon(),
-                IconKind = GetWorkshopIconKind(type),
-                Name = _localizationService.GetString(type.GetLocalizationKey()),
-                Level = workshop?.Level ?? 1,
-                WorkerCount = workshop?.Workers.Count ?? 0,
-                MaxWorkers = workshop?.MaxWorkers ?? 1,
-                IncomePerSecond = workshop?.IncomePerSecond ?? 0,
-                UpgradeCost = workshop?.UpgradeCost ?? 100,
-                HireWorkerCost = workshop?.HireWorkerCost ?? 50,
-                IsUnlocked = isUnlocked,
-                UnlockLevel = type.GetUnlockLevel(),
-                CanUpgrade = workshop?.CanUpgrade ?? true,
-                CanHireWorker = workshop?.CanHireWorker ?? false,
-                CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100),
-                CanAffordWorker = state.Money >= (workshop?.HireWorkerCost ?? 50)
-            });
+                Workshops.Add(CreateWorkshopDisplay(state, type));
+            }
+            return;
         }
+
+        // Update: Bestehende Items aktualisieren (kein Clear/Add → weniger UI-Churn)
+        for (int i = 0; i < _workshopTypes.Length && i < Workshops.Count; i++)
+        {
+            UpdateWorkshopDisplay(Workshops[i], state, _workshopTypes[i]);
+        }
+    }
+
+    private WorkshopDisplayModel CreateWorkshopDisplay(GameState state, WorkshopType type)
+    {
+        var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
+        bool isUnlocked = state.IsWorkshopUnlocked(type);
+        return new WorkshopDisplayModel
+        {
+            Type = type,
+            Icon = type.GetIcon(),
+            IconKind = GetWorkshopIconKind(type),
+            Name = _localizationService.GetString(type.GetLocalizationKey()),
+            Level = workshop?.Level ?? 1,
+            WorkerCount = workshop?.Workers.Count ?? 0,
+            MaxWorkers = workshop?.MaxWorkers ?? 1,
+            IncomePerSecond = workshop?.IncomePerSecond ?? 0,
+            UpgradeCost = workshop?.UpgradeCost ?? 100,
+            HireWorkerCost = workshop?.HireWorkerCost ?? 50,
+            IsUnlocked = isUnlocked,
+            UnlockLevel = type.GetUnlockLevel(),
+            CanUpgrade = workshop?.CanUpgrade ?? true,
+            CanHireWorker = workshop?.CanHireWorker ?? false,
+            CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100),
+            CanAffordWorker = state.Money >= (workshop?.HireWorkerCost ?? 50)
+        };
+    }
+
+    private static void UpdateWorkshopDisplay(WorkshopDisplayModel model, GameState state, WorkshopType type)
+    {
+        var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
+        bool isUnlocked = state.IsWorkshopUnlocked(type);
+
+        model.Level = workshop?.Level ?? 1;
+        model.WorkerCount = workshop?.Workers.Count ?? 0;
+        model.MaxWorkers = workshop?.MaxWorkers ?? 1;
+        model.IncomePerSecond = workshop?.IncomePerSecond ?? 0;
+        model.UpgradeCost = workshop?.UpgradeCost ?? 100;
+        model.HireWorkerCost = workshop?.HireWorkerCost ?? 50;
+        model.IsUnlocked = isUnlocked;
+        model.CanUpgrade = workshop?.CanUpgrade ?? true;
+        model.CanHireWorker = workshop?.CanHireWorker ?? false;
+        model.CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100);
+        model.CanAffordWorker = state.Money >= (workshop?.HireWorkerCost ?? 50);
+
+        model.NotifyAllChanged();
     }
 
     private void RefreshOrders()
@@ -967,9 +1082,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnGameTick(object? sender, GameTickEventArgs e)
     {
-        // Update money display (already handled by MoneyChanged event)
-        IncomePerSecond = _gameStateService.State.NetIncomePerSecond;
-        IncomeDisplay = $"{FormatMoney(IncomePerSecond)}/s";
+        // Nur updaten wenn sich der Wert geaendert hat (vermeidet unnoetige UI-Updates)
+        var newIncome = _gameStateService.State.NetIncomePerSecond;
+        if (newIncome != IncomePerSecond)
+        {
+            IncomePerSecond = newIncome;
+            IncomeDisplay = $"{FormatMoney(IncomePerSecond)}/s";
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1083,4 +1202,25 @@ public partial class WorkshopDisplayModel : ObservableObject
     public string UpgradeCostDisplay => $"{UpgradeCost:N0}€";
     public string HireCostDisplay => $"{HireWorkerCost:N0}€";
     public double LevelProgress => Level / 50.0;
+
+    /// <summary>
+    /// Benachrichtigt die UI ueber alle Property-Aenderungen nach einem In-Place-Update.
+    /// </summary>
+    public void NotifyAllChanged()
+    {
+        OnPropertyChanged(nameof(Level));
+        OnPropertyChanged(nameof(WorkerCount));
+        OnPropertyChanged(nameof(MaxWorkers));
+        OnPropertyChanged(nameof(IncomePerSecond));
+        OnPropertyChanged(nameof(UpgradeCost));
+        OnPropertyChanged(nameof(HireWorkerCost));
+        OnPropertyChanged(nameof(IsUnlocked));
+        OnPropertyChanged(nameof(CanUpgrade));
+        OnPropertyChanged(nameof(CanHireWorker));
+        OnPropertyChanged(nameof(WorkerDisplay));
+        OnPropertyChanged(nameof(IncomeDisplay));
+        OnPropertyChanged(nameof(UpgradeCostDisplay));
+        OnPropertyChanged(nameof(HireCostDisplay));
+        OnPropertyChanged(nameof(LevelProgress));
+    }
 }

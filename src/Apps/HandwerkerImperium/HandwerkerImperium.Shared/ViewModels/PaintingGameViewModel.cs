@@ -161,13 +161,13 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
     private void InitializeGame()
     {
         // Set grid size and time based on difficulty
-        // Hard limited to 5x5 for better touch precision on small screens
         (GridSize, MaxTime) = Difficulty switch
         {
-            OrderDifficulty.Easy => (4, 25),
-            OrderDifficulty.Medium => (5, 35),
-            OrderDifficulty.Hard => (5, 40),   // Was 6x6/45s - now 5x5 for touch precision
-            _ => (5, 35)
+            OrderDifficulty.Easy => (4, 20),
+            OrderDifficulty.Medium => (5, 28),
+            OrderDifficulty.Hard => (5, 32),
+            OrderDifficulty.Expert => (6, 38),
+            _ => (5, 28)
         };
 
         TimeRemaining = MaxTime;

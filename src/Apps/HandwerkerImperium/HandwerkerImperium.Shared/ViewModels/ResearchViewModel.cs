@@ -79,6 +79,31 @@ public partial class ResearchViewModel : ObservableObject
     [ObservableProperty]
     private string _marketingBranchLabel = string.Empty;
 
+    [ObservableProperty]
+    private List<ResearchDisplayItem> _selectedBranch = [];
+
+    [ObservableProperty]
+    private string _selectedBranchDescription = string.Empty;
+
+    [ObservableProperty]
+    private ResearchBranch _selectedTab = ResearchBranch.Tools;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COMPUTED PROPERTIES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public double ToolsTabOpacity => SelectedTab == ResearchBranch.Tools ? 1.0 : 0.5;
+    public double ManagementTabOpacity => SelectedTab == ResearchBranch.Management ? 1.0 : 0.5;
+    public double MarketingTabOpacity => SelectedTab == ResearchBranch.Marketing ? 1.0 : 0.5;
+
+    partial void OnSelectedTabChanged(ResearchBranch value)
+    {
+        OnPropertyChanged(nameof(ToolsTabOpacity));
+        OnPropertyChanged(nameof(ManagementTabOpacity));
+        OnPropertyChanged(nameof(MarketingTabOpacity));
+        UpdateSelectedBranch();
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -111,6 +136,7 @@ public partial class ResearchViewModel : ObservableObject
         ToolsBranch = BuildBranchDisplayItems(ResearchBranch.Tools);
         ManagementBranch = BuildBranchDisplayItems(ResearchBranch.Management);
         MarketingBranch = BuildBranchDisplayItems(ResearchBranch.Marketing);
+        UpdateSelectedBranch();
 
         var active = _researchService.GetActiveResearch();
         ActiveResearch = active;
@@ -184,6 +210,24 @@ public partial class ResearchViewModel : ObservableObject
     // ═══════════════════════════════════════════════════════════════════════
     // COMMANDS
     // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void SelectToolsBranch()
+    {
+        SelectedTab = ResearchBranch.Tools;
+    }
+
+    [RelayCommand]
+    private void SelectManagementBranch()
+    {
+        SelectedTab = ResearchBranch.Management;
+    }
+
+    [RelayCommand]
+    private void SelectMarketingBranch()
+    {
+        SelectedTab = ResearchBranch.Marketing;
+    }
 
     [RelayCommand]
     private void StartResearch(string? researchId)
@@ -261,6 +305,19 @@ public partial class ResearchViewModel : ObservableObject
     // HELPERS
     // ═══════════════════════════════════════════════════════════════════════
 
+    private void UpdateSelectedBranch()
+    {
+        SelectedBranch = SelectedTab switch
+        {
+            ResearchBranch.Tools => ToolsBranch,
+            ResearchBranch.Management => ManagementBranch,
+            ResearchBranch.Marketing => MarketingBranch,
+            _ => ToolsBranch
+        };
+
+        SelectedBranchDescription = _localizationService.GetString(SelectedTab.GetDescriptionKey());
+    }
+
     private List<ResearchDisplayItem> BuildBranchDisplayItems(ResearchBranch branch)
     {
         var branchResearches = _researchService.GetBranch(branch);
@@ -334,6 +391,14 @@ public class ResearchDisplayItem
     public bool CanStart { get; set; }
     public double Progress { get; set; }
     public ResearchEffect Effect { get; set; } = new();
+
+    /// <summary>
+    /// Opacity: locked = 0.4, unlocked = 1.0.
+    /// </summary>
+    /// <summary>
+    /// Display label for the level (e.g. "Lv.3").
+    /// </summary>
+    public string LevelDisplay => $"Lv.{Level}";
 
     /// <summary>
     /// Opacity: locked = 0.4, unlocked = 1.0.

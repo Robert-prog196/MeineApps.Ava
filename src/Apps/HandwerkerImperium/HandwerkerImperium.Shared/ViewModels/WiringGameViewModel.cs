@@ -146,13 +146,13 @@ public partial class WiringGameViewModel : ObservableObject, IDisposable
     private void InitializeGame()
     {
         // Set wire count and time based on difficulty
-        // Reduced timers to increase challenge (was too easy)
         (WireCount, MaxTime) = Difficulty switch
         {
-            OrderDifficulty.Easy => (3, 15),    // Was 20s
-            OrderDifficulty.Medium => (4, 18),  // Was 25s
-            OrderDifficulty.Hard => (5, 22),    // Was 30s
-            _ => (4, 18)
+            OrderDifficulty.Easy => (3, 12),
+            OrderDifficulty.Medium => (4, 15),
+            OrderDifficulty.Hard => (5, 18),
+            OrderDifficulty.Expert => (6, 22),
+            _ => (4, 15)
         };
 
         TimeRemaining = MaxTime;

@@ -85,213 +85,171 @@
     </Border>
 
     <!-- ================================================================= -->
-    <!-- RESEARCH TREE (3 columns)                                         -->
+    <!-- RESEARCH TREE (vertical list, branch tabs)                        -->
     <!-- ================================================================= -->
-    <ScrollViewer Grid.Row="2" Padding="16,12">
-      <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+    <Grid Grid.Row="2" RowDefinitions="Auto,*">
 
-        <!-- TOOLS BRANCH -->
+      <!-- Branch Tab Selector -->
+      <Border Margin="16,12,16,0"
+              Classes="CardElevated"
+              Padding="4"
+              CornerRadius="12">
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="4">
+          <Button Classes="Primary"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="8,6"
+                  Command="{Binding SelectToolsBranchCommand}"
+                  Opacity="{Binding ToolsTabOpacity}">
+            <TextBlock Text="{Binding ToolsBranchLabel}"
+                       FontSize="12" FontWeight="SemiBold"
+                       TextTrimming="CharacterEllipsis" />
+          </Button>
+          <Button Grid.Column="1"
+                  Classes="Primary"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="8,6"
+                  Command="{Binding SelectManagementBranchCommand}"
+                  Opacity="{Binding ManagementTabOpacity}">
+            <TextBlock Text="{Binding ManagementBranchLabel}"
+                       FontSize="12" FontWeight="SemiBold"
+                       TextTrimming="CharacterEllipsis" />
+          </Button>
+          <Button Grid.Column="2"
+                  Classes="Primary"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="8,6"
+                  Command="{Binding SelectMarketingBranchCommand}"
+                  Opacity="{Binding MarketingTabOpacity}">
+            <TextBlock Text="{Binding MarketingBranchLabel}"
+                       FontSize="12" FontWeight="SemiBold"
+                       TextTrimming="CharacterEllipsis" />
+          </Button>
+        </Grid>
+      </Border>
+
+      <!-- Branch Description -->
+      <ScrollViewer Grid.Row="1" Padding="16,12">
         <StackPanel Spacing="8">
-          <TextBlock Text="{Binding ToolsBranchLabel}"
-                     FontSize="14" FontWeight="Bold"
-                     Foreground="{DynamicResource PrimaryBrush}"
-                     HorizontalAlignment="Center"
+
+          <!-- Branch Description -->
+          <TextBlock Text="{Binding SelectedBranchDescription}"
+                     FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextWrapping="Wrap"
                      Margin="0,0,0,4" />
-          <ItemsControl ItemsSource="{Binding ToolsBranch}">
+
+          <!-- Research Items -->
+          <ItemsControl ItemsSource="{Binding SelectedBranch}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="vm:ResearchDisplayItem">
                 <Border Classes="Card"
-                        Margin="0,0,0,6"
-                        Padding="8"
+                        Margin="0,0,0,8"
+                        Padding="12"
                         Opacity="{Binding DisplayOpacity}">
-                  <StackPanel Spacing="4">
-                    <!-- Name + Status -->
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding Name}"
-                                 FontSize="12" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 TextWrapping="Wrap" />
+                  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                        ColumnDefinitions="Auto,*,Auto"
+                        RowSpacing="6" ColumnSpacing="10">
 
-                      <!-- Checkmark (researched) -->
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="CheckCircle" Width="16" Height="16"
-                                       Foreground="{DynamicResource SuccessBrush}"
-                                       IsVisible="{Binding IsResearched}" />
+                    <!-- Row 0: Level Badge + Name + Status Icon -->
+                    <Border Background="{DynamicResource PrimaryBrush}"
+                            CornerRadius="4"
+                            Padding="6,2"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="{Binding LevelDisplay}"
+                                 FontSize="11" FontWeight="Bold"
+                                 Foreground="White" />
+                    </Border>
 
-                      <!-- Lock (locked) -->
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="Lock" Width="16" Height="16"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       IsVisible="{Binding IsLocked}" />
-                    </Grid>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Name}"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
 
-                    <!-- Cost + Duration -->
-                    <StackPanel Orientation="Horizontal" Spacing="6"
+                    <!-- Status Icon -->
+                    <mi:MaterialIcon Grid.Column="2"
+                                     Kind="CheckCircle" Width="20" Height="20"
+                                     Foreground="{DynamicResource SuccessBrush}"
+                                     IsVisible="{Binding IsResearched}"
+                                     VerticalAlignment="Center" />
+                    <mi:MaterialIcon Grid.Column="2"
+                                     Kind="Lock" Width="20" Height="20"
+                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     IsVisible="{Binding IsLocked}"
+                                     VerticalAlignment="Center" />
+
+                    <!-- Row 1: Description -->
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="3"
+                               Text="{Binding Description}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+
+                    <!-- Row 2: Cost + Duration (only when not researched) -->
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="3"
+                                Orientation="Horizontal" Spacing="16"
                                 IsVisible="{Binding !IsResearched}">
-                      <TextBlock Text="{Binding CostDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{Binding DurationDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="CurrencyEur" Width="14" Height="14"
+                                         Foreground="{DynamicResource WarningBrush}" />
+                        <TextBlock Text="{Binding CostDisplay}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   VerticalAlignment="Center" />
+                      </StackPanel>
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="Clock" Width="14" Height="14"
+                                         Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding DurationDisplay}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                      </StackPanel>
                     </StackPanel>
 
-                    <!-- Active progress -->
-                    <StackPanel IsVisible="{Binding IsActive}" Spacing="2">
+                    <!-- Row 3: Active Progress Bar -->
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="3"
+                                IsVisible="{Binding IsActive}" Spacing="4">
                       <ProgressBar Value="{Binding Progress}"
                                    Maximum="1"
                                    Foreground="{DynamicResource PrimaryBrush}"
-                                   Height="4" />
+                                   Height="6" />
                     </StackPanel>
 
-                    <!-- Start Button -->
-                    <Button Classes="Primary"
+                    <!-- Row 4: Start Button -->
+                    <Button Grid.Row="4" Grid.ColumnSpan="3"
+                            Classes="Primary"
                             HorizontalAlignment="Stretch"
-                            Padding="4,4"
-                            FontSize="11"
-                            MinHeight="28"
+                            HorizontalContentAlignment="Center"
+                            Padding="8,8"
                             IsVisible="{Binding CanStart}"
                             Command="{Binding $parent[ItemsControl].((vm:ResearchViewModel)DataContext).StartResearchCommand}"
                             CommandParameter="{Binding Id}">
-                      <TextBlock Text="{loc:Translate StartResearch}"
-                                 FontSize="11"
-                                 HorizontalAlignment="Center" />
+                      <StackPanel Orientation="Horizontal" Spacing="6"
+                                  HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="FlaskOutline" Width="16" Height="16" />
+                        <TextBlock Text="{loc:Translate StartResearch}"
+                                   FontSize="13" FontWeight="SemiBold" />
+                      </StackPanel>
                     </Button>
-                  </StackPanel>
+
+                  </Grid>
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-        </StackPanel>
 
-        <!-- MANAGEMENT BRANCH -->
-        <StackPanel Grid.Column="1" Spacing="8">
-          <TextBlock Text="{Binding ManagementBranchLabel}"
-                     FontSize="14" FontWeight="Bold"
-                     Foreground="{DynamicResource PrimaryBrush}"
-                     HorizontalAlignment="Center"
-                     Margin="0,0,0,4" />
-          <ItemsControl ItemsSource="{Binding ManagementBranch}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:ResearchDisplayItem">
-                <Border Classes="Card"
-                        Margin="0,0,0,6"
-                        Padding="8"
-                        Opacity="{Binding DisplayOpacity}">
-                  <StackPanel Spacing="4">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding Name}"
-                                 FontSize="12" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 TextWrapping="Wrap" />
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="CheckCircle" Width="16" Height="16"
-                                       Foreground="{DynamicResource SuccessBrush}"
-                                       IsVisible="{Binding IsResearched}" />
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="Lock" Width="16" Height="16"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       IsVisible="{Binding IsLocked}" />
-                    </Grid>
-                    <StackPanel Orientation="Horizontal" Spacing="6"
-                                IsVisible="{Binding !IsResearched}">
-                      <TextBlock Text="{Binding CostDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{Binding DurationDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
-                    <StackPanel IsVisible="{Binding IsActive}" Spacing="2">
-                      <ProgressBar Value="{Binding Progress}"
-                                   Maximum="1"
-                                   Foreground="{DynamicResource PrimaryBrush}"
-                                   Height="4" />
-                    </StackPanel>
-                    <Button Classes="Primary"
-                            HorizontalAlignment="Stretch"
-                            Padding="4,4"
-                            FontSize="11"
-                            MinHeight="28"
-                            IsVisible="{Binding CanStart}"
-                            Command="{Binding $parent[ItemsControl].((vm:ResearchViewModel)DataContext).StartResearchCommand}"
-                            CommandParameter="{Binding Id}">
-                      <TextBlock Text="{loc:Translate StartResearch}"
-                                 FontSize="11"
-                                 HorizontalAlignment="Center" />
-                    </Button>
-                  </StackPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
+          <!-- Bottom Spacer -->
+          <Border Height="20" />
 
-        <!-- MARKETING BRANCH -->
-        <StackPanel Grid.Column="2" Spacing="8">
-          <TextBlock Text="{Binding MarketingBranchLabel}"
-                     FontSize="14" FontWeight="Bold"
-                     Foreground="{DynamicResource PrimaryBrush}"
-                     HorizontalAlignment="Center"
-                     Margin="0,0,0,4" />
-          <ItemsControl ItemsSource="{Binding MarketingBranch}">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:ResearchDisplayItem">
-                <Border Classes="Card"
-                        Margin="0,0,0,6"
-                        Padding="8"
-                        Opacity="{Binding DisplayOpacity}">
-                  <StackPanel Spacing="4">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="{Binding Name}"
-                                 FontSize="12" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 TextWrapping="Wrap" />
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="CheckCircle" Width="16" Height="16"
-                                       Foreground="{DynamicResource SuccessBrush}"
-                                       IsVisible="{Binding IsResearched}" />
-                      <mi:MaterialIcon Grid.Column="1"
-                                       Kind="Lock" Width="16" Height="16"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       IsVisible="{Binding IsLocked}" />
-                    </Grid>
-                    <StackPanel Orientation="Horizontal" Spacing="6"
-                                IsVisible="{Binding !IsResearched}">
-                      <TextBlock Text="{Binding CostDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{Binding DurationDisplay}"
-                                 FontSize="10"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
-                    <StackPanel IsVisible="{Binding IsActive}" Spacing="2">
-                      <ProgressBar Value="{Binding Progress}"
-                                   Maximum="1"
-                                   Foreground="{DynamicResource PrimaryBrush}"
-                                   Height="4" />
-                    </StackPanel>
-                    <Button Classes="Primary"
-                            HorizontalAlignment="Stretch"
-                            Padding="4,4"
-                            FontSize="11"
-                            MinHeight="28"
-                            IsVisible="{Binding CanStart}"
-                            Command="{Binding $parent[ItemsControl].((vm:ResearchViewModel)DataContext).StartResearchCommand}"
-                            CommandParameter="{Binding Id}">
-                      <TextBlock Text="{loc:Translate StartResearch}"
-                                 FontSize="11"
-                                 HorizontalAlignment="Center" />
-                    </Button>
-                  </StackPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
         </StackPanel>
+      </ScrollViewer>
 
-      </Grid>
-    </ScrollViewer>
+    </Grid>
 
   </Grid>
 

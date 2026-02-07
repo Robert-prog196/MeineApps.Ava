@@ -667,5 +667,189 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string Input => ResourceManager.GetString("Input", resourceCulture) ?? "";
 
         public static string Output => ResourceManager.GetString("Output", resourceCulture) ?? "";
+
+        public static string StartResearch => ResourceManager.GetString("StartResearch", resourceCulture) ?? "";
+
+        public static string CurrentResearch => ResourceManager.GetString("CurrentResearch", resourceCulture) ?? "";
+
+        public static string ResearchBetterSaws => ResourceManager.GetString("ResearchBetterSaws", resourceCulture) ?? "";
+
+        public static string ResearchPrecisionTools => ResourceManager.GetString("ResearchPrecisionTools", resourceCulture) ?? "";
+
+        public static string ResearchPowerTools => ResourceManager.GetString("ResearchPowerTools", resourceCulture) ?? "";
+
+        public static string ResearchAutoMaterial => ResourceManager.GetString("ResearchAutoMaterial", resourceCulture) ?? "";
+
+        public static string ResearchAdvancedMachinery => ResourceManager.GetString("ResearchAdvancedMachinery", resourceCulture) ?? "";
+
+        public static string ResearchQualityControl => ResourceManager.GetString("ResearchQualityControl", resourceCulture) ?? "";
+
+        public static string ResearchCncMachines => ResourceManager.GetString("ResearchCncMachines", resourceCulture) ?? "";
+
+        public static string ResearchLaserCutting => ResourceManager.GetString("ResearchLaserCutting", resourceCulture) ?? "";
+
+        public static string ResearchRobotics => ResourceManager.GetString("ResearchRobotics", resourceCulture) ?? "";
+
+        public static string Research3dPrinting => ResourceManager.GetString("Research3dPrinting", resourceCulture) ?? "";
+
+        public static string ResearchSmartFactory => ResourceManager.GetString("ResearchSmartFactory", resourceCulture) ?? "";
+
+        public static string ResearchNanotech => ResourceManager.GetString("ResearchNanotech", resourceCulture) ?? "";
+
+        public static string ResearchQuantumMeasure => ResourceManager.GetString("ResearchQuantumMeasure", resourceCulture) ?? "";
+
+        public static string ResearchAiAssisted => ResourceManager.GetString("ResearchAiAssisted", resourceCulture) ?? "";
+
+        public static string ResearchMasterCraftsman => ResourceManager.GetString("ResearchMasterCraftsman", resourceCulture) ?? "";
+
+        public static string ResearchBetterSawsDesc => ResourceManager.GetString("ResearchBetterSawsDesc", resourceCulture) ?? "";
+
+        public static string ResearchPrecisionToolsDesc => ResourceManager.GetString("ResearchPrecisionToolsDesc", resourceCulture) ?? "";
+
+        public static string ResearchPowerToolsDesc => ResourceManager.GetString("ResearchPowerToolsDesc", resourceCulture) ?? "";
+
+        public static string ResearchAutoMaterialDesc => ResourceManager.GetString("ResearchAutoMaterialDesc", resourceCulture) ?? "";
+
+        public static string ResearchAdvancedMachineryDesc => ResourceManager.GetString("ResearchAdvancedMachineryDesc", resourceCulture) ?? "";
+
+        public static string ResearchQualityControlDesc => ResourceManager.GetString("ResearchQualityControlDesc", resourceCulture) ?? "";
+
+        public static string ResearchCncMachinesDesc => ResourceManager.GetString("ResearchCncMachinesDesc", resourceCulture) ?? "";
+
+        public static string ResearchLaserCuttingDesc => ResourceManager.GetString("ResearchLaserCuttingDesc", resourceCulture) ?? "";
+
+        public static string ResearchRoboticsDesc => ResourceManager.GetString("ResearchRoboticsDesc", resourceCulture) ?? "";
+
+        public static string Research3dPrintingDesc => ResourceManager.GetString("Research3dPrintingDesc", resourceCulture) ?? "";
+
+        public static string ResearchSmartFactoryDesc => ResourceManager.GetString("ResearchSmartFactoryDesc", resourceCulture) ?? "";
+
+        public static string ResearchNanotechDesc => ResourceManager.GetString("ResearchNanotechDesc", resourceCulture) ?? "";
+
+        public static string ResearchQuantumMeasureDesc => ResourceManager.GetString("ResearchQuantumMeasureDesc", resourceCulture) ?? "";
+
+        public static string ResearchAiAssistedDesc => ResourceManager.GetString("ResearchAiAssistedDesc", resourceCulture) ?? "";
+
+        public static string ResearchMasterCraftsmanDesc => ResourceManager.GetString("ResearchMasterCraftsmanDesc", resourceCulture) ?? "";
+
+        public static string ResearchHrBasics => ResourceManager.GetString("ResearchHrBasics", resourceCulture) ?? "";
+
+        public static string ResearchTeamBuilding => ResourceManager.GetString("ResearchTeamBuilding", resourceCulture) ?? "";
+
+        public static string ResearchMotivation => ResourceManager.GetString("ResearchMotivation", resourceCulture) ?? "";
+
+        public static string ResearchHeadhunter => ResourceManager.GetString("ResearchHeadhunter", resourceCulture) ?? "";
+
+        public static string ResearchTrainingProgram => ResourceManager.GetString("ResearchTrainingProgram", resourceCulture) ?? "";
+
+        public static string ResearchWorkLifeBalance => ResourceManager.GetString("ResearchWorkLifeBalance", resourceCulture) ?? "";
+
+        public static string ResearchAutoAssign => ResourceManager.GetString("ResearchAutoAssign", resourceCulture) ?? "";
+
+        public static string ResearchTalentScout => ResourceManager.GetString("ResearchTalentScout", resourceCulture) ?? "";
+
+        public static string ResearchLeadership => ResourceManager.GetString("ResearchLeadership", resourceCulture) ?? "";
+
+        public static string ResearchEliteRecruitment => ResourceManager.GetString("ResearchEliteRecruitment", resourceCulture) ?? "";
+
+        public static string ResearchMentorship => ResourceManager.GetString("ResearchMentorship", resourceCulture) ?? "";
+
+        public static string ResearchCorporateCulture => ResourceManager.GetString("ResearchCorporateCulture", resourceCulture) ?? "";
+
+        public static string ResearchGlobalTalent => ResourceManager.GetString("ResearchGlobalTalent", resourceCulture) ?? "";
+
+        public static string ResearchAiManagement => ResourceManager.GetString("ResearchAiManagement", resourceCulture) ?? "";
+
+        public static string ResearchMasterManager => ResourceManager.GetString("ResearchMasterManager", resourceCulture) ?? "";
+
+        public static string ResearchHrBasicsDesc => ResourceManager.GetString("ResearchHrBasicsDesc", resourceCulture) ?? "";
+
+        public static string ResearchTeamBuildingDesc => ResourceManager.GetString("ResearchTeamBuildingDesc", resourceCulture) ?? "";
+
+        public static string ResearchMotivationDesc => ResourceManager.GetString("ResearchMotivationDesc", resourceCulture) ?? "";
+
+        public static string ResearchHeadhunterDesc => ResourceManager.GetString("ResearchHeadhunterDesc", resourceCulture) ?? "";
+
+        public static string ResearchTrainingProgramDesc => ResourceManager.GetString("ResearchTrainingProgramDesc", resourceCulture) ?? "";
+
+        public static string ResearchWorkLifeBalanceDesc => ResourceManager.GetString("ResearchWorkLifeBalanceDesc", resourceCulture) ?? "";
+
+        public static string ResearchAutoAssignDesc => ResourceManager.GetString("ResearchAutoAssignDesc", resourceCulture) ?? "";
+
+        public static string ResearchTalentScoutDesc => ResourceManager.GetString("ResearchTalentScoutDesc", resourceCulture) ?? "";
+
+        public static string ResearchLeadershipDesc => ResourceManager.GetString("ResearchLeadershipDesc", resourceCulture) ?? "";
+
+        public static string ResearchEliteRecruitmentDesc => ResourceManager.GetString("ResearchEliteRecruitmentDesc", resourceCulture) ?? "";
+
+        public static string ResearchMentorshipDesc => ResourceManager.GetString("ResearchMentorshipDesc", resourceCulture) ?? "";
+
+        public static string ResearchCorporateCultureDesc => ResourceManager.GetString("ResearchCorporateCultureDesc", resourceCulture) ?? "";
+
+        public static string ResearchGlobalTalentDesc => ResourceManager.GetString("ResearchGlobalTalentDesc", resourceCulture) ?? "";
+
+        public static string ResearchAiManagementDesc => ResourceManager.GetString("ResearchAiManagementDesc", resourceCulture) ?? "";
+
+        public static string ResearchMasterManagerDesc => ResourceManager.GetString("ResearchMasterManagerDesc", resourceCulture) ?? "";
+
+        public static string ResearchLocalAds => ResourceManager.GetString("ResearchLocalAds", resourceCulture) ?? "";
+
+        public static string ResearchOnlinePresence => ResourceManager.GetString("ResearchOnlinePresence", resourceCulture) ?? "";
+
+        public static string ResearchBranding => ResourceManager.GetString("ResearchBranding", resourceCulture) ?? "";
+
+        public static string ResearchReferralProgram => ResourceManager.GetString("ResearchReferralProgram", resourceCulture) ?? "";
+
+        public static string ResearchPremiumBrand => ResourceManager.GetString("ResearchPremiumBrand", resourceCulture) ?? "";
+
+        public static string ResearchSocialMedia => ResourceManager.GetString("ResearchSocialMedia", resourceCulture) ?? "";
+
+        public static string ResearchPublicRelations => ResourceManager.GetString("ResearchPublicRelations", resourceCulture) ?? "";
+
+        public static string ResearchTvCampaign => ResourceManager.GetString("ResearchTvCampaign", resourceCulture) ?? "";
+
+        public static string ResearchInternational => ResourceManager.GetString("ResearchInternational", resourceCulture) ?? "";
+
+        public static string ResearchLuxuryBrand => ResourceManager.GetString("ResearchLuxuryBrand", resourceCulture) ?? "";
+
+        public static string ResearchFranchise => ResourceManager.GetString("ResearchFranchise", resourceCulture) ?? "";
+
+        public static string ResearchGlobalBrand => ResourceManager.GetString("ResearchGlobalBrand", resourceCulture) ?? "";
+
+        public static string ResearchCelebEndorsement => ResourceManager.GetString("ResearchCelebEndorsement", resourceCulture) ?? "";
+
+        public static string ResearchMonopoly => ResourceManager.GetString("ResearchMonopoly", resourceCulture) ?? "";
+
+        public static string ResearchMarketDomination => ResourceManager.GetString("ResearchMarketDomination", resourceCulture) ?? "";
+
+        public static string ResearchLocalAdsDesc => ResourceManager.GetString("ResearchLocalAdsDesc", resourceCulture) ?? "";
+
+        public static string ResearchOnlinePresenceDesc => ResourceManager.GetString("ResearchOnlinePresenceDesc", resourceCulture) ?? "";
+
+        public static string ResearchBrandingDesc => ResourceManager.GetString("ResearchBrandingDesc", resourceCulture) ?? "";
+
+        public static string ResearchReferralProgramDesc => ResourceManager.GetString("ResearchReferralProgramDesc", resourceCulture) ?? "";
+
+        public static string ResearchPremiumBrandDesc => ResourceManager.GetString("ResearchPremiumBrandDesc", resourceCulture) ?? "";
+
+        public static string ResearchSocialMediaDesc => ResourceManager.GetString("ResearchSocialMediaDesc", resourceCulture) ?? "";
+
+        public static string ResearchPublicRelationsDesc => ResourceManager.GetString("ResearchPublicRelationsDesc", resourceCulture) ?? "";
+
+        public static string ResearchTvCampaignDesc => ResourceManager.GetString("ResearchTvCampaignDesc", resourceCulture) ?? "";
+
+        public static string ResearchInternationalDesc => ResourceManager.GetString("ResearchInternationalDesc", resourceCulture) ?? "";
+
+        public static string ResearchLuxuryBrandDesc => ResourceManager.GetString("ResearchLuxuryBrandDesc", resourceCulture) ?? "";
+
+        public static string ResearchFranchiseDesc => ResourceManager.GetString("ResearchFranchiseDesc", resourceCulture) ?? "";
+
+        public static string ResearchGlobalBrandDesc => ResourceManager.GetString("ResearchGlobalBrandDesc", resourceCulture) ?? "";
+
+        public static string ResearchCelebEndorsementDesc => ResourceManager.GetString("ResearchCelebEndorsementDesc", resourceCulture) ?? "";
+
+        public static string ResearchMonopolyDesc => ResourceManager.GetString("ResearchMonopolyDesc", resourceCulture) ?? "";
+
+        public static string ResearchMarketDominationDesc => ResourceManager.GetString("ResearchMarketDominationDesc", resourceCulture) ?? "";
     }
 }

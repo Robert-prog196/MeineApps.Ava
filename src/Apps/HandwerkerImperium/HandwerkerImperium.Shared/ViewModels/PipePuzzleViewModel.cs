@@ -11,6 +11,7 @@ namespace HandwerkerImperium.ViewModels;
 /// <summary>
 /// ViewModel for the Pipe Puzzle mini-game.
 /// Player must rotate pipe segments to connect water from source to drain.
+/// Grid is non-square (cols x rows), start/end positions are randomized and locked.
 /// </summary>
 public partial class PipePuzzleViewModel : ObservableObject, IDisposable
 {
@@ -42,7 +43,10 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     private ObservableCollection<PipeTile> _tiles = [];
 
     [ObservableProperty]
-    private int _gridSize = 4;
+    private int _gridCols = 6;
+
+    [ObservableProperty]
+    private int _gridRows = 5;
 
     [ObservableProperty]
     private int _movesCount;
@@ -87,25 +91,26 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     // COMPUTED PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Gets the difficulty as star display string.
-    /// </summary>
     public string DifficultyStars => Difficulty switch
     {
         OrderDifficulty.Easy => "★☆☆",
         OrderDifficulty.Medium => "★★☆",
         OrderDifficulty.Hard => "★★★",
+        OrderDifficulty.Expert => "★★★★",
         _ => "★☆☆"
     };
 
     /// <summary>
     /// Width of the puzzle grid in pixels for WrapPanel constraint.
-    /// Each tile is 60px + 4px margin = 64px.
+    /// Each tile is 52px + 4px margin = 56px.
     /// </summary>
-    public double PuzzleGridWidth => GridSize * 64;
+    public double PuzzleGridWidth => GridCols * 56;
 
     partial void OnDifficultyChanged(OrderDifficulty value) => OnPropertyChanged(nameof(DifficultyStars));
-    partial void OnGridSizeChanged(int value) => OnPropertyChanged(nameof(PuzzleGridWidth));
+    partial void OnGridColsChanged(int value) => OnPropertyChanged(nameof(PuzzleGridWidth));
+
+    // Source/Drain position tracking
+    private int _sourceRow, _sourceCol, _drainRow, _drainCol;
 
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
@@ -124,12 +129,9 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // INITIALIZATION (replaces IQueryAttributable)
+    // INITIALIZATION
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Initialize the game with an order ID.
-    /// </summary>
     public void SetOrderId(string orderId)
     {
         OrderId = orderId;
@@ -149,13 +151,14 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
 
     private void InitializePuzzle()
     {
-        // Set grid size and time based on difficulty
-        (GridSize, MaxTime) = Difficulty switch
+        // Grid sizes: Cols x Rows (wider than tall)
+        (GridCols, GridRows, MaxTime) = Difficulty switch
         {
-            OrderDifficulty.Easy => (3, 45),
-            OrderDifficulty.Medium => (4, 60),
-            OrderDifficulty.Hard => (5, 90),
-            _ => (4, 60)
+            OrderDifficulty.Easy => (5, 4, 40),
+            OrderDifficulty.Medium => (6, 5, 55),
+            OrderDifficulty.Hard => (7, 6, 75),
+            OrderDifficulty.Expert => (8, 7, 95),
+            _ => (6, 5, 55)
         };
 
         TimeRemaining = MaxTime;
@@ -172,22 +175,38 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         Tiles.Clear();
         var random = new Random();
 
-        // Generate a solvable puzzle
-        // First create the solution path, then add random pipes
+        // Randomize source position on left edge
+        _sourceRow = random.Next(GridRows);
+        _sourceCol = 0;
 
-        // Create a simple path from left to right
-        var path = GeneratePath();
+        // Randomize drain position on right edge (different row preferred)
+        _drainCol = GridCols - 1;
+        // Ensure drain is at least 1 row away from source for interesting paths
+        if (GridRows >= 3)
+        {
+            do
+            {
+                _drainRow = random.Next(GridRows);
+            } while (Math.Abs(_drainRow - _sourceRow) < 1);
+        }
+        else
+        {
+            _drainRow = random.Next(GridRows);
+        }
+
+        // Generate a solvable path from source to drain
+        var path = GeneratePath(random);
 
         // Fill the grid with pipes
-        for (int row = 0; row < GridSize; row++)
+        for (int row = 0; row < GridRows; row++)
         {
-            for (int col = 0; col < GridSize; col++)
+            for (int col = 0; col < GridCols; col++)
             {
                 var tile = new PipeTile
                 {
                     Row = row,
                     Column = col,
-                    Index = row * GridSize + col
+                    Index = row * GridCols + col
                 };
 
                 // Check if this cell is on the path
@@ -196,25 +215,33 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
                 {
                     tile.PipeType = pathCell.Type;
                     tile.IsPartOfSolution = true;
-                    // Randomize initial rotation (player needs to fix it)
-                    tile.Rotation = random.Next(4) * 90;
+                    tile.SolvedRotation = pathCell.SolvedRotation;
                 }
                 else
                 {
-                    // Add random pipe that's not on the critical path
                     tile.PipeType = GetRandomPipeType(random);
-                    tile.Rotation = random.Next(4) * 90;
-                    tile.IsPartOfSolution = false;
+                    tile.SolvedRotation = -1;
                 }
 
-                // Mark source and drain
-                if (col == 0 && row == GridSize / 2)
+                // Mark source and drain (NOT rotatable)
+                if (col == _sourceCol && row == _sourceRow)
                 {
                     tile.IsSource = true;
+                    tile.IsLocked = true;
+                    // Source tile should connect from left (external) to path
+                    tile.Rotation = tile.SolvedRotation >= 0 ? tile.SolvedRotation : 0;
                 }
-                else if (col == GridSize - 1 && row == GridSize / 2)
+                else if (col == _drainCol && row == _drainRow)
                 {
                     tile.IsDrain = true;
+                    tile.IsLocked = true;
+                    // Drain tile stays at solved rotation
+                    tile.Rotation = tile.SolvedRotation >= 0 ? tile.SolvedRotation : 0;
+                }
+                else
+                {
+                    // Randomize initial rotation (player needs to fix it)
+                    tile.Rotation = random.Next(4) * 90;
                 }
 
                 Tiles.Add(tile);
@@ -222,75 +249,165 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         }
     }
 
-    private List<PathCell> GeneratePath()
+    private List<PathCell> GeneratePath(Random random)
     {
         var path = new List<PathCell>();
-        var random = new Random();
-        int currentRow = GridSize / 2;
-        int currentCol = 0;
+        var visited = new HashSet<(int row, int col)>();
 
-        // Start with source connector (horizontal going right)
-        path.Add(new PathCell(currentRow, currentCol, PipeType.Straight, Direction.Right));
-        currentCol++;
-
-        // Generate path to the right side
-        while (currentCol < GridSize - 1)
+        // Use BFS/DFS to find a path from source to drain with interesting turns
+        var result = new List<(int row, int col)>();
+        if (FindPath(_sourceRow, _sourceCol, _drainRow, _drainCol, visited, result, random))
         {
-            var directions = new List<Direction> { Direction.Right };
-
-            // Allow going up/down occasionally
-            if (currentRow > 0 && random.Next(3) == 0)
-                directions.Add(Direction.Up);
-            if (currentRow < GridSize - 1 && random.Next(3) == 0)
-                directions.Add(Direction.Down);
-
-            var dir = directions[random.Next(directions.Count)];
-
-            if (dir == Direction.Right)
+            // Convert coordinate path to pipe types with correct rotations
+            for (int i = 0; i < result.Count; i++)
             {
-                // Determine pipe type based on previous direction
-                var prevCell = path.Last();
-                PipeType type;
+                var (row, col) = result[i];
 
-                if (prevCell.ExitDirection == Direction.Up || prevCell.ExitDirection == Direction.Down)
+                // Determine entry and exit directions
+                Direction? entryDir = null;
+                Direction? exitDir = null;
+
+                if (i == 0)
                 {
-                    type = PipeType.Corner;
+                    // Source tile: entry from Left (external)
+                    entryDir = Direction.Left;
                 }
                 else
                 {
-                    type = PipeType.Straight;
+                    var (prevRow, prevCol) = result[i - 1];
+                    entryDir = GetDirectionFrom(prevRow, prevCol, row, col);
                 }
 
-                path.Add(new PathCell(currentRow, currentCol, type, Direction.Right));
-                currentCol++;
-            }
-            else if (dir == Direction.Up && currentRow > 0)
-            {
-                path.Add(new PathCell(currentRow, currentCol, PipeType.Corner, Direction.Up));
-                currentRow--;
-                // Add vertical piece
-                if (currentCol < GridSize - 1)
+                if (i == result.Count - 1)
                 {
-                    path.Add(new PathCell(currentRow, currentCol, PipeType.Corner, Direction.Right));
-                    currentCol++;
+                    // Drain tile: exit to Right (external)
+                    exitDir = Direction.Right;
                 }
-            }
-            else if (dir == Direction.Down && currentRow < GridSize - 1)
-            {
-                path.Add(new PathCell(currentRow, currentCol, PipeType.Corner, Direction.Down));
-                currentRow++;
-                if (currentCol < GridSize - 1)
+                else
                 {
-                    path.Add(new PathCell(currentRow, currentCol, PipeType.Corner, Direction.Right));
-                    currentCol++;
+                    var (nextRow, nextCol) = result[i + 1];
+                    exitDir = GetDirectionTo(row, col, nextRow, nextCol);
+                }
+
+                if (entryDir.HasValue && exitDir.HasValue)
+                {
+                    var (pipeType, rotation) = GetPipeTypeAndRotation(entryDir.Value, exitDir.Value);
+                    path.Add(new PathCell(row, col, pipeType, exitDir.Value, rotation));
                 }
             }
         }
 
-        // End with drain connector
-        path.Add(new PathCell(currentRow, currentCol, PipeType.Straight, Direction.Right));
-
         return path;
+    }
+
+    private bool FindPath(int row, int col, int targetRow, int targetCol,
+        HashSet<(int, int)> visited, List<(int, int)> result, Random random)
+    {
+        if (row < 0 || row >= GridRows || col < 0 || col >= GridCols)
+            return false;
+        if (visited.Contains((row, col)))
+            return false;
+
+        visited.Add((row, col));
+        result.Add((row, col));
+
+        if (row == targetRow && col == targetCol)
+            return true;
+
+        // Prioritize going Right, but add randomness for Up/Down
+        var neighbors = new List<(int r, int c)>
+        {
+            (row, col + 1),     // Right (primary direction)
+            (row - 1, col),     // Up
+            (row + 1, col),     // Down
+        };
+
+        // Shuffle neighbors with bias towards right
+        // Right stays at front with high probability
+        if (random.Next(3) > 0)
+        {
+            // Keep right first but shuffle up/down
+            if (random.Next(2) == 0)
+                (neighbors[1], neighbors[2]) = (neighbors[2], neighbors[1]);
+        }
+        else
+        {
+            // Occasionally try vertical first for more interesting paths
+            var verticalFirst = random.Next(2) == 0 ? 1 : 2;
+            (neighbors[0], neighbors[verticalFirst]) = (neighbors[verticalFirst], neighbors[0]);
+        }
+
+        // Add going left as rare option for really winding paths (medium+ only)
+        if (GridCols >= 6 && random.Next(8) == 0 && col > 1)
+        {
+            neighbors.Add((row, col - 1));
+        }
+
+        foreach (var (nr, nc) in neighbors)
+        {
+            if (FindPath(nr, nc, targetRow, targetCol, visited, result, random))
+                return true;
+        }
+
+        // Backtrack
+        result.RemoveAt(result.Count - 1);
+        visited.Remove((row, col));
+        return false;
+    }
+
+    private static Direction GetDirectionFrom(int fromRow, int fromCol, int toRow, int toCol)
+    {
+        // Direction water comes FROM when entering toRow/toCol from fromRow/fromCol
+        if (fromRow < toRow) return Direction.Up;
+        if (fromRow > toRow) return Direction.Down;
+        if (fromCol < toCol) return Direction.Left;
+        return Direction.Right;
+    }
+
+    private static Direction GetDirectionTo(int fromRow, int fromCol, int toRow, int toCol)
+    {
+        // Direction water goes TO from fromRow/fromCol to toRow/toCol
+        if (toRow < fromRow) return Direction.Up;
+        if (toRow > fromRow) return Direction.Down;
+        if (toCol < fromCol) return Direction.Left;
+        return Direction.Right;
+    }
+
+    /// <summary>
+    /// Determines the pipe type and rotation needed to connect entry→exit.
+    /// </summary>
+    private static (PipeType type, int rotation) GetPipeTypeAndRotation(Direction entry, Direction exit)
+    {
+        // Straight pipe: connects opposite sides
+        if (AreOpposite(entry, exit))
+        {
+            return (entry == Direction.Left || entry == Direction.Right)
+                ? (PipeType.Straight, 0)    // Horizontal
+                : (PipeType.Straight, 90);  // Vertical
+        }
+
+        // Corner pipe: connects two adjacent sides (L-shape)
+        // Base corner at rotation 0: opens Right + Down
+        // Rotation  90: opens Down + Left
+        // Rotation 180: opens Left + Up
+        // Rotation 270: opens Up + Right
+        var pair = (entry, exit);
+        return pair switch
+        {
+            (Direction.Right, Direction.Down) or (Direction.Down, Direction.Right) => (PipeType.Corner, 0),
+            (Direction.Down, Direction.Left) or (Direction.Left, Direction.Down) => (PipeType.Corner, 90),
+            (Direction.Left, Direction.Up) or (Direction.Up, Direction.Left) => (PipeType.Corner, 180),
+            (Direction.Up, Direction.Right) or (Direction.Right, Direction.Up) => (PipeType.Corner, 270),
+            _ => (PipeType.Corner, 0)
+        };
+    }
+
+    private static bool AreOpposite(Direction a, Direction b)
+    {
+        return (a == Direction.Left && b == Direction.Right) ||
+               (a == Direction.Right && b == Direction.Left) ||
+               (a == Direction.Up && b == Direction.Down) ||
+               (a == Direction.Down && b == Direction.Up);
     }
 
     private static PipeType GetRandomPipeType(Random random)
@@ -314,7 +431,6 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         _isEnding = false;
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
-        // Start countdown timer using Avalonia DispatcherTimer
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -340,13 +456,14 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     {
         if (tile == null || !IsPlaying || IsResultShown) return;
 
-        // Rotate by 90 degrees
+        // Source and Drain tiles cannot be rotated
+        if (tile.IsLocked) return;
+
         tile.Rotation = (tile.Rotation + 90) % 360;
         MovesCount++;
 
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
-        // Check if puzzle is solved
         if (CheckIfSolved())
         {
             IsPuzzleSolved = true;
@@ -356,21 +473,17 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
 
     private bool CheckIfSolved()
     {
-        // Check if water can flow from source to drain
-        // Water enters the source tile from the Left side (outside the grid)
         var visited = new HashSet<int>();
-        return TracePath(GridSize / 2, 0, Direction.Left, visited);
+        return TracePath(_sourceRow, _sourceCol, Direction.Left, visited);
     }
 
     private bool TracePath(int row, int col, Direction fromDirection, HashSet<int> visited)
     {
-        // Out of bounds
-        if (row < 0 || row >= GridSize || col < 0 || col >= GridSize)
+        if (row < 0 || row >= GridRows || col < 0 || col >= GridCols)
             return false;
 
-        int index = row * GridSize + col;
+        int index = row * GridCols + col;
 
-        // Already visited
         if (visited.Contains(index))
             return false;
 
@@ -378,15 +491,12 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
 
         var tile = Tiles[index];
 
-        // Check if pipe connects from the incoming direction
         if (!tile.ConnectsFrom(fromDirection))
             return false;
 
-        // Reached the drain!
         if (tile.IsDrain)
             return true;
 
-        // Get the exit directions from this pipe
         var exits = tile.GetExitDirections(fromDirection);
 
         foreach (var exit in exits)
@@ -432,15 +542,15 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         IsPlaying = false;
         _timer?.Stop();
 
-        // Calculate rating based on performance
         if (solved)
         {
             double timeRatio = (double)TimeRemaining / MaxTime;
-            double moveEfficiency = GridSize * GridSize / (double)Math.Max(MovesCount, 1);
+            int optimalMoves = GridCols * GridRows;
+            double moveEfficiency = optimalMoves / (double)Math.Max(MovesCount, 1);
 
-            if (timeRatio > 0.6 && moveEfficiency > 0.5)
+            if (timeRatio > 0.5 && moveEfficiency > 0.4)
                 Result = MiniGameRating.Perfect;
-            else if (timeRatio > 0.3 && moveEfficiency > 0.3)
+            else if (timeRatio > 0.25 && moveEfficiency > 0.25)
                 Result = MiniGameRating.Good;
             else
                 Result = MiniGameRating.Ok;
@@ -450,10 +560,8 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
             Result = MiniGameRating.Miss;
         }
 
-        // Record result
         _gameStateService.RecordMiniGameResult(Result);
 
-        // Play sound
         var sound = Result switch
         {
             MiniGameRating.Perfect => GameSound.Perfect,
@@ -463,7 +571,6 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         };
         await _audioService.PlaySoundAsync(sound);
 
-        // Calculate rewards
         var order = _gameStateService.GetActiveOrder();
         if (order != null)
         {
@@ -474,14 +581,13 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
             XpAmount = (int)(baseXp * Result.GetXpPercentage());
         }
 
-        // Set result display
         ResultText = _localizationService.GetString(Result.GetLocalizationKey());
         ResultEmoji = Result switch
         {
-            MiniGameRating.Perfect => "⭐⭐⭐",
-            MiniGameRating.Good => "⭐⭐",
-            MiniGameRating.Ok => "⭐",
-            _ => "💨"
+            MiniGameRating.Perfect => "\u2b50\u2b50\u2b50",
+            MiniGameRating.Good => "\u2b50\u2b50",
+            MiniGameRating.Ok => "\u2b50",
+            _ => "\ud83d\udca8"
         };
 
         IsResultShown = true;
@@ -568,9 +674,6 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
 // SUPPORTING TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/// <summary>
-/// Types of pipe segments.
-/// </summary>
 public enum PipeType
 {
     Straight,   // Connects two opposite sides
@@ -579,9 +682,6 @@ public enum PipeType
     Cross       // Connects all four sides
 }
 
-/// <summary>
-/// Direction for pipe connections.
-/// </summary>
 public enum Direction
 {
     Up,
@@ -590,9 +690,6 @@ public enum Direction
     Right
 }
 
-/// <summary>
-/// Represents a single tile in the pipe puzzle.
-/// </summary>
 public partial class PipeTile : ObservableObject
 {
     public int Row { get; set; }
@@ -603,13 +700,18 @@ public partial class PipeTile : ObservableObject
     public bool IsDrain { get; set; }
     public bool IsPartOfSolution { get; set; }
 
-    [ObservableProperty]
-    private int _rotation; // 0, 90, 180, 270
+    /// <summary>Whether this tile is locked (cannot be rotated). Source/Drain are locked.</summary>
+    public bool IsLocked { get; set; }
+
+    /// <summary>The rotation at which this tile is part of the solution (-1 if not on path).</summary>
+    public int SolvedRotation { get; set; } = -1;
 
     [ObservableProperty]
-    private bool _isConnected; // For visual feedback when water flows through
+    private int _rotation;
 
-    // Notify pipe opening properties when rotation changes
+    [ObservableProperty]
+    private bool _isConnected;
+
     partial void OnRotationChanged(int value)
     {
         OnPropertyChanged(nameof(HasTopOpening));
@@ -618,42 +720,25 @@ public partial class PipeTile : ObservableObject
         OnPropertyChanged(nameof(HasRightOpening));
     }
 
-    /// <summary>Whether the pipe has an opening on the top side at current rotation.</summary>
     public bool HasTopOpening => GetOpenings().Contains(Direction.Up);
-
-    /// <summary>Whether the pipe has an opening on the bottom side at current rotation.</summary>
     public bool HasBottomOpening => GetOpenings().Contains(Direction.Down);
-
-    /// <summary>Whether the pipe has an opening on the left side at current rotation.</summary>
     public bool HasLeftOpening => GetOpenings().Contains(Direction.Left);
-
-    /// <summary>Whether the pipe has an opening on the right side at current rotation.</summary>
     public bool HasRightOpening => GetOpenings().Contains(Direction.Right);
 
-    /// <summary>
-    /// Checks if this pipe connects from the given direction.
-    /// </summary>
     public bool ConnectsFrom(Direction fromDirection)
     {
         var openings = GetOpenings();
         return openings.Contains(fromDirection);
     }
 
-    /// <summary>
-    /// Gets all exit directions from this pipe when entering from the given direction.
-    /// </summary>
     public List<Direction> GetExitDirections(Direction fromDirection)
     {
         var openings = GetOpenings();
         return openings.Where(d => d != fromDirection).ToList();
     }
 
-    /// <summary>
-    /// Gets the openings of this pipe based on type and rotation.
-    /// </summary>
     private List<Direction> GetOpenings()
     {
-        // Base openings for each pipe type (at 0 rotation)
         var baseOpenings = PipeType switch
         {
             PipeType.Straight => new[] { Direction.Left, Direction.Right },
@@ -663,7 +748,6 @@ public partial class PipeTile : ObservableObject
             _ => Array.Empty<Direction>()
         };
 
-        // Rotate based on current rotation
         return baseOpenings.Select(d => RotateDirection(d, Rotation)).ToList();
     }
 
@@ -688,4 +772,4 @@ public partial class PipeTile : ObservableObject
 /// <summary>
 /// Helper class for path generation.
 /// </summary>
-internal record PathCell(int Row, int Col, PipeType Type, Direction ExitDirection);
+internal record PathCell(int Row, int Col, PipeType Type, Direction ExitDirection, int SolvedRotation);

@@ -1538,5 +1538,288 @@
   <data name="AchEventsSurvived10Desc" xml:space="preserve">
     <value>Survivez &#224; 10 &#233;v&#233;nements al&#233;atoires</value>
   </data>
+  <!-- Research UI Keys -->
+  <data name="StartResearch" xml:space="preserve">
+    <value>Lancer</value>
+  </data>
+  <data name="CurrentResearch" xml:space="preserve">
+    <value>Recherche en cours</value>
+  </data>
+  <!-- Research: Tools Branch (Names) -->
+  <data name="ResearchBetterSaws" xml:space="preserve">
+    <value>Meilleures scies</value>
+  </data>
+  <data name="ResearchPrecisionTools" xml:space="preserve">
+    <value>Outils de pr&#233;cision</value>
+  </data>
+  <data name="ResearchPowerTools" xml:space="preserve">
+    <value>Outils &#233;lectriques</value>
+  </data>
+  <data name="ResearchAutoMaterial" xml:space="preserve">
+    <value>Auto-Mat&#233;riau</value>
+  </data>
+  <data name="ResearchAdvancedMachinery" xml:space="preserve">
+    <value>Machines avanc&#233;es</value>
+  </data>
+  <data name="ResearchQualityControl" xml:space="preserve">
+    <value>Contr&#244;le qualit&#233;</value>
+  </data>
+  <data name="ResearchCncMachines" xml:space="preserve">
+    <value>Machines CNC</value>
+  </data>
+  <data name="ResearchLaserCutting" xml:space="preserve">
+    <value>D&#233;coupe laser</value>
+  </data>
+  <data name="ResearchRobotics" xml:space="preserve">
+    <value>Robotique</value>
+  </data>
+  <data name="Research3dPrinting" xml:space="preserve">
+    <value>Impression 3D</value>
+  </data>
+  <data name="ResearchSmartFactory" xml:space="preserve">
+    <value>Usine intelligente</value>
+  </data>
+  <data name="ResearchNanotech" xml:space="preserve">
+    <value>Nanotechnologie</value>
+  </data>
+  <data name="ResearchQuantumMeasure" xml:space="preserve">
+    <value>Mesure quantique</value>
+  </data>
+  <data name="ResearchAiAssisted" xml:space="preserve">
+    <value>Assist&#233; par IA</value>
+  </data>
+  <data name="ResearchMasterCraftsman" xml:space="preserve">
+    <value>Ma&#238;tre artisan</value>
+  </data>
+  <!-- Research: Tools Branch (Descriptions) -->
+  <data name="ResearchBetterSawsDesc" xml:space="preserve">
+    <value>+5% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchPrecisionToolsDesc" xml:space="preserve">
+    <value>+2% Zone de mini-jeu</value>
+  </data>
+  <data name="ResearchPowerToolsDesc" xml:space="preserve">
+    <value>+5% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchAutoMaterialDesc" xml:space="preserve">
+    <value>D&#233;bloque Auto-Mat&#233;riau</value>
+  </data>
+  <data name="ResearchAdvancedMachineryDesc" xml:space="preserve">
+    <value>+8% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchQualityControlDesc" xml:space="preserve">
+    <value>+3% Zone de mini-jeu</value>
+  </data>
+  <data name="ResearchCncMachinesDesc" xml:space="preserve">
+    <value>+10% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchLaserCuttingDesc" xml:space="preserve">
+    <value>+3% Zone de mini-jeu</value>
+  </data>
+  <data name="ResearchRoboticsDesc" xml:space="preserve">
+    <value>+10% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="Research3dPrintingDesc" xml:space="preserve">
+    <value>-10% Co&#251;ts</value>
+  </data>
+  <data name="ResearchSmartFactoryDesc" xml:space="preserve">
+    <value>+12% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchNanotechDesc" xml:space="preserve">
+    <value>+4% Zone de mini-jeu</value>
+  </data>
+  <data name="ResearchQuantumMeasureDesc" xml:space="preserve">
+    <value>+15% Efficacit&#233; des ouvriers</value>
+  </data>
+  <data name="ResearchAiAssistedDesc" xml:space="preserve">
+    <value>-15% Co&#251;ts</value>
+  </data>
+  <data name="ResearchMasterCraftsmanDesc" xml:space="preserve">
+    <value>+20% Efficacit&#233; des ouvriers, +5% Zone de mini-jeu</value>
+  </data>
+  <!-- Research: Management Branch (Names) -->
+  <data name="ResearchHrBasics" xml:space="preserve">
+    <value>Bases RH</value>
+  </data>
+  <data name="ResearchTeamBuilding" xml:space="preserve">
+    <value>Esprit d'&#233;quipe</value>
+  </data>
+  <data name="ResearchMotivation" xml:space="preserve">
+    <value>Motivation</value>
+  </data>
+  <data name="ResearchHeadhunter" xml:space="preserve">
+    <value>Chasseur de t&#234;tes</value>
+  </data>
+  <data name="ResearchTrainingProgram" xml:space="preserve">
+    <value>Programme de formation</value>
+  </data>
+  <data name="ResearchWorkLifeBalance" xml:space="preserve">
+    <value>&#201;quilibre travail-vie</value>
+  </data>
+  <data name="ResearchAutoAssign" xml:space="preserve">
+    <value>Auto-affectation</value>
+  </data>
+  <data name="ResearchTalentScout" xml:space="preserve">
+    <value>Recherche de talents</value>
+  </data>
+  <data name="ResearchLeadership" xml:space="preserve">
+    <value>Leadership</value>
+  </data>
+  <data name="ResearchEliteRecruitment" xml:space="preserve">
+    <value>Recrutement d'&#233;lite</value>
+  </data>
+  <data name="ResearchMentorship" xml:space="preserve">
+    <value>Mentorat</value>
+  </data>
+  <data name="ResearchCorporateCulture" xml:space="preserve">
+    <value>Culture d'entreprise</value>
+  </data>
+  <data name="ResearchGlobalTalent" xml:space="preserve">
+    <value>Talent mondial</value>
+  </data>
+  <data name="ResearchAiManagement" xml:space="preserve">
+    <value>Gestion par IA</value>
+  </data>
+  <data name="ResearchMasterManager" xml:space="preserve">
+    <value>Ma&#238;tre gestionnaire</value>
+  </data>
+  <!-- Research: Management Branch (Descriptions) -->
+  <data name="ResearchHrBasicsDesc" xml:space="preserve">
+    <value>-5% Salaires</value>
+  </data>
+  <data name="ResearchTeamBuildingDesc" xml:space="preserve">
+    <value>+1 Place d'ouvrier</value>
+  </data>
+  <data name="ResearchMotivationDesc" xml:space="preserve">
+    <value>-5% Salaires</value>
+  </data>
+  <data name="ResearchHeadhunterDesc" xml:space="preserve">
+    <value>D&#233;bloque Chasseur de t&#234;tes</value>
+  </data>
+  <data name="ResearchTrainingProgramDesc" xml:space="preserve">
+    <value>+50% Vitesse de formation</value>
+  </data>
+  <data name="ResearchWorkLifeBalanceDesc" xml:space="preserve">
+    <value>-8% Salaires</value>
+  </data>
+  <data name="ResearchAutoAssignDesc" xml:space="preserve">
+    <value>D&#233;bloque Auto-affectation</value>
+  </data>
+  <data name="ResearchTalentScoutDesc" xml:space="preserve">
+    <value>+1 Place d'ouvrier</value>
+  </data>
+  <data name="ResearchLeadershipDesc" xml:space="preserve">
+    <value>-10% Salaires</value>
+  </data>
+  <data name="ResearchEliteRecruitmentDesc" xml:space="preserve">
+    <value>D&#233;bloque ouvriers rang S</value>
+  </data>
+  <data name="ResearchMentorshipDesc" xml:space="preserve">
+    <value>+50% Vitesse de formation</value>
+  </data>
+  <data name="ResearchCorporateCultureDesc" xml:space="preserve">
+    <value>-10% Salaires</value>
+  </data>
+  <data name="ResearchGlobalTalentDesc" xml:space="preserve">
+    <value>+2 Places d'ouvrier</value>
+  </data>
+  <data name="ResearchAiManagementDesc" xml:space="preserve">
+    <value>-12% Salaires</value>
+  </data>
+  <data name="ResearchMasterManagerDesc" xml:space="preserve">
+    <value>+2 Places d'ouvrier, -15% Salaires</value>
+  </data>
+  <!-- Research: Marketing Branch (Names) -->
+  <data name="ResearchLocalAds" xml:space="preserve">
+    <value>Publicit&#233; locale</value>
+  </data>
+  <data name="ResearchOnlinePresence" xml:space="preserve">
+    <value>Pr&#233;sence en ligne</value>
+  </data>
+  <data name="ResearchBranding" xml:space="preserve">
+    <value>Image de marque</value>
+  </data>
+  <data name="ResearchReferralProgram" xml:space="preserve">
+    <value>Programme de parrainage</value>
+  </data>
+  <data name="ResearchPremiumBrand" xml:space="preserve">
+    <value>Marque premium</value>
+  </data>
+  <data name="ResearchSocialMedia" xml:space="preserve">
+    <value>R&#233;seaux sociaux</value>
+  </data>
+  <data name="ResearchPublicRelations" xml:space="preserve">
+    <value>Relations publiques</value>
+  </data>
+  <data name="ResearchTvCampaign" xml:space="preserve">
+    <value>Campagne TV</value>
+  </data>
+  <data name="ResearchInternational" xml:space="preserve">
+    <value>International</value>
+  </data>
+  <data name="ResearchLuxuryBrand" xml:space="preserve">
+    <value>Marque de luxe</value>
+  </data>
+  <data name="ResearchFranchise" xml:space="preserve">
+    <value>Franchise</value>
+  </data>
+  <data name="ResearchGlobalBrand" xml:space="preserve">
+    <value>Marque mondiale</value>
+  </data>
+  <data name="ResearchCelebEndorsement" xml:space="preserve">
+    <value>Publicit&#233; c&#233;l&#233;brit&#233;</value>
+  </data>
+  <data name="ResearchMonopoly" xml:space="preserve">
+    <value>Monopole</value>
+  </data>
+  <data name="ResearchMarketDomination" xml:space="preserve">
+    <value>Domination du march&#233;</value>
+  </data>
+  <!-- Research: Marketing Branch (Descriptions) -->
+  <data name="ResearchLocalAdsDesc" xml:space="preserve">
+    <value>+5% R&#233;compenses</value>
+  </data>
+  <data name="ResearchOnlinePresenceDesc" xml:space="preserve">
+    <value>+1 Place de commande</value>
+  </data>
+  <data name="ResearchBrandingDesc" xml:space="preserve">
+    <value>+5% R&#233;compenses</value>
+  </data>
+  <data name="ResearchReferralProgramDesc" xml:space="preserve">
+    <value>+8% R&#233;compenses</value>
+  </data>
+  <data name="ResearchPremiumBrandDesc" xml:space="preserve">
+    <value>+1 Place de commande</value>
+  </data>
+  <data name="ResearchSocialMediaDesc" xml:space="preserve">
+    <value>+8% R&#233;compenses</value>
+  </data>
+  <data name="ResearchPublicRelationsDesc" xml:space="preserve">
+    <value>+10% R&#233;compenses</value>
+  </data>
+  <data name="ResearchTvCampaignDesc" xml:space="preserve">
+    <value>+1 Place de commande</value>
+  </data>
+  <data name="ResearchInternationalDesc" xml:space="preserve">
+    <value>+10% R&#233;compenses</value>
+  </data>
+  <data name="ResearchLuxuryBrandDesc" xml:space="preserve">
+    <value>+12% R&#233;compenses</value>
+  </data>
+  <data name="ResearchFranchiseDesc" xml:space="preserve">
+    <value>+2 Places de commande</value>
+  </data>
+  <data name="ResearchGlobalBrandDesc" xml:space="preserve">
+    <value>+12% R&#233;compenses</value>
+  </data>
+  <data name="ResearchCelebEndorsementDesc" xml:space="preserve">
+    <value>+15% R&#233;compenses</value>
+  </data>
+  <data name="ResearchMonopolyDesc" xml:space="preserve">
+    <value>+2 Places de commande</value>
+  </data>
+  <data name="ResearchMarketDominationDesc" xml:space="preserve">
+    <value>+20% R&#233;compenses, +2 Places de commande</value>
+  </data>
 
 </root>

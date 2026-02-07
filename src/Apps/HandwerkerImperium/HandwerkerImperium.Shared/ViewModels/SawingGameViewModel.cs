@@ -23,7 +23,7 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
 
     // Game configuration
     private const double TICK_INTERVAL_MS = 16; // ~60 FPS
-    private const double MARKER_SPEED = 0.015;  // Units per tick (0.0 - 1.0 range)
+    private const double MARKER_SPEED = 0.022;  // Units per tick (0.0 - 1.0 range), increased for harder gameplay
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
