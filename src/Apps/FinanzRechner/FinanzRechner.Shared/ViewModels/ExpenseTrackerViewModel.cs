@@ -644,7 +644,7 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
                 SelectedMonth = NewExpenseDate.Month;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var title = _localizationService.GetString("Error") ?? "Error";
             var message = _localizationService.GetString("SaveError") ?? "Failed to save transaction. Please try again.";

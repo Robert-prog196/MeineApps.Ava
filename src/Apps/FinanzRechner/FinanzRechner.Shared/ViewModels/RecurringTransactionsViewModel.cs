@@ -257,7 +257,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
             ResetForm();
             await LoadTransactionsAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var title = _localizationService.GetString("Error") ?? "Error";
             var message = _localizationService.GetString("SaveError") ?? "Failed to save transaction. Please try again.";
@@ -323,7 +323,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         {
             // Undo was triggered - do nothing
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var title = _localizationService.GetString("Error") ?? "Error";
             var message = _localizationService.GetString("DeleteError") ?? "Failed to delete transaction. Please try again.";
@@ -363,7 +363,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
             await _expenseService.UpdateRecurringTransactionAsync(transaction);
             await LoadTransactionsAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Revert on error
             transaction.IsActive = !transaction.IsActive;

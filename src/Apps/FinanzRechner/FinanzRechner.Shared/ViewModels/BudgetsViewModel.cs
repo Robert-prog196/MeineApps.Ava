@@ -226,7 +226,7 @@ public partial class BudgetsViewModel : ObservableObject, IDisposable
             ShowAddBudget = false;
             await LoadBudgetsAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var title = _localizationService.GetString("Error") ?? "Error";
             var message = _localizationService.GetString("SaveError") ?? "Failed to save budget. Please try again.";
@@ -292,7 +292,7 @@ public partial class BudgetsViewModel : ObservableObject, IDisposable
         {
             // Undo was triggered - do nothing
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             var title = _localizationService.GetString("Error") ?? "Error";
             var message = _localizationService.GetString("DeleteError") ?? "Failed to delete budget. Please try again.";

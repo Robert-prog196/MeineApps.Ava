@@ -16,6 +16,7 @@ public class ExpenseService : IExpenseService, IDisposable
     private const double MaxAmount = 999_999_999.99;
     private const int MaxDescriptionLength = 200;
     private const int MaxNoteLength = 500;
+    private static readonly JsonSerializerOptions _jsonWriteOptions = new() { WriteIndented = true };
 
     private readonly string _expensesFilePath;
     private readonly string _budgetsFilePath;
@@ -288,11 +289,22 @@ public class ExpenseService : IExpenseService, IDisposable
     public async Task<IReadOnlyList<BudgetStatus>> GetAllBudgetStatusAsync()
     {
         await InitializeAsync();
+        var now = DateTime.Now;
+        // Alle Monatsausgaben einmal laden statt pro Budget (N+1 vermeiden)
+        var monthExpenses = _expenses
+            .Where(e => e.Date.Year == now.Year && e.Date.Month == now.Month && e.Type == TransactionType.Expense)
+            .ToList();
+
         var statusList = new List<BudgetStatus>();
         foreach (var budget in _budgets.Where(b => b.IsEnabled))
         {
-            var status = await GetBudgetStatusAsync(budget.Category);
-            if (status != null) statusList.Add(status);
+            var spent = monthExpenses.Where(e => e.Category == budget.Category).Sum(e => e.Amount);
+            var remaining = budget.MonthlyLimit - spent;
+            var percentageUsed = budget.MonthlyLimit > 0 ? (spent / budget.MonthlyLimit) * 100 : 0;
+            var alertLevel = percentageUsed >= 100 ? BudgetAlertLevel.Exceeded :
+                            percentageUsed >= budget.WarningThreshold ? BudgetAlertLevel.Warning :
+                            BudgetAlertLevel.Safe;
+            statusList.Add(new BudgetStatus(budget.Category, budget.MonthlyLimit, spent, remaining, percentageUsed, alertLevel));
         }
         return statusList;
     }
@@ -363,18 +375,34 @@ public class ExpenseService : IExpenseService, IDisposable
 
     public async Task<int> ProcessDueRecurringTransactionsAsync()
     {
+        await InitializeAsync();
         var today = DateTime.Today;
-        var count = 0;
-        foreach (var recurring in _recurringTransactions.Where(r => r.IsActive))
+
+        await _semaphore.WaitAsync();
+        try
         {
-            if (!recurring.IsDue(today)) continue;
-            var expense = recurring.CreateExpense(today);
-            await AddExpenseAsync(expense);
-            recurring.LastExecuted = today;
-            count++;
+            var count = 0;
+            foreach (var recurring in _recurringTransactions.Where(r => r.IsActive))
+            {
+                if (!recurring.IsDue(today)) continue;
+                var expense = recurring.CreateExpense(today);
+                expense.Id = Guid.NewGuid().ToString();
+                _expenses.Add(expense);
+                recurring.LastExecuted = today;
+                count++;
+            }
+            // Batch-Save: Alles auf einmal statt pro Expense einzeln
+            if (count > 0)
+            {
+                await SaveExpensesAsync();
+                await SaveRecurringTransactionsAsync();
+            }
+            return count;
         }
-        if (count > 0) await SaveRecurringTransactionsAsync();
-        return count;
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     #endregion
@@ -394,7 +422,7 @@ public class ExpenseService : IExpenseService, IDisposable
         {
             var backup = new BackupData("1.0", DateTime.Now,
                 _expenses.ToList(), _budgets.ToList(), _recurringTransactions.ToList());
-            return JsonSerializer.Serialize(backup, new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(backup, _jsonWriteOptions);
         }
         finally
         {
@@ -424,9 +452,10 @@ public class ExpenseService : IExpenseService, IDisposable
 
             if (backup.Expenses != null)
             {
+                var existingIds = mergeData ? _expenses.Select(e => e.Id).ToHashSet() : null;
                 foreach (var expense in backup.Expenses)
                 {
-                    if (mergeData && _expenses.Any(e => e.Id == expense.Id)) continue;
+                    if (mergeData && existingIds!.Contains(expense.Id)) continue;
                     _expenses.Add(expense);
                     importedCount++;
                 }
@@ -447,9 +476,10 @@ public class ExpenseService : IExpenseService, IDisposable
 
             if (backup.RecurringTransactions != null)
             {
+                var existingRecurringIds = mergeData ? _recurringTransactions.Select(r => r.Id).ToHashSet() : null;
                 foreach (var recurring in backup.RecurringTransactions)
                 {
-                    if (mergeData && _recurringTransactions.Any(r => r.Id == recurring.Id)) continue;
+                    if (mergeData && existingRecurringIds!.Contains(recurring.Id)) continue;
                     _recurringTransactions.Add(recurring);
                 }
             }
@@ -480,7 +510,7 @@ public class ExpenseService : IExpenseService, IDisposable
                 _expenses = JsonSerializer.Deserialize<List<Expense>>(json) ?? [];
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Silently handle load error - will use empty collection
             _expenses = [];
@@ -497,7 +527,7 @@ public class ExpenseService : IExpenseService, IDisposable
                 _budgets = JsonSerializer.Deserialize<List<Budget>>(json) ?? [];
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Silently handle load error - will use empty collection
             _budgets = [];
@@ -514,7 +544,7 @@ public class ExpenseService : IExpenseService, IDisposable
                 _recurringTransactions = JsonSerializer.Deserialize<List<RecurringTransaction>>(json) ?? [];
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Silently handle load error - will use empty collection
             _recurringTransactions = [];
@@ -523,19 +553,19 @@ public class ExpenseService : IExpenseService, IDisposable
 
     private async Task SaveExpensesAsync()
     {
-        var json = JsonSerializer.Serialize(_expenses, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(_expenses, _jsonWriteOptions);
         await File.WriteAllTextAsync(_expensesFilePath, json);
     }
 
     private async Task SaveBudgetsAsync()
     {
-        var json = JsonSerializer.Serialize(_budgets, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(_budgets, _jsonWriteOptions);
         await File.WriteAllTextAsync(_budgetsFilePath, json);
     }
 
     private async Task SaveRecurringTransactionsAsync()
     {
-        var json = JsonSerializer.Serialize(_recurringTransactions, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(_recurringTransactions, _jsonWriteOptions);
         await File.WriteAllTextAsync(_recurringFilePath, json);
     }
 
@@ -600,7 +630,7 @@ public class ExpenseService : IExpenseService, IDisposable
                 _sentNotifications[$"{notificationKey}_80"] = DateTime.Now;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Silently handle budget warning check failure
         }
