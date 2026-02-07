@@ -57,6 +57,13 @@ public class GameEngine : IDisposable
     private const float DEATH_DELAY = 2f;
     private const float LEVEL_COMPLETE_DELAY = 3f;
 
+    // Gecachte SKPaint/SKFont fuer Overlay-Rendering (vermeidet Allokationen pro Frame)
+    private readonly SKPaint _overlayBgPaint = new();
+    private readonly SKPaint _overlayTextPaint = new() { IsAntialias = true };
+    private readonly SKFont _overlayFont = new() { Embolden = true };
+    private readonly SKMaskFilter _overlayGlowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 3);
+    private readonly SKMaskFilter _overlayGlowFilterLarge = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
+
     // Events
     public event Action? OnGameOver;
     public event Action? OnLevelComplete;
@@ -687,9 +694,10 @@ public class GameEngine : IDisposable
             }
         }
 
-        // Player collision with power-ups
-        foreach (var powerUp in _powerUps.ToList())
+        // Player collision with power-ups (Rueckwaerts-Iteration statt .ToList())
+        for (int i = _powerUps.Count - 1; i >= 0; i--)
         {
+            var powerUp = _powerUps[i];
             if (!powerUp.IsActive || powerUp.IsMarkedForRemoval)
                 continue;
 
@@ -1006,120 +1014,88 @@ public class GameEngine : IDisposable
 
     private void RenderStartingOverlay(SKCanvas canvas, float screenWidth, float screenHeight)
     {
-        using var bgPaint = new SKPaint
-        {
-            Color = new SKColor(0, 0, 0, 180)
-        };
-        canvas.DrawRect(0, 0, screenWidth, screenHeight, bgPaint);
+        _overlayBgPaint.Color = new SKColor(0, 0, 0, 180);
+        canvas.DrawRect(0, 0, screenWidth, screenHeight, _overlayBgPaint);
 
-        using var glowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 3);
-        using var font = new SKFont { Size = 48, Embolden = true };
-        using var textPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            IsAntialias = true,
-            MaskFilter = glowFilter
-        };
+        _overlayFont.Size = 48;
+        _overlayTextPaint.Color = SKColors.White;
+        _overlayTextPaint.MaskFilter = _overlayGlowFilter;
 
         string text = _isArcadeMode
             ? string.Format(_localizationService.GetString("WaveOverlay"), _arcadeWave)
             : string.Format(_localizationService.GetString("StageOverlay"), _currentLevelNumber);
 
-        canvas.DrawText(text, screenWidth / 2, screenHeight / 2, SKTextAlign.Center, font, textPaint);
+        canvas.DrawText(text, screenWidth / 2, screenHeight / 2, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
         // Countdown
         int countdown = (int)(START_DELAY - _stateTimer) + 1;
-        font.Size = 72;
-        textPaint.Color = SKColors.Yellow;
-        canvas.DrawText(countdown.ToString(), screenWidth / 2, screenHeight / 2 + 80, SKTextAlign.Center, font, textPaint);
+        _overlayFont.Size = 72;
+        _overlayTextPaint.Color = SKColors.Yellow;
+        canvas.DrawText(countdown.ToString(), screenWidth / 2, screenHeight / 2 + 80, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
     }
 
     private void RenderPausedOverlay(SKCanvas canvas, float screenWidth, float screenHeight)
     {
-        using var bgPaint = new SKPaint
-        {
-            Color = new SKColor(0, 0, 0, 200)
-        };
-        canvas.DrawRect(0, 0, screenWidth, screenHeight, bgPaint);
+        _overlayBgPaint.Color = new SKColor(0, 0, 0, 200);
+        canvas.DrawRect(0, 0, screenWidth, screenHeight, _overlayBgPaint);
 
-        using var glowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 3);
-        using var font = new SKFont { Size = 48, Embolden = true };
-        using var textPaint = new SKPaint
-        {
-            Color = SKColors.White,
-            IsAntialias = true,
-            MaskFilter = glowFilter
-        };
+        _overlayFont.Size = 48;
+        _overlayTextPaint.Color = SKColors.White;
+        _overlayTextPaint.MaskFilter = _overlayGlowFilter;
 
-        canvas.DrawText(_localizationService.GetString("Paused"), screenWidth / 2, screenHeight / 2, SKTextAlign.Center, font, textPaint);
+        canvas.DrawText(_localizationService.GetString("Paused"), screenWidth / 2, screenHeight / 2, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
-        font.Size = 24;
-        textPaint.MaskFilter = null;
-        canvas.DrawText(_localizationService.GetString("TapToResume"), screenWidth / 2, screenHeight / 2 + 50, SKTextAlign.Center, font, textPaint);
+        _overlayFont.Size = 24;
+        _overlayTextPaint.MaskFilter = null;
+        canvas.DrawText(_localizationService.GetString("TapToResume"), screenWidth / 2, screenHeight / 2 + 50, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
     }
 
     private void RenderLevelCompleteOverlay(SKCanvas canvas, float screenWidth, float screenHeight)
     {
-        using var bgPaint = new SKPaint
-        {
-            Color = new SKColor(0, 50, 0, 200)
-        };
-        canvas.DrawRect(0, 0, screenWidth, screenHeight, bgPaint);
+        _overlayBgPaint.Color = new SKColor(0, 50, 0, 200);
+        canvas.DrawRect(0, 0, screenWidth, screenHeight, _overlayBgPaint);
 
-        using var glowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
-        using var font = new SKFont { Size = 48, Embolden = true };
-        using var textPaint = new SKPaint
-        {
-            Color = SKColors.Green,
-            IsAntialias = true,
-            MaskFilter = glowFilter
-        };
+        _overlayFont.Size = 48;
+        _overlayTextPaint.Color = SKColors.Green;
+        _overlayTextPaint.MaskFilter = _overlayGlowFilterLarge;
 
-        canvas.DrawText(_localizationService.GetString("LevelComplete"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, font, textPaint);
+        canvas.DrawText(_localizationService.GetString("LevelComplete"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
-        textPaint.Color = SKColors.Yellow;
-        textPaint.MaskFilter = null;
-        font.Size = 32;
-        canvas.DrawText(string.Format(_localizationService.GetString("ScoreFormat"), _player.Score), screenWidth / 2, screenHeight / 2 + 20, SKTextAlign.Center, font, textPaint);
+        _overlayTextPaint.Color = SKColors.Yellow;
+        _overlayTextPaint.MaskFilter = null;
+        _overlayFont.Size = 32;
+        canvas.DrawText(string.Format(_localizationService.GetString("ScoreFormat"), _player.Score), screenWidth / 2, screenHeight / 2 + 20, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
-        textPaint.Color = SKColors.Cyan;
-        font.Size = 24;
+        _overlayTextPaint.Color = SKColors.Cyan;
+        _overlayFont.Size = 24;
         int timeBonus = (int)_timer.RemainingTime * 10;
-        canvas.DrawText(string.Format(_localizationService.GetString("TimeBonusFormat"), timeBonus), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, font, textPaint);
+        canvas.DrawText(string.Format(_localizationService.GetString("TimeBonusFormat"), timeBonus), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
     }
 
     private void RenderGameOverOverlay(SKCanvas canvas, float screenWidth, float screenHeight)
     {
-        using var bgPaint = new SKPaint
-        {
-            Color = new SKColor(50, 0, 0, 220)
-        };
-        canvas.DrawRect(0, 0, screenWidth, screenHeight, bgPaint);
+        _overlayBgPaint.Color = new SKColor(50, 0, 0, 220);
+        canvas.DrawRect(0, 0, screenWidth, screenHeight, _overlayBgPaint);
 
-        using var glowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
-        using var font = new SKFont { Size = 64, Embolden = true };
-        using var textPaint = new SKPaint
-        {
-            Color = SKColors.Red,
-            IsAntialias = true,
-            MaskFilter = glowFilter
-        };
+        _overlayFont.Size = 64;
+        _overlayTextPaint.Color = SKColors.Red;
+        _overlayTextPaint.MaskFilter = _overlayGlowFilterLarge;
 
-        canvas.DrawText(_localizationService.GetString("GameOver"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, font, textPaint);
+        canvas.DrawText(_localizationService.GetString("GameOver"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
-        textPaint.Color = SKColors.White;
-        textPaint.MaskFilter = null;
-        font.Size = 32;
-        canvas.DrawText(string.Format(_localizationService.GetString("FinalScore"), _player.Score), screenWidth / 2, screenHeight / 2 + 20, SKTextAlign.Center, font, textPaint);
+        _overlayTextPaint.Color = SKColors.White;
+        _overlayTextPaint.MaskFilter = null;
+        _overlayFont.Size = 32;
+        canvas.DrawText(string.Format(_localizationService.GetString("FinalScore"), _player.Score), screenWidth / 2, screenHeight / 2 + 20, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
-        font.Size = 24;
+        _overlayFont.Size = 24;
         if (_isArcadeMode)
         {
-            canvas.DrawText(string.Format(_localizationService.GetString("WaveReached"), _arcadeWave), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, font, textPaint);
+            canvas.DrawText(string.Format(_localizationService.GetString("WaveReached"), _arcadeWave), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
         }
         else
         {
-            canvas.DrawText(string.Format(_localizationService.GetString("LevelFormat"), _currentLevelNumber), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, font, textPaint);
+            canvas.DrawText(string.Format(_localizationService.GetString("LevelFormat"), _currentLevelNumber), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
         }
     }
 
@@ -1127,5 +1103,12 @@ public class GameEngine : IDisposable
     {
         _timer.OnWarning -= OnTimeWarning;
         _timer.OnExpired -= OnTimeExpired;
+
+        // Gecachte Overlay-Objekte freigeben
+        _overlayBgPaint.Dispose();
+        _overlayTextPaint.Dispose();
+        _overlayFont.Dispose();
+        _overlayGlowFilter.Dispose();
+        _overlayGlowFilterLarge.Dispose();
     }
 }

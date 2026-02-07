@@ -176,6 +176,58 @@ dotnet build src/Apps/BomberBlast/BomberBlast.Android/BomberBlast.Android.csproj
 - **Pause-Button entfernt**: Pause nur noch via Escape-Taste (PauseButton aus GameView.axaml entfernt)
 - **Window-Level Keyboard**: MainWindow.axaml.cs leitet KeyDown/KeyUp an GameViewModel weiter (zuverlaessiger Focus)
 
+## AppChecker Fixes (07.02.2026)
+- **HighScoreService.cs + ProgressService.cs**: 2x Debug.WriteLine entfernt, catch (Exception ex)→catch (Exception)
+- **AndroidManifest.xml**: `android:roundIcon="@mipmap/appicon_round"` ergaenzt
+- **MainViewModel**: `ILocalizationService localization` als Constructor-Parameter, `LanguageChanged += (_, _) => MenuVm.OnAppearing()` abonniert
+
+## Performance-Fixes (07.02.2026)
+
+### AStar.cs - Object Pooling
+- PriorityQueue, HashSet, Dictionaries als Klassenfelder mit .Clear() statt neue Instanzen pro FindPath()-Aufruf
+- BFS visited/queue als Klassenfelder mit .Clear() statt neue Instanzen pro FindSafeCell()-Aufruf
+- Directions als static readonly Array statt new[] pro GetNeighbors()-Aufruf
+- Node Klasse durch (int X, int Y) value tuple ersetzt (kein Heap)
+- GetNeighbors() fuellt gepoolte _neighbors Liste statt IEnumerable<Node> mit yield return
+
+### EnemyAI.cs - DangerZone + LINQ Fixes
+- _dangerZone HashSet als Klassenfeld mit .Clear() statt neue Instanz pro CalculateDangerZone()
+- _validDirections Liste als Klassenfeld fuer GetRandomValidDirection() und GetRandomSafeDirection()
+- LINQ .Where().ToList() durch manuelle Loops mit gepoolter Liste ersetzt
+
+### GameEngine.cs - Overlay SKPaint/SKFont Caching
+- 5 gecachte Felder: _overlayBgPaint, _overlayTextPaint, _overlayFont, _overlayGlowFilter, _overlayGlowFilterLarge
+- Alle 4 Overlay-Methoden nutzen gecachte Objekte (nur Color/Size aendern statt neue Instanzen)
+- Dispose() gibt alle gecachten Objekte frei
+- _powerUps.ToList() durch Rueckwaerts-Iteration ersetzt (for i = Count-1)
+
+### GameRenderer.cs - HUD String-Allokationen
+- _activePowers Liste als Klassenfeld mit .Clear() statt neue Liste pro Frame
+- INV-Timer-String wird gecacht (_lastInvTimerValue/_lastInvString), nur bei Wertaenderung neu erstellt
+
+### GameViewModel.cs - DateTime.Now -> Stopwatch
+- System.Diagnostics.Stopwatch statt DateTime.Now fuer Frame-Timing (praeziser, weniger Allokationen)
+- _frameStopwatch.Restart() in StartGameLoop/Restart
+- deltaTime = _frameStopwatch.Elapsed.TotalSeconds + Restart() in OnPaintSurface
+
+## Neon Visual Fixes (07.02.2026)
+
+### Neon Palette Brightened
+- FloorBase (20,22,30)→(30,34,48), FloorAlt (18,20,28)→(26,30,42), FloorLine alpha 30→50
+- WallBase (35,40,55)→(50,58,80), WallEdge alpha 180→200
+- BlockBase (50,45,40)→(70,60,50), BlockMortar alpha 100→170, BlockHighlight alpha 60→100, BlockShadow brightened
+- Neon blocks: 3D edge effect (highlight top/left, shadow bottom/right), thicker glow-cracks (1→1.5), diagonal crack
+
+### HUD Text Glow Fix
+- _hudTextGlow: `SKBlurStyle.Outer` (glow only outside text, text stays crisp)
+- Previously used `_smallGlow` with `SKBlurStyle.Normal` which blurred the text itself (TIME, SCORE unreadable)
+- Applied to 4 HUD locations: TIME value, SCORE value, BOMBS/FIRE values, PowerUp labels
+
+### B/F Labels → Mini Icons
+- RenderMiniBomb(): Circle body + gloss highlight + fuse line + spark dot
+- RenderMiniFlame(): Outer orange flame (QuadTo curves) + inner yellow flame
+- Both used in HUD instead of "B"/"F" text labels
+
 ## Status
 - Build: All 3 projects compile successfully (0 errors, 0 warnings)
 - Ported from: BomberBlast MAUI v1.2.0

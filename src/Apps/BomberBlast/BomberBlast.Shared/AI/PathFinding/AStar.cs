@@ -9,6 +9,22 @@ public class AStar
 {
     private readonly GameGrid _grid;
 
+    // Gepoolte Collections fuer FindPath() - vermeidet Heap-Allokationen pro Aufruf
+    private readonly PriorityQueue<(int X, int Y), float> _openSet = new();
+    private readonly HashSet<(int, int)> _closedSet = new();
+    private readonly Dictionary<(int, int), (int, int)> _cameFrom = new();
+    private readonly Dictionary<(int, int), float> _gScore = new();
+
+    // Gepoolte Collections fuer FindSafeCell()
+    private readonly HashSet<(int, int)> _bfsVisited = new();
+    private readonly Queue<(int x, int y, int dist)> _bfsQueue = new();
+
+    // Richtungen als statisches Array - wird nie neu allokiert
+    private static readonly (int dx, int dy)[] Directions = { (-1, 0), (1, 0), (0, -1), (0, 1) };
+
+    // Gepoolte Neighbor-Liste fuer GetNeighbors()
+    private readonly List<(int X, int Y)> _neighbors = new(4);
+
     public AStar(GameGrid grid)
     {
         _grid = grid;
@@ -27,41 +43,42 @@ public class AStar
     public Queue<(int x, int y)> FindPath(int startX, int startY, int goalX, int goalY,
         bool canPassWalls = false, bool avoidBombs = true)
     {
-        var openSet = new PriorityQueue<Node, float>();
-        var closedSet = new HashSet<(int, int)>();
-        var cameFrom = new Dictionary<(int, int), (int, int)>();
-        var gScore = new Dictionary<(int, int), float>();
+        // Gepoolte Collections zuruecksetzen
+        _openSet.Clear();
+        _closedSet.Clear();
+        _cameFrom.Clear();
+        _gScore.Clear();
 
-        var startNode = new Node(startX, startY);
-        gScore[(startX, startY)] = 0;
-        openSet.Enqueue(startNode, Heuristic(startX, startY, goalX, goalY));
+        _gScore[(startX, startY)] = 0;
+        _openSet.Enqueue((startX, startY), Heuristic(startX, startY, goalX, goalY));
 
-        while (openSet.Count > 0)
+        while (_openSet.Count > 0)
         {
-            var current = openSet.Dequeue();
+            var current = _openSet.Dequeue();
 
             if (current.X == goalX && current.Y == goalY)
             {
-                return ReconstructPath(cameFrom, (goalX, goalY));
+                return ReconstructPath(_cameFrom, (goalX, goalY));
             }
 
-            closedSet.Add((current.X, current.Y));
+            _closedSet.Add((current.X, current.Y));
 
-            foreach (var neighbor in GetNeighbors(current.X, current.Y, canPassWalls, avoidBombs))
+            GetNeighbors(current.X, current.Y, canPassWalls, avoidBombs);
+            foreach (var neighbor in _neighbors)
             {
-                if (closedSet.Contains((neighbor.X, neighbor.Y)))
+                if (_closedSet.Contains((neighbor.X, neighbor.Y)))
                     continue;
 
-                float tentativeG = gScore[(current.X, current.Y)] + 1;
+                float tentativeG = _gScore[(current.X, current.Y)] + 1;
 
-                if (!gScore.ContainsKey((neighbor.X, neighbor.Y)) ||
-                    tentativeG < gScore[(neighbor.X, neighbor.Y)])
+                if (!_gScore.ContainsKey((neighbor.X, neighbor.Y)) ||
+                    tentativeG < _gScore[(neighbor.X, neighbor.Y)])
                 {
-                    cameFrom[(neighbor.X, neighbor.Y)] = (current.X, current.Y);
-                    gScore[(neighbor.X, neighbor.Y)] = tentativeG;
+                    _cameFrom[(neighbor.X, neighbor.Y)] = (current.X, current.Y);
+                    _gScore[(neighbor.X, neighbor.Y)] = tentativeG;
 
                     float fScore = tentativeG + Heuristic(neighbor.X, neighbor.Y, goalX, goalY);
-                    openSet.Enqueue(neighbor, fScore);
+                    _openSet.Enqueue((neighbor.X, neighbor.Y), fScore);
                 }
             }
         }
@@ -76,14 +93,16 @@ public class AStar
     public (int x, int y)? FindSafeCell(int startX, int startY, HashSet<(int, int)> dangerZone,
         bool canPassWalls = false)
     {
-        var visited = new HashSet<(int, int)>();
-        var queue = new Queue<(int x, int y, int dist)>();
-        queue.Enqueue((startX, startY, 0));
-        visited.Add((startX, startY));
+        // Gepoolte Collections zuruecksetzen
+        _bfsVisited.Clear();
+        _bfsQueue.Clear();
 
-        while (queue.Count > 0)
+        _bfsQueue.Enqueue((startX, startY, 0));
+        _bfsVisited.Add((startX, startY));
+
+        while (_bfsQueue.Count > 0)
         {
-            var (x, y, dist) = queue.Dequeue();
+            var (x, y, dist) = _bfsQueue.Dequeue();
 
             // Found safe cell
             if (!dangerZone.Contains((x, y)))
@@ -95,12 +114,13 @@ public class AStar
             if (dist > 10)
                 continue;
 
-            foreach (var neighbor in GetNeighbors(x, y, canPassWalls, avoidBombs: false))
+            GetNeighbors(x, y, canPassWalls, avoidBombs: false);
+            foreach (var neighbor in _neighbors)
             {
-                if (!visited.Contains((neighbor.X, neighbor.Y)))
+                if (!_bfsVisited.Contains((neighbor.X, neighbor.Y)))
                 {
-                    visited.Add((neighbor.X, neighbor.Y));
-                    queue.Enqueue((neighbor.X, neighbor.Y, dist + 1));
+                    _bfsVisited.Add((neighbor.X, neighbor.Y));
+                    _bfsQueue.Enqueue((neighbor.X, neighbor.Y, dist + 1));
                 }
             }
         }
@@ -108,11 +128,14 @@ public class AStar
         return null;
     }
 
-    private IEnumerable<Node> GetNeighbors(int x, int y, bool canPassWalls, bool avoidBombs)
+    /// <summary>
+    /// Fuellt _neighbors mit begehbaren Nachbarzellen (keine Heap-Allokation)
+    /// </summary>
+    private void GetNeighbors(int x, int y, bool canPassWalls, bool avoidBombs)
     {
-        var directions = new[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
+        _neighbors.Clear();
 
-        foreach (var (dx, dy) in directions)
+        foreach (var (dx, dy) in Directions)
         {
             int nx = x + dx;
             int ny = y + dy;
@@ -131,7 +154,7 @@ public class AStar
             if (avoidBombs && cell.Bomb != null)
                 continue;
 
-            yield return new Node(nx, ny);
+            _neighbors.Add((nx, ny));
         }
     }
 
@@ -158,17 +181,5 @@ public class AStar
             path.RemoveAt(0);
 
         return new Queue<(int x, int y)>(path);
-    }
-
-    private class Node
-    {
-        public int X { get; }
-        public int Y { get; }
-
-        public Node(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
     }
 }

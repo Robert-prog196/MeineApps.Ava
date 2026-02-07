@@ -1,4 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MeineApps.Core.Ava.Localization;
 
 namespace BomberBlast.ViewModels;
 
@@ -47,6 +49,39 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isHelpActive;
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // DIALOG PROPERTIES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isAlertDialogVisible;
+
+    [ObservableProperty]
+    private string _alertDialogTitle = "";
+
+    [ObservableProperty]
+    private string _alertDialogMessage = "";
+
+    [ObservableProperty]
+    private string _alertDialogButtonText = "";
+
+    [ObservableProperty]
+    private bool _isConfirmDialogVisible;
+
+    [ObservableProperty]
+    private string _confirmDialogTitle = "";
+
+    [ObservableProperty]
+    private string _confirmDialogMessage = "";
+
+    [ObservableProperty]
+    private string _confirmDialogAcceptText = "";
+
+    [ObservableProperty]
+    private string _confirmDialogCancelText = "";
+
+    private TaskCompletionSource<bool>? _confirmDialogTcs;
+
     /// <summary>
     /// Tracks whether Settings was opened from within a game (for back-navigation).
     /// </summary>
@@ -64,7 +99,8 @@ public partial class MainViewModel : ObservableObject
         HighScoresViewModel highScoresVm,
         GameOverViewModel gameOverVm,
         PauseViewModel pauseVm,
-        HelpViewModel helpVm)
+        HelpViewModel helpVm,
+        ILocalizationService localization)
     {
         MenuVm = menuVm;
         GameVm = gameVm;
@@ -84,6 +120,16 @@ public partial class MainViewModel : ObservableObject
         WireNavigation(gameOverVm);
         WireNavigation(pauseVm);
         WireNavigation(helpVm);
+
+        // Wire up dialog events from SettingsVM
+        settingsVm.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
+        settingsVm.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+
+        localization.LanguageChanged += (_, _) =>
+        {
+            // Child VMs re-read their localized texts on next OnAppearing
+            MenuVm.OnAppearing();
+        };
 
         // Initialize menu
         menuVm.OnAppearing();
@@ -243,5 +289,48 @@ public partial class MainViewModel : ObservableObject
         IsHighScoresActive = false;
         IsGameOverActive = false;
         IsHelpActive = false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // DIALOGS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void ShowAlertDialog(string title, string message, string buttonText)
+    {
+        AlertDialogTitle = title;
+        AlertDialogMessage = message;
+        AlertDialogButtonText = buttonText;
+        IsAlertDialogVisible = true;
+    }
+
+    [RelayCommand]
+    private void DismissAlert()
+    {
+        IsAlertDialogVisible = false;
+    }
+
+    private Task<bool> ShowConfirmDialog(string title, string message, string acceptText, string cancelText)
+    {
+        ConfirmDialogTitle = title;
+        ConfirmDialogMessage = message;
+        ConfirmDialogAcceptText = acceptText;
+        ConfirmDialogCancelText = cancelText;
+        _confirmDialogTcs = new TaskCompletionSource<bool>();
+        IsConfirmDialogVisible = true;
+        return _confirmDialogTcs.Task;
+    }
+
+    [RelayCommand]
+    private void AcceptConfirm()
+    {
+        IsConfirmDialogVisible = false;
+        _confirmDialogTcs?.TrySetResult(true);
+    }
+
+    [RelayCommand]
+    private void CancelConfirm()
+    {
+        IsConfirmDialogVisible = false;
+        _confirmDialogTcs?.TrySetResult(false);
     }
 }

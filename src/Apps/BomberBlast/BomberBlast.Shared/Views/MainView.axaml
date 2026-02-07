@@ -34,6 +34,55 @@
     <!-- Help -->
     <views:HelpView DataContext="{Binding HelpVm}"
                      IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsHelpActive}" />
+
+    <!-- Alert Dialog Overlay -->
+    <Border IsVisible="{Binding IsAlertDialogVisible}"
+            Background="#80000000" ZIndex="100"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24" MaxWidth="360"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding AlertDialogTitle}"
+                     Classes="TitleMedium"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding AlertDialogMessage}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <Button Classes="Primary" HorizontalAlignment="Right"
+                  Content="{Binding AlertDialogButtonText}"
+                  Command="{Binding DismissAlertCommand}" />
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Confirm Dialog Overlay -->
+    <Border IsVisible="{Binding IsConfirmDialogVisible}"
+            Background="#80000000" ZIndex="100"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="24" MaxWidth="360"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding ConfirmDialogTitle}"
+                     Classes="TitleMedium"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding ConfirmDialogMessage}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Classes="Secondary"
+                    Content="{Binding ConfirmDialogCancelText}"
+                    Command="{Binding CancelConfirmCommand}" />
+            <Button Classes="Danger"
+                    Content="{Binding ConfirmDialogAcceptText}"
+                    Command="{Binding AcceptConfirmCommand}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
   </Panel>
 
 </UserControl>

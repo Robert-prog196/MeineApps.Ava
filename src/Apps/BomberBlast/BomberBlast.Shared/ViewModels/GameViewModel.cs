@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,7 +17,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
     private const float MAX_DELTA_TIME = 0.1f;
 
     private readonly GameEngine _gameEngine;
-    private DateTime _lastUpdate;
+    private readonly Stopwatch _frameStopwatch = new();
     private bool _isInitialized;
     private bool _disposed;
     private bool _isGameLoopRunning;
@@ -110,7 +111,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
         }
 
         IsLoading = false;
-        _lastUpdate = DateTime.Now;
+        _frameStopwatch.Restart();
         StartGameLoop();
     }
 
@@ -177,9 +178,9 @@ public partial class GameViewModel : ObservableObject, IDisposable
         // Update game state if the loop is running
         if (_isGameLoopRunning)
         {
-            var now = DateTime.Now;
-            float deltaTime = (float)(now - _lastUpdate).TotalSeconds;
-            _lastUpdate = now;
+            // Stopwatch ist praeziser und guenstiger als DateTime.Now
+            float deltaTime = (float)_frameStopwatch.Elapsed.TotalSeconds;
+            _frameStopwatch.Restart();
 
             // Clamp delta time to prevent large jumps
             deltaTime = Math.Min(deltaTime, MAX_DELTA_TIME);
@@ -312,7 +313,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
         IsPaused = false;
         await InitializeGameAsync();
         _isInitialized = true;
-        _lastUpdate = DateTime.Now;
+        _frameStopwatch.Restart();
     }
 
     [RelayCommand]

@@ -127,9 +127,9 @@ public class ProgressService : IProgressService
             string json = JsonSerializer.Serialize(_data);
             _preferences.Set<string>(PROGRESS_KEY, json);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to save progress: {ex.Message}");
+            // Save failed silently
         }
     }
 

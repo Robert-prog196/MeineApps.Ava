@@ -122,9 +122,9 @@ public class HighScoreService : IHighScoreService
             string json = JsonSerializer.Serialize(data);
             _preferences.Set<string>(SCORES_KEY, json);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to save scores: {ex.Message}");
+            // Save failed silently
         }
     }
 

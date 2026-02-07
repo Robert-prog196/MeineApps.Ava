@@ -18,6 +18,10 @@ public class EnemyAI
     private const int NORMAL_INTEL_DETECTION = 5;
     private const int HIGH_INTEL_DETECTION = 8;
 
+    // Gepoolte Collections - vermeidet Heap-Allokationen pro Frame
+    private readonly HashSet<(int, int)> _dangerZone = new();
+    private readonly List<Direction> _validDirections = new(4);
+
     public EnemyAI(GameGrid grid)
     {
         _grid = grid;
@@ -301,7 +305,8 @@ public class EnemyAI
 
     private HashSet<(int, int)> CalculateDangerZone(IEnumerable<Bomb> bombs)
     {
-        var dangerZone = new HashSet<(int, int)>();
+        // Gepooltes HashSet wiederverwenden statt neu allokieren
+        _dangerZone.Clear();
 
         foreach (var bomb in bombs)
         {
@@ -312,7 +317,7 @@ public class EnemyAI
             int by = bomb.GridY;
 
             // Bomb cell is dangerous
-            dangerZone.Add((bx, by));
+            _dangerZone.Add((bx, by));
 
             // Calculate explosion range in all directions
             foreach (var dir in DirectionExtensions.GetCardinalDirections())
@@ -326,7 +331,7 @@ public class EnemyAI
                     if (cell == null || cell.Type == CellType.Wall)
                         break;
 
-                    dangerZone.Add((nx, ny));
+                    _dangerZone.Add((nx, ny));
 
                     if (cell.Type == CellType.Block)
                         break;
@@ -334,39 +339,44 @@ public class EnemyAI
             }
         }
 
-        return dangerZone;
+        return _dangerZone;
     }
 
     private Direction GetRandomValidDirection(Enemy enemy)
     {
-        var validDirections = DirectionExtensions.GetCardinalDirections()
-            .Where(d => CanMoveInDirection(enemy, d))
-            .ToList();
+        // Gepoolte Liste statt LINQ .Where().ToList()
+        _validDirections.Clear();
+        foreach (var d in DirectionExtensions.GetCardinalDirections())
+        {
+            if (CanMoveInDirection(enemy, d))
+                _validDirections.Add(d);
+        }
 
-        if (validDirections.Count == 0)
+        if (_validDirections.Count == 0)
             return Direction.None;
 
-        return validDirections[_random.Next(validDirections.Count)];
+        return _validDirections[_random.Next(_validDirections.Count)];
     }
 
     private Direction GetRandomSafeDirection(Enemy enemy, HashSet<(int, int)> dangerZone)
     {
-        var safeDirections = DirectionExtensions.GetCardinalDirections()
-            .Where(d =>
-            {
-                if (!CanMoveInDirection(enemy, d))
-                    return false;
+        // Gepoolte Liste statt LINQ .Where().ToList()
+        _validDirections.Clear();
+        foreach (var d in DirectionExtensions.GetCardinalDirections())
+        {
+            if (!CanMoveInDirection(enemy, d))
+                continue;
 
-                int nx = enemy.GridX + d.GetDeltaX();
-                int ny = enemy.GridY + d.GetDeltaY();
-                return !dangerZone.Contains((nx, ny));
-            })
-            .ToList();
+            int nx = enemy.GridX + d.GetDeltaX();
+            int ny = enemy.GridY + d.GetDeltaY();
+            if (!dangerZone.Contains((nx, ny)))
+                _validDirections.Add(d);
+        }
 
-        if (safeDirections.Count == 0)
+        if (_validDirections.Count == 0)
             return GetRandomValidDirection(enemy);
 
-        return safeDirections[_random.Next(safeDirections.Count)];
+        return _validDirections[_random.Next(_validDirections.Count)];
     }
 
     private bool CanMoveInDirection(Enemy enemy, Direction direction)
