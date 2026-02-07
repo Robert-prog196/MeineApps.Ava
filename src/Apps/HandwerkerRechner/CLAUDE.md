@@ -123,3 +123,11 @@ dotnet build src/Apps/HandwerkerRechner/HandwerkerRechner.Android/HandwerkerRech
 - 3x DateTime.Now → DateTime.UtcNow (ProjectService)
 - 10 hardcodierte deutsche/englische Strings lokalisiert
 - Full Solution Build: 0 Fehler
+
+### AppChecker Fixes (07.02.2026)
+- **MainViewModel.OnLanguageChanged()**: `SettingsViewModel.UpdateLocalizedTexts()` Aufruf ergaenzt
+- **AppStrings.fr.resx**: ~140 fehlende Keys ergaenzt (PDF Export, Units, Info Texts, History, Electrical, Drywall, Semantic Properties)
+- **AppStrings.it.resx**: ~140 fehlende Keys ergaenzt (identische Kategorien wie FR, italienische Uebersetzungen)
+- **AppStrings.pt.resx**: ~152 fehlende Keys ergaenzt (FR/IT-Kategorien + 12 PT-spezifische Label/Result-Keys)
+- Verifiziert: FR 500/500, IT 500/500, PT 535/500 unique Keys (0 fehlend vs. Base)
+- Base-Datei hat 7 Duplikat-Keys (ExportPdf, Date, MaterialList, GeneratedBy, ShareMaterialList, PdfExportSuccess, PdfExportFailed)

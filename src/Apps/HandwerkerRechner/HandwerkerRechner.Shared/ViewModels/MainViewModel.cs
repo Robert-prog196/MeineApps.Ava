@@ -138,6 +138,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         UpdateNavTexts();
         UpdateHomeTexts();
+        SettingsViewModel.UpdateLocalizedTexts();
     }
 
     #endregion

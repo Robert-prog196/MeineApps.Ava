@@ -1189,4 +1189,476 @@ Vous économisez 0,96 € par rapport à l'achat individuel !</value>
   <data name="HistoryPaintCoats" xml:space="preserve">
     <value>{0} m², {1}x couche</value>
   </data>
+
+  <!-- PDF Export -->
+  <data name="ExportPdf" xml:space="preserve">
+    <value>Exporter en PDF</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="MaterialList" xml:space="preserve">
+    <value>Liste des matériaux</value>
+  </data>
+  <data name="GeneratedBy" xml:space="preserve">
+    <value>Généré par HandwerkerRechner</value>
+  </data>
+  <data name="ShareMaterialList" xml:space="preserve">
+    <value>Partager la liste des matériaux</value>
+  </data>
+  <data name="PdfExportSuccess" xml:space="preserve">
+    <value>PDF exporté avec succès !</value>
+  </data>
+  <data name="PdfExportFailed" xml:space="preserve">
+    <value>L'export PDF a échoué.</value>
+  </data>
+
+  <!-- Units -->
+  <data name="UnitSquareMeters" xml:space="preserve">
+    <value>m²</value>
+  </data>
+  <data name="UnitLiters" xml:space="preserve">
+    <value>litres</value>
+  </data>
+  <data name="UnitRolls" xml:space="preserve">
+    <value>rouleaux</value>
+  </data>
+  <data name="UnitBoards" xml:space="preserve">
+    <value>lames</value>
+  </data>
+  <data name="UnitKilograms" xml:space="preserve">
+    <value>kg</value>
+  </data>
+  <data name="UnitMeters" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="UnitVolts" xml:space="preserve">
+    <value>V</value>
+  </data>
+  <data name="UnitAmpere" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="UnitWatts" xml:space="preserve">
+    <value>W</value>
+  </data>
+  <data name="UnitOhms" xml:space="preserve">
+    <value>&#937;</value>
+  </data>
+  <data name="UnitDegrees" xml:space="preserve">
+    <value>°</value>
+  </data>
+  <data name="UnitPercent" xml:space="preserve">
+    <value>%</value>
+  </data>
+
+  <!-- Unit Converter Settings -->
+  <data name="UnitSystem" xml:space="preserve">
+    <value>Système d'unités</value>
+  </data>
+  <data name="UnitSystemChanged" xml:space="preserve">
+    <value>Système d'unités modifié</value>
+  </data>
+  <data name="UnitSystemChangedMessage" xml:space="preserve">
+    <value>Tous les calculateurs utilisent maintenant {0}.</value>
+  </data>
+
+  <!-- Info Help Texts -->
+  <data name="InfoWaste" xml:space="preserve">
+    <value>Perte</value>
+  </data>
+  <data name="InfoWasteDescription" xml:space="preserve">
+    <value>La perte est le matériau supplémentaire nécessaire en raison de la découpe et des chutes.
+
+Valeurs recommandées :
+&#8226; Carrelage, panneaux : 5-10%
+&#8226; Stratifié, lames : 10-15%
+&#8226; Papier peint à motifs : 15-20%
+
+Prévoir plus de perte dans les pièces complexes (baies vitrées, niches).</value>
+  </data>
+  <data name="InfoRapport" xml:space="preserve">
+    <value>Raccord de motif</value>
+  </data>
+  <data name="InfoRapportDescription" xml:space="preserve">
+    <value>Le raccord est la distance après laquelle le motif du papier peint se répète.
+
+Exemple :
+&#8226; Raccord 0 cm = pas de motif (uni)
+&#8226; Raccord 32 cm = le motif se répète tous les 32 cm
+
+Plus le raccord est grand, plus il y a de perte, car les lés doivent être découpés pour correspondre.</value>
+  </data>
+  <data name="InfoVoltageDrop" xml:space="preserve">
+    <value>Chute de tension</value>
+  </data>
+  <data name="InfoVoltageDropDescription" xml:space="preserve">
+    <value>La chute de tension est la perte de tension dans un câble due à sa résistance électrique.
+
+Maximum autorisé (norme NF C 15-100) :
+&#8226; Éclairage : 3%
+&#8226; Prises : 3%
+&#8226; Moteurs : 5%
+
+Si la limite est dépassée, une section plus épaisse doit être choisie.</value>
+  </data>
+  <data name="InfoCrossSection" xml:space="preserve">
+    <value>Section du câble</value>
+  </data>
+  <data name="InfoCrossSectionDescription" xml:space="preserve">
+    <value>La section indique l'épaisseur du conducteur en mm².
+
+Valeurs typiques :
+&#8226; 1,5 mm² : Éclairage (max. 16A)
+&#8226; 2,5 mm² : Prises (max. 20A)
+&#8226; 4 mm² : Cuisinière, chauffe-eau
+&#8226; 6 mm² : Gros consommateurs
+
+Plus le câble est long, plus la section doit être épaisse.</value>
+  </data>
+  <data name="InfoCoverage" xml:space="preserve">
+    <value>Rendement</value>
+  </data>
+  <data name="InfoCoverageDescription" xml:space="preserve">
+    <value>Le rendement indique quelle surface peut être peinte avec 1 litre de peinture.
+
+Valeurs typiques :
+&#8226; Peinture murale lisse : 6-8 m²/L
+&#8226; Peinture murale texturée : 4-6 m²/L
+&#8226; Peinture à dispersion : 7-10 m²/L
+&#8226; Peinture latex : 5-7 m²/L
+
+Le rendement diminue sur les surfaces rugueuses !</value>
+  </data>
+
+  <!-- Calculation History -->
+  <data name="CalculationHistory" xml:space="preserve">
+    <value>Historique</value>
+  </data>
+  <data name="RecentCalculations" xml:space="preserve">
+    <value>Calculs récents</value>
+  </data>
+  <data name="NoHistoryYet" xml:space="preserve">
+    <value>Aucun calcul pour l'instant</value>
+  </data>
+  <data name="HistoryDescription" xml:space="preserve">
+    <value>Vos 10 derniers calculs sont enregistrés automatiquement.</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Effacer l'historique</value>
+  </data>
+  <data name="ClearHistoryConfirm" xml:space="preserve">
+    <value>Effacer l'historique ?</value>
+  </data>
+  <data name="ClearHistoryMessage" xml:space="preserve">
+    <value>Voulez-vous vraiment supprimer tous les calculs enregistrés ?</value>
+  </data>
+  <data name="LoadCalculation" xml:space="preserve">
+    <value>Charger le calcul</value>
+  </data>
+
+  <!-- Electrical Calculator Labels -->
+  <data name="VoltageDropCalculator" xml:space="preserve">
+    <value>Calculer la chute de tension</value>
+  </data>
+  <data name="PowerCostCalculator" xml:space="preserve">
+    <value>Calculer le coût de l'énergie</value>
+  </data>
+  <data name="OhmsLawCalculator" xml:space="preserve">
+    <value>Loi d'Ohm</value>
+  </data>
+  <data name="Voltage" xml:space="preserve">
+    <value>Tension (V)</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Courant (A)</value>
+  </data>
+  <data name="CableLength" xml:space="preserve">
+    <value>Longueur du câble (m)</value>
+  </data>
+  <data name="CrossSection" xml:space="preserve">
+    <value>Section (mm²)</value>
+  </data>
+  <data name="CopperCable" xml:space="preserve">
+    <value>Câble en cuivre</value>
+  </data>
+  <data name="Power" xml:space="preserve">
+    <value>Puissance (W)</value>
+  </data>
+  <data name="HoursPerDay" xml:space="preserve">
+    <value>h/jour</value>
+  </data>
+  <data name="PricePerKwh" xml:space="preserve">
+    <value>€/kWh</value>
+  </data>
+  <data name="EnterAtLeastTwoValues" xml:space="preserve">
+    <value>Saisissez au moins 2 valeurs</value>
+  </data>
+  <data name="VoltageU" xml:space="preserve">
+    <value>Tension U (V)</value>
+  </data>
+  <data name="CurrentI" xml:space="preserve">
+    <value>Courant I (A)</value>
+  </data>
+  <data name="ResistanceR" xml:space="preserve">
+    <value>Résistance R (&#937;)</value>
+  </data>
+  <data name="PowerP" xml:space="preserve">
+    <value>Puissance P (W)</value>
+  </data>
+  <data name="CableLengthLabel" xml:space="preserve">
+    <value>Longueur du câble</value>
+  </data>
+  <data name="VoltageDropTooHigh" xml:space="preserve">
+    <value>Chute de tension trop élevée !</value>
+  </data>
+  <data name="VoltageDropOverCable" xml:space="preserve">
+    <value>Chute de tension sur la longueur du câble (max. 3% recommandé)</value>
+  </data>
+  <data name="PowerMeter" xml:space="preserve">
+    <value>COMPTEUR</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>ACTIF</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>COÛT</value>
+  </data>
+  <data name="PowerConsumptionAndCosts" xml:space="preserve">
+    <value>Consommation et coûts de fonctionnement par jour/mois/an</value>
+  </data>
+  <data name="Resistance" xml:space="preserve">
+    <value>RÉSISTANCE</value>
+  </data>
+  <data name="OhmsLawDescription" xml:space="preserve">
+    <value>Loi d'Ohm : Relation entre tension (U), courant (I), résistance (R) et puissance (P)</value>
+  </data>
+  <data name="Percentage" xml:space="preserve">
+    <value>Pourcentage</value>
+  </data>
+  <data name="StatusMaxThreePercent" xml:space="preserve">
+    <value>Statut (max. 3%)</value>
+  </data>
+  <data name="ConsumptionPerDay" xml:space="preserve">
+    <value>Consommation/jour</value>
+  </data>
+  <data name="CostPerDay" xml:space="preserve">
+    <value>Coût/jour</value>
+  </data>
+  <data name="CostPerMonth" xml:space="preserve">
+    <value>Coût/mois</value>
+  </data>
+  <data name="CostPerYear" xml:space="preserve">
+    <value>Coût/an</value>
+  </data>
+  <data name="VoltageULabel" xml:space="preserve">
+    <value>Tension U</value>
+  </data>
+  <data name="CurrentILabel" xml:space="preserve">
+    <value>Courant I</value>
+  </data>
+  <data name="ResistanceRLabel" xml:space="preserve">
+    <value>Résistance R</value>
+  </data>
+  <data name="PowerPLabel" xml:space="preserve">
+    <value>Puissance P</value>
+  </data>
+
+  <!-- Drywall Calculator Labels -->
+  <data name="DrywallCalculator" xml:space="preserve">
+    <value>Calculateur Placo</value>
+  </data>
+  <data name="Studs" xml:space="preserve">
+    <value>Ossature</value>
+  </data>
+  <data name="Plates" xml:space="preserve">
+    <value>Plaques de plâtre</value>
+  </data>
+  <data name="Compound" xml:space="preserve">
+    <value>Enduit de joint</value>
+  </data>
+  <data name="PricePerSqm" xml:space="preserve">
+    <value>Prix par m² (€)</value>
+  </data>
+  <data name="DoublePlated" xml:space="preserve">
+    <value>Double couche</value>
+  </data>
+  <data name="WallDimensions" xml:space="preserve">
+    <value>Dimensions du mur</value>
+  </data>
+  <data name="EnterPricePerSqm" xml:space="preserve">
+    <value>Saisissez le prix par m² pour calculer le coût total.</value>
+  </data>
+  <data name="CWProfilesStuds" xml:space="preserve">
+    <value>Profilés CW (montants)</value>
+  </data>
+  <data name="UWProfilesTopBottom" xml:space="preserve">
+    <value>Profilés UW (haut/bas)</value>
+  </data>
+  <data name="DrywallSheets" xml:space="preserve">
+    <value>Plaques de plâtre</value>
+  </data>
+  <data name="Screws" xml:space="preserve">
+    <value>Vis à placo</value>
+  </data>
+  <data name="StudsDescription" xml:space="preserve">
+    <value>Ossature : Profilés CW (verticaux, espacement 62,5cm) avec profilés UW (haut/bas) + plaque de plâtre + vis</value>
+  </data>
+  <data name="PlatesSize" xml:space="preserve">
+    <value>Plaques : 250×125 cm standard</value>
+  </data>
+  <data name="LengthM" xml:space="preserve">
+    <value>Longueur (m)</value>
+  </data>
+  <data name="HeightM" xml:space="preserve">
+    <value>Hauteur (m)</value>
+  </data>
+
+  <!-- Semantic Properties for Accessibility -->
+  <data name="GoBackSemantic" xml:space="preserve">
+    <value>Retourner à la page précédente</value>
+  </data>
+  <data name="OpenSettingsSemantic" xml:space="preserve">
+    <value>Ouvrir les paramètres</value>
+  </data>
+  <data name="OpenProjectsSemantic" xml:space="preserve">
+    <value>Ouvrir les projets enregistrés</value>
+  </data>
+  <data name="CalculateButtonSemantic" xml:space="preserve">
+    <value>Lancer le calcul</value>
+  </data>
+  <data name="ResetButtonSemantic" xml:space="preserve">
+    <value>Réinitialiser les entrées</value>
+  </data>
+  <data name="SaveProjectButtonSemantic" xml:space="preserve">
+    <value>Enregistrer le calcul comme projet</value>
+  </data>
+  <data name="FeedbackButtonSemantic" xml:space="preserve">
+    <value>Envoyer un commentaire par e-mail</value>
+  </data>
+  <data name="RestorePurchasesSemantic" xml:space="preserve">
+    <value>Restaurer les achats précédents</value>
+  </data>
+  <data name="LoadProjectSemantic" xml:space="preserve">
+    <value>Ouvrir le projet</value>
+  </data>
+  <data name="DeleteProjectSemantic" xml:space="preserve">
+    <value>Supprimer le projet</value>
+  </data>
+  <data name="RoomLengthSemantic" xml:space="preserve">
+    <value>Saisir la longueur de la pièce en mètres</value>
+  </data>
+  <data name="RoomWidthSemantic" xml:space="preserve">
+    <value>Saisir la largeur de la pièce en mètres</value>
+  </data>
+  <data name="RoomHeightSemantic" xml:space="preserve">
+    <value>Saisir la hauteur de la pièce en mètres</value>
+  </data>
+  <data name="TileLengthSemantic" xml:space="preserve">
+    <value>Saisir la longueur du carreau en centimètres</value>
+  </data>
+  <data name="TileWidthSemantic" xml:space="preserve">
+    <value>Saisir la largeur du carreau en centimètres</value>
+  </data>
+  <data name="WasteSemantic" xml:space="preserve">
+    <value>Saisir la perte en pourcentage</value>
+  </data>
+  <data name="PricePerTileSemantic" xml:space="preserve">
+    <value>Saisir le prix par carreau en euros</value>
+  </data>
+  <data name="WallHeightSemantic" xml:space="preserve">
+    <value>Saisir la hauteur du mur en mètres</value>
+  </data>
+  <data name="PricePerSqmSemantic" xml:space="preserve">
+    <value>Saisir le prix par mètre carré en euros</value>
+  </data>
+  <data name="VoltageSemantic" xml:space="preserve">
+    <value>Saisir la tension en volts</value>
+  </data>
+  <data name="CurrentSemantic" xml:space="preserve">
+    <value>Saisir le courant en ampères</value>
+  </data>
+  <data name="CableLengthSemantic" xml:space="preserve">
+    <value>Saisir la longueur du câble en mètres</value>
+  </data>
+  <data name="CrossSectionSemantic" xml:space="preserve">
+    <value>Saisir la section du câble en millimètres carrés</value>
+  </data>
+  <data name="PowerSemantic" xml:space="preserve">
+    <value>Saisir la puissance en watts</value>
+  </data>
+  <data name="HoursPerDaySemantic" xml:space="preserve">
+    <value>Saisir les heures de fonctionnement par jour</value>
+  </data>
+  <data name="PricePerKwhSemantic" xml:space="preserve">
+    <value>Saisir le prix de l'électricité par kilowattheure en euros</value>
+  </data>
+  <data name="CategoryTilesSemantic" xml:space="preserve">
+    <value>Ouvrir le calculateur de carrelage</value>
+  </data>
+  <data name="CategoryWallpaperSemantic" xml:space="preserve">
+    <value>Ouvrir le calculateur de papier peint</value>
+  </data>
+  <data name="CategoryPaintSemantic" xml:space="preserve">
+    <value>Ouvrir le calculateur de peinture</value>
+  </data>
+  <data name="CategoryFlooringSemantic" xml:space="preserve">
+    <value>Ouvrir le calculateur de parquet</value>
+  </data>
+  <data name="CategoryDrywallSemantic" xml:space="preserve">
+    <value>Ouvrir la catégorie placo</value>
+  </data>
+  <data name="CategoryElectricalSemantic" xml:space="preserve">
+    <value>Ouvrir la catégorie électricité</value>
+  </data>
+  <data name="CategoryMetalSemantic" xml:space="preserve">
+    <value>Ouvrir la catégorie métal</value>
+  </data>
+  <data name="CategoryGardenSemantic" xml:space="preserve">
+    <value>Ouvrir la catégorie jardin</value>
+  </data>
+  <data name="CategoryRoofSolarSemantic" xml:space="preserve">
+    <value>Ouvrir la catégorie toit et solaire</value>
+  </data>
+  <data name="SelectThemeVividSemantic" xml:space="preserve">
+    <value>Sélectionner le thème Vivid</value>
+  </data>
+  <data name="SelectThemeClassicSemantic" xml:space="preserve">
+    <value>Sélectionner le thème Classique</value>
+  </data>
+  <data name="SelectThemeGlassDarkSemantic" xml:space="preserve">
+    <value>Sélectionner le thème Glass Dark</value>
+  </data>
+  <data name="SelectThemeSoftLightSemantic" xml:space="preserve">
+    <value>Sélectionner le thème Soft Light</value>
+  </data>
+  <data name="SelectLanguageGermanSemantic" xml:space="preserve">
+    <value>Changer la langue en allemand</value>
+  </data>
+  <data name="SelectLanguageEnglishSemantic" xml:space="preserve">
+    <value>Changer la langue en anglais</value>
+  </data>
+  <data name="SelectLanguageSpanishSemantic" xml:space="preserve">
+    <value>Changer la langue en espagnol</value>
+  </data>
+  <data name="SelectLanguageFrenchSemantic" xml:space="preserve">
+    <value>Changer la langue en français</value>
+  </data>
+  <data name="SelectLanguageItalianSemantic" xml:space="preserve">
+    <value>Changer la langue en italien</value>
+  </data>
+  <data name="SelectLanguagePortugueseSemantic" xml:space="preserve">
+    <value>Changer la langue en portugais</value>
+  </data>
+  <data name="SelectMetricSemantic" xml:space="preserve">
+    <value>Sélectionner le système métrique</value>
+  </data>
+  <data name="SelectImperialSemantic" xml:space="preserve">
+    <value>Sélectionner le système impérial</value>
+  </data>
+  <data name="PurchasePremiumSemantic" xml:space="preserve">
+    <value>Acheter la version premium</value>
+  </data>
+  <data name="PurchaseAllCategoriesSemantic" xml:space="preserve">
+    <value>Acheter toutes les catégories pour 3,99 euros</value>
+  </data>
 </root>
