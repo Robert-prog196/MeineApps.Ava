@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Services;
 using SkiaSharp;
 using WorkTimePro.Models;
@@ -26,6 +28,17 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly IExportService _exportService;
     private readonly IPurchaseService _purchaseService;
     private readonly ITrialService _trialService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPreferencesService _preferences;
+
+    private const string ExtendedStatsExpiryKey = "ExtendedStatsExpiry";
+
+    // Rewarded Ad Overlay
+    [ObservableProperty]
+    private bool _showRewardedAdOverlay;
+
+    /// <summary>Aufgeschobene Aktion nach erfolgreicher Ad-Wiedergabe</summary>
+    private Func<Task>? _pendingAction;
 
     // Color palette for charts
     private static readonly string[] ChartColors = new[]
@@ -43,7 +56,9 @@ public partial class StatisticsViewModel : ObservableObject
         IEmployerService employerService,
         IExportService exportService,
         IPurchaseService purchaseService,
-        ITrialService trialService)
+        ITrialService trialService,
+        IRewardedAdService rewardedAdService,
+        IPreferencesService preferences)
     {
         _database = database;
         _calculation = calculation;
@@ -52,6 +67,8 @@ public partial class StatisticsViewModel : ObservableObject
         _exportService = exportService;
         _purchaseService = purchaseService;
         _trialService = trialService;
+        _rewardedAdService = rewardedAdService;
+        _preferences = preferences;
     }
 
     // === Properties ===
@@ -244,11 +261,47 @@ public partial class StatisticsViewModel : ObservableObject
     [RelayCommand]
     private async Task ChangePeriodAsync(string periodStr)
     {
-        if (Enum.TryParse<StatisticsPeriod>(periodStr, out var period))
+        if (!Enum.TryParse<StatisticsPeriod>(periodStr, out var period))
+            return;
+
+        // Quartal/Jahr erfordern Premium oder Rewarded Ad (24h Zugang)
+        if ((period == StatisticsPeriod.Quarter || period == StatisticsPeriod.Year)
+            && !_purchaseService.IsPremium && !_trialService.IsTrialActive
+            && !HasExtendedStatsAccess())
         {
-            SelectedPeriod = period;
-            await LoadDataAsync();
+            _pendingAction = async () =>
+            {
+                // 24h Zugang gewaehren
+                GrantExtendedStatsAccess();
+                SelectedPeriod = period;
+                await LoadDataAsync();
+            };
+            ShowRewardedAdOverlay = true;
+            return;
         }
+
+        SelectedPeriod = period;
+        await LoadDataAsync();
+    }
+
+    /// <summary>Prueft ob der Nutzer erweiterten Statistik-Zugang hat (24h nach Video)</summary>
+    private bool HasExtendedStatsAccess()
+    {
+        var expiryStr = _preferences.Get<string>(ExtendedStatsExpiryKey, "");
+        if (string.IsNullOrEmpty(expiryStr))
+            return false;
+
+        if (DateTime.TryParse(expiryStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var expiry))
+            return DateTime.UtcNow < expiry;
+
+        return false;
+    }
+
+    /// <summary>Gewaehrt 24h Zugang zu erweiterten Statistik-Zeitraeumen</summary>
+    private void GrantExtendedStatsAccess()
+    {
+        var expiry = DateTime.UtcNow.AddHours(24);
+        _preferences.Set(ExtendedStatsExpiryKey, expiry.ToString("O", CultureInfo.InvariantCulture));
     }
 
     [RelayCommand]
@@ -258,11 +311,19 @@ public partial class StatisticsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExportAsync()
+    private async Task ExportAsync(bool skipPremiumCheck = false)
     {
+        if (!skipPremiumCheck && !_purchaseService.IsPremium && !_trialService.IsTrialActive)
+        {
+            // Soft-Paywall: Ad-Overlay anzeigen statt hart blockieren
+            _pendingAction = () => ExportAsync(skipPremiumCheck: true);
+            ShowRewardedAdOverlay = true;
+            return;
+        }
+
         try
         {
-            // Default to PDF export in Avalonia
+            // Standard-Export als PDF in Avalonia
             IsLoading = true;
             string? filePath = await _exportService.ExportRangeToPdfAsync(StartDate, EndDate);
 
@@ -281,8 +342,29 @@ public partial class StatisticsViewModel : ObservableObject
         }
     }
 
-    // Localized export button text
+    // Lokalisierter Export-Button-Text
     public string ExportButtonText => $"{Icons.Export} {AppStrings.Export}";
+
+    // === Rewarded Ad Commands ===
+
+    [RelayCommand]
+    private async Task WatchAdAsync()
+    {
+        ShowRewardedAdOverlay = false;
+        var success = await _rewardedAdService.ShowAdAsync("monthly_stats");
+        if (success && _pendingAction != null)
+        {
+            await _pendingAction();
+        }
+        _pendingAction = null;
+    }
+
+    [RelayCommand]
+    private void CancelAdOverlay()
+    {
+        ShowRewardedAdOverlay = false;
+        _pendingAction = null;
+    }
 
     // === Calculations ===
 

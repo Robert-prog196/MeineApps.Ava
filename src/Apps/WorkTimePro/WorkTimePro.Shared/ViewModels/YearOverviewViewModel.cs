@@ -24,6 +24,14 @@ public partial class YearOverviewViewModel : ObservableObject
     private readonly IExportService _exportService;
     private readonly IPurchaseService _purchaseService;
     private readonly ITrialService _trialService;
+    private readonly IRewardedAdService _rewardedAdService;
+
+    // Rewarded Ad Overlay
+    [ObservableProperty]
+    private bool _showRewardedAdOverlay;
+
+    /// <summary>Aufgeschobene Aktion nach erfolgreicher Ad-Wiedergabe</summary>
+    private Func<Task>? _pendingAction;
 
     public event Action<string>? NavigationRequested;
     public event Action<string>? MessageRequested;
@@ -92,7 +100,8 @@ public partial class YearOverviewViewModel : ObservableObject
         IVacationService vacationService,
         IExportService exportService,
         IPurchaseService purchaseService,
-        ITrialService trialService)
+        ITrialService trialService,
+        IRewardedAdService rewardedAdService)
     {
         _database = database;
         _calculation = calculation;
@@ -100,6 +109,7 @@ public partial class YearOverviewViewModel : ObservableObject
         _exportService = exportService;
         _purchaseService = purchaseService;
         _trialService = trialService;
+        _rewardedAdService = rewardedAdService;
 
         SelectedYear = DateTime.Today.Year;
         InitializeAxes();
@@ -269,11 +279,13 @@ public partial class YearOverviewViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExportPdfAsync()
+    private async Task ExportPdfAsync(bool skipPremiumCheck = false)
     {
-        if (!IsPremium)
+        if (!skipPremiumCheck && !IsPremium)
         {
-            MessageRequested?.Invoke(AppStrings.PdfExportPremium);
+            // Soft-Paywall: Ad-Overlay anzeigen statt hart blockieren
+            _pendingAction = () => ExportPdfAsync(skipPremiumCheck: true);
+            ShowRewardedAdOverlay = true;
             return;
         }
 
@@ -291,6 +303,27 @@ public partial class YearOverviewViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    // === Rewarded Ad Commands ===
+
+    [RelayCommand]
+    private async Task WatchAdAsync()
+    {
+        ShowRewardedAdOverlay = false;
+        var success = await _rewardedAdService.ShowAdAsync("export");
+        if (success && _pendingAction != null)
+        {
+            await _pendingAction();
+        }
+        _pendingAction = null;
+    }
+
+    [RelayCommand]
+    private void CancelAdOverlay()
+    {
+        ShowRewardedAdOverlay = false;
+        _pendingAction = null;
     }
 
     [RelayCommand]

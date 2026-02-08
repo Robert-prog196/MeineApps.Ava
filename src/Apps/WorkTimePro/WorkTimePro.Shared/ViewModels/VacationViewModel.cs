@@ -29,6 +29,14 @@ public partial class VacationViewModel : ObservableObject
     private readonly IPurchaseService _purchaseService;
     private readonly ITrialService _trialService;
     private readonly ILocalizationService _localization;
+    private readonly IRewardedAdService _rewardedAdService;
+
+    // Rewarded Ad Overlay
+    [ObservableProperty]
+    private bool _showRewardedAdOverlay;
+
+    /// <summary>Aufgeschobene Aktion nach erfolgreicher Ad-Wiedergabe</summary>
+    private Func<Task>? _pendingAction;
 
     [ObservableProperty]
     private int _selectedYear;
@@ -93,13 +101,15 @@ public partial class VacationViewModel : ObservableObject
         IHolidayService holidayService,
         IPurchaseService purchaseService,
         ITrialService trialService,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IRewardedAdService rewardedAdService)
     {
         _vacationService = vacationService;
         _holidayService = holidayService;
         _purchaseService = purchaseService;
         _trialService = trialService;
         _localization = localization;
+        _rewardedAdService = rewardedAdService;
 
         SelectedYear = DateTime.Today.Year;
     }
@@ -183,11 +193,13 @@ public partial class VacationViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AddVacationAsync()
+    private async Task AddVacationAsync(bool skipPremiumCheck = false)
     {
-        if (!IsPremium)
+        if (!skipPremiumCheck && !IsPremium)
         {
-            MessageRequested?.Invoke(AppStrings.PremiumRequired);
+            // Soft-Paywall: Ad-Overlay anzeigen statt hart blockieren
+            _pendingAction = () => AddVacationAsync(skipPremiumCheck: true);
+            ShowRewardedAdOverlay = true;
             return;
         }
 
@@ -226,17 +238,28 @@ public partial class VacationViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task EditQuotaAsync()
+    private async Task EditQuotaAsync(bool skipPremiumCheck = false)
     {
-        if (!IsPremium) return;
+        if (!skipPremiumCheck && !IsPremium)
+        {
+            _pendingAction = () => EditQuotaAsync(skipPremiumCheck: true);
+            ShowRewardedAdOverlay = true;
+            return;
+        }
 
         // TODO: implement platform-specific quota edit dialog
+        await Task.CompletedTask;
     }
 
     [RelayCommand]
-    private async Task CarryOverDaysAsync()
+    private async Task CarryOverDaysAsync(bool skipPremiumCheck = false)
     {
-        if (!IsPremium) return;
+        if (!skipPremiumCheck && !IsPremium)
+        {
+            _pendingAction = () => CarryOverDaysAsync(skipPremiumCheck: true);
+            ShowRewardedAdOverlay = true;
+            return;
+        }
 
         var previousYear = SelectedYear - 1;
         var transferred = await _vacationService.CarryOverRemainingDaysAsync(previousYear, SelectedYear);
@@ -274,6 +297,27 @@ public partial class VacationViewModel : ObservableObject
     private void GoBack()
     {
         NavigationRequested?.Invoke("..");
+    }
+
+    // === Rewarded Ad Commands ===
+
+    [RelayCommand]
+    private async Task WatchAdAsync()
+    {
+        ShowRewardedAdOverlay = false;
+        var success = await _rewardedAdService.ShowAdAsync("vacation_entry");
+        if (success && _pendingAction != null)
+        {
+            await _pendingAction();
+        }
+        _pendingAction = null;
+    }
+
+    [RelayCommand]
+    private void CancelAdOverlay()
+    {
+        ShowRewardedAdOverlay = false;
+        _pendingAction = null;
     }
 
     public List<VacationTypeItem> VacationTypes => new()

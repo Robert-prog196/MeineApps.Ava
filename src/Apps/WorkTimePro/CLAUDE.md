@@ -206,3 +206,31 @@ dotnet build src/Apps/WorkTimePro/WorkTimePro.Android/WorkTimePro.Android.csproj
 - **WorkTimePro.Android.csproj**: Linked AndroidFileShareService.cs
 - **MainActivity.cs**: FileShareServiceFactory vor base.OnCreate gesetzt
 - Build: Shared + Desktop + Android 0 Fehler
+
+## Rewarded Ads - Soft Paywall (07.02.2026)
+
+### Funktionsweise
+- Premium-Features zeigen "Video ODER Premium" Overlay
+- Nutzer kann einmalig per Rewarded Ad freischalten ODER Premium kaufen
+- Premium-Nutzer sehen kein Overlay (direkter Zugang)
+
+### Betroffene ViewModels + Features
+- **VacationViewModel**: `IRewardedAdService` injiziert, Soft Paywall auf `AddVacation`, `EditQuota`, `CarryOver`, Placement: `"vacation_entry"`
+- **YearOverviewViewModel**: `IRewardedAdService` injiziert, Soft Paywall auf `ExportPdf`, Placement: `"export"`
+- **StatisticsViewModel**: `IRewardedAdService` + `IPreferencesService` injiziert, Soft Paywall auf `Export` + erweiterte Zeitraeume (Quartal/Jahr), Placement: `"monthly_stats"`
+  - Extended Stats Gate: Quartal/Jahr-Zeitraeume erfordern Premium oder Rewarded Ad
+  - Nach Video: 24h Zugang via `"ExtendedStatsExpiry"` Key (UTC, DateTimeStyles.RoundtripKind)
+  - `HasExtendedStatsAccess()` + `GrantExtendedStatsAccess()` Helper-Methoden
+
+### Views
+- **VacationView.axaml**: Rewarded-Ad-Overlay mit "Video schauen" + "Premium kaufen" Buttons
+- **YearOverviewView.axaml**: Rewarded-Ad-Overlay (gleiche Struktur)
+- **StatisticsView.axaml**: Rewarded-Ad-Overlay (gleiche Struktur)
+
+### Android Integration
+- **WorkTimePro.Android.csproj**: Linked `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs`
+- **App.axaml.cs**: `RewardedAdServiceFactory` Property fuer Android-Override
+- **MainActivity.cs**: RewardedAdHelper Lifecycle (init, load, dispose)
+
+### Lokalisierung
+- 6 neue resx-Keys in 6 Sprachen: PremiumFeatureTitle, PremiumFeatureDesc, WatchVideoOnce, BuyPremiumUnlimited, VideoRewardSuccess, VideoAdFailed

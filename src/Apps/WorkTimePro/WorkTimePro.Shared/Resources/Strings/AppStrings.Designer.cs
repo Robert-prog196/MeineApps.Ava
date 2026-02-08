@@ -2153,5 +2153,42 @@ namespace WorkTimePro.Resources.Strings {
                 return ResourceManager.GetString("WorkDaysFormat", resourceCulture);
             }
         }
+
+        // Rewarded Ads
+        internal static string PremiumFeatureTitle {
+            get {
+                return ResourceManager.GetString("PremiumFeatureTitle", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeatureDesc {
+            get {
+                return ResourceManager.GetString("PremiumFeatureDesc", resourceCulture);
+            }
+        }
+
+        internal static string WatchVideoOnce {
+            get {
+                return ResourceManager.GetString("WatchVideoOnce", resourceCulture);
+            }
+        }
+
+        internal static string BuyPremiumUnlimited {
+            get {
+                return ResourceManager.GetString("BuyPremiumUnlimited", resourceCulture);
+            }
+        }
+
+        internal static string VideoRewardSuccess {
+            get {
+                return ResourceManager.GetString("VideoRewardSuccess", resourceCulture);
+            }
+        }
+
+        internal static string VideoAdFailed {
+            get {
+                return ResourceManager.GetString("VideoAdFailed", resourceCulture);
+            }
+        }
     }
 }

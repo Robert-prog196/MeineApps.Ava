@@ -989,4 +989,24 @@
     <value>Date range</value>
   </data>
 
+  <!-- Rewarded Ads -->
+  <data name="PremiumFeatureTitle" xml:space="preserve">
+    <value>Premium Feature</value>
+  </data>
+  <data name="PremiumFeatureDesc" xml:space="preserve">
+    <value>This feature requires Premium.</value>
+  </data>
+  <data name="WatchVideoOnce" xml:space="preserve">
+    <value>Watch Video → Use Once</value>
+  </data>
+  <data name="BuyPremiumUnlimited" xml:space="preserve">
+    <value>Buy Premium → Unlimited</value>
+  </data>
+  <data name="VideoRewardSuccess" xml:space="preserve">
+    <value>Feature unlocked!</value>
+  </data>
+  <data name="VideoAdFailed" xml:space="preserve">
+    <value>Could not load video</value>
+  </data>
+
 </root>

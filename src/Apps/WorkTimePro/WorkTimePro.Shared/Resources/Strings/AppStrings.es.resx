@@ -368,4 +368,24 @@
     <value>Periodo</value>
   </data>
 
+  <!-- Rewarded Ads -->
+  <data name="PremiumFeatureTitle" xml:space="preserve">
+    <value>Función Premium</value>
+  </data>
+  <data name="PremiumFeatureDesc" xml:space="preserve">
+    <value>Esta función requiere Premium.</value>
+  </data>
+  <data name="WatchVideoOnce" xml:space="preserve">
+    <value>Ver Video → Usar una vez</value>
+  </data>
+  <data name="BuyPremiumUnlimited" xml:space="preserve">
+    <value>Comprar Premium → Ilimitado</value>
+  </data>
+  <data name="VideoRewardSuccess" xml:space="preserve">
+    <value>¡Función desbloqueada!</value>
+  </data>
+  <data name="VideoAdFailed" xml:space="preserve">
+    <value>No se pudo cargar el video</value>
+  </data>
+
 </root>
