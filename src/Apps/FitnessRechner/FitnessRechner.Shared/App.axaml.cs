@@ -1,6 +1,8 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
@@ -18,6 +20,18 @@ namespace FitnessRechner;
 public partial class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
+
+    /// <summary>
+    /// Factory fuer plattformspezifischen IRewardedAdService (Android setzt RewardedAdHelper).
+    /// Nimmt IServiceProvider entgegen fuer Lazy-Resolution von Abhaengigkeiten.
+    /// </summary>
+    public static Func<IServiceProvider, IRewardedAdService>? RewardedAdServiceFactory { get; set; }
+
+    /// <summary>
+    /// Factory fuer plattformspezifischen IFileShareService.
+    /// Android setzt dies auf AndroidFileShareService.
+    /// </summary>
+    public static Func<IFileShareService>? FileShareServiceFactory { get; set; }
 
     public override void Initialize()
     {
@@ -50,18 +64,140 @@ public partial class App : Application
             }
             else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
             {
-                var vm = Services.GetRequiredService<MainViewModel>();
-                singleViewPlatform.MainView = new MainView
+                try
                 {
-                    DataContext = vm
-                };
+                    // Debug: Views einzeln testen um Crash-Verursacher zu finden
+                    var errors = new System.Text.StringBuilder();
+                    errors.AppendLine("=== VIEW CONSTRUCTION TEST ===\n");
+
+                    // Test 1: Leeres MainView (ohne DataContext)
+                    try
+                    {
+                        var mv = new MainView();
+                        errors.AppendLine("PASS: new MainView()");
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: new MainView()\n{ex.GetType().Name}: {ex.Message}\n");
+                    }
+
+                    // Test 2: HomeView
+                    try
+                    {
+                        var hv = new Views.HomeView();
+                        errors.AppendLine("PASS: new HomeView()");
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: new HomeView()\n{ex.GetType().Name}: {ex.Message}\n");
+                    }
+
+                    // Test 3: ProgressView
+                    try
+                    {
+                        var pv = new Views.ProgressView();
+                        errors.AppendLine("PASS: new ProgressView()");
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: new ProgressView()\n{ex.GetType().Name}: {ex.Message}\n");
+                    }
+
+                    // Test 4: FoodSearchView
+                    try
+                    {
+                        var fv = new Views.FoodSearchView();
+                        errors.AppendLine("PASS: new FoodSearchView()");
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: new FoodSearchView()\n{ex.GetType().Name}: {ex.Message}\n");
+                    }
+
+                    // Test 5: SettingsView
+                    try
+                    {
+                        var sv = new Views.SettingsView();
+                        errors.AppendLine("PASS: new SettingsView()");
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: new SettingsView()\n{ex.GetType().Name}: {ex.Message}\n");
+                    }
+
+                    // Test 6: MainView + DataContext + Attach
+                    var mainViewSuccess = false;
+                    try
+                    {
+                        var vm = Services.GetRequiredService<MainViewModel>();
+                        errors.AppendLine("PASS: MainViewModel resolved");
+
+                        var mainView = new MainView();
+                        mainView.DataContext = vm;
+                        errors.AppendLine("PASS: MainView.DataContext set");
+
+                        singleViewPlatform.MainView = mainView;
+                        errors.AppendLine("PASS: singleViewPlatform.MainView set");
+                        mainViewSuccess = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.AppendLine($"FAIL: MainView attach\n{ex}\n");
+                    }
+
+                    // Falls Fehler: Ergebnis anzeigen
+                    if (!mainViewSuccess)
+                    {
+                        singleViewPlatform.MainView = new ScrollViewer
+                        {
+                            Content = new TextBlock
+                            {
+                                Text = errors.ToString(),
+                                Foreground = Brushes.Red,
+                                FontSize = 11,
+                                TextWrapping = TextWrapping.Wrap,
+                                Margin = new Avalonia.Thickness(12, 40, 12, 16)
+                            }
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    singleViewPlatform.MainView = new ScrollViewer
+                    {
+                        Content = new TextBlock
+                        {
+                            Text = $"STARTUP ERROR:\n\n{ex}",
+                            Foreground = Brushes.Red,
+                            FontSize = 12,
+                            TextWrapping = TextWrapping.Wrap,
+                            Margin = new Avalonia.Thickness(16, 40, 16, 16)
+                        }
+                    };
+                }
             }
 
             base.OnFrameworkInitializationCompleted();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Fatal error during initialization
+            // Auf Android: Fehler im UI anzeigen wenn moeglich
+            if (ApplicationLifetime is ISingleViewApplicationLifetime svp)
+            {
+                svp.MainView = new ScrollViewer
+                {
+                    Content = new TextBlock
+                    {
+                        Text = $"FATAL INIT ERROR:\n\n{ex}",
+                        Foreground = Brushes.Red,
+                        FontSize = 12,
+                        TextWrapping = TextWrapping.Wrap,
+                        Margin = new Avalonia.Thickness(16, 40, 16, 16)
+                    }
+                };
+                base.OnFrameworkInitializationCompleted();
+                return;
+            }
             throw;
         }
     }
@@ -74,6 +210,18 @@ public partial class App : Application
 
         // Premium Services (Ads, Purchases)
         services.AddMeineAppsPremium();
+
+        // Android-Override: Echte Rewarded Ads statt Desktop-Simulator
+        if (RewardedAdServiceFactory != null)
+            services.AddSingleton<IRewardedAdService>(sp => RewardedAdServiceFactory!(sp));
+
+        services.AddSingleton<IScanLimitService, ScanLimitService>();
+
+        // File Share Service (Desktop: Datei oeffnen, Android: Share Intent)
+        if (FileShareServiceFactory != null)
+            services.AddSingleton<IFileShareService>(_ => FileShareServiceFactory!());
+        else
+            services.AddSingleton<IFileShareService, DesktopFileShareService>();
 
         // Localization
         services.AddSingleton<ILocalizationService>(sp =>

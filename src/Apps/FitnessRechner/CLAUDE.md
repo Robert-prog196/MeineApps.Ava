@@ -121,3 +121,60 @@ dotnet build src/Apps/FitnessRechner/FitnessRechner.Android/FitnessRechner.Andro
 - **MainViewModel**: 3 neue Properties (RemoveAdsText, PremiumPriceText, SectionCalculatorsText) + OnLanguageChanged()
 - 4 neue resx-Keys in 6 Sprachen (RemoveAds, PremiumPrice, GetPremium, SectionCalculators)
 - Build: 0 Fehler
+
+### Rewarded Ads - Barcode Scan-Limit (07.02.2026)
+
+#### Funktionsweise
+- Nicht-Premium-Nutzer haben 3 Barcode-Scans pro Tag
+- Per Rewarded Ad erhaelt der Nutzer 5 zusaetzliche Scans
+- Premium-Nutzer haben unbegrenzte Scans (kein Limit)
+
+#### Neue Dateien
+- **IScanLimitService.cs** + **ScanLimitService.cs**: Tages-Limit (3 Scans/Tag), `CanScan`, `RemainingScans`, `UseOneScan()`, `AddBonusScans(5)`, Reset bei Datumswechsel
+
+#### Aenderungen
+- **FoodSearchViewModel**: Scan-Gate vor Barcode-Scan, `WatchAdForScansAsync` Command, `ShowScanLimitOverlay` / `IsScanLimitOverlayVisible`
+- **App.axaml.cs**: `IScanLimitService` DI + `RewardedAdServiceFactory` Property fuer Android-Override
+
+#### Android Integration
+- **FitnessRechner.Android.csproj**: Linked `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs`
+- **MainActivity.cs**: RewardedAdHelper Lifecycle (init, load, dispose)
+
+#### Lokalisierung
+- 4 neue resx-Keys in 6 Sprachen: RemainingScans, ScanLimitTitle, ScanLimitMessage, WatchAdForScans
+
+### Rewarded Ads - 3 neue Features (07.02.2026)
+
+#### Feature 1: ShowAdAsync Placement-Strings
+- **FoodSearchViewModel**: `ShowAdAsync()` → `ShowAdAsync("barcode_scan")` (Placement-Tracking)
+
+#### Feature 2: Wochenanalyse (Weekly Analysis)
+- **ProgressViewModel**: Analyse-Button im Header, Ad-Gate fuer Non-Premium
+  - `RequestAnalysisAsync()`: Premium-Check, zeigt Ad-Overlay wenn noetig
+  - `ConfirmAnalysisAdAsync()`: Zeigt Rewarded Ad ("detail_analysis" Placement)
+  - `GenerateAnalysisReportAsync()`: 7-Tage-Durchschnitte (Gewicht, Kalorien, Wasser, Trend, Zielerreichung)
+  - Properties: ShowAnalysisOverlay, ShowAnalysisAdOverlay, AvgWeightDisplay, AvgCaloriesDisplay, AvgWaterDisplay, TrendDisplay, CalorieTargetDisplay
+- **ProgressView.axaml**: 4-Spalten-Header (Analyse+Export+Add Buttons), Analysis Ad Overlay (ZIndex=80), Analysis Report Overlay (2x3 Grid)
+
+#### Feature 3: Tracking Export (CSV)
+- **ProgressViewModel**: Export-Button im Header, Ad-Gate fuer Non-Premium
+  - `ExportTrackingAsync()`: Premium-Check, zeigt Ad-Overlay wenn noetig
+  - `ConfirmExportAdAsync()`: Zeigt Rewarded Ad ("tracking_export" Placement)
+  - `PerformExportAsync()`: CSV mit 90-Tage-Daten (Date, Weight, BMI, Water, Calories), IFileShareService.ShareFileAsync
+  - Properties: ShowExportAdOverlay
+- **ProgressView.axaml**: Export Ad Overlay (ZIndex=80)
+- **App.axaml.cs**: FileShareServiceFactory + IFileShareService DI-Registrierung (Desktop: DesktopFileShareService, Android: AndroidFileShareService)
+- **Android**: FileProvider Konfiguration (AndroidManifest.xml, file_paths.xml, Linked AndroidFileShareService.cs)
+
+#### Feature 4: Erweiterte Nahrungsmittel-Datenbank (24h Zugang)
+- **FoodSearchViewModel**: "Mehr laden" Hint bei <=5 lokalen Ergebnissen fuer Non-Premium
+  - `CheckExtendedFoodAccess()`: Premium oder gueltige 24h-Freischaltung pruefen
+  - `RequestExtendedDb()` / `ConfirmExtendedDbAdAsync()`: Ad-Gate ("extended_food_db" Placement)
+  - `PerformExtendedSearch()`: maxResults=200 nach Freischaltung
+  - Ablauf-Key: "extended_food_db_expiry" mit ISO 8601 UTC + DateTimeStyles.RoundtripKind
+  - Properties: HasExtendedFoodAccess, ShowExtendedDbOverlay, ShowExtendedDbHint
+- **FoodSearchView.axaml**: Extended DB Hint Card, Scan Limit Ad Overlay, Extended DB Ad Overlay (alle ZIndex=80)
+
+#### Lokalisierung
+- 11 neue resx-Keys in 6 Sprachen: WeeklyAnalysis, WeeklyAnalysisDesc, AvgWeight, AvgCalories, AvgWater, WeightTrend, CalorieTarget, ExportTracking, ExportTrackingDesc, ExtendedFoodDb, ExtendedFoodDbDesc
+- AppStrings.Designer.cs: 11 neue Properties

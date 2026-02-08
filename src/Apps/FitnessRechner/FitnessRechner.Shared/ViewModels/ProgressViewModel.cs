@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FitnessRechner.Models;
@@ -29,6 +31,8 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private readonly IPurchaseService _purchaseService;
     private readonly IFoodSearchService _foodSearchService;
     private readonly IPreferencesService _preferences;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IFileShareService _fileShareService;
 
     private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
     private const string WATER_GOAL_KEY = "daily_water_goal";
@@ -48,12 +52,16 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         ITrackingService trackingService,
         IPurchaseService purchaseService,
         IFoodSearchService foodSearchService,
-        IPreferencesService preferences)
+        IPreferencesService preferences,
+        IRewardedAdService rewardedAdService,
+        IFileShareService fileShareService)
     {
         _trackingService = trackingService;
         _purchaseService = purchaseService;
         _foodSearchService = foodSearchService;
         _preferences = preferences;
+        _rewardedAdService = rewardedAdService;
+        _fileShareService = fileShareService;
     }
 
     #region Tab Selection
@@ -289,6 +297,24 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         AppStrings.Dinner,
         AppStrings.Snack
     ];
+
+    #endregion
+
+    #region Weekly Analysis (Wochenreport)
+
+    [ObservableProperty] private bool _showAnalysisOverlay;
+    [ObservableProperty] private bool _showAnalysisAdOverlay;
+    [ObservableProperty] private string _avgWeightDisplay = "-";
+    [ObservableProperty] private string _avgCaloriesDisplay = "-";
+    [ObservableProperty] private string _avgWaterDisplay = "-";
+    [ObservableProperty] private string _trendDisplay = "-";
+    [ObservableProperty] private string _calorieTargetDisplay = "-";
+
+    #endregion
+
+    #region Tracking Export
+
+    [ObservableProperty] private bool _showExportAdOverlay;
 
     #endregion
 
@@ -668,6 +694,228 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
             ShowUndoBanner = false;
         }
     }
+
+    #region Weekly Analysis Commands
+
+    /// <summary>
+    /// Analyse anfordern. Premium: direkt zeigen. Sonst: Ad-Overlay.
+    /// </summary>
+    [RelayCommand]
+    private async Task RequestAnalysisAsync()
+    {
+        if (_purchaseService.IsPremium)
+        {
+            await GenerateAnalysisReportAsync();
+            ShowAnalysisOverlay = true;
+        }
+        else
+        {
+            ShowAnalysisAdOverlay = true;
+        }
+    }
+
+    /// <summary>
+    /// User bestaetigt: Video schauen fuer Wochenreport.
+    /// </summary>
+    [RelayCommand]
+    private async Task ConfirmAnalysisAdAsync()
+    {
+        ShowAnalysisAdOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("detail_analysis");
+        if (success)
+        {
+            await GenerateAnalysisReportAsync();
+            ShowAnalysisOverlay = true;
+        }
+    }
+
+    /// <summary>
+    /// Analyse-Overlay schliessen.
+    /// </summary>
+    [RelayCommand]
+    private void CloseAnalysis()
+    {
+        ShowAnalysisOverlay = false;
+        ShowAnalysisAdOverlay = false;
+    }
+
+    /// <summary>
+    /// Berechnet Durchschnittswerte der letzten 7 Tage.
+    /// </summary>
+    private async Task GenerateAnalysisReportAsync()
+    {
+        var startDate = DateTime.Today.AddDays(-6);
+        var endDate = DateTime.Today;
+
+        // Gewicht-Daten (letzte 7 Tage)
+        var weightEntries = await _trackingService.GetEntriesAsync(TrackingType.Weight, startDate, endDate);
+        if (weightEntries.Count > 0)
+        {
+            var avgWeight = weightEntries.Average(e => e.Value);
+            AvgWeightDisplay = $"{avgWeight:F1} kg";
+
+            // Trend: Differenz erstes und letztes Gewicht
+            var sorted = weightEntries.OrderBy(e => e.Date).ToList();
+            if (sorted.Count >= 2)
+            {
+                var diff = sorted[^1].Value - sorted[0].Value;
+                TrendDisplay = diff >= 0 ? $"+{diff:F1} kg" : $"{diff:F1} kg";
+            }
+            else
+            {
+                TrendDisplay = "-";
+            }
+        }
+        else
+        {
+            AvgWeightDisplay = "-";
+            TrendDisplay = "-";
+        }
+
+        // Kalorien-Daten (letzte 7 Tage)
+        double totalCals = 0;
+        int daysWithCals = 0;
+        for (int i = 0; i < 7; i++)
+        {
+            var date = startDate.AddDays(i);
+            var summary = await _foodSearchService.GetDailySummaryAsync(date);
+            if (summary.TotalCalories > 0)
+            {
+                totalCals += summary.TotalCalories;
+                daysWithCals++;
+            }
+        }
+        AvgCaloriesDisplay = daysWithCals > 0 ? $"{totalCals / daysWithCals:F0} kcal" : "-";
+
+        // Kalorienziel-Erreichung
+        var calorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 0.0);
+        if (calorieGoal > 0 && daysWithCals > 0)
+        {
+            var avgCals = totalCals / daysWithCals;
+            var percentage = avgCals / calorieGoal * 100;
+            CalorieTargetDisplay = $"{percentage:F0}%";
+        }
+        else
+        {
+            CalorieTargetDisplay = "-";
+        }
+
+        // Wasser-Daten (letzte 7 Tage)
+        var waterEntries = await _trackingService.GetEntriesAsync(TrackingType.Water, startDate, endDate);
+        if (waterEntries.Count > 0)
+        {
+            var avgWater = waterEntries.Average(e => e.Value);
+            AvgWaterDisplay = $"{avgWater:F0} ml";
+        }
+        else
+        {
+            AvgWaterDisplay = "-";
+        }
+    }
+
+    #endregion
+
+    #region Export Commands
+
+    /// <summary>
+    /// Tracking-Daten exportieren. Premium: direkt. Sonst: Ad-Overlay.
+    /// </summary>
+    [RelayCommand]
+    private async Task ExportTrackingAsync()
+    {
+        if (_purchaseService.IsPremium)
+        {
+            await PerformExportAsync();
+        }
+        else
+        {
+            ShowExportAdOverlay = true;
+        }
+    }
+
+    /// <summary>
+    /// User bestaetigt: Video schauen fuer Export.
+    /// </summary>
+    [RelayCommand]
+    private async Task ConfirmExportAdAsync()
+    {
+        ShowExportAdOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("tracking_export");
+        if (success)
+        {
+            await PerformExportAsync();
+        }
+    }
+
+    /// <summary>
+    /// Export-Ad-Overlay schliessen.
+    /// </summary>
+    [RelayCommand]
+    private void CancelExport()
+    {
+        ShowExportAdOverlay = false;
+    }
+
+    /// <summary>
+    /// Erstellt CSV-Export und teilt die Datei.
+    /// </summary>
+    private async Task PerformExportAsync()
+    {
+        try
+        {
+            var exportDir = _fileShareService.GetExportDirectory("FitnessRechner");
+            var fileName = $"tracking_export_{DateTime.Today:yyyy-MM-dd}.csv";
+            var filePath = Path.Combine(exportDir, fileName);
+
+            var sb = new StringBuilder();
+            // CSV Header
+            sb.AppendLine("Date,Weight (kg),BMI,Water (ml),Calories");
+
+            // Letzte 90 Tage exportieren
+            var startDate = DateTime.Today.AddDays(-89);
+            var endDate = DateTime.Today;
+
+            var weightEntries = await _trackingService.GetEntriesAsync(TrackingType.Weight, startDate, endDate);
+            var bmiEntries = await _trackingService.GetEntriesAsync(TrackingType.Bmi, startDate, endDate);
+            var waterEntries = await _trackingService.GetEntriesAsync(TrackingType.Water, startDate, endDate);
+
+            // Alle Daten nach Datum zusammenfuehren
+            var weightByDate = weightEntries.ToDictionary(e => e.Date.Date, e => e.Value);
+            var bmiByDate = bmiEntries.ToDictionary(e => e.Date.Date, e => e.Value);
+            var waterByDate = waterEntries.ToDictionary(e => e.Date.Date, e => e.Value);
+
+            for (int i = 0; i < 90; i++)
+            {
+                var date = startDate.AddDays(i);
+                var weight = weightByDate.TryGetValue(date, out var w) ? w.ToString("F1", CultureInfo.InvariantCulture) : "";
+                var bmi = bmiByDate.TryGetValue(date, out var b) ? b.ToString("F1", CultureInfo.InvariantCulture) : "";
+                var water = waterByDate.TryGetValue(date, out var wa) ? wa.ToString("F0", CultureInfo.InvariantCulture) : "";
+
+                // Kalorien fuer den Tag
+                var summary = await _foodSearchService.GetDailySummaryAsync(date);
+                var cals = summary.TotalCalories > 0 ? summary.TotalCalories.ToString("F0", CultureInfo.InvariantCulture) : "";
+
+                // Nur Zeilen mit mindestens einem Wert
+                if (!string.IsNullOrEmpty(weight) || !string.IsNullOrEmpty(bmi) ||
+                    !string.IsNullOrEmpty(water) || !string.IsNullOrEmpty(cals))
+                {
+                    sb.AppendLine($"{date:yyyy-MM-dd},{weight},{bmi},{water},{cals}");
+                }
+            }
+
+            await File.WriteAllTextAsync(filePath, sb.ToString());
+            await _fileShareService.ShareFileAsync(filePath, AppStrings.ExportTracking, "text/csv");
+            MessageRequested?.Invoke(AppStrings.AlertSuccess, AppStrings.ExportTracking);
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(AppStrings.Error, AppStrings.ErrorSavingData);
+        }
+    }
+
+    #endregion
 
     #endregion
 

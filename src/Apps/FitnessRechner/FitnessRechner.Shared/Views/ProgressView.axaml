@@ -17,19 +17,41 @@
   <Grid RowDefinitions="Auto,Auto,*,Auto">
 
     <!-- ============================================ -->
-    <!-- Row 0: Header with Title + Add Button        -->
+    <!-- Row 0: Header with Title + Action Buttons    -->
     <!-- ============================================ -->
     <Border Grid.Row="0"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             Padding="16,12">
-      <Grid ColumnDefinitions="*,Auto">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto">
         <TextBlock Text="{loc:Translate Progress}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
+
+        <!-- Analyse Button -->
         <Button Grid.Column="1"
+                Classes="Text Small"
+                Command="{Binding RequestAnalysisCommand}"
+                ToolTip.Tip="{loc:Translate WeeklyAnalysis}"
+                Margin="0,0,4,0">
+          <mi:MaterialIcon Kind="ChartBox" Width="20" Height="20"
+                           Foreground="{DynamicResource InfoBrush}" />
+        </Button>
+
+        <!-- Export Button -->
+        <Button Grid.Column="2"
+                Classes="Text Small"
+                Command="{Binding ExportTrackingCommand}"
+                ToolTip.Tip="{loc:Translate ExportTracking}"
+                Margin="0,0,4,0">
+          <mi:MaterialIcon Kind="FileExport" Width="20" Height="20"
+                           Foreground="{DynamicResource SuccessBrush}" />
+        </Button>
+
+        <!-- Add Button -->
+        <Button Grid.Column="3"
                 Classes="Primary Small"
                 Command="{Binding ToggleAddFormCommand}"
                 IsVisible="{Binding !ShowAddForm}">
@@ -796,6 +818,168 @@
           <TextBlock Text="{loc:Translate Undo}" FontWeight="Bold" />
         </Button>
       </Grid>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Analysis Ad Overlay (Gate)                    -->
+    <!-- ============================================ -->
+    <Border Grid.RowSpan="4"
+            Background="#CC000000"
+            IsVisible="{Binding ShowAnalysisAdOverlay}"
+            ZIndex="80">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="350"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <mi:MaterialIcon Kind="ChartBox" Width="48" Height="48"
+                           Foreground="{DynamicResource InfoBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate WeeklyAnalysis}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate WeeklyAnalysisDesc}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     TextWrapping="Wrap" TextAlignment="Center" />
+          <Button Classes="Primary"
+                  Command="{Binding ConfirmAnalysisAdCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Play" Width="20" Height="20" />
+              <TextBlock Text="{loc:Translate WeeklyAnalysis}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Classes="Text"
+                  Command="{Binding CloseAnalysisCommand}"
+                  HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate Cancel}"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </Button>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Analysis Report Overlay                       -->
+    <!-- ============================================ -->
+    <Border Grid.RowSpan="4"
+            Background="#CC000000"
+            IsVisible="{Binding ShowAnalysisOverlay}"
+            ZIndex="80">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="400"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{loc:Translate WeeklyAnalysis}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+
+          <!-- Report-Daten -->
+          <Border Classes="Card" Padding="16">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="16" RowSpacing="12">
+              <!-- Durchschn. Gewicht -->
+              <StackPanel>
+                <TextBlock Text="{loc:Translate AvgWeight}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding AvgWeightDisplay}" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}" />
+              </StackPanel>
+
+              <!-- Gewichtstrend -->
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{loc:Translate WeightTrend}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding TrendDisplay}" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource InfoBrush}" />
+              </StackPanel>
+
+              <!-- Durchschn. Kalorien -->
+              <StackPanel Grid.Row="1">
+                <TextBlock Text="{loc:Translate AvgCalories}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding AvgCaloriesDisplay}" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource ErrorBrush}" />
+              </StackPanel>
+
+              <!-- Kalorienziel-Erreichung -->
+              <StackPanel Grid.Row="1" Grid.Column="1">
+                <TextBlock Text="{loc:Translate CalorieTarget}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding CalorieTargetDisplay}" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource WarningBrush}" />
+              </StackPanel>
+
+              <!-- Durchschn. Wasser -->
+              <StackPanel Grid.Row="2">
+                <TextBlock Text="{loc:Translate AvgWater}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding AvgWaterDisplay}" FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource InfoBrush}" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <Button Classes="Primary"
+                  Command="{Binding CloseAnalysisCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <TextBlock Text="{loc:Translate OK}" />
+          </Button>
+        </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- ============================================ -->
+    <!-- Export Ad Overlay                             -->
+    <!-- ============================================ -->
+    <Border Grid.RowSpan="4"
+            Background="#CC000000"
+            IsVisible="{Binding ShowExportAdOverlay}"
+            ZIndex="80">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="350"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <mi:MaterialIcon Kind="FileExport" Width="48" Height="48"
+                           Foreground="{DynamicResource SuccessBrush}"
+                           HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate ExportTracking}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{loc:Translate ExportTrackingDesc}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     TextWrapping="Wrap" TextAlignment="Center" />
+          <Button Classes="Primary"
+                  Command="{Binding ConfirmExportAdCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Play" Width="20" Height="20" />
+              <TextBlock Text="{loc:Translate ExportTracking}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button Classes="Text"
+                  Command="{Binding CancelExportCommand}"
+                  HorizontalAlignment="Center">
+            <TextBlock Text="{loc:Translate Cancel}"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </Button>
+        </StackPanel>
+      </Border>
     </Border>
 
   </Grid>

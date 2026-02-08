@@ -328,4 +328,27 @@
   <data name="PremiumPrice" xml:space="preserve"><value>From 3.99 € - one-time</value></data>
   <data name="GetPremium" xml:space="preserve"><value>Go Premium</value></data>
   <data name="SectionCalculators" xml:space="preserve"><value>Calculators</value></data>
+
+  <!-- Scan Limit -->
+  <data name="RemainingScans" xml:space="preserve"><value>{0} scans remaining</value></data>
+  <data name="ScanLimitTitle" xml:space="preserve"><value>Scan limit reached</value></data>
+  <data name="ScanLimitMessage" xml:space="preserve"><value>You have used all free scans for today. Watch a short video to get 5 more scans!</value></data>
+  <data name="WatchAdForScans" xml:space="preserve"><value>Watch video for 5 scans</value></data>
+
+  <!-- Weekly Analysis -->
+  <data name="WeeklyAnalysis" xml:space="preserve"><value>Weekly Analysis</value></data>
+  <data name="WeeklyAnalysisDesc" xml:space="preserve"><value>Watch a video for your weekly report</value></data>
+  <data name="AvgWeight" xml:space="preserve"><value>Avg. Weight</value></data>
+  <data name="AvgCalories" xml:space="preserve"><value>Avg. Calories</value></data>
+  <data name="AvgWater" xml:space="preserve"><value>Avg. Water</value></data>
+  <data name="WeightTrend" xml:space="preserve"><value>Weight Trend</value></data>
+  <data name="CalorieTarget" xml:space="preserve"><value>Calorie Target</value></data>
+
+  <!-- Tracking Export -->
+  <data name="ExportTracking" xml:space="preserve"><value>Export Tracking</value></data>
+  <data name="ExportTrackingDesc" xml:space="preserve"><value>Watch a video to export your data</value></data>
+
+  <!-- Extended Food Database -->
+  <data name="ExtendedFoodDb" xml:space="preserve"><value>Extended Database</value></data>
+  <data name="ExtendedFoodDbDesc" xml:space="preserve"><value>Watch a video for 24h access to more foods</value></data>
 </root>

@@ -326,4 +326,27 @@
   <data name="PremiumPrice" xml:space="preserve"><value>A partir de 3,99 € – pagamento único</value></data>
   <data name="GetPremium" xml:space="preserve"><value>Obter Premium</value></data>
   <data name="SectionCalculators" xml:space="preserve"><value>Calculadoras</value></data>
+
+  <!-- Scan Limit -->
+  <data name="RemainingScans" xml:space="preserve"><value>{0} digitalizacoes restantes</value></data>
+  <data name="ScanLimitTitle" xml:space="preserve"><value>Limite de digitalizacoes atingido</value></data>
+  <data name="ScanLimitMessage" xml:space="preserve"><value>Voce usou todas as digitalizacoes gratuitas de hoje. Assista um video curto para obter 5 digitalizacoes extras!</value></data>
+  <data name="WatchAdForScans" xml:space="preserve"><value>Assistir video para 5 digitalizacoes</value></data>
+
+  <!-- Weekly Analysis -->
+  <data name="WeeklyAnalysis" xml:space="preserve"><value>Analise semanal</value></data>
+  <data name="WeeklyAnalysisDesc" xml:space="preserve"><value>Assista um video para seu relatorio semanal</value></data>
+  <data name="AvgWeight" xml:space="preserve"><value>Peso medio</value></data>
+  <data name="AvgCalories" xml:space="preserve"><value>Calorias medias</value></data>
+  <data name="AvgWater" xml:space="preserve"><value>Agua media</value></data>
+  <data name="WeightTrend" xml:space="preserve"><value>Tendencia de peso</value></data>
+  <data name="CalorieTarget" xml:space="preserve"><value>Meta calorica</value></data>
+
+  <!-- Tracking Export -->
+  <data name="ExportTracking" xml:space="preserve"><value>Exportar rastreamento</value></data>
+  <data name="ExportTrackingDesc" xml:space="preserve"><value>Assista um video para exportar seus dados</value></data>
+
+  <!-- Extended Food Database -->
+  <data name="ExtendedFoodDb" xml:space="preserve"><value>Banco de dados estendido</value></data>
+  <data name="ExtendedFoodDbDesc" xml:space="preserve"><value>Assista um video para 24h de acesso a mais alimentos</value></data>
 </root>

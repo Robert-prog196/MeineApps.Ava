@@ -15,6 +15,8 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     private readonly IFoodSearchService _foodSearchService;
     private readonly IPurchaseService _purchaseService;
     private readonly IPreferencesService _preferences;
+    private readonly IScanLimitService _scanLimitService;
+    private readonly IRewardedAdService _rewardedAdService;
     private CancellationTokenSource? _searchCancellationTokenSource;
 
     private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
@@ -35,14 +37,20 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     public FoodSearchViewModel(
         IFoodSearchService foodSearchService,
         IPurchaseService purchaseService,
-        IPreferencesService preferences)
+        IPreferencesService preferences,
+        IScanLimitService scanLimitService,
+        IRewardedAdService rewardedAdService)
     {
         _foodSearchService = foodSearchService;
         _purchaseService = purchaseService;
         _preferences = preferences;
+        _scanLimitService = scanLimitService;
+        _rewardedAdService = rewardedAdService;
         LoadCalorieGoal();
         LoadMacroGoals();
         UpdateShowAds();
+        UpdateRemainingScans();
+        CheckExtendedFoodAccess();
     }
 
     /// <summary>
@@ -66,12 +74,24 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _hasResults;
     [ObservableProperty] private bool _hasMoreResults;
 
+    // Erweiterte Food-Datenbank (24h Online-Zugang via Rewarded Ad)
+    [ObservableProperty] private bool _hasExtendedFoodAccess;
+    [ObservableProperty] private bool _showExtendedDbOverlay;
+    [ObservableProperty] private bool _showExtendedDbHint;
+
+    private const string EXTENDED_FOOD_DB_EXPIRY_KEY = "ExtendedFoodDbExpiry";
+
     // Pagination
     private List<FoodSearchResult> _allSearchResults = [];
     private const int RESULTS_PAGE_SIZE = 15;
 
     // Ads
     [ObservableProperty] private bool _showAds;
+
+    // Scan-Limit (3 kostenlose Scans pro Tag, +5 via Rewarded Ad)
+    [ObservableProperty] private bool _showScanLimitOverlay;
+    [ObservableProperty] private int _remainingScansDisplay;
+    [ObservableProperty] private string _remainingScansText = "";
 
     // Undo functionality
     [ObservableProperty] private bool _showUndoBanner;
@@ -229,6 +249,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
         HasResults = SearchResults.Count > 0;
         HasMoreResults = _allSearchResults.Count > RESULTS_PAGE_SIZE;
         IsSearching = false;
+        UpdateExtendedDbHint();
     }
 
     [RelayCommand]
@@ -466,7 +487,55 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void OpenBarcodeScanner()
     {
+        // Scan-Limit pruefen (Premium-Nutzer sind unbegrenzt)
+        if (!_scanLimitService.CanScan)
+        {
+            ShowScanLimitOverlay = true;
+            return;
+        }
+
+        _scanLimitService.UseOneScan();
+        UpdateRemainingScans();
         NavigationRequested?.Invoke("BarcodeScannerPage");
+    }
+
+    /// <summary>
+    /// Rewarded Ad schauen um +5 Scans zu erhalten, danach wird der blockierte Scan ausgefuehrt.
+    /// </summary>
+    [RelayCommand]
+    private async Task WatchAdForScansAsync()
+    {
+        ShowScanLimitOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("barcode_scan");
+        if (success)
+        {
+            _scanLimitService.AddScans(5);
+            UpdateRemainingScans();
+
+            // Blockierten Scan jetzt ausfuehren
+            _scanLimitService.UseOneScan();
+            UpdateRemainingScans();
+            NavigationRequested?.Invoke("BarcodeScannerPage");
+        }
+    }
+
+    /// <summary>
+    /// Scan-Limit Overlay schliessen ohne Ad zu schauen.
+    /// </summary>
+    [RelayCommand]
+    private void CancelScanLimit()
+    {
+        ShowScanLimitOverlay = false;
+    }
+
+    /// <summary>
+    /// Aktualisiert die Anzeige der verbleibenden Scans.
+    /// </summary>
+    private void UpdateRemainingScans()
+    {
+        RemainingScansDisplay = _scanLimitService.RemainingScans;
+        RemainingScansText = string.Format(AppStrings.RemainingScans, RemainingScansDisplay);
     }
 
     private void LoadMacroGoals()
@@ -585,6 +654,8 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     public void OnAppearing()
     {
         UpdateShowAds();
+        UpdateRemainingScans();
+        CheckExtendedFoodAccess();
         _ = SafeLoadOnAppearingAsync();
     }
 
@@ -652,6 +723,111 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
         }
         IsSelectedFoodFavorite = await _foodSearchService.IsFavoriteAsync(SelectedFood.Name);
     }
+
+    #region Extended Food Database
+
+    /// <summary>
+    /// Prueft ob 24h erweiterter Zugang aktiv ist.
+    /// </summary>
+    private void CheckExtendedFoodAccess()
+    {
+        if (_purchaseService.IsPremium)
+        {
+            HasExtendedFoodAccess = true;
+            return;
+        }
+
+        var expiryStr = _preferences.Get(EXTENDED_FOOD_DB_EXPIRY_KEY, "");
+        if (!string.IsNullOrEmpty(expiryStr) &&
+            DateTime.TryParse(expiryStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var expiry) &&
+            DateTime.UtcNow < expiry)
+        {
+            HasExtendedFoodAccess = true;
+        }
+        else
+        {
+            HasExtendedFoodAccess = false;
+        }
+    }
+
+    /// <summary>
+    /// Zeigt "Mehr laden" Hint wenn lokale Suche wenig Ergebnisse hat.
+    /// </summary>
+    private void UpdateExtendedDbHint()
+    {
+        // Hint zeigen wenn: nicht Premium, kein Extended Access, und wenige Ergebnisse
+        ShowExtendedDbHint = !_purchaseService.IsPremium
+            && !HasExtendedFoodAccess
+            && HasResults
+            && _allSearchResults.Count <= 5;
+    }
+
+    /// <summary>
+    /// User will erweiterte Datenbank nutzen. Zeigt Ad-Overlay.
+    /// </summary>
+    [RelayCommand]
+    private void RequestExtendedDb()
+    {
+        ShowExtendedDbOverlay = true;
+    }
+
+    /// <summary>
+    /// User bestaetigt: Video schauen fuer 24h erweiterten Zugang.
+    /// </summary>
+    [RelayCommand]
+    private async Task ConfirmExtendedDbAdAsync()
+    {
+        ShowExtendedDbOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("extended_food_db");
+        if (success)
+        {
+            // 24h Zugang freischalten
+            var expiry = DateTime.UtcNow.AddHours(24);
+            _preferences.Set(EXTENDED_FOOD_DB_EXPIRY_KEY, expiry.ToString("O"));
+            HasExtendedFoodAccess = true;
+            ShowExtendedDbHint = false;
+
+            // Suche mit erweiterter DB wiederholen (alle 114 Foods statt Top-Ergebnisse)
+            if (!string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                PerformExtendedSearch(SearchQuery);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Extended DB Overlay schliessen.
+    /// </summary>
+    [RelayCommand]
+    private void CancelExtendedDb()
+    {
+        ShowExtendedDbOverlay = false;
+    }
+
+    /// <summary>
+    /// Erweiterte Suche: Liefert alle Ergebnisse (keine Score-Filterung).
+    /// </summary>
+    private void PerformExtendedSearch(string query)
+    {
+        IsSearching = true;
+
+        // Erweiterte Suche mit hoeherem Limit
+        _allSearchResults = _foodSearchService.Search(query, 200).ToList();
+
+        SearchResults.Clear();
+        var firstPage = _allSearchResults.Take(RESULTS_PAGE_SIZE);
+        foreach (var result in firstPage)
+        {
+            SearchResults.Add(result);
+        }
+
+        HasResults = SearchResults.Count > 0;
+        HasMoreResults = _allSearchResults.Count > RESULTS_PAGE_SIZE;
+        IsSearching = false;
+    }
+
+    #endregion
 
     // IDisposable instead of Finalizer to avoid GC-Thread issues
     public void Dispose()

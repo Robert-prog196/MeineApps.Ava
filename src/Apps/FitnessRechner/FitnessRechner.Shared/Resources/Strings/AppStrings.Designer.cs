@@ -1550,5 +1550,95 @@ namespace FitnessRechner.Resources.Strings {
                 return ResourceManager.GetString("SectionCalculators", resourceCulture);
             }
         }
+
+        public static string RemainingScans {
+            get {
+                return ResourceManager.GetString("RemainingScans", resourceCulture);
+            }
+        }
+
+        public static string ScanLimitTitle {
+            get {
+                return ResourceManager.GetString("ScanLimitTitle", resourceCulture);
+            }
+        }
+
+        public static string ScanLimitMessage {
+            get {
+                return ResourceManager.GetString("ScanLimitMessage", resourceCulture);
+            }
+        }
+
+        public static string WatchAdForScans {
+            get {
+                return ResourceManager.GetString("WatchAdForScans", resourceCulture);
+            }
+        }
+
+        public static string WeeklyAnalysis {
+            get {
+                return ResourceManager.GetString("WeeklyAnalysis", resourceCulture);
+            }
+        }
+
+        public static string WeeklyAnalysisDesc {
+            get {
+                return ResourceManager.GetString("WeeklyAnalysisDesc", resourceCulture);
+            }
+        }
+
+        public static string AvgWeight {
+            get {
+                return ResourceManager.GetString("AvgWeight", resourceCulture);
+            }
+        }
+
+        public static string AvgCalories {
+            get {
+                return ResourceManager.GetString("AvgCalories", resourceCulture);
+            }
+        }
+
+        public static string AvgWater {
+            get {
+                return ResourceManager.GetString("AvgWater", resourceCulture);
+            }
+        }
+
+        public static string WeightTrend {
+            get {
+                return ResourceManager.GetString("WeightTrend", resourceCulture);
+            }
+        }
+
+        public static string CalorieTarget {
+            get {
+                return ResourceManager.GetString("CalorieTarget", resourceCulture);
+            }
+        }
+
+        public static string ExportTracking {
+            get {
+                return ResourceManager.GetString("ExportTracking", resourceCulture);
+            }
+        }
+
+        public static string ExportTrackingDesc {
+            get {
+                return ResourceManager.GetString("ExportTrackingDesc", resourceCulture);
+            }
+        }
+
+        public static string ExtendedFoodDb {
+            get {
+                return ResourceManager.GetString("ExtendedFoodDb", resourceCulture);
+            }
+        }
+
+        public static string ExtendedFoodDbDesc {
+            get {
+                return ResourceManager.GetString("ExtendedFoodDbDesc", resourceCulture);
+            }
+        }
     }
 }
