@@ -4,6 +4,7 @@ using HandwerkerRechner.Models;
 using HandwerkerRechner.Services;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerRechner.ViewModels.Floor;
 
@@ -14,6 +15,10 @@ public partial class FlooringCalculatorViewModel : ObservableObject
     private readonly ILocalizationService _localization;
     private readonly ICalculationHistoryService _historyService;
     private readonly IUnitConverterService _unitConverter;
+    private readonly IMaterialExportService _exportService;
+    private readonly IFileShareService _fileShareService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
     private string? _currentProjectId;
 
     /// <summary>
@@ -47,13 +52,21 @@ public partial class FlooringCalculatorViewModel : ObservableObject
         IProjectService projectService,
         ILocalizationService localization,
         ICalculationHistoryService historyService,
-        IUnitConverterService unitConverter)
+        IUnitConverterService unitConverter,
+        IMaterialExportService exportService,
+        IFileShareService fileShareService,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService)
     {
         _craftEngine = craftEngine;
         _projectService = projectService;
         _localization = localization;
         _historyService = historyService;
         _unitConverter = unitConverter;
+        _exportService = exportService;
+        _fileShareService = fileShareService;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
 
         _unitConverter.UnitSystemChanged += OnUnitSystemChanged;
     }
@@ -327,6 +340,47 @@ public partial class FlooringCalculatorViewModel : ObservableObject
         }
         catch (Exception)
         {
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportMaterialList()
+    {
+        if (!HasResult || Result == null) return;
+
+        try
+        {
+            if (!_purchaseService.IsPremium)
+            {
+                var adResult = await _rewardedAdService.ShowAdAsync("material_pdf");
+                if (!adResult) return;
+            }
+
+            var calcType = _localization.GetString("CalcFlooring") ?? "Flooring";
+            var inputs = new Dictionary<string, string>
+            {
+                [_localization.GetString("RoomLength") ?? "Room length"] = $"{RoomLength:F1} m",
+                [_localization.GetString("RoomWidth") ?? "Room width"] = $"{RoomWidth:F1} m",
+                [_localization.GetString("BoardLength") ?? "Board length"] = $"{BoardLength:F2} m",
+                [_localization.GetString("BoardWidth") ?? "Board width"] = $"{BoardWidth} cm",
+                [_localization.GetString("Waste") ?? "Waste"] = $"{WastePercentage} %"
+            };
+            var results = new Dictionary<string, string>
+            {
+                [_localization.GetString("Area") ?? "Area"] = AreaDisplay,
+                [_localization.GetString("BoardsNeeded") ?? "Boards needed"] = BoardsNeededDisplay,
+                [_localization.GetString("BoardsWithWaste") ?? "With waste"] = BoardsWithWasteDisplay
+            };
+            if (ShowCost && PricePerBoard > 0)
+                results[_localization.GetString("TotalCost") ?? "Total cost"] = TotalCostDisplay;
+
+            var path = await _exportService.ExportToPdfAsync(calcType, inputs, results);
+            await _fileShareService.ShareFileAsync(path, _localization.GetString("ShareMaterialList") ?? "Share", "application/pdf");
+            MessageRequested?.Invoke(_localization.GetString("Success") ?? "Success", _localization.GetString("PdfExportSuccess") ?? "PDF exported!");
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(_localization.GetString("Error") ?? "Error", _localization.GetString("PdfExportFailed") ?? "Export failed.");
         }
     }
 

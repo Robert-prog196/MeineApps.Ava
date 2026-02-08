@@ -78,17 +78,27 @@
                     </StackPanel>
                   </Button>
 
-                  <!-- Delete Button -->
-                  <Button Grid.Column="1"
-                          Command="{Binding $parent[UserControl].((vm:ProjectsViewModel)DataContext).DeleteProjectCommand}"
-                          CommandParameter="{Binding}"
-                          Classes="Text"
-                          VerticalAlignment="Top"
-                          Padding="12"
-                          Margin="0,4,4,0">
-                    <mi:MaterialIcon Kind="Delete" Width="20" Height="20"
-                                     Foreground="{DynamicResource TextMutedBrush}" />
-                  </Button>
+                  <!-- Aktion-Buttons (Export + Delete) -->
+                  <StackPanel Grid.Column="1" Spacing="0"
+                              VerticalAlignment="Top"
+                              Margin="0,4,4,0">
+                    <!-- Export als PDF -->
+                    <Button Command="{Binding $parent[UserControl].((vm:ProjectsViewModel)DataContext).ExportProjectCommand}"
+                            CommandParameter="{Binding}"
+                            Classes="Text"
+                            Padding="12">
+                      <mi:MaterialIcon Kind="FilePdfBox" Width="20" Height="20"
+                                       Foreground="{DynamicResource AccentBrush}" />
+                    </Button>
+                    <!-- Loeschen -->
+                    <Button Command="{Binding $parent[UserControl].((vm:ProjectsViewModel)DataContext).DeleteProjectCommand}"
+                            CommandParameter="{Binding}"
+                            Classes="Text"
+                            Padding="12">
+                      <mi:MaterialIcon Kind="Delete" Width="20" Height="20"
+                                       Foreground="{DynamicResource TextMutedBrush}" />
+                    </Button>
+                  </StackPanel>
 
                 </Grid>
               </Border>

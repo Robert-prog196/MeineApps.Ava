@@ -1704,4 +1704,56 @@ Coverage decreases on rough surfaces!</value>
   <data name="MoreCategories" xml:space="preserve">
     <value>More Categories</value>
   </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PremiumCalculatorsLocked" xml:space="preserve">
+    <value>Unlock Premium Calculators</value>
+  </data>
+  <data name="WatchVideoFor30Min" xml:space="preserve">
+    <value>Watch a video for 30 min access to all premium calculators.</value>
+  </data>
+  <data name="AccessGranted" xml:space="preserve">
+    <value>Access granted!</value>
+  </data>
+  <data name="AccessExpiresIn" xml:space="preserve">
+    <value>Access expires in {0} min</value>
+  </data>
+  <data name="TemporaryAccessActive" xml:space="preserve">
+    <value>Premium access active</value>
+  </data>
+  <data name="VideoFor30Min" xml:space="preserve">
+    <value>Watch Video → 30 Min Access</value>
+  </data>
+
+  <!-- Rewarded Ads - Extended History -->
+  <data name="ExtendedHistoryTitle" xml:space="preserve">
+    <value>Extended History</value>
+  </data>
+  <data name="ExtendedHistoryDesc" xml:space="preserve">
+    <value>Watch a video for 24h access to 30 calculations</value>
+  </data>
+
+  <!-- Rewarded Ads - Material Export -->
+  <data name="ExportMaterialList" xml:space="preserve">
+    <value>Export Material List</value>
+  </data>
+  <data name="ExportMaterialDesc" xml:space="preserve">
+    <value>Watch a video to export as PDF</value>
+  </data>
+
+  <!-- Rewarded Ads - Project Export -->
+  <data name="ExportProject" xml:space="preserve">
+    <value>Share Project</value>
+  </data>
+  <data name="ExportProjectDesc" xml:space="preserve">
+    <value>Watch a video to share this project</value>
+  </data>
+
+  <!-- PDF Labels -->
+  <data name="MaterialListPdf" xml:space="preserve">
+    <value>Material List</value>
+  </data>
+  <data name="ProjectReport" xml:space="preserve">
+    <value>Project Report</value>
+  </data>
 </root>

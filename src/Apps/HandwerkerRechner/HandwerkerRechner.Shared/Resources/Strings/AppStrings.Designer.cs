@@ -773,5 +773,90 @@ namespace HandwerkerRechner.Resources.Strings {
                 return ResourceManager.GetString("MoreCategories", resourceCulture);
             }
         }
+
+        // Rewarded Ads
+        internal static string PremiumCalculatorsLocked {
+            get {
+                return ResourceManager.GetString("PremiumCalculatorsLocked", resourceCulture);
+            }
+        }
+
+        internal static string WatchVideoFor30Min {
+            get {
+                return ResourceManager.GetString("WatchVideoFor30Min", resourceCulture);
+            }
+        }
+
+        internal static string AccessGranted {
+            get {
+                return ResourceManager.GetString("AccessGranted", resourceCulture);
+            }
+        }
+
+        internal static string AccessExpiresIn {
+            get {
+                return ResourceManager.GetString("AccessExpiresIn", resourceCulture);
+            }
+        }
+
+        internal static string TemporaryAccessActive {
+            get {
+                return ResourceManager.GetString("TemporaryAccessActive", resourceCulture);
+            }
+        }
+
+        internal static string VideoFor30Min {
+            get {
+                return ResourceManager.GetString("VideoFor30Min", resourceCulture);
+            }
+        }
+
+        internal static string ExtendedHistoryTitle {
+            get {
+                return ResourceManager.GetString("ExtendedHistoryTitle", resourceCulture);
+            }
+        }
+
+        internal static string ExtendedHistoryDesc {
+            get {
+                return ResourceManager.GetString("ExtendedHistoryDesc", resourceCulture);
+            }
+        }
+
+        internal static string ExportMaterialList {
+            get {
+                return ResourceManager.GetString("ExportMaterialList", resourceCulture);
+            }
+        }
+
+        internal static string ExportMaterialDesc {
+            get {
+                return ResourceManager.GetString("ExportMaterialDesc", resourceCulture);
+            }
+        }
+
+        internal static string ExportProject {
+            get {
+                return ResourceManager.GetString("ExportProject", resourceCulture);
+            }
+        }
+
+        internal static string ExportProjectDesc {
+            get {
+                return ResourceManager.GetString("ExportProjectDesc", resourceCulture);
+            }
+        }
+
+        internal static string MaterialListPdf {
+            get {
+                return ResourceManager.GetString("MaterialListPdf", resourceCulture);
+            }
+        }
+
+        internal static string ProjectReport {
+            get {
+                return ResourceManager.GetString("ProjectReport", resourceCulture);
+            }
+        }
     }
 }

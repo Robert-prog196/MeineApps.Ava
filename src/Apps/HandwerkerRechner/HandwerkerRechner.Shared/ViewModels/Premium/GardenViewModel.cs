@@ -4,6 +4,7 @@ using HandwerkerRechner.Models;
 using HandwerkerRechner.Services;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerRechner.ViewModels.Premium;
 
@@ -13,6 +14,10 @@ public partial class GardenViewModel : ObservableObject
     private readonly IProjectService _projectService;
     private readonly ILocalizationService _localization;
     private readonly ICalculationHistoryService _historyService;
+    private readonly IMaterialExportService _exportService;
+    private readonly IFileShareService _fileShareService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
     private string? _currentProjectId;
 
     public event Action<string>? NavigationRequested;
@@ -23,12 +28,20 @@ public partial class GardenViewModel : ObservableObject
         CraftEngine engine,
         IProjectService projectService,
         ILocalizationService localization,
-        ICalculationHistoryService historyService)
+        ICalculationHistoryService historyService,
+        IMaterialExportService exportService,
+        IFileShareService fileShareService,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService)
     {
         _engine = engine;
         _projectService = projectService;
         _localization = localization;
         _historyService = historyService;
+        _exportService = exportService;
+        _fileShareService = fileShareService;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
     }
 
     /// <summary>
@@ -456,6 +469,66 @@ public partial class GardenViewModel : ObservableObject
         catch (Exception)
         {
             // Silently ignore load errors
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportMaterialList()
+    {
+        if (!HasResult) return;
+
+        try
+        {
+            if (!_purchaseService.IsPremium)
+            {
+                var adResult = await _rewardedAdService.ShowAdAsync("material_pdf");
+                if (!adResult) return;
+            }
+
+            var calcType = Calculators[SelectedCalculator];
+            var inputs = new Dictionary<string, string>();
+            var results = new Dictionary<string, string>();
+
+            switch (SelectedCalculator)
+            {
+                case 0 when PavingResult != null:
+                    inputs[_localization.GetString("LabelAreaSqm") ?? "Area"] = $"{PavingArea:F1} m\u00b2";
+                    inputs[_localization.GetString("LabelStoneLengthCm") ?? "Stone length"] = $"{StoneLength} cm";
+                    inputs[_localization.GetString("LabelStoneWidthCm") ?? "Stone width"] = $"{StoneWidth} cm";
+                    results[_localization.GetString("ResultStonesNeeded") ?? "Stones"] = $"{PavingResult.StonesNeeded}";
+                    results[_localization.GetString("ResultWithReserveFivePercent") ?? "+5%"] = $"{PavingResult.StonesWithReserve}";
+                    if (PricePerStone > 0)
+                        results[_localization.GetString("TotalCost") ?? "Total cost"] = $"{PavingResult.StonesWithReserve * PricePerStone:F2} \u20ac";
+                    break;
+                case 1 when SoilResult != null:
+                    inputs[_localization.GetString("LabelAreaSqm") ?? "Area"] = $"{SoilArea:F1} m\u00b2";
+                    inputs[_localization.GetString("LabelDepthCm") ?? "Depth"] = $"{SoilDepth} cm";
+                    results[_localization.GetString("ResultVolumeNeeded") ?? "Volume"] = $"{SoilResult.VolumeLiters:F1} L";
+                    results[_localization.GetString("ResultBagsNeeded") ?? "Bags"] = $"{SoilResult.BagsNeeded}";
+                    if (PricePerBag > 0)
+                        results[_localization.GetString("TotalCost") ?? "Total cost"] = $"{SoilResult.BagsNeeded * PricePerBag:F2} \u20ac";
+                    break;
+                case 2 when PondResult != null:
+                    inputs[_localization.GetString("LabelLengthM") ?? "Length"] = $"{PondLength:F1} m";
+                    inputs[_localization.GetString("LabelWidthM") ?? "Width"] = $"{PondWidth:F1} m";
+                    inputs[_localization.GetString("LabelDepthM") ?? "Depth"] = $"{PondDepth:F1} m";
+                    results[_localization.GetString("ResultLinerLength") ?? "Liner length"] = $"{PondResult.LinerLength:F2} m";
+                    results[_localization.GetString("ResultLinerWidth") ?? "Liner width"] = $"{PondResult.LinerWidth:F2} m";
+                    results[_localization.GetString("ResultLinerArea") ?? "Liner area"] = $"{PondResult.LinerArea:F2} m\u00b2";
+                    if (PricePerSqmLiner > 0)
+                        results[_localization.GetString("TotalCost") ?? "Total cost"] = $"{PondResult.LinerArea * PricePerSqmLiner:F2} \u20ac";
+                    break;
+                default:
+                    return;
+            }
+
+            var path = await _exportService.ExportToPdfAsync(calcType, inputs, results);
+            await _fileShareService.ShareFileAsync(path, _localization.GetString("ShareMaterialList") ?? "Share", "application/pdf");
+            MessageRequested?.Invoke(_localization.GetString("Success") ?? "Success", _localization.GetString("PdfExportSuccess") ?? "PDF exported!");
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(_localization.GetString("Error") ?? "Error", _localization.GetString("PdfExportFailed") ?? "Export failed.");
         }
     }
 }

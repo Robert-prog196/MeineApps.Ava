@@ -24,6 +24,9 @@
 
     <!-- DI -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+
+    <!-- PDF Export -->
+    <PackageReference Include="PdfSharpCore" />
   </ItemGroup>
 
   <ItemGroup>

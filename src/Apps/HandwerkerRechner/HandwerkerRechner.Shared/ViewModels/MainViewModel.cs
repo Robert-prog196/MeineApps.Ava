@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HandwerkerRechner.Services;
 using HandwerkerRechner.ViewModels.Floor;
 using HandwerkerRechner.ViewModels.Premium;
 using MeineApps.Core.Ava.Localization;
@@ -18,6 +19,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IPurchaseService _purchaseService;
     private readonly IAdService _adService;
     private readonly ILocalizationService _localization;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPremiumAccessService _premiumAccessService;
 
     /// <summary>
     /// Event for showing alerts/messages to the user (title, message)
@@ -37,11 +40,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ILocalizationService localization,
         IThemeService themeService,
         SettingsViewModel settingsViewModel,
-        ProjectsViewModel projectsViewModel)
+        ProjectsViewModel projectsViewModel,
+        IRewardedAdService rewardedAdService,
+        IPremiumAccessService premiumAccessService)
     {
         _purchaseService = purchaseService;
         _adService = adService;
         _localization = localization;
+        _rewardedAdService = rewardedAdService;
+        _premiumAccessService = premiumAccessService;
         SettingsViewModel = settingsViewModel;
         ProjectsViewModel = projectsViewModel;
 
@@ -52,6 +59,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ProjectsViewModel.NavigationRequested += OnProjectNavigation;
 
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
+        _premiumAccessService.AccessExpired += OnAccessExpired;
 
         // Subscribe to language changes
         SettingsViewModel.LanguageChanged += OnLanguageChanged;
@@ -138,6 +146,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(GetPremiumText));
         OnPropertyChanged(nameof(PremiumPriceText));
         OnPropertyChanged(nameof(MoreCategoriesLabel));
+        OnPropertyChanged(nameof(PremiumLockedText));
+        OnPropertyChanged(nameof(VideoFor30MinText));
+        OnPropertyChanged(nameof(PremiumLockedDescText));
+        OnPropertyChanged(nameof(ExtendedHistoryTitleText));
+        OnPropertyChanged(nameof(ExtendedHistoryDescText));
     }
 
     private void OnLanguageChanged()
@@ -338,21 +351,141 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void NavigateToFlooring() => NavigateTo("FlooringCalculatorPage");
 
-    // Premium Calculator Navigation
+    // Premium Calculator Navigation (gated mit PremiumAccess oder Ad)
     [RelayCommand]
-    private void NavigateToDrywall() => NavigateTo("DrywallPage");
+    private void NavigateToDrywall() => NavigatePremium("DrywallPage");
 
     [RelayCommand]
-    private void NavigateToElectrical() => NavigateTo("ElectricalPage");
+    private void NavigateToElectrical() => NavigatePremium("ElectricalPage");
 
     [RelayCommand]
-    private void NavigateToMetal() => NavigateTo("MetalPage");
+    private void NavigateToMetal() => NavigatePremium("MetalPage");
 
     [RelayCommand]
-    private void NavigateToGarden() => NavigateTo("GardenPage");
+    private void NavigateToGarden() => NavigatePremium("GardenPage");
 
     [RelayCommand]
-    private void NavigateToRoofSolar() => NavigateTo("RoofSolarPage");
+    private void NavigateToRoofSolar() => NavigatePremium("RoofSolarPage");
+
+    /// <summary>
+    /// Prueft Premium-Zugang vor Navigation zu Premium-Rechnern.
+    /// Premium oder temporaerer Zugang → direkt. Sonst → Ad-Overlay.
+    /// </summary>
+    private void NavigatePremium(string route)
+    {
+        if (_premiumAccessService.HasAccess)
+        {
+            NavigateTo(route);
+            return;
+        }
+        PendingPremiumRoute = route;
+        ShowPremiumAccessOverlay = true;
+    }
+
+    #region Premium Access Overlay
+
+    [ObservableProperty]
+    private bool _showPremiumAccessOverlay;
+
+    [ObservableProperty]
+    private string _pendingPremiumRoute = "";
+
+    [ObservableProperty]
+    private bool _hasTemporaryAccess;
+
+    [ObservableProperty]
+    private string _accessTimerText = "";
+
+    // Lokalisierte Texte fuer das Overlay
+    public string PremiumLockedText => _localization.GetString("PremiumCalculatorsLocked") ?? "Unlock Premium Calculators";
+    public string VideoFor30MinText => _localization.GetString("VideoFor30Min") ?? "Watch Video → 30 Min Access";
+    public string PremiumLockedDescText => _localization.GetString("WatchVideoFor30Min") ?? "Watch a video for 30 min access to all premium calculators.";
+
+    [RelayCommand]
+    private async Task ConfirmPremiumAdAsync()
+    {
+        ShowPremiumAccessOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("premium_access");
+        if (success)
+        {
+            _premiumAccessService.GrantTemporaryAccess(TimeSpan.FromMinutes(30));
+            HasTemporaryAccess = true;
+
+            var msg = _localization.GetString("AccessGranted") ?? "Access granted!";
+            MessageRequested?.Invoke(msg, "");
+
+            // Gemerkten Rechner oeffnen
+            if (!string.IsNullOrEmpty(PendingPremiumRoute))
+                NavigateTo(PendingPremiumRoute);
+        }
+        PendingPremiumRoute = "";
+    }
+
+    [RelayCommand]
+    private void CancelPremiumAd()
+    {
+        ShowPremiumAccessOverlay = false;
+        PendingPremiumRoute = "";
+    }
+
+    private void OnAccessExpired(object? sender, EventArgs e)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            HasTemporaryAccess = false;
+            AccessTimerText = "";
+        });
+    }
+
+    #endregion
+
+    #region Extended History
+
+    [ObservableProperty]
+    private bool _showExtendedHistoryOverlay;
+
+    public string ExtendedHistoryTitleText => _localization.GetString("ExtendedHistoryTitle") ?? "Extended History";
+    public string ExtendedHistoryDescText => _localization.GetString("ExtendedHistoryDesc") ?? "Watch a video to unlock 30 saved calculations for 24 hours (instead of 5).";
+
+    /// <summary>
+    /// Zeigt Overlay zum Freischalten der erweiterten History
+    /// </summary>
+    [RelayCommand]
+    private void ShowExtendedHistoryAd()
+    {
+        if (_premiumAccessService.HasExtendedHistory)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("ExtendedHistoryTitle") ?? "Extended History",
+                _localization.GetString("AccessGranted") ?? "Already active!");
+            return;
+        }
+        ShowExtendedHistoryOverlay = true;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmExtendedHistoryAdAsync()
+    {
+        ShowExtendedHistoryOverlay = false;
+
+        var success = await _rewardedAdService.ShowAdAsync("extended_history");
+        if (success)
+        {
+            _premiumAccessService.GrantExtendedHistory();
+            MessageRequested?.Invoke(
+                _localization.GetString("AccessGranted") ?? "Access granted!",
+                _localization.GetString("ExtendedHistoryDesc") ?? "30 entries for 24h!");
+        }
+    }
+
+    [RelayCommand]
+    private void CancelExtendedHistoryAd()
+    {
+        ShowExtendedHistoryOverlay = false;
+    }
+
+    #endregion
 
     [RelayCommand]
     private async Task PurchaseRemoveAds()
@@ -410,6 +543,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_disposed) return;
 
         _purchaseService.PremiumStatusChanged -= OnPremiumStatusChanged;
+        _premiumAccessService.AccessExpired -= OnAccessExpired;
         SettingsViewModel.LanguageChanged -= OnLanguageChanged;
         SettingsViewModel.FeedbackRequested -= OnFeedbackRequested;
         ProjectsViewModel.NavigationRequested -= OnProjectNavigation;

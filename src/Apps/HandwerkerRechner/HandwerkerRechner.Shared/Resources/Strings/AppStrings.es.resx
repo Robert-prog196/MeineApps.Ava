@@ -1679,4 +1679,50 @@ Valores típicos:
   <data name="MoreCategories" xml:space="preserve">
     <value>Más categorías</value>
   </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PremiumCalculatorsLocked" xml:space="preserve">
+    <value>Desbloquear Calculadoras Premium</value>
+  </data>
+  <data name="WatchVideoFor30Min" xml:space="preserve">
+    <value>Mira un video para 30 min de acceso a todas las calculadoras premium.</value>
+  </data>
+  <data name="AccessGranted" xml:space="preserve">
+    <value>¡Acceso concedido!</value>
+  </data>
+  <data name="AccessExpiresIn" xml:space="preserve">
+    <value>Acceso expira en {0} min</value>
+  </data>
+  <data name="TemporaryAccessActive" xml:space="preserve">
+    <value>Acceso premium activo</value>
+  </data>
+  <data name="VideoFor30Min" xml:space="preserve">
+    <value>Ver Video → 30 Min Acceso</value>
+  </data>
+
+  <!-- Extended History & Export Features -->
+  <data name="ExtendedHistoryTitle" xml:space="preserve">
+    <value>Historial ampliado</value>
+  </data>
+  <data name="ExtendedHistoryDesc" xml:space="preserve">
+    <value>Mira un video para desbloquear 30 cálculos guardados durante 24 horas (en lugar de 5).</value>
+  </data>
+  <data name="ExportMaterialList" xml:space="preserve">
+    <value>Exportar lista de materiales</value>
+  </data>
+  <data name="ExportMaterialDesc" xml:space="preserve">
+    <value>Mira un video para exportar la lista de materiales como PDF.</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>Exportar proyecto</value>
+  </data>
+  <data name="ExportProjectDesc" xml:space="preserve">
+    <value>Mira un video para exportar el proyecto como PDF.</value>
+  </data>
+  <data name="MaterialListPdf" xml:space="preserve">
+    <value>Lista de materiales PDF</value>
+  </data>
+  <data name="ProjectReport" xml:space="preserve">
+    <value>Informe del proyecto</value>
+  </data>
 </root>

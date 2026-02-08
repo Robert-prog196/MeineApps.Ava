@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HandwerkerRechner.Models;
 using HandwerkerRechner.Services;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerRechner.ViewModels;
 
@@ -14,6 +17,10 @@ public partial class ProjectsViewModel : ObservableObject
 {
     private readonly IProjectService _projectService;
     private readonly ILocalizationService _localization;
+    private readonly IMaterialExportService _exportService;
+    private readonly IFileShareService _fileShareService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
 
     /// <summary>
     /// Raised when the VM wants to navigate to a page.
@@ -48,10 +55,20 @@ public partial class ProjectsViewModel : ObservableObject
     /// </summary>
     public bool ShowEmptyState => !IsLoading && !HasProjects;
 
-    public ProjectsViewModel(IProjectService projectService, ILocalizationService localization)
+    public ProjectsViewModel(
+        IProjectService projectService,
+        ILocalizationService localization,
+        IMaterialExportService exportService,
+        IFileShareService fileShareService,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService)
     {
         _projectService = projectService;
         _localization = localization;
+        _exportService = exportService;
+        _fileShareService = fileShareService;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
     }
 
     private void NavigateTo(string route) => NavigationRequested?.Invoke(route);
@@ -141,6 +158,60 @@ public partial class ProjectsViewModel : ObservableObject
     private void GoBack()
     {
         NavigateTo("..");
+    }
+
+    [RelayCommand]
+    private async Task ExportProject(Project? project)
+    {
+        if (project == null) return;
+
+        try
+        {
+            // Ad-Gate: Premium direkt, Free nach Rewarded Ad
+            if (!_purchaseService.IsPremium)
+            {
+                var adResult = await _rewardedAdService.ShowAdAsync("project_export");
+                if (!adResult) return;
+            }
+
+            // Projekt-Daten als Inputs/Results aufbereiten
+            var data = project.GetData();
+            var inputs = new Dictionary<string, string>();
+            var results = new Dictionary<string, string>();
+
+            if (data != null)
+            {
+                foreach (var kvp in data)
+                {
+                    if (kvp.Key == "Result" && kvp.Value is JsonElement resultElement)
+                    {
+                        // Result-Dictionary entpacken
+                        if (resultElement.ValueKind == JsonValueKind.Object)
+                        {
+                            foreach (var prop in resultElement.EnumerateObject())
+                            {
+                                var label = _localization.GetString(prop.Name) ?? prop.Name;
+                                results[label] = prop.Value.ToString();
+                            }
+                        }
+                    }
+                    else if (kvp.Key != "SelectedCalculator")
+                    {
+                        var label = _localization.GetString(kvp.Key) ?? kvp.Key;
+                        inputs[label] = kvp.Value?.ToString() ?? "";
+                    }
+                }
+            }
+
+            var calcTypeName = _localization.GetString("CalcType" + project.CalculatorType) ?? project.CalculatorType.ToString();
+            var path = await _exportService.ExportProjectToPdfAsync(project.Name, calcTypeName, inputs, results);
+            await _fileShareService.ShareFileAsync(path, _localization.GetString("ExportProject") ?? "Share Project", "application/pdf");
+            MessageRequested?.Invoke(_localization.GetString("Success") ?? "Success", _localization.GetString("PdfExportSuccess") ?? "PDF exported!");
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(_localization.GetString("Error") ?? "Error", _localization.GetString("PdfExportFailed") ?? "Export failed.");
+        }
     }
 
     private static string GetRouteForCalculatorType(CalculatorType calculatorType) => calculatorType switch

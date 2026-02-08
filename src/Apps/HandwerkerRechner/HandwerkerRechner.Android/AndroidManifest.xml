@@ -8,7 +8,7 @@
       android:supportsRtl="true"
       android:theme="@style/MyTheme.NoActionBar">
     <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
-               android:value="ca-app-pub-2667921454778639~2757130357" />
+               android:value="ca-app-pub-2588160251469436~1938872706" />
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

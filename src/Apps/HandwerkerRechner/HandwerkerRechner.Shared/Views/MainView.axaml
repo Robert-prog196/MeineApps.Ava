@@ -7,6 +7,7 @@
              xmlns:floorViews="using:HandwerkerRechner.Views.Floor"
              xmlns:premViews="using:HandwerkerRechner.Views.Premium"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
              x:Class="HandwerkerRechner.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -437,6 +438,43 @@
                 </Border>
               </Button>
 
+              <!-- ========== Extended History Card ========== -->
+              <Button Background="Transparent" Padding="0"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      IsVisible="{Binding !IsPremium}"
+                      Command="{Binding ShowExtendedHistoryAdCommand}">
+                <Border Classes="Card" CornerRadius="12" Padding="14">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0" Width="40" Height="40"
+                            CornerRadius="20" Margin="0,0,12,0">
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                          <GradientStop Color="#3B82F6" Offset="0" />
+                          <GradientStop Color="#1D4ED8" Offset="1" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                      <mi:MaterialIcon Kind="History" Width="22" Height="22"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="{Binding ExtendedHistoryTitleText}"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding ExtendedHistoryDescText}"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 TextTrimming="CharacterEllipsis"
+                                 MaxLines="2" />
+                    </StackPanel>
+                    <mi:MaterialIcon Grid.Column="2"
+                                     Kind="ChevronRight" Width="18" Height="18"
+                                     Foreground="{DynamicResource TextMutedBrush}"
+                                     VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+              </Button>
+
             </StackPanel>
 
             <!-- Abstand unten -->
@@ -465,11 +503,134 @@
         <ContentControl Content="{Binding CurrentCalculatorVm}" />
       </Panel>
 
+      <!-- Premium Access Overlay -->
+      <Border IsVisible="{Binding ShowPremiumAccessOverlay}"
+              Background="#CC000000"
+              ZIndex="100">
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="16"
+                Padding="24"
+                MaxWidth="340"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <StackPanel Spacing="16" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding PremiumLockedText}"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap" TextAlignment="Center" />
+
+            <Border Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="30"
+                    Width="60" Height="60"
+                    HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Lock" Width="32" Height="32"
+                               Foreground="{DynamicResource AccentBrush}" />
+            </Border>
+
+            <TextBlock Text="{Binding PremiumLockedDescText}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center" />
+
+            <StackPanel Spacing="8">
+              <Button Classes="Filled"
+                      Command="{Binding ConfirmPremiumAdCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      Padding="16,12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
+                  <TextBlock Text="{Binding VideoFor30MinText}"
+                             FontSize="15" FontWeight="SemiBold" />
+                </StackPanel>
+              </Button>
+
+              <Button Classes="Text"
+                      Command="{Binding CancelPremiumAdCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      Padding="12,10">
+                <TextBlock Text="{loc:Translate Cancel}"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
+
+      <!-- Extended History Overlay -->
+      <Border IsVisible="{Binding ShowExtendedHistoryOverlay}"
+              Background="#CC000000"
+              ZIndex="100">
+        <Border Background="{DynamicResource CardBrush}"
+                CornerRadius="16"
+                Padding="24"
+                MaxWidth="340"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <StackPanel Spacing="16" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding ExtendedHistoryTitleText}"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap" TextAlignment="Center" />
+
+            <Border Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="30"
+                    Width="60" Height="60"
+                    HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="History" Width="32" Height="32"
+                               Foreground="{DynamicResource AccentBrush}" />
+            </Border>
+
+            <TextBlock Text="{Binding ExtendedHistoryDescText}"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center" />
+
+            <StackPanel Spacing="8">
+              <Button Classes="Filled"
+                      Command="{Binding ConfirmExtendedHistoryAdCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      Padding="16,12">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
+                  <TextBlock Text="{loc:Translate WatchVideoFor30Min}"
+                             FontSize="15" FontWeight="SemiBold" />
+                </StackPanel>
+              </Button>
+
+              <Button Classes="Text"
+                      Command="{Binding CancelExtendedHistoryAdCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      Padding="12,10">
+                <TextBlock Text="{loc:Translate Cancel}"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
+
     </Panel>
 
     <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->
     <Border Grid.Row="1" Height="50"
             IsVisible="{Binding IsAdBannerVisible}" />
+
+    <!-- Ersatz-Spacer wenn Tab-Bar versteckt (Calculator offen) -->
+    <!-- Gleiche Hoehe wie Tab-Bar, damit Buttons ueber der nativen Ad bleiben -->
+    <Border Grid.Row="2" Height="60"
+            IsVisible="{Binding IsCalculatorOpen}" />
 
     <!-- Bottom Tab Bar -->
     <Border Grid.Row="2"

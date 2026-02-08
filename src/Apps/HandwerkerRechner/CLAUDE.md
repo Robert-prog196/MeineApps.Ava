@@ -143,3 +143,67 @@ dotnet build src/Apps/HandwerkerRechner/HandwerkerRechner.Android/HandwerkerRech
 - **MainViewModel**: 5 neue Properties (SectionFloorWallText, SectionPremiumToolsText, CalculatorCountText, GetPremiumText, PremiumPriceText) + UpdateHomeTexts()
 - 6 neue resx-Keys in 6 Sprachen (SectionFloorWall, SectionPremiumTools, CalculatorCount, GetPremium, PremiumPrice, MoreCategories)
 - Build: 0 Fehler
+
+### Rewarded Ads - Premium-Rechner Ad-Gate (07.02.2026)
+
+#### Funktionsweise
+- 5 Premium-Rechner (Drywall, Electrical, Metal, Garden, RoofSolar) sind fuer Nicht-Premium-Nutzer gesperrt
+- Per Rewarded Ad erhaelt der Nutzer 30 Minuten Zugang zu allen Premium-Rechnern
+- Premium-Nutzer haben dauerhaft Zugang (kein Ad-Gate)
+
+#### Neue Dateien
+- **IPremiumAccessService.cs** + **PremiumAccessService.cs**: Temporaerer 30-Min Premium-Zugang, `HasAccess`, `RemainingTime`, `GrantAccess()`, Timer-basiert
+
+#### Aenderungen
+- **MainViewModel**: `NavigatePremium()` prueft PremiumAccess vor Navigation, `ShowPremiumAccessOverlay` / `IsPremiumAccessOverlayVisible`, `ConfirmPremiumAdAsync` Command
+- **MainView.axaml**: Premium-Access-Overlay UI (Beschreibung + Video-Button + Abbrechen, Countdown-Anzeige bei aktivem Zugang)
+- **App.axaml.cs**: `IPremiumAccessService` DI + `RewardedAdServiceFactory` Property fuer Android-Override
+
+#### Android Integration
+- **HandwerkerRechner.Android.csproj**: Linked `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs`
+- **MainActivity.cs**: RewardedAdHelper Lifecycle (init, load, dispose)
+
+#### Lokalisierung
+- 6 neue resx-Keys in 6 Sprachen: PremiumCalculatorsLocked, WatchVideoFor30Min, AccessGranted, AccessExpiresIn, TemporaryAccessActive, VideoFor30Min
+
+### 3 Neue Rewarded Ad Features (07.02.2026)
+
+#### Feature 1: Placement-Strings
+- `ShowAdAsync()` → `ShowAdAsync("premium_access")` in MainViewModel
+
+#### Feature 2: Erweiterte Berechnungs-History
+- **IPremiumAccessService**: `HasExtendedHistory`, `GrantExtendedHistory()`, `GetHistoryLimit()` (5 free / 30 extended)
+- **PremiumAccessService**: 24h persistent Extended History via IPreferencesService (ExtendedHistoryPrefKey)
+- **MainViewModel**: `ShowExtendedHistoryAd`, `ConfirmExtendedHistoryAdAsync`, `CancelExtendedHistoryAd` Commands + Overlay
+- **CalculationHistoryService**: MaxItemsPerCalculator 10 → 30 (Core Library)
+
+#### Feature 3: Material-Liste PDF Export
+- **IMaterialExportService.cs** (NEU): Interface fuer PDF-Export (ExportToPdfAsync, ExportProjectToPdfAsync)
+- **MaterialExportService.cs** (NEU): PdfSharpCore-basiert (A4, Header, Inputs, Results, Footer)
+- **Alle 9 Calculator VMs**: `ExportMaterialList` RelayCommand mit Ad-Gate (placement "material_pdf")
+- **App.axaml.cs**: IFileShareService + IMaterialExportService DI-Registrierung
+- **HandwerkerRechner.Shared.csproj**: PdfSharpCore PackageReference
+
+#### Feature 4: Projekt-Export als PDF
+- **ProjectsViewModel**: `ExportProject(Project?)` RelayCommand mit Ad-Gate (placement "project_export")
+- Parst Projekt-DataJson via JsonElement in Inputs/Results Dictionaries
+
+#### Lokalisierung
+- 8 neue resx-Keys in 6 Sprachen: ExtendedHistoryTitle, ExtendedHistoryDesc, ExportMaterialList, ExportMaterialDesc, ExportProject, ExportProjectDesc, MaterialListPdf, ProjectReport
+- AppStrings.Designer.cs: 8 neue Properties
+
+#### Bugfixes waehrend Implementierung
+- RoofSolarVM: `SolarResult.PeakPower` → `SolarResult.KwPeak`, `AnnualYield` → `AnnualYieldKwh`, PaybackYears berechnet statt Property
+- GardenVM: `SoilResult.VolumeNeeded` → `SoilResult.VolumeLiters`
+- MetalVM: `MetalWeightResult` → `WeightResult`, `ThreadDrillResult` → `ThreadResult`, `DrillDiameter` → `DrillSize`
+- Build: 0 Fehler
+
+### Fehlende UI-Elemente nachgeruestet (08.02.2026)
+- **9 Calculator Views**: Export-Button (FilePdfBox Icon + ExportMaterialList Command) hinzugefuegt
+  - Floor Views (4): Button am Ende der Results-Card (IsVisible durch HasResult der Card)
+  - Premium Views (5): Button als 2. Zeile in der Action-Bar (Grid.Row=1, IsVisible=HasResult)
+- **ProjectsView**: Export-Button (FilePdfBox) pro Projekt-Karte neben Delete-Button (Ancestor-Binding auf ExportProjectCommand)
+- **MainView.axaml**:
+  - Extended-History-Ad-Overlay (ZIndex=100, ShowExtendedHistoryOverlay, Confirm/Cancel Bindings, History-Icon)
+  - Extended-History-Karte auf Home-Tab (Blue-Gradient Icon, Titel + Beschreibung, Chevron, ShowExtendedHistoryAdCommand)
+- Build: Shared + Desktop + Android 0 Fehler

@@ -1700,4 +1700,56 @@ Auf rauem Untergrund sinkt die Ergiebigkeit!</value>
   <data name="MoreCategories" xml:space="preserve">
     <value>Weitere Kategorien</value>
   </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PremiumCalculatorsLocked" xml:space="preserve">
+    <value>Premium-Rechner freischalten</value>
+  </data>
+  <data name="WatchVideoFor30Min" xml:space="preserve">
+    <value>Video schauen für 30 Min Zugang zu allen Premium-Rechnern.</value>
+  </data>
+  <data name="AccessGranted" xml:space="preserve">
+    <value>Zugang freigeschaltet!</value>
+  </data>
+  <data name="AccessExpiresIn" xml:space="preserve">
+    <value>Zugang läuft ab in {0} Min</value>
+  </data>
+  <data name="TemporaryAccessActive" xml:space="preserve">
+    <value>Premium-Zugang aktiv</value>
+  </data>
+  <data name="VideoFor30Min" xml:space="preserve">
+    <value>Video schauen → 30 Min Zugang</value>
+  </data>
+
+  <!-- Rewarded Ads - Erweiterte History -->
+  <data name="ExtendedHistoryTitle" xml:space="preserve">
+    <value>Erweiterte History</value>
+  </data>
+  <data name="ExtendedHistoryDesc" xml:space="preserve">
+    <value>Video schauen für 24h Zugang zu 30 Berechnungen</value>
+  </data>
+
+  <!-- Rewarded Ads - Material Export -->
+  <data name="ExportMaterialList" xml:space="preserve">
+    <value>Materialliste exportieren</value>
+  </data>
+  <data name="ExportMaterialDesc" xml:space="preserve">
+    <value>Video schauen um als PDF zu exportieren</value>
+  </data>
+
+  <!-- Rewarded Ads - Projekt Export -->
+  <data name="ExportProject" xml:space="preserve">
+    <value>Projekt teilen</value>
+  </data>
+  <data name="ExportProjectDesc" xml:space="preserve">
+    <value>Video schauen um dieses Projekt zu teilen</value>
+  </data>
+
+  <!-- PDF Labels -->
+  <data name="MaterialListPdf" xml:space="preserve">
+    <value>Materialliste</value>
+  </data>
+  <data name="ProjectReport" xml:space="preserve">
+    <value>Projektbericht</value>
+  </data>
 </root>

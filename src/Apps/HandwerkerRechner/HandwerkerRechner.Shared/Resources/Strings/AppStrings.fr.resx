@@ -1679,4 +1679,50 @@ Le rendement diminue sur les surfaces rugueuses !</value>
   <data name="MoreCategories" xml:space="preserve">
     <value>Plus de catégories</value>
   </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PremiumCalculatorsLocked" xml:space="preserve">
+    <value>Débloquer les Calculatrices Premium</value>
+  </data>
+  <data name="WatchVideoFor30Min" xml:space="preserve">
+    <value>Regarde une vidéo pour 30 min d'accès à toutes les calculatrices premium.</value>
+  </data>
+  <data name="AccessGranted" xml:space="preserve">
+    <value>Accès accordé !</value>
+  </data>
+  <data name="AccessExpiresIn" xml:space="preserve">
+    <value>L'accès expire dans {0} min</value>
+  </data>
+  <data name="TemporaryAccessActive" xml:space="preserve">
+    <value>Accès premium actif</value>
+  </data>
+  <data name="VideoFor30Min" xml:space="preserve">
+    <value>Voir Vidéo → 30 Min d'Accès</value>
+  </data>
+
+  <!-- Extended History & Export Features -->
+  <data name="ExtendedHistoryTitle" xml:space="preserve">
+    <value>Historique étendu</value>
+  </data>
+  <data name="ExtendedHistoryDesc" xml:space="preserve">
+    <value>Regardez une vidéo pour débloquer 30 calculs sauvegardés pendant 24 heures (au lieu de 5).</value>
+  </data>
+  <data name="ExportMaterialList" xml:space="preserve">
+    <value>Exporter la liste des matériaux</value>
+  </data>
+  <data name="ExportMaterialDesc" xml:space="preserve">
+    <value>Regardez une vidéo pour exporter la liste des matériaux en PDF.</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>Exporter le projet</value>
+  </data>
+  <data name="ExportProjectDesc" xml:space="preserve">
+    <value>Regardez une vidéo pour exporter le projet en PDF.</value>
+  </data>
+  <data name="MaterialListPdf" xml:space="preserve">
+    <value>Liste des matériaux PDF</value>
+  </data>
+  <data name="ProjectReport" xml:space="preserve">
+    <value>Rapport de projet</value>
+  </data>
 </root>

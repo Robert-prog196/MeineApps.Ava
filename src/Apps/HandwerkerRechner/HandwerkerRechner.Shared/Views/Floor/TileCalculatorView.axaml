@@ -183,6 +183,19 @@
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}" />
             </Grid>
+            <!-- Material-Export (PDF) -->
+            <Button Command="{Binding ExportMaterialListCommand}"
+                    Classes="Outlined"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Margin="0,4,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="FilePdfBox" Width="18" Height="18"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                <TextBlock Text="{loc:Translate ExportMaterialList}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
           </StackPanel>
         </Border>
 

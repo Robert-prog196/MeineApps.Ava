@@ -323,7 +323,7 @@
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,1,0,0"
             BorderBrush="{DynamicResource CardBorderBrush}">
-      <Grid ColumnDefinitions="*,8,*,8,*">
+      <Grid ColumnDefinitions="*,8,*,8,*" RowDefinitions="Auto,Auto">
         <Button Grid.Column="0" Content="{loc:Translate Reset}"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
@@ -342,6 +342,21 @@
           <StackPanel Orientation="Horizontal" Spacing="6">
             <mi:MaterialIcon Kind="ContentSave" Width="18" Height="18" />
             <TextBlock Text="{loc:Translate Save}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <!-- Material-Export (PDF) -->
+        <Button Grid.Row="1" Grid.ColumnSpan="5"
+                Command="{Binding ExportMaterialListCommand}"
+                Classes="Outlined"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                IsVisible="{Binding HasResult}"
+                Margin="0,8,0,0">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="FilePdfBox" Width="18" Height="18"
+                             Foreground="{DynamicResource AccentBrush}" />
+            <TextBlock Text="{loc:Translate ExportMaterialList}"
                        VerticalAlignment="Center" />
           </StackPanel>
         </Button>

@@ -1679,4 +1679,50 @@ Su superfici ruvide la resa diminuisce!</value>
   <data name="MoreCategories" xml:space="preserve">
     <value>Altre categorie</value>
   </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PremiumCalculatorsLocked" xml:space="preserve">
+    <value>Sblocca Calcolatrici Premium</value>
+  </data>
+  <data name="WatchVideoFor30Min" xml:space="preserve">
+    <value>Guarda un video per 30 min di accesso a tutti i calcolatori premium.</value>
+  </data>
+  <data name="AccessGranted" xml:space="preserve">
+    <value>Accesso concesso!</value>
+  </data>
+  <data name="AccessExpiresIn" xml:space="preserve">
+    <value>L'accesso scade tra {0} min</value>
+  </data>
+  <data name="TemporaryAccessActive" xml:space="preserve">
+    <value>Accesso premium attivo</value>
+  </data>
+  <data name="VideoFor30Min" xml:space="preserve">
+    <value>Guarda Video → 30 Min Accesso</value>
+  </data>
+
+  <!-- Extended History & Export Features -->
+  <data name="ExtendedHistoryTitle" xml:space="preserve">
+    <value>Cronologia estesa</value>
+  </data>
+  <data name="ExtendedHistoryDesc" xml:space="preserve">
+    <value>Guarda un video per sbloccare 30 calcoli salvati per 24 ore (invece di 5).</value>
+  </data>
+  <data name="ExportMaterialList" xml:space="preserve">
+    <value>Esporta lista dei materiali</value>
+  </data>
+  <data name="ExportMaterialDesc" xml:space="preserve">
+    <value>Guarda un video per esportare la lista dei materiali come PDF.</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>Esporta progetto</value>
+  </data>
+  <data name="ExportProjectDesc" xml:space="preserve">
+    <value>Guarda un video per esportare il progetto come PDF.</value>
+  </data>
+  <data name="MaterialListPdf" xml:space="preserve">
+    <value>Lista dei materiali PDF</value>
+  </data>
+  <data name="ProjectReport" xml:space="preserve">
+    <value>Rapporto del progetto</value>
+  </data>
 </root>

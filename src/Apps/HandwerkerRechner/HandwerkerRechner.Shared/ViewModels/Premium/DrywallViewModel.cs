@@ -4,6 +4,7 @@ using HandwerkerRechner.Models;
 using HandwerkerRechner.Services;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerRechner.ViewModels.Premium;
 
@@ -13,6 +14,10 @@ public partial class DrywallViewModel : ObservableObject
     private readonly IProjectService _projectService;
     private readonly ILocalizationService _localization;
     private readonly ICalculationHistoryService _historyService;
+    private readonly IMaterialExportService _exportService;
+    private readonly IFileShareService _fileShareService;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
     private string? _currentProjectId;
 
     public event Action<string>? NavigationRequested;
@@ -23,12 +28,20 @@ public partial class DrywallViewModel : ObservableObject
         CraftEngine engine,
         IProjectService projectService,
         ILocalizationService localization,
-        ICalculationHistoryService historyService)
+        ICalculationHistoryService historyService,
+        IMaterialExportService exportService,
+        IFileShareService fileShareService,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService)
     {
         _engine = engine;
         _projectService = projectService;
         _localization = localization;
         _historyService = historyService;
+        _exportService = exportService;
+        _fileShareService = fileShareService;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
     }
 
     /// <summary>
@@ -243,6 +256,46 @@ public partial class DrywallViewModel : ObservableObject
         catch (Exception)
         {
             // Silently ignore load errors
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportMaterialList()
+    {
+        if (!HasResult || Result == null) return;
+
+        try
+        {
+            if (!_purchaseService.IsPremium)
+            {
+                var adResult = await _rewardedAdService.ShowAdAsync("material_pdf");
+                if (!adResult) return;
+            }
+
+            var calcType = _localization.GetString("CategoryDrywall") ?? "Drywall";
+            var inputs = new Dictionary<string, string>
+            {
+                [_localization.GetString("WallLength") ?? "Wall length"] = $"{WallLength:F1} m",
+                [_localization.GetString("RoomHeight") ?? "Height"] = $"{WallHeight:F1} m",
+                [_localization.GetString("DoublePlated") ?? "Double layered"] = DoublePlated ? "Yes" : "No"
+            };
+            var results = new Dictionary<string, string>
+            {
+                [_localization.GetString("DrywallSheets") ?? "Sheets"] = PlatesNeeded,
+                [_localization.GetString("CWProfilesStuds") ?? "CW profiles"] = CwProfilesNeeded,
+                [_localization.GetString("UWProfilesTopBottom") ?? "UW profiles"] = UwLengthNeeded,
+                [_localization.GetString("Screws") ?? "Screws"] = ScrewsNeeded
+            };
+            if (ShowCost && PricePerSqm > 0)
+                results[_localization.GetString("TotalCost") ?? "Total cost"] = TotalCostDisplay;
+
+            var path = await _exportService.ExportToPdfAsync(calcType, inputs, results);
+            await _fileShareService.ShareFileAsync(path, _localization.GetString("ShareMaterialList") ?? "Share", "application/pdf");
+            MessageRequested?.Invoke(_localization.GetString("Success") ?? "Success", _localization.GetString("PdfExportSuccess") ?? "PDF exported!");
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(_localization.GetString("Error") ?? "Error", _localization.GetString("PdfExportFailed") ?? "Export failed.");
         }
     }
 }
