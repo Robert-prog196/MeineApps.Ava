@@ -13,7 +13,9 @@ Monetarisierungs-Library fuer Avalonia Apps (Ads, IAP, Trial):
 ```
 MeineApps.Core.Premium.Ava/
 ├── Android/
-│   └── AdMobHelper.cs         # Native AdMob banner (linked file, NOT compiled here)
+│   ├── AdMobHelper.cs              # Native AdMob banner (linked file, NOT compiled here)
+│   ├── RewardedAdHelper.cs         # Rewarded Ad helper (linked file, NOT compiled here)
+│   └── AndroidRewardedAdService.cs # IRewardedAdService Android-Impl (linked file, NOT compiled here)
 ├── Services/
 │   ├── IAdService.cs          # Ad service interface
 │   ├── IPurchaseService.cs    # Purchase service interface
@@ -102,5 +104,39 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 - Behebt Konflikt zwischen `...Annotation.Jvm` und `...Annotation.Android` Transitiv-Abhaengigkeiten
 
 ### AdConfig.cs - Echte Ad-Unit-IDs
-- 2 Publisher-Accounts: `ca-app-pub-2667921454778639` (FinanzRechner, FitnessRechner, HandwerkerRechner) und `ca-app-pub-2588160251469436` (WorkTimePro, BomberBlast, HandwerkerImperium)
-- Alle 6 Apps haben echte Banner-IDs + App-IDs in AdConfig.cs und AndroidManifest.xml
+- 1 Publisher-Account: `ca-app-pub-2588160251469436` (alle 6 Apps)
+- Alle 6 Apps haben echte Banner-IDs + Rewarded-IDs + App-IDs in AdConfig.cs und AndroidManifest.xml
+
+### Rewarded Ads (07.02.2026)
+
+#### RewardedAdHelper.cs (Linked File Pattern)
+- Lebt in `Android/RewardedAdHelper.cs`, wird per `<Compile Include>` in jedes Android-Projekt eingebunden
+- **Namespace:** `MeineApps.Core.Premium.Ava.Droid`
+- Load(Activity, adUnitId) + ShowAsync() → Task<bool> (true = Belohnung verdient)
+- Automatisches Nachladen nach Ad-Dismiss
+- **Java Generics Erasure Fix:** `LoadCallback` nutzt `[Android.Runtime.Register("onAdLoaded", "(Lcom/google/android/gms/ads/rewarded/RewardedAd;)V", "")]` statt override, weil Java Erasure `onAdLoaded(Object)` vs `onAdLoaded(RewardedAd)` kollidiert
+
+#### AndroidRewardedAdService.cs (Linked File Pattern)
+- Lebt in `Android/AndroidRewardedAdService.cs`, wird per `<Compile Include>` in jedes Android-Projekt eingebunden
+- Constructor: `(RewardedAdHelper helper, IPurchaseService purchaseService)`
+- Premium-Nutzer sehen keine Ads (IsAvailable = false)
+- Implementiert `IRewardedAdService`
+
+#### DI-Integration in Apps
+- Jede App hat in `App.axaml.cs`: `static Func<IServiceProvider, IRewardedAdService>? RewardedAdServiceFactory`
+- Nach `services.AddMeineAppsPremium()` wird Factory als DI-Override registriert (wenn gesetzt)
+- `MainActivity.cs` erstellt RewardedAdHelper, setzt Factory VOR base.OnCreate(), laedt Ad NACH DI-Build
+- Lazy Resolution: IPurchaseService wird erst beim ersten Aufruf ueber IServiceProvider aufgeloest
+
+#### IRewardedAdService Interface (Services/)
+- `IsAvailable`: bool - Ob Rewarded Ad geladen und bereit ist
+- `ShowRewardedAdAsync()`: Task<bool> - Zeigt Ad, gibt true bei Belohnung zurueck
+- Premium-Nutzer: IsAvailable immer false (keine Ads)
+
+#### RewardedAdService (Services/) - Desktop Fallback
+- Simuliert Rewarded Ads auf Desktop (Task.Delay + immer true)
+- Wird ueberschrieben durch AndroidRewardedAdService auf Android
+
+#### DI-Registrierung
+- `AddMeineAppsPremium()` registriert `IRewardedAdService` als Singleton (RewardedAdService)
+- Apps ueberschreiben via `RewardedAdServiceFactory` Property fuer Android-Implementierung

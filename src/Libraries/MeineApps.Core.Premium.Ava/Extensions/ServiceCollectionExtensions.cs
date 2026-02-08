@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAdService, AdMobService>();
         services.AddSingleton<IPurchaseService, PurchaseService>();
         services.AddSingleton<ITrialService, TrialService>();
+        services.AddSingleton<IRewardedAdService, RewardedAdService>();
 
         return services;
     }
@@ -29,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAdService, AdMobService>();
         services.AddSingleton<IPurchaseService, TPurchaseService>();
         services.AddSingleton<ITrialService, TrialService>();
+        services.AddSingleton<IRewardedAdService, RewardedAdService>();
 
         return services;
     }

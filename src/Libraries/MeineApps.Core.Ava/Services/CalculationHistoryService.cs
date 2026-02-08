@@ -9,7 +9,7 @@ namespace MeineApps.Core.Ava.Services;
 public class CalculationHistoryService : ICalculationHistoryService
 {
     private const string HistoryFolder = "calculation_history";
-    private const int MaxItemsPerCalculator = 10;
+    private const int MaxItemsPerCalculator = 30;
 
     private readonly string _historyPath;
 
