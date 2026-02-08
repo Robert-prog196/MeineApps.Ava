@@ -26,13 +26,13 @@
               Padding="16,12"
               CornerRadius="0,0,12,12">
         <Grid ColumnDefinitions="Auto,*,Auto">
-          <!-- Back Button -->
+          <!-- Zurueck-Button -->
           <Button Classes="Text"
                   Command="{Binding GoBackCommand}">
             <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
           </Button>
 
-          <!-- Title -->
+          <!-- Titel -->
           <StackPanel Grid.Column="1"
                       Orientation="Horizontal"
                       HorizontalAlignment="Center"
@@ -44,8 +44,20 @@
                        Foreground="{DynamicResource TextPrimaryBrush}" />
           </StackPanel>
 
-          <!-- Spacer -->
-          <Border Grid.Column="2" Width="44" />
+          <!-- Coin-Badge -->
+          <Border Grid.Column="2"
+                  Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="16"
+                  Padding="12,6">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <mi:MaterialIcon Kind="CircleMultiple" Width="18" Height="18"
+                               Foreground="#FFD700" />
+              <TextBlock Text="{Binding CoinsText}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="#FFD700"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
         </Grid>
       </Border>
 
@@ -60,51 +72,75 @@
           </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:LevelDisplayItem">
-              <Button Command="{Binding SelectCommand}"
-                      IsEnabled="{Binding IsUnlocked}"
-                      Width="70" Height="85"
-                      Margin="5"
-                      Padding="0"
-                      CornerRadius="10"
-                      HorizontalContentAlignment="Stretch"
-                      VerticalContentAlignment="Stretch">
-                <Button.Background>
-                  <SolidColorBrush Color="{Binding BackgroundColor}" />
-                </Button.Background>
-                <Grid RowDefinitions="*,Auto">
-                  <!-- Level Number -->
-                  <TextBlock Grid.Row="0"
-                             Text="{Binding LevelNumber}"
-                             FontSize="24"
-                             FontWeight="Bold"
-                             Foreground="{Binding TextBrush}"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center" />
+              <Panel>
+                <!-- Welt-Header -->
+                <Border IsVisible="{Binding IsWorldHeader}"
+                        Background="{DynamicResource SurfaceBrush}"
+                        CornerRadius="8"
+                        Padding="16,8"
+                        Margin="5,12,5,4"
+                        Width="660"
+                        HorizontalAlignment="Center"
+                        Opacity="{Binding WorldHeaderOpacity}">
+                  <StackPanel Orientation="Horizontal" Spacing="8"
+                              HorizontalAlignment="Center">
+                    <mi:MaterialIcon Kind="{Binding WorldIconKind}"
+                                     Width="20" Height="20"
+                                     Foreground="{Binding WorldHeaderBrush}" />
+                    <TextBlock Text="{Binding WorldLockText}"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{Binding WorldHeaderBrush}" />
+                  </StackPanel>
+                </Border>
 
-                  <!-- Stars or Lock -->
-                  <TextBlock Grid.Row="1"
-                             Text="{Binding StarsDisplay}"
-                             FontSize="12"
-                             Foreground="Gold"
-                             HorizontalAlignment="Center"
-                             Margin="0,0,0,5"
-                             IsVisible="{Binding IsCompleted}" />
+                <!-- Level-Button -->
+                <Button IsVisible="{Binding !IsWorldHeader}"
+                        Command="{Binding SelectCommand}"
+                        IsEnabled="{Binding IsUnlocked}"
+                        Width="70" Height="85"
+                        Margin="5"
+                        Padding="0"
+                        CornerRadius="10"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch">
+                  <Button.Background>
+                    <SolidColorBrush Color="{Binding BackgroundColor}" />
+                  </Button.Background>
+                  <Grid RowDefinitions="*,Auto">
+                    <!-- Level-Nummer -->
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding LevelNumber}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{Binding TextBrush}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
 
-                  <mi:MaterialIcon Grid.Row="1"
-                                   Kind="Lock"
-                                   Width="14" Height="14"
-                                   Foreground="{DynamicResource TextMutedBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,5"
-                                   IsVisible="{Binding IsLocked}" />
-                </Grid>
-              </Button>
+                    <!-- Sterne oder Schloss -->
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding StarsDisplay}"
+                               FontSize="12"
+                               Foreground="Gold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,5"
+                               IsVisible="{Binding IsCompleted}" />
+
+                    <mi:MaterialIcon Grid.Row="1"
+                                     Kind="Lock"
+                                     Width="14" Height="14"
+                                     Foreground="{DynamicResource TextMutedBrush}"
+                                     HorizontalAlignment="Center"
+                                     Margin="0,0,0,5"
+                                     IsVisible="{Binding IsLocked}" />
+                  </Grid>
+                </Button>
+              </Panel>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
 
-      <!-- Footer: Progress + Ad Banner -->
+      <!-- Footer: Fortschritt + Ad Banner -->
       <Border Grid.Row="2"
               Background="{DynamicResource SurfaceBrush}"
               Padding="12,8">
@@ -118,7 +154,7 @@
                        Foreground="{DynamicResource AccentBrush}" />
           </StackPanel>
 
-          <!-- Ad Banner placeholder -->
+          <!-- Ad Banner Platzhalter -->
           <Border Grid.Column="1"
                   Height="50" Width="320"
                   IsVisible="{Binding ShowAds}"
@@ -134,6 +170,71 @@
       </Border>
 
     </Grid>
+
+    <!-- Power-Up Boost Overlay -->
+    <Border IsVisible="{Binding ShowBoostOverlay}"
+            Background="#CC000000"
+            ZIndex="50">
+      <Border Background="{DynamicResource CardBrush}"
+              CornerRadius="16"
+              Padding="24"
+              MaxWidth="340"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <TextBlock Text="{Binding BoostTitleText}"
+                     FontSize="22" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+
+          <Border Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="30"
+                  Width="60" Height="60"
+                  HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="{Binding BoostPowerUpIcon}"
+                             Width="32" Height="32"
+                             Foreground="{DynamicResource AccentBrush}" />
+          </Border>
+
+          <TextBlock Text="{Binding BoostPowerUpName}"
+                     FontSize="18" FontWeight="SemiBold"
+                     Foreground="{DynamicResource AccentBrush}"
+                     HorizontalAlignment="Center" />
+
+          <TextBlock Text="{Binding BoostDescText}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     HorizontalAlignment="Center"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center" />
+
+          <StackPanel Spacing="8">
+            <Button Classes="Filled"
+                    Command="{Binding AcceptBoostCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Padding="16,12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
+                <TextBlock Text="{loc:Translate WatchVideo}"
+                           FontSize="15" FontWeight="SemiBold" />
+              </StackPanel>
+            </Button>
+
+            <Button Classes="Text"
+                    Command="{Binding DeclineBoostCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Padding="12,10">
+              <TextBlock Text="{Binding BoostDeclineText}"
+                         FontSize="14"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Button>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
   </Panel>
 
 </UserControl>

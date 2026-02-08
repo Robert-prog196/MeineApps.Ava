@@ -2,27 +2,30 @@ using System.Collections.ObjectModel;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using BomberBlast.Services;
+using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
 
 namespace BomberBlast.ViewModels;
 
 /// <summary>
-/// ViewModel for the level select page.
-/// Displays a grid of 50 levels with completion status and stars.
+/// ViewModel fuer die Level-Auswahl.
+/// Zeigt 50 Level in 5 Welten mit Stern-basiertem World-Gating.
+/// Power-Up Boost Overlay ab Level 20 (Rewarded Ad).
 /// </summary>
 public partial class LevelSelectViewModel : ObservableObject
 {
     private readonly IProgressService _progressService;
     private readonly IPurchaseService _purchaseService;
+    private readonly ICoinService _coinService;
+    private readonly ILocalizationService _localizationService;
+    private readonly IRewardedAdService _rewardedAdService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Event to request navigation. Parameter is the route string.
-    /// </summary>
     public event Action<string>? NavigationRequested;
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -38,28 +41,57 @@ public partial class LevelSelectViewModel : ObservableObject
     [ObservableProperty]
     private string _starsText = "";
 
+    [ObservableProperty]
+    private string _coinsText = "";
+
+    // Power-Up Boost Overlay
+    [ObservableProperty]
+    private bool _showBoostOverlay;
+
+    [ObservableProperty]
+    private string _boostPowerUpName = "";
+
+    [ObservableProperty]
+    private MaterialIconKind _boostPowerUpIcon = MaterialIconKind.Flash;
+
+    [ObservableProperty]
+    private int _pendingLevel;
+
+    [ObservableProperty]
+    private string _boostTitleText = "";
+
+    [ObservableProperty]
+    private string _boostDescText = "";
+
+    [ObservableProperty]
+    private string _boostDeclineText = "";
+
+    private string _pendingBoostType = "";
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Indicates whether ads should be shown (not premium).
-    /// </summary>
     public bool ShowAds => !_purchaseService.IsPremium;
 
-    public LevelSelectViewModel(IProgressService progressService, IPurchaseService purchaseService)
+    public LevelSelectViewModel(
+        IProgressService progressService,
+        IPurchaseService purchaseService,
+        ICoinService coinService,
+        ILocalizationService localizationService,
+        IRewardedAdService rewardedAdService)
     {
         _progressService = progressService;
         _purchaseService = purchaseService;
+        _coinService = coinService;
+        _localizationService = localizationService;
+        _rewardedAdService = rewardedAdService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
     // INITIALIZATION
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Called when the view appears. Builds the level grid and updates progress info.
-    /// </summary>
     public void OnAppearing()
     {
         BuildLevelList();
@@ -69,10 +101,34 @@ public partial class LevelSelectViewModel : ObservableObject
     private void BuildLevelList()
     {
         Levels.Clear();
+        int totalStars = _progressService.GetTotalStars();
 
         for (int i = 1; i <= _progressService.TotalLevels; i++)
         {
-            bool isUnlocked = _progressService.IsLevelUnlocked(i);
+            int world = _progressService.GetWorldForLevel(i);
+            int worldStarsRequired = _progressService.GetWorldStarsRequired(i);
+            bool isWorldLocked = worldStarsRequired > 0 && totalStars < worldStarsRequired;
+            bool isFirstInWorld = ((i - 1) % 10) == 0;
+
+            // Welt-Header einfuegen (vor dem ersten Level jeder Welt)
+            if (isFirstInWorld && world > 1)
+            {
+                var header = new LevelDisplayItem
+                {
+                    LevelNumber = 0,
+                    IsWorldHeader = true,
+                    WorldNumber = world,
+                    WorldStarsRequired = worldStarsRequired,
+                    IsWorldLocked = isWorldLocked,
+                    WorldLockText = isWorldLocked
+                        ? string.Format(_localizationService.GetString("WorldLocked"), worldStarsRequired)
+                        : string.Format(_localizationService.GetString("WorldFormat"), world),
+                    DisplayText = ""
+                };
+                Levels.Add(header);
+            }
+
+            bool isUnlocked = !isWorldLocked && _progressService.IsLevelUnlocked(i);
             int stars = _progressService.GetLevelStars(i);
             int bestScore = _progressService.GetLevelBestScore(i);
             bool isCompleted = bestScore > 0;
@@ -87,7 +143,8 @@ public partial class LevelSelectViewModel : ObservableObject
                 StarsText = isCompleted && stars > 0
                     ? new string('\u2605', stars) + new string('\u2606', 3 - stars)
                     : "",
-                BestScore = bestScore
+                BestScore = bestScore,
+                IsWorldLocked = isWorldLocked
             };
             item.SelectCommand = new RelayCommand(() => SelectLevel(item));
             Levels.Add(item);
@@ -102,7 +159,8 @@ public partial class LevelSelectViewModel : ObservableObject
         int maxStars = total * 3;
 
         ProgressText = $"{completed}/{total}";
-        StarsText = $"{stars}/{maxStars}";
+        StarsText = $"\u2605 {stars}/{maxStars}";
+        CoinsText = _coinService.Balance.ToString("N0");
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -112,10 +170,68 @@ public partial class LevelSelectViewModel : ObservableObject
     [RelayCommand]
     private void SelectLevel(LevelDisplayItem? level)
     {
-        if (level == null || !level.IsUnlocked)
+        if (level == null || !level.IsUnlocked || level.IsWorldHeader)
             return;
 
+        // Ab Level 20: Boost-Overlay anbieten (nur fuer Free User)
+        if (level.LevelNumber >= 20 && !_purchaseService.IsPremium && _rewardedAdService.IsAvailable)
+        {
+            PendingLevel = level.LevelNumber;
+            PickRandomBoost();
+            ShowBoostOverlay = true;
+            return;
+        }
+
         NavigationRequested?.Invoke($"Game?mode=story&level={level.LevelNumber}");
+    }
+
+    private void PickRandomBoost()
+    {
+        var boosts = new[]
+        {
+            ("speed", MaterialIconKind.Flash),
+            ("fire", MaterialIconKind.Fire),
+            ("bombs", MaterialIconKind.Bomb)
+        };
+        var selected = boosts[Random.Shared.Next(boosts.Length)];
+        _pendingBoostType = selected.Item1;
+        BoostPowerUpIcon = selected.Item2;
+
+        // Lokalisierte Texte
+        BoostTitleText = _localizationService.GetString("PowerUpBoost");
+        BoostDescText = _localizationService.GetString("PowerUpBoostDesc");
+        BoostDeclineText = _localizationService.GetString("WithoutBoost");
+
+        BoostPowerUpName = _pendingBoostType switch
+        {
+            "speed" => "Speed Boost",
+            "fire" => "+1 Fire",
+            "bombs" => "+1 Bomb",
+            _ => ""
+        };
+    }
+
+    [RelayCommand]
+    private async Task AcceptBoostAsync()
+    {
+        ShowBoostOverlay = false;
+        var success = await _rewardedAdService.ShowAdAsync("power_up");
+        if (success)
+        {
+            NavigationRequested?.Invoke($"Game?mode=story&level={PendingLevel}&boost={_pendingBoostType}");
+        }
+        else
+        {
+            // Ad fehlgeschlagen, normal starten
+            NavigationRequested?.Invoke($"Game?mode=story&level={PendingLevel}");
+        }
+    }
+
+    [RelayCommand]
+    private void DeclineBoost()
+    {
+        ShowBoostOverlay = false;
+        NavigationRequested?.Invoke($"Game?mode=story&level={PendingLevel}");
     }
 
     [RelayCommand]
@@ -126,8 +242,7 @@ public partial class LevelSelectViewModel : ObservableObject
 }
 
 /// <summary>
-/// Display model for a single level in the level select grid.
-/// Also aliased as LevelItem for View DataTemplate compatibility.
+/// Anzeige-Model fuer ein Level in der Level-Auswahl
 /// </summary>
 public class LevelDisplayItem
 {
@@ -139,27 +254,37 @@ public class LevelDisplayItem
     public string StarsText { get; set; } = "";
     public int BestScore { get; set; }
 
-    /// <summary>Command to select this level (bound from the ItemTemplate).</summary>
+    // Welt-Header Properties
+    public bool IsWorldHeader { get; set; }
+    public int WorldNumber { get; set; }
+    public int WorldStarsRequired { get; set; }
+    public bool IsWorldLocked { get; set; }
+    public string WorldLockText { get; set; } = "";
+
     public IRelayCommand? SelectCommand { get; set; }
-
-    /// <summary>Whether this level is locked (inverse of IsUnlocked).</summary>
     public bool IsLocked => !IsUnlocked;
-
-    /// <summary>Star display text for the view.</summary>
     public string StarsDisplay => StarsText;
 
-    /// <summary>Background color based on level state.</summary>
     public Color BackgroundColor =>
+        IsWorldLocked ? Color.Parse("#333333") :
         !IsUnlocked ? Color.Parse("#444444") :
         IsCompleted ? Color.Parse("#2E7D32") :
         Color.Parse("#1565C0");
 
-    /// <summary>Text brush based on level state.</summary>
     public IBrush TextBrush =>
-        !IsUnlocked ? Brushes.Gray : Brushes.White;
+        !IsUnlocked || IsWorldLocked ? Brushes.Gray : Brushes.White;
+
+    // Welt-Header Anzeige-Properties
+    public double WorldHeaderOpacity => IsWorldLocked ? 0.5 : 1.0;
+
+    public Material.Icons.MaterialIconKind WorldIconKind =>
+        IsWorldLocked ? Material.Icons.MaterialIconKind.Lock : Material.Icons.MaterialIconKind.Earth;
+
+    public IBrush WorldHeaderBrush =>
+        IsWorldLocked ? Brushes.Gray : Brush.Parse("#FFD700");
 }
 
 /// <summary>
-/// Alias for LevelDisplayItem used in View DataTemplates.
+/// Alias fuer LevelDisplayItem in View DataTemplates
 /// </summary>
 public class LevelItem : LevelDisplayItem { }

@@ -1,0 +1,179 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:models="using:BomberBlast.Models"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:conv="using:Avalonia.Data.Converters"
+             x:Class="BomberBlast.Views.ShopView"
+             x:DataType="vm:ShopViewModel">
+
+  <!-- Gradient-Hintergrund -->
+  <Panel>
+    <Border>
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="{DynamicResource GradientStartColor}" Offset="0" />
+          <GradientStop Color="{DynamicResource GradientMidColor}" Offset="0.5" />
+          <GradientStop Color="{DynamicResource GradientEndColor}" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <Grid RowDefinitions="Auto,*">
+
+      <!-- Header -->
+      <Border Grid.Row="0"
+              Classes="CardElevated"
+              Padding="16,10"
+              CornerRadius="0,0,12,12">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <!-- Zurueck-Button -->
+          <Button Classes="Text"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
+          </Button>
+
+          <!-- Titel -->
+          <TextBlock Grid.Column="1"
+                     Text="{Binding ShopTitleText}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center" />
+
+          <!-- Coin-Badge -->
+          <Border Grid.Column="2"
+                  Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="16"
+                  Padding="12,6">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <mi:MaterialIcon Kind="CircleMultiple" Width="18" Height="18"
+                               Foreground="#FFD700" />
+              <TextBlock Text="{Binding CoinsText}"
+                         FontSize="15" FontWeight="SemiBold"
+                         Foreground="#FFD700"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <!-- Upgrade-Liste -->
+      <ScrollViewer Grid.Row="1" Padding="12,8">
+        <ItemsControl ItemsSource="{Binding ShopItems}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal"
+                         HorizontalAlignment="Center" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:ShopDisplayItem">
+              <Border Background="{DynamicResource CardColor}"
+                      CornerRadius="12"
+                      Padding="12"
+                      Margin="6"
+                      Width="240"
+                      BoxShadow="0 2 8 0 #30000000">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+
+                  <!-- Icon-Badge -->
+                  <Border Grid.Row="0" Grid.Column="0"
+                          Grid.RowSpan="2"
+                          Width="44" Height="44"
+                          CornerRadius="10"
+                          Margin="0,0,10,0"
+                          VerticalAlignment="Center">
+                    <Border.Background>
+                      <SolidColorBrush Color="{Binding IconColor}" Opacity="0.2" />
+                    </Border.Background>
+                    <mi:MaterialIcon Kind="{Binding IconKind}"
+                                     Width="24" Height="24"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center">
+                      <mi:MaterialIcon.Foreground>
+                        <SolidColorBrush Color="{Binding IconColor}" />
+                      </mi:MaterialIcon.Foreground>
+                    </mi:MaterialIcon>
+                  </Border>
+
+                  <!-- Name -->
+                  <TextBlock Grid.Row="0" Grid.Column="1"
+                             Text="{Binding DisplayName}"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                  <!-- Beschreibung -->
+                  <TextBlock Grid.Row="1" Grid.Column="1"
+                             Text="{Binding DisplayDescription}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             TextWrapping="Wrap" />
+
+                  <!-- Level-Fortschritt -->
+                  <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                              Orientation="Horizontal" Spacing="8"
+                              Margin="0,8,0,4">
+                    <TextBlock Text="{Binding LevelDots}"
+                               FontSize="16"
+                               Foreground="{DynamicResource AccentBrush}"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding LevelText}"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+
+                  <!-- Kauf-Button oder Maxed-Badge -->
+                  <Panel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                         Margin="0,4,0,0">
+                    <!-- Maxed: Gruener Checkmark -->
+                    <Border IsVisible="{Binding IsMaxed}"
+                            Background="#1B5E20"
+                            CornerRadius="8"
+                            Padding="8,6"
+                            HorizontalAlignment="Stretch">
+                      <StackPanel Orientation="Horizontal" Spacing="6"
+                                  HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="CheckCircle" Width="16" Height="16"
+                                         Foreground="#4CAF50" />
+                        <TextBlock Text="{loc:Translate ShopMaxed}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#4CAF50" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Kauf-Button -->
+                    <Button IsVisible="{Binding !IsMaxed}"
+                            Command="{Binding $parent[ItemsControl].((vm:ShopViewModel)DataContext).PurchaseCommand}"
+                            CommandParameter="{Binding}"
+                            IsEnabled="{Binding CanBuy}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            CornerRadius="8"
+                            Padding="8,6">
+                      <Button.Background>
+                        <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+                      </Button.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <mi:MaterialIcon Kind="CircleMultiple" Width="14" Height="14"
+                                         Foreground="#FFD700" />
+                        <TextBlock Text="{Binding NextPrice, StringFormat='{}{0:N0}'}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="White" />
+                      </StackPanel>
+                    </Button>
+                  </Panel>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

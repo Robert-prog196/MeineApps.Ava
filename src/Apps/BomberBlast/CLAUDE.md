@@ -33,7 +33,10 @@ BomberBlast/
 │   ├── Models/
 │   │   ├── Entities/            # Player, Enemy, Bomb, Explosion, PowerUp, Direction
 │   │   ├── Grid/                # Cell, CellType, GameGrid (15x10)
-│   │   └── Levels/              # Level, LevelGenerator (50 levels + arcade)
+│   │   ├── Levels/              # Level, LevelGenerator (50 levels + arcade)
+│   │   ├── UpgradeType.cs       # Enum: 6 Shop-Upgrade-Typen
+│   │   ├── PlayerUpgrades.cs    # Persistenter Upgrade-Stand (Preise, MaxLevel)
+│   │   └── ShopDisplayItem.cs   # ObservableObject fuer Shop-UI Binding
 │   ├── Services/
 │   │   ├── ISoundService.cs     # Sound abstraction
 │   │   ├── IProgressService.cs  # Game progress persistence
@@ -41,26 +44,34 @@ BomberBlast/
 │   │   ├── IHighScoreService.cs
 │   │   ├── HighScoreService.cs
 │   │   ├── IGameStyleService.cs # Visual style (Classic/Neon)
-│   │   └── GameStyleService.cs  # Persists style via IPreferencesService
-│   ├── ViewModels/              # 9 ViewModels (MVVM)
-│   │   ├── MainViewModel.cs     # Navigation/view switching
-│   │   ├── GameViewModel.cs     # 60fps game loop (DispatcherTimer)
-│   │   ├── MainMenuViewModel.cs
-│   │   ├── LevelSelectViewModel.cs
+│   │   ├── GameStyleService.cs  # Persists style via IPreferencesService
+│   │   ├── ICoinService.cs      # Persistente Coin-Waehrung
+│   │   ├── CoinService.cs       # Balance, AddCoins, TrySpendCoins
+│   │   ├── IShopService.cs      # 6 Upgrades, Preise, Kauf-Logik
+│   │   ├── ShopService.cs       # PlayerUpgrades Persistenz
+│   │   ├── IRewardedAdService.cs # Rewarded Ad Abstraktion
+│   │   └── RewardedAdService.cs  # Desktop-Simulator (Task.Delay)
+│   ├── ViewModels/              # 10 ViewModels (MVVM)
+│   │   ├── MainViewModel.cs     # Navigation/view switching (10 child VMs)
+│   │   ├── GameViewModel.cs     # 60fps game loop + Coin-Events
+│   │   ├── MainMenuViewModel.cs # Coins-Badge, Shop-Button
+│   │   ├── LevelSelectViewModel.cs # World-Gating, Stern-Header
 │   │   ├── SettingsViewModel.cs
 │   │   ├── HighScoresViewModel.cs
-│   │   ├── GameOverViewModel.cs
+│   │   ├── GameOverViewModel.cs # Coins, Verdoppeln, Weitermachen
 │   │   ├── PauseViewModel.cs
-│   │   └── HelpViewModel.cs
-│   ├── Views/                   # 9 Avalonia views
+│   │   ├── HelpViewModel.cs
+│   │   └── ShopViewModel.cs     # 6 Upgrades kaufen
+│   ├── Views/                   # 10 Avalonia views
 │   │   ├── MainWindow.axaml(.cs)
 │   │   ├── MainView.axaml(.cs)
-│   │   ├── MainMenuView.axaml(.cs)
+│   │   ├── MainMenuView.axaml(.cs) # Coin-Badge + Shop-Button
 │   │   ├── GameView.axaml(.cs)  # SKCanvasView for SkiaSharp
-│   │   ├── LevelSelectView.axaml(.cs)
+│   │   ├── LevelSelectView.axaml(.cs) # Welt-Header + Coin-Badge
 │   │   ├── SettingsView.axaml(.cs)
 │   │   ├── HighScoresView.axaml(.cs)
-│   │   ├── GameOverView.axaml(.cs)
+│   │   ├── GameOverView.axaml(.cs) # Coins + Verdoppeln + Weitermachen
+│   │   ├── ShopView.axaml(.cs)  # 6 Upgrade-Karten, Coin-Stand
 │   │   └── HelpView.axaml(.cs)
 │   └── Resources/Strings/       # 6 languages (DE, EN, ES, FR, IT, PT)
 ├── BomberBlast.Desktop/         # Desktop entry (net10.0)
@@ -227,6 +238,79 @@ dotnet build src/Apps/BomberBlast/BomberBlast.Android/BomberBlast.Android.csproj
 - RenderMiniBomb(): Circle body + gloss highlight + fuse line + spark dot
 - RenderMiniFlame(): Outer orange flame (QuadTo curves) + inner yellow flame
 - Both used in HUD instead of "B"/"F" text labels
+
+## Coins-Economy + Shop (07.02.2026)
+
+### Neue Features
+- **Coin-Waehrung**: Score→Coins (1:1 bei Level-Complete, 0.5x bei Game Over), persistent via IPreferencesService
+- **Shop mit 6 Upgrades**: StartBombs (3x), StartFire (3x), StartSpeed (1x), ExtraLives (2x), ScoreMultiplier (3x), TimeBonus (1x)
+- **Rewarded Ads**: Coins verdoppeln (GameOver), Weitermachen (Story, 1x pro Versuch) - Desktop: Simulator
+- **World-Gating**: 5 Welten a 10 Level, Stern-Anforderungen: 0/10/25/45/70 Sterne
+- **UI**: Shop-Button im Hauptmenue, Coin-Badges ueberall, Welt-Header in LevelSelect
+
+### Upgrade-Preise
+| Upgrade | Max | Preise |
+|---------|-----|--------|
+| StartBombs | 3 | 3.000 / 8.000 / 20.000 |
+| StartFire | 3 | 3.000 / 8.000 / 20.000 |
+| StartSpeed | 1 | 5.000 |
+| ExtraLives | 2 | 15.000 / 40.000 |
+| ScoreMultiplier | 3 | 10.000 / 30.000 / 75.000 |
+| TimeBonus | 1 | 12.000 |
+
+### Neue Dateien (11)
+- Models: UpgradeType.cs, PlayerUpgrades.cs, ShopDisplayItem.cs
+- Services: ICoinService+CoinService, IShopService+ShopService, IRewardedAdService+RewardedAdService
+- ViewModels: ShopViewModel.cs
+- Views: ShopView.axaml(.cs)
+
+### Geaenderte Dateien (10)
+- GameEngine.cs: IShopService, ApplyUpgrades, ContinueAfterGameOver, Score-Multiplikator, OnCoinsEarned
+- Player.cs: MaxBombs/FireRange public set
+- IProgressService.cs + ProgressService.cs: World-Gating (GetWorldStarsRequired, GetWorldForLevel)
+- GameOverViewModel.cs: Coins, Verdoppeln, Weitermachen
+- GameViewModel.cs: Continue-Mode, Coin-Events
+- LevelSelectViewModel.cs: World-Header, Coin-Badge
+- MainMenuViewModel.cs: Coin-Badge, Shop-Button
+- MainViewModel.cs: ShopVm, IsShopActive, erweiterte GameOver/Game Params
+- App.axaml.cs: ICoinService, IShopService, IRewardedAdService, ShopViewModel DI
+- 24 neue Lokalisierungs-Keys in 6 Sprachen
+
+## Rewarded Ads Integration (07.02.2026)
+
+### Zentrale IRewardedAdService (Phase 1)
+- Lokale `IRewardedAdService.cs` + `RewardedAdService.cs` **GELOESCHT** → nutzt zentrale Premium Library (`MeineApps.Core.Premium.Ava`)
+- App.axaml.cs: `RewardedAdServiceFactory` Property fuer Android-Override, DI-Registrierung
+
+### Power-Up Boost (Level >= 20)
+- **LevelSelectViewModel**: Boost-Overlay vor Level-Start (ab Level 20), AcceptBoostCommand/DeclineBoostCommand
+- **LevelSelectView.axaml**: Boost-Overlay UI (Beschreibung + Akzeptieren/Ablehnen Buttons)
+- **GameEngine**: `ApplyBoostPowerUp()` - gibt alle 3 PowerUps (BombUp, FireUp, SpeedUp) zum Start
+
+### Level-Skip (3x Game Over)
+- **GameOverViewModel**: `CanSkipLevel` (nach 3 Versuchen am selben Level), `SkipLevelAsync` Command
+- **GameOverView.axaml**: Skip-Level Button UI
+- **IProgressService + ProgressService**: `GetFailCount(level)` / `IncrementFailCount(level)` / `ResetFailCount(level)`
+
+### Android Integration (Phase 6)
+- **BomberBlast.Android.csproj**: Linked `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs`
+- **MainActivity.cs**: RewardedAdHelper Lifecycle (init, load, dispose)
+
+### Lokalisierung
+- 6 neue resx-Keys in 6 Sprachen: PowerUpBoost, PowerUpBoostDesc, WithoutBoost, SkipLevel, SkipLevelDesc, SkipLevelInfo
+
+## Score-Verdopplung nach Level-Complete (07.02.2026)
+- **GameViewModel**: IRewardedAdService + IPurchaseService injiziert, Score-Double-Overlay (ShowScoreDoubleOverlay, LevelCompleteScore, CanDoubleScore)
+- **GameViewModel**: DoubleScoreCommand (ShowAdAsync("score_double")), SkipDoubleScoreCommand, ProceedToNextLevel()
+- **GameEngine**: DoubleScore() Methode (verdoppelt _player.Score, feuert OnScoreChanged + OnCoinsEarned)
+- **GameView.axaml**: Score-Double-Overlay (ZIndex=50) mit Score-Anzeige, Video-Button, Weiter-Button
+- **HandleLevelComplete**: Zeigt Overlay statt direkt NextLevel (nur fuer Free User mit verfuegbarer Ad)
+- **Placement-Strings**: Alle ShowAdAsync()-Aufrufe mit spezifischen Placements versehen:
+  - GameOverVM DoubleCoins/ContinueGame: "continue"
+  - GameOverVM SkipLevel: "level_skip"
+  - LevelSelectVM AcceptBoost: "power_up"
+  - GameVM DoubleScore: "score_double"
+- **Lokalisierung**: 4 neue Keys (ScoreDoubleTitle, ScoreDoubleDesc, WatchVideoDouble, ContinueWithout) in 6 Sprachen + Designer.cs
 
 ## Status
 - Build: All 3 projects compile successfully (0 errors, 0 warnings)

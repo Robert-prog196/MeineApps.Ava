@@ -23,6 +23,7 @@ public partial class MainViewModel : ObservableObject
     public GameOverViewModel GameOverVm { get; }
     public PauseViewModel PauseVm { get; }
     public HelpViewModel HelpVm { get; }
+    public ShopViewModel ShopVm { get; }
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -48,6 +49,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isHelpActive;
+
+    [ObservableProperty]
+    private bool _isShopActive;
 
     // ═══════════════════════════════════════════════════════════════════════
     // DIALOG PROPERTIES
@@ -87,6 +91,11 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private bool _returnToGameFromSettings;
 
+    /// <summary>
+    /// Zaehlt Fehlversuche pro Level (fuer Level-Skip nach 3x Game Over)
+    /// </summary>
+    private readonly Dictionary<int, int> _levelFailCounts = new();
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -100,6 +109,7 @@ public partial class MainViewModel : ObservableObject
         GameOverViewModel gameOverVm,
         PauseViewModel pauseVm,
         HelpViewModel helpVm,
+        ShopViewModel shopVm,
         ILocalizationService localization)
     {
         MenuVm = menuVm;
@@ -110,6 +120,7 @@ public partial class MainViewModel : ObservableObject
         GameOverVm = gameOverVm;
         PauseVm = pauseVm;
         HelpVm = helpVm;
+        ShopVm = shopVm;
 
         // Wire up navigation from child VMs
         WireNavigation(menuVm);
@@ -120,10 +131,12 @@ public partial class MainViewModel : ObservableObject
         WireNavigation(gameOverVm);
         WireNavigation(pauseVm);
         WireNavigation(helpVm);
+        WireNavigation(shopVm);
 
-        // Wire up dialog events from SettingsVM
+        // Wire up dialog events from SettingsVM + ShopVM
         settingsVm.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
         settingsVm.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        shopVm.MessageRequested += (t, m, b) => ShowAlertDialog(t, m, b);
 
         localization.LanguageChanged += (_, _) =>
         {
@@ -195,6 +208,8 @@ public partial class MainViewModel : ObservableObject
                     var query = route[(route.IndexOf('?') + 1)..];
                     var mode = "quick";
                     var level = 1;
+                    var continueMode = false;
+                    var boost = "";
                     foreach (var param in query.Split('&'))
                     {
                         var parts = param.Split('=');
@@ -202,9 +217,11 @@ public partial class MainViewModel : ObservableObject
                         {
                             if (parts[0] == "mode") mode = parts[1];
                             if (parts[0] == "level") int.TryParse(parts[1], out level);
+                            if (parts[0] == "continue") bool.TryParse(parts[1], out continueMode);
+                            if (parts[0] == "boost") boost = parts[1];
                         }
                     }
-                    GameVm.SetParameters(mode, level);
+                    GameVm.SetParameters(mode, level, continueMode, boost);
                 }
                 // Start the game (initializes engine + starts 60fps loop)
                 await GameVm.OnAppearingAsync();
@@ -228,7 +245,6 @@ public partial class MainViewModel : ObservableObject
 
             case "GameOver":
                 IsGameOverActive = true;
-                // Parse game over parameters and pass to GameOverVm
                 if (route.Contains('?'))
                 {
                     var query = route[(route.IndexOf('?') + 1)..];
@@ -236,6 +252,9 @@ public partial class MainViewModel : ObservableObject
                     var level = 0;
                     var isHighScore = false;
                     var mode = "story";
+                    var coins = 0;
+                    var levelComplete = false;
+                    var canContinue = false;
                     foreach (var param in query.Split('&'))
                     {
                         var parts = param.Split('=');
@@ -247,11 +266,32 @@ public partial class MainViewModel : ObservableObject
                                 case "level": int.TryParse(parts[1], out level); break;
                                 case "highscore": bool.TryParse(parts[1], out isHighScore); break;
                                 case "mode": mode = parts[1]; break;
+                                case "coins": int.TryParse(parts[1], out coins); break;
+                                case "levelcomplete": bool.TryParse(parts[1], out levelComplete); break;
+                                case "cancontinue": bool.TryParse(parts[1], out canContinue); break;
                             }
                         }
                     }
-                    GameOverVm.SetParameters(score, level, isHighScore, mode);
+
+                    // Fehlversuche pro Level tracken (fuer Level-Skip)
+                    var fails = 0;
+                    if (!levelComplete && mode == "story" && level > 0)
+                    {
+                        fails = _levelFailCounts.GetValueOrDefault(level) + 1;
+                        _levelFailCounts[level] = fails;
+                    }
+                    else if (levelComplete && level > 0)
+                    {
+                        _levelFailCounts.Remove(level);
+                    }
+
+                    GameOverVm.SetParameters(score, level, isHighScore, mode, coins, levelComplete, canContinue, fails);
                 }
+                break;
+
+            case "Shop":
+                IsShopActive = true;
+                ShopVm.OnAppearing();
                 break;
 
             case "Help":
@@ -289,6 +329,7 @@ public partial class MainViewModel : ObservableObject
         IsHighScoresActive = false;
         IsGameOverActive = false;
         IsHelpActive = false;
+        IsShopActive = false;
     }
 
     // ═══════════════════════════════════════════════════════════════════════

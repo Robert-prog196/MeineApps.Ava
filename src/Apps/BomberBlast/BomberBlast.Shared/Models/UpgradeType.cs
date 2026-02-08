@@ -1,0 +1,25 @@
+namespace BomberBlast.Models;
+
+/// <summary>
+/// Typen von Shop-Upgrades
+/// </summary>
+public enum UpgradeType
+{
+    /// <summary>Start-Bomben +1 (Max 3 Stufen)</summary>
+    StartBombs,
+
+    /// <summary>Start-Feuer +1 (Max 3 Stufen)</summary>
+    StartFire,
+
+    /// <summary>Start-Speed aktiv (Max 1 Stufe)</summary>
+    StartSpeed,
+
+    /// <summary>Extra Leben +1 (Max 2 Stufen)</summary>
+    ExtraLives,
+
+    /// <summary>Score-Multiplikator erhoehen (Max 3 Stufen)</summary>
+    ScoreMultiplier,
+
+    /// <summary>Zeitbonus verdoppeln (Max 1 Stufe)</summary>
+    TimeBonus
+}

@@ -507,4 +507,119 @@
     <value>D-Pad classico</value>
   </data>
 
+  <!-- Shop UI -->
+  <data name="ShopTitle" xml:space="preserve">
+    <value>Negozio</value>
+  </data>
+  <data name="ShopBuy" xml:space="preserve">
+    <value>Acquista</value>
+  </data>
+  <data name="ShopMaxed" xml:space="preserve">
+    <value>MAX</value>
+  </data>
+  <data name="ShopNotEnoughCoins" xml:space="preserve">
+    <value>Monete insufficienti!</value>
+  </data>
+  <data name="SectionStartUpgrades" xml:space="preserve">
+    <value>Potenziamenti iniziali</value>
+  </data>
+  <data name="SectionScoreBooster" xml:space="preserve">
+    <value>Moltiplicatore punti</value>
+  </data>
+  <data name="UpgradeLevelFormat" xml:space="preserve">
+    <value>Livello {0}/{1}</value>
+  </data>
+  <data name="UpgradeStartBombs" xml:space="preserve">
+    <value>Bomba extra</value>
+  </data>
+  <data name="UpgradeStartBombsDesc" xml:space="preserve">
+    <value>Inizia con più bombe</value>
+  </data>
+  <data name="UpgradeStartFire" xml:space="preserve">
+    <value>Raggio del fuoco</value>
+  </data>
+  <data name="UpgradeStartFireDesc" xml:space="preserve">
+    <value>Esplosioni più grandi dall'inizio</value>
+  </data>
+  <data name="UpgradeStartSpeed" xml:space="preserve">
+    <value>Aumento velocità</value>
+  </data>
+  <data name="UpgradeStartSpeedDesc" xml:space="preserve">
+    <value>Inizia con aumento di velocità</value>
+  </data>
+  <data name="UpgradeExtraLives" xml:space="preserve">
+    <value>Vite extra</value>
+  </data>
+  <data name="UpgradeExtraLivesDesc" xml:space="preserve">
+    <value>Più vite nella modalità storia</value>
+  </data>
+  <data name="UpgradeScoreMultiplier" xml:space="preserve">
+    <value>Moltiplicatore punti</value>
+  </data>
+  <data name="UpgradeScoreMultiplierDesc" xml:space="preserve">
+    <value>Moltiplica il tuo punteggio</value>
+  </data>
+  <data name="UpgradeTimeBonus" xml:space="preserve">
+    <value>Bonus tempo</value>
+  </data>
+  <data name="UpgradeTimeBonusDesc" xml:space="preserve">
+    <value>Punti bonus tempo raddoppiati</value>
+  </data>
+
+  <!-- GameOver UI -->
+  <data name="CoinsEarned" xml:space="preserve">
+    <value>+{0} Monete</value>
+  </data>
+  <data name="DoubleCoins" xml:space="preserve">
+    <value>Raddoppia monete</value>
+  </data>
+  <data name="CoinsDoubled" xml:space="preserve">
+    <value>Raddoppiato!</value>
+  </data>
+  <data name="ContinueGame" xml:space="preserve">
+    <value>Continua</value>
+  </data>
+
+  <!-- Level Select -->
+  <data name="WorldFormat" xml:space="preserve">
+    <value>Mondo {0}</value>
+  </data>
+  <data name="WorldLocked" xml:space="preserve">
+    <value>{0} ★ necessarie</value>
+  </data>
+
+  <!-- Rewarded Ads -->
+  <data name="PowerUpBoost" xml:space="preserve">
+    <value>Power-Up Boost</value>
+  </data>
+  <data name="WatchVideo" xml:space="preserve">
+    <value>Guarda Video</value>
+  </data>
+  <data name="WithoutBoost" xml:space="preserve">
+    <value>Inizia senza</value>
+  </data>
+  <data name="SkipLevel" xml:space="preserve">
+    <value>Salta Livello</value>
+  </data>
+  <data name="SkipLevelInfo" xml:space="preserve">
+    <value>Il livello sarà completato con 1 stella</value>
+  </data>
+  <data name="WatchVideoBoost" xml:space="preserve">
+    <value>Guardare video per boost iniziale?</value>
+  </data>
+
+  <!-- Score Double -->
+  <data name="ScoreDoubleTitle" xml:space="preserve">
+    <value>Raddoppiare il punteggio?</value>
+  </data>
+  <data name="ScoreDoubleDesc" xml:space="preserve">
+    <value>Guarda un video per raddoppiare il tuo punteggio</value>
+  </data>
+  <data name="WatchVideoDouble" xml:space="preserve">
+    <value>Video → Score x2</value>
+  </data>
+  <data name="ContinueWithout" xml:space="preserve">
+    <value>Continua</value>
+  </data>
+
 </root>

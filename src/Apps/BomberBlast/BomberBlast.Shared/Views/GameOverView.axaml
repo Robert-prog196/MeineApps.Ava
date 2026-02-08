@@ -20,17 +20,17 @@
 
     <Grid RowDefinitions="*,Auto">
 
-      <!-- 2-Column Layout: Score left, Buttons right -->
+      <!-- 2-Column Layout: Score+Coins links, Buttons rechts -->
       <Grid Grid.Row="0"
             ColumnDefinitions="*,*"
             VerticalAlignment="Center"
             Margin="24,16">
 
-        <!-- Left: Score Info -->
+        <!-- Links: Score + Coins Info -->
         <StackPanel Grid.Column="0"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
-                    Spacing="16">
+                    Spacing="12">
 
           <TextBlock Text="{loc:Translate GameOver}"
                      FontSize="42"
@@ -38,7 +38,7 @@
                      Foreground="{DynamicResource ErrorBrush}"
                      HorizontalAlignment="Center" />
 
-          <StackPanel Spacing="8">
+          <StackPanel Spacing="6">
             <TextBlock Text="{Binding ScoreText}"
                        FontSize="28"
                        Foreground="{DynamicResource TextPrimaryBrush}"
@@ -52,25 +52,110 @@
           <!-- High Score Badge -->
           <Border Background="{DynamicResource AccentBrush}"
                   CornerRadius="10"
-                  Padding="12"
+                  Padding="12,6"
                   IsVisible="{Binding IsHighScore}"
                   HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" Spacing="8">
-              <mi:MaterialIcon Kind="Star" Width="24" Height="24"
+              <mi:MaterialIcon Kind="Star" Width="20" Height="20"
                                Foreground="{DynamicResource SurfaceBrush}" />
               <TextBlock Text="{loc:Translate NewHighScore}"
-                         FontSize="20"
+                         FontSize="16"
                          FontWeight="Bold"
                          Foreground="{DynamicResource SurfaceBrush}" />
             </StackPanel>
           </Border>
+
+          <!-- Coins verdient -->
+          <Border Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="10"
+                  Padding="16,10"
+                  HorizontalAlignment="Center"
+                  BoxShadow="0 2 8 0 #30000000">
+            <StackPanel Spacing="6">
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          HorizontalAlignment="Center">
+                <mi:MaterialIcon Kind="CircleMultiple" Width="22" Height="22"
+                                 Foreground="#FFD700" />
+                <TextBlock Text="{Binding CoinsEarnedText}"
+                           FontSize="22" FontWeight="Bold"
+                           Foreground="#FFD700" />
+              </StackPanel>
+
+              <!-- Verdoppeln Button -->
+              <Button IsVisible="{Binding CanDoubleCoins}"
+                      Command="{Binding DoubleCoinsCommand}"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Center"
+                      CornerRadius="8"
+                      Background="#7B1FA2"
+                      Padding="12,6">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Video" Width="16" Height="16"
+                                   Foreground="White" />
+                  <TextBlock Text="{Binding DoubleCoinsButtonText}"
+                             FontSize="13" FontWeight="SemiBold"
+                             Foreground="White" />
+                </StackPanel>
+              </Button>
+
+              <!-- Verdoppelt-Anzeige -->
+              <TextBlock IsVisible="{Binding HasDoubled}"
+                         Text="{Binding DoubleCoinsButtonText}"
+                         FontSize="13"
+                         Foreground="#4CAF50"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
         </StackPanel>
 
-        <!-- Right: Buttons -->
+        <!-- Rechts: Buttons -->
         <StackPanel Grid.Column="1"
                     VerticalAlignment="Center"
-                    Spacing="16"
+                    Spacing="12"
                     Margin="16,0">
+
+          <!-- Continue Button (nur Story, 1x) -->
+          <Button IsVisible="{Binding CanContinue}"
+                  Command="{Binding ContinueGameCommand}"
+                  Classes="Primary"
+                  Background="#7B1FA2"
+                  FontSize="16"
+                  Height="48"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Video" Width="18" Height="18"
+                               Foreground="White" />
+              <TextBlock Text="{Binding ContinueButtonText}"
+                         Foreground="White" />
+            </StackPanel>
+          </Button>
+
+          <!-- Level-Skip Button (nach 3x Game Over) -->
+          <Button IsVisible="{Binding CanSkipLevel}"
+                  Command="{Binding SkipLevelCommand}"
+                  Classes="Primary"
+                  Background="#FF9800"
+                  FontSize="14"
+                  Height="44"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Spacing="2" HorizontalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6"
+                          HorizontalAlignment="Center">
+                <mi:MaterialIcon Kind="SkipNext" Width="18" Height="18"
+                                 Foreground="White" />
+                <TextBlock Text="{Binding SkipLevelText}"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="White" />
+              </StackPanel>
+              <TextBlock Text="{Binding SkipLevelInfoText}"
+                         FontSize="10"
+                         Foreground="#CCFFFFFF"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Button>
 
           <Button Content="{loc:Translate TryAgain}"
                   Classes="Primary"
@@ -91,7 +176,7 @@
         </StackPanel>
       </Grid>
 
-      <!-- Ad Banner placeholder -->
+      <!-- Ad Banner Platzhalter -->
       <Border Grid.Row="1"
               Height="50"
               IsVisible="{Binding ShowAds}"

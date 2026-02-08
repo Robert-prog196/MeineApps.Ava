@@ -21,17 +21,42 @@ public class ProgressService : IProgressService
         LoadProgress();
     }
 
+    // Stern-Anforderungen pro Welt (Index = Welt-Nummer)
+    private static readonly int[] WorldStarsRequired = [0, 0, 10, 25, 45, 70];
+
     public bool IsLevelUnlocked(int level)
     {
         if (level < 1 || level > TotalLevels)
             return false;
 
-        // First level always unlocked
+        // Erstes Level immer freigeschaltet
         if (level == 1)
             return true;
 
-        // Unlock if previous level completed
-        return level <= _data.HighestCompleted + 1;
+        // Vorheriges Level muss abgeschlossen sein
+        if (level > _data.HighestCompleted + 1)
+            return false;
+
+        // Welt-Gating: Genuegend Sterne fuer die Welt erforderlich
+        int requiredStars = GetWorldStarsRequired(level);
+        if (requiredStars > 0 && GetTotalStars() < requiredStars)
+            return false;
+
+        return true;
+    }
+
+    public int GetWorldStarsRequired(int level)
+    {
+        int world = GetWorldForLevel(level);
+        return world >= 1 && world < WorldStarsRequired.Length
+            ? WorldStarsRequired[world]
+            : 0;
+    }
+
+    public int GetWorldForLevel(int level)
+    {
+        if (level < 1) return 1;
+        return ((level - 1) / 10) + 1;
     }
 
     public void CompleteLevel(int level)

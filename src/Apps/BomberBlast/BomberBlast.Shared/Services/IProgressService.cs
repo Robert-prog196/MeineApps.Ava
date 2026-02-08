@@ -29,6 +29,12 @@ public interface IProgressService
     /// <summary>Get stars earned for a level</summary>
     int GetLevelStars(int level);
 
+    /// <summary>Stern-Anforderung fuer die Welt eines Levels</summary>
+    int GetWorldStarsRequired(int level);
+
+    /// <summary>Welt-Nummer (1-5) fuer ein Level</summary>
+    int GetWorldForLevel(int level);
+
     /// <summary>Reset all progress</summary>
     void ResetProgress();
 }

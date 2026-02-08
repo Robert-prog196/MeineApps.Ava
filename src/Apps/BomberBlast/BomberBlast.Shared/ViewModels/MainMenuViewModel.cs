@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BomberBlast.Services;
@@ -14,6 +13,7 @@ public partial class MainMenuViewModel : ObservableObject
 {
     private readonly IProgressService _progressService;
     private readonly IPurchaseService _purchaseService;
+    private readonly ICoinService _coinService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
@@ -34,6 +34,12 @@ public partial class MainMenuViewModel : ObservableObject
     [ObservableProperty]
     private string _versionText = "v1.0.0 - RS-Digital";
 
+    [ObservableProperty]
+    private string _coinsText = "0";
+
+    [ObservableProperty]
+    private int _coinBalance;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -48,10 +54,11 @@ public partial class MainMenuViewModel : ObservableObject
     /// </summary>
     public bool HasProgress => ShowContinueButton;
 
-    public MainMenuViewModel(IProgressService progressService, IPurchaseService purchaseService)
+    public MainMenuViewModel(IProgressService progressService, IPurchaseService purchaseService, ICoinService coinService)
     {
         _progressService = progressService;
         _purchaseService = purchaseService;
+        _coinService = coinService;
 
         // Set version from assembly
         var assembly = System.Reflection.Assembly.GetEntryAssembly();
@@ -71,6 +78,8 @@ public partial class MainMenuViewModel : ObservableObject
     public void OnAppearing()
     {
         ShowContinueButton = _progressService.HighestCompletedLevel > 0;
+        CoinBalance = _coinService.Balance;
+        CoinsText = _coinService.Balance.ToString("N0");
         OnPropertyChanged(nameof(HasProgress));
         OnPropertyChanged(nameof(ShowAds));
     }
@@ -122,5 +131,11 @@ public partial class MainMenuViewModel : ObservableObject
     private void Settings()
     {
         NavigationRequested?.Invoke("Settings");
+    }
+
+    [RelayCommand]
+    private void Shop()
+    {
+        NavigationRequested?.Invoke("Shop");
     }
 }

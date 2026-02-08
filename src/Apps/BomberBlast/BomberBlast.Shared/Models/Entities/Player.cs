@@ -18,9 +18,9 @@ public class Player : Entity
     public Direction MovementDirection { get; set; } = Direction.None;
     public bool IsMoving => MovementDirection != Direction.None;
 
-    // Power-up stats (permanent)
-    public int MaxBombs { get; private set; } = 1;
-    public int FireRange { get; private set; } = 1;
+    // Power-up stats (permanent, per Shop-Upgrades auch von aussen setzbar)
+    public int MaxBombs { get; set; } = 1;
+    public int FireRange { get; set; } = 1;
 
     // Power-up abilities (lost on death)
     public bool HasSpeed { get; set; }

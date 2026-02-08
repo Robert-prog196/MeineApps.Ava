@@ -35,6 +35,10 @@
     <views:HelpView DataContext="{Binding HelpVm}"
                      IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsHelpActive}" />
 
+    <!-- Shop -->
+    <views:ShopView DataContext="{Binding ShopVm}"
+                     IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsShopActive}" />
+
     <!-- Alert Dialog Overlay -->
     <Border IsVisible="{Binding IsAlertDialogVisible}"
             Background="#80000000" ZIndex="100"

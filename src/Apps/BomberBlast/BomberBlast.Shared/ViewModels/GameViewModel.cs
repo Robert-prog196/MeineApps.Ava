@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BomberBlast.Core;
+using MeineApps.Core.Premium.Ava.Services;
 using SkiaSharp;
 
 namespace BomberBlast.ViewModels;
@@ -17,6 +18,8 @@ public partial class GameViewModel : ObservableObject, IDisposable
     private const float MAX_DELTA_TIME = 0.1f;
 
     private readonly GameEngine _gameEngine;
+    private readonly IRewardedAdService _rewardedAdService;
+    private readonly IPurchaseService _purchaseService;
     private readonly Stopwatch _frameStopwatch = new();
     private bool _isInitialized;
     private bool _disposed;
@@ -24,6 +27,10 @@ public partial class GameViewModel : ObservableObject, IDisposable
 
     private string _mode = "story";
     private int _level = 1;
+    private bool _continueMode;
+    private string _boostType = "";
+    private int _lastCoinsEarned;
+    private bool _lastIsLevelComplete;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
@@ -49,6 +56,19 @@ public partial class GameViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isPaused;
 
+    // Score-Verdopplung nach Level-Complete
+    [ObservableProperty]
+    private bool _showScoreDoubleOverlay;
+
+    [ObservableProperty]
+    private int _levelCompleteScore;
+
+    [ObservableProperty]
+    private string _levelCompleteScoreText = "";
+
+    [ObservableProperty]
+    private bool _canDoubleScore;
+
     // ═══════════════════════════════════════════════════════════════════════
     // PUBLIC PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -67,9 +87,14 @@ public partial class GameViewModel : ObservableObject, IDisposable
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
-    public GameViewModel(GameEngine gameEngine)
+    public GameViewModel(
+        GameEngine gameEngine,
+        IRewardedAdService rewardedAdService,
+        IPurchaseService purchaseService)
     {
         _gameEngine = gameEngine;
+        _rewardedAdService = rewardedAdService;
+        _purchaseService = purchaseService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -80,10 +105,12 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// Set the game mode and level parameters before starting.
     /// Resets initialization flag so the game engine reinitializes on next OnAppearingAsync.
     /// </summary>
-    public void SetParameters(string mode, int level)
+    public void SetParameters(string mode, int level, bool continueMode = false, string boostType = "")
     {
         _mode = mode;
         _level = level;
+        _continueMode = continueMode;
+        _boostType = boostType;
         _isInitialized = false;
     }
 
@@ -95,6 +122,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
         // Subscribe to game events
         _gameEngine.OnGameOver += HandleGameOver;
         _gameEngine.OnLevelComplete += HandleLevelComplete;
+        _gameEngine.OnCoinsEarned += HandleCoinsEarned;
 
         if (!_isInitialized)
         {
@@ -126,10 +154,22 @@ public partial class GameViewModel : ObservableObject, IDisposable
         // Unsubscribe from game events to prevent memory leaks
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
+        _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
     }
 
     private async Task InitializeGameAsync()
     {
+        _lastCoinsEarned = 0;
+        _lastIsLevelComplete = false;
+
+        // Continue-Modus: Spiel fortsetzen statt neu initialisieren
+        if (_continueMode)
+        {
+            _continueMode = false;
+            _gameEngine.ContinueAfterGameOver();
+            return;
+        }
+
         switch (_mode.ToLower())
         {
             case "arcade":
@@ -138,7 +178,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
 
             case "quick":
                 var random = new Random();
-                int randomLevel = random.Next(1, 11); // First 10 levels for quick play
+                int randomLevel = random.Next(1, 11);
                 await _gameEngine.StartStoryModeAsync(randomLevel);
                 break;
 
@@ -146,6 +186,13 @@ public partial class GameViewModel : ObservableObject, IDisposable
             default:
                 await _gameEngine.StartStoryModeAsync(_level);
                 break;
+        }
+
+        // Power-Up Boost anwenden (aus Rewarded Ad)
+        if (!string.IsNullOrEmpty(_boostType))
+        {
+            _gameEngine.ApplyBoostPowerUp(_boostType);
+            _boostType = "";
         }
     }
 
@@ -332,23 +379,85 @@ public partial class GameViewModel : ObservableObject, IDisposable
         NavigationRequested?.Invoke("..");
     }
 
+    [RelayCommand]
+    private async Task DoubleScoreAsync()
+    {
+        if (!CanDoubleScore) return;
+
+        bool rewarded = await _rewardedAdService.ShowAdAsync("score_double");
+        if (rewarded)
+        {
+            // Score im Engine verdoppeln
+            _gameEngine.DoubleScore();
+            LevelCompleteScore = _gameEngine.Score;
+            LevelCompleteScoreText = LevelCompleteScore.ToString("N0");
+            CanDoubleScore = false;
+        }
+
+        // Overlay schliessen und zum naechsten Level
+        ShowScoreDoubleOverlay = false;
+        await ProceedToNextLevel();
+    }
+
+    [RelayCommand]
+    private async Task SkipDoubleScore()
+    {
+        ShowScoreDoubleOverlay = false;
+        await ProceedToNextLevel();
+    }
+
+    /// <summary>
+    /// Weiter zum naechsten Level oder Game-Over-Screen (bei Level 50 / Sieg)
+    /// </summary>
+    private async Task ProceedToNextLevel()
+    {
+        var score = _gameEngine.Score;
+        var level = _gameEngine.IsArcadeMode ? _gameEngine.ArcadeWave : _gameEngine.CurrentLevel;
+        var isHighScore = _gameEngine.IsCurrentScoreHighScore;
+        var mode = _gameEngine.IsArcadeMode ? "arcade" : "story";
+        var coins = _lastCoinsEarned;
+
+        if (_gameEngine.CurrentLevel >= 50 && !_gameEngine.IsArcadeMode)
+        {
+            // Sieg! -> Game Over Screen mit Level-Complete-Flag
+            NavigationRequested?.Invoke(
+                $"GameOver?score={score}&level={level}&highscore={isHighScore}&mode={mode}" +
+                $"&coins={coins}&levelcomplete=true&cancontinue=false");
+        }
+        else
+        {
+            // Naechstes Level
+            await _gameEngine.NextLevelAsync();
+            _frameStopwatch.Restart();
+        }
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // GAME EVENT HANDLERS
     // ═══════════════════════════════════════════════════════════════════════
+
+    private void HandleCoinsEarned(int coins, int totalScore, bool isLevelComplete)
+    {
+        _lastCoinsEarned = coins;
+        _lastIsLevelComplete = isLevelComplete;
+    }
 
     private async void HandleGameOver()
     {
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            await Task.Delay(2000); // Show game over briefly
+            await Task.Delay(2000);
 
             var score = _gameEngine.Score;
             var level = _gameEngine.IsArcadeMode ? _gameEngine.ArcadeWave : _gameEngine.CurrentLevel;
             var isHighScore = _gameEngine.IsCurrentScoreHighScore;
             var mode = _gameEngine.IsArcadeMode ? "arcade" : "story";
+            var coins = _lastCoinsEarned;
+            var canContinue = _gameEngine.CanContinue;
 
             NavigationRequested?.Invoke(
-                $"GameOver?score={score}&level={level}&highscore={isHighScore}&mode={mode}");
+                $"GameOver?score={score}&level={level}&highscore={isHighScore}&mode={mode}" +
+                $"&coins={coins}&levelcomplete=false&cancontinue={canContinue}");
         });
     }
 
@@ -356,17 +465,25 @@ public partial class GameViewModel : ObservableObject, IDisposable
     {
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            await Task.Delay(3000); // Show level complete for 3 seconds
+            await Task.Delay(3000);
 
-            if (_gameEngine.CurrentLevel >= 50 && !_gameEngine.IsArcadeMode)
+            // Score-Verdopplung anbieten (nur fuer Free User mit verfuegbarer Ad)
+            bool canDouble = !_purchaseService.IsPremium && _rewardedAdService.IsAvailable;
+
+            if (canDouble)
             {
-                // Victory!
-                NavigationRequested?.Invoke("..");
+                // Game-Loop stoppen waehrend Overlay sichtbar
+                StopGameLoop();
+                LevelCompleteScore = _gameEngine.Score;
+                LevelCompleteScoreText = LevelCompleteScore.ToString("N0");
+                CanDoubleScore = true;
+                ShowScoreDoubleOverlay = true;
+                // Overlay-Buttons uebernehmen die weitere Navigation
             }
             else
             {
-                // Next level
-                await _gameEngine.NextLevelAsync();
+                // Kein Overlay -> direkt weiter
+                await ProceedToNextLevel();
             }
         });
     }
@@ -383,6 +500,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
 
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
+        _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
 
         _disposed = true;
         GC.SuppressFinalize(this);

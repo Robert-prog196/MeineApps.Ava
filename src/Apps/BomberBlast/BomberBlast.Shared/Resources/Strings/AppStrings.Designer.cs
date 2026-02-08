@@ -958,5 +958,220 @@ namespace BomberBlast.Resources.Strings {
                 return ResourceManager.GetString("InputClassicDPad", resourceCulture);
             }
         }
+
+        // Shop UI
+        internal static string ShopTitle {
+            get {
+                return ResourceManager.GetString("ShopTitle", resourceCulture);
+            }
+        }
+
+        internal static string ShopBuy {
+            get {
+                return ResourceManager.GetString("ShopBuy", resourceCulture);
+            }
+        }
+
+        internal static string ShopMaxed {
+            get {
+                return ResourceManager.GetString("ShopMaxed", resourceCulture);
+            }
+        }
+
+        internal static string ShopNotEnoughCoins {
+            get {
+                return ResourceManager.GetString("ShopNotEnoughCoins", resourceCulture);
+            }
+        }
+
+        internal static string SectionStartUpgrades {
+            get {
+                return ResourceManager.GetString("SectionStartUpgrades", resourceCulture);
+            }
+        }
+
+        internal static string SectionScoreBooster {
+            get {
+                return ResourceManager.GetString("SectionScoreBooster", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeLevelFormat {
+            get {
+                return ResourceManager.GetString("UpgradeLevelFormat", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartBombs {
+            get {
+                return ResourceManager.GetString("UpgradeStartBombs", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartBombsDesc {
+            get {
+                return ResourceManager.GetString("UpgradeStartBombsDesc", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartFire {
+            get {
+                return ResourceManager.GetString("UpgradeStartFire", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartFireDesc {
+            get {
+                return ResourceManager.GetString("UpgradeStartFireDesc", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartSpeed {
+            get {
+                return ResourceManager.GetString("UpgradeStartSpeed", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeStartSpeedDesc {
+            get {
+                return ResourceManager.GetString("UpgradeStartSpeedDesc", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeExtraLives {
+            get {
+                return ResourceManager.GetString("UpgradeExtraLives", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeExtraLivesDesc {
+            get {
+                return ResourceManager.GetString("UpgradeExtraLivesDesc", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeScoreMultiplier {
+            get {
+                return ResourceManager.GetString("UpgradeScoreMultiplier", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeScoreMultiplierDesc {
+            get {
+                return ResourceManager.GetString("UpgradeScoreMultiplierDesc", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeTimeBonus {
+            get {
+                return ResourceManager.GetString("UpgradeTimeBonus", resourceCulture);
+            }
+        }
+
+        internal static string UpgradeTimeBonusDesc {
+            get {
+                return ResourceManager.GetString("UpgradeTimeBonusDesc", resourceCulture);
+            }
+        }
+
+        // GameOver UI
+        internal static string CoinsEarned {
+            get {
+                return ResourceManager.GetString("CoinsEarned", resourceCulture);
+            }
+        }
+
+        internal static string DoubleCoins {
+            get {
+                return ResourceManager.GetString("DoubleCoins", resourceCulture);
+            }
+        }
+
+        internal static string CoinsDoubled {
+            get {
+                return ResourceManager.GetString("CoinsDoubled", resourceCulture);
+            }
+        }
+
+        internal static string ContinueGame {
+            get {
+                return ResourceManager.GetString("ContinueGame", resourceCulture);
+            }
+        }
+
+        // Level Select
+        internal static string WorldFormat {
+            get {
+                return ResourceManager.GetString("WorldFormat", resourceCulture);
+            }
+        }
+
+        internal static string WorldLocked {
+            get {
+                return ResourceManager.GetString("WorldLocked", resourceCulture);
+            }
+        }
+
+        // Rewarded Ads
+        internal static string PowerUpBoost {
+            get {
+                return ResourceManager.GetString("PowerUpBoost", resourceCulture);
+            }
+        }
+
+        internal static string WatchVideo {
+            get {
+                return ResourceManager.GetString("WatchVideo", resourceCulture);
+            }
+        }
+
+        internal static string WithoutBoost {
+            get {
+                return ResourceManager.GetString("WithoutBoost", resourceCulture);
+            }
+        }
+
+        internal static string SkipLevel {
+            get {
+                return ResourceManager.GetString("SkipLevel", resourceCulture);
+            }
+        }
+
+        internal static string SkipLevelInfo {
+            get {
+                return ResourceManager.GetString("SkipLevelInfo", resourceCulture);
+            }
+        }
+
+        internal static string WatchVideoBoost {
+            get {
+                return ResourceManager.GetString("WatchVideoBoost", resourceCulture);
+            }
+        }
+
+        // Score Double
+        internal static string ScoreDoubleTitle {
+            get {
+                return ResourceManager.GetString("ScoreDoubleTitle", resourceCulture);
+            }
+        }
+
+        internal static string ScoreDoubleDesc {
+            get {
+                return ResourceManager.GetString("ScoreDoubleDesc", resourceCulture);
+            }
+        }
+
+        internal static string WatchVideoDouble {
+            get {
+                return ResourceManager.GetString("WatchVideoDouble", resourceCulture);
+            }
+        }
+
+        internal static string ContinueWithout {
+            get {
+                return ResourceManager.GetString("ContinueWithout", resourceCulture);
+            }
+        }
     }
 }

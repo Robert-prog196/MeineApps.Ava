@@ -24,6 +24,7 @@ public class GameEngine : IDisposable
     private readonly InputManager _inputManager;
     private readonly ILocalizationService _localizationService;
     private readonly IGameStyleService _gameStyleService;
+    private readonly IShopService _shopService;
     private readonly GameRenderer _renderer;
 
     // Game state
@@ -45,6 +46,7 @@ public class GameEngine : IDisposable
     private bool _isArcadeMode;
     private int _arcadeWave;
     private bool _levelCompleteHandled;
+    private bool _continueUsed;
 
     // Statistics
     private int _bombsUsed;
@@ -68,6 +70,8 @@ public class GameEngine : IDisposable
     public event Action? OnGameOver;
     public event Action? OnLevelComplete;
     public event Action<int>? OnScoreChanged;
+    /// <summary>Coins verdient: (coinsEarned, totalScore, isLevelComplete)</summary>
+    public event Action<int, int, bool>? OnCoinsEarned;
 
     public GameState State => _state;
     public int Score => _player?.Score ?? 0;
@@ -77,6 +81,9 @@ public class GameEngine : IDisposable
     public float RemainingTime => _timer?.RemainingTime ?? 0;
     public bool IsArcadeMode => _isArcadeMode;
     public bool IsCurrentScoreHighScore => _highScoreService.IsHighScore(Score);
+
+    /// <summary>Ob Continue moeglich ist (nur Story, nur 1x pro Level-Versuch)</summary>
+    public bool CanContinue => !_continueUsed && !_isArcadeMode;
 
     // Touch input forwarding
     public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
@@ -102,7 +109,8 @@ public class GameEngine : IDisposable
         IHighScoreService highScoreService,
         InputManager inputManager,
         ILocalizationService localizationService,
-        IGameStyleService gameStyleService)
+        IGameStyleService gameStyleService,
+        IShopService shopService)
     {
         _soundManager = soundManager;
         _spriteSheet = spriteSheet;
@@ -111,6 +119,7 @@ public class GameEngine : IDisposable
         _inputManager = inputManager;
         _localizationService = localizationService;
         _gameStyleService = gameStyleService;
+        _shopService = shopService;
 
         _renderer = new GameRenderer(_spriteSheet, _gameStyleService);
         _grid = new GameGrid();
@@ -131,8 +140,10 @@ public class GameEngine : IDisposable
         _isArcadeMode = false;
         _currentLevelNumber = levelNumber;
         _currentLevel = LevelGenerator.GenerateLevel(levelNumber);
+        _continueUsed = false;
 
         _player.ResetForNewGame();
+        ApplyUpgrades();
         await LoadLevelAsync();
 
         _soundManager.PlayMusic(_currentLevel.MusicTrack == "boss"
@@ -149,9 +160,11 @@ public class GameEngine : IDisposable
         _arcadeWave = 1;
         _currentLevelNumber = 1;
         _currentLevel = LevelGenerator.GenerateArcadeLevel(1);
+        _continueUsed = false;
 
         _player.ResetForNewGame();
-        _player.Lives = 1; // Arcade mode: 1 life
+        ApplyUpgrades();
+        _player.Lives = 1; // Arcade: immer 1 Leben
         await LoadLevelAsync();
 
         _soundManager.PlayMusic(SoundManager.MUSIC_GAMEPLAY);
@@ -211,6 +224,60 @@ public class GameEngine : IDisposable
         {
             await _spriteSheet.LoadAsync();
         }
+    }
+
+    /// <summary>
+    /// Shop-Upgrades auf den Spieler anwenden
+    /// </summary>
+    private void ApplyUpgrades()
+    {
+        _player.MaxBombs = _shopService.GetStartBombs();
+        _player.FireRange = _shopService.GetStartFire();
+        _player.HasSpeed = _shopService.HasStartSpeed();
+        _player.Lives = _shopService.GetStartLives(_isArcadeMode);
+    }
+
+    /// <summary>
+    /// Boost-PowerUp anwenden (aus Rewarded Ad vor Level-Start)
+    /// </summary>
+    public void ApplyBoostPowerUp(string boostType)
+    {
+        switch (boostType)
+        {
+            case "speed":
+                _player.HasSpeed = true;
+                break;
+            case "fire":
+                _player.FireRange += 1;
+                break;
+            case "bombs":
+                _player.MaxBombs += 1;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Score verdoppeln (nach Level-Complete Rewarded Ad)
+    /// </summary>
+    public void DoubleScore()
+    {
+        _player.Score *= 2;
+        OnScoreChanged?.Invoke(_player.Score);
+
+        // Coins-Event ebenfalls mit verdoppeltem Score aktualisieren
+        OnCoinsEarned?.Invoke(_player.Score, _player.Score, true);
+    }
+
+    /// <summary>
+    /// Spiel nach Game Over fortsetzen (per Rewarded Ad)
+    /// </summary>
+    public void ContinueAfterGameOver()
+    {
+        if (_continueUsed) return;
+
+        _continueUsed = true;
+        _player.Lives = 1;
+        RespawnPlayer();
     }
 
     private void PlacePowerUps(Random random)
@@ -784,13 +851,24 @@ public class GameEngine : IDisposable
         _levelCompleteHandled = false;
         _timer.Pause();
 
-        // Calculate bonuses
-        int timeBonus = (int)_timer.RemainingTime * 10;
+        // Bonusberechnung mit Shop-Upgrades
+        int timeBonusMultiplier = _shopService.GetTimeBonusMultiplier();
+        int timeBonus = (int)_timer.RemainingTime * timeBonusMultiplier;
         int efficiencyBonus = _bombsUsed <= 7 ? 10000 : 0;
         _player.Score += timeBonus + efficiencyBonus;
 
+        // Score-Multiplikator anwenden
+        float scoreMultiplier = _shopService.GetScoreMultiplier();
+        if (scoreMultiplier > 1.0f)
+        {
+            _player.Score = (int)(_player.Score * scoreMultiplier);
+        }
+
         _soundManager.PlaySound(SoundManager.SFX_LEVEL_COMPLETE);
         OnScoreChanged?.Invoke(_player.Score);
+
+        // Coins verdient (1:1 zum Score)
+        OnCoinsEarned?.Invoke(_player.Score, _player.Score, true);
     }
 
     private void UpdatePlayerDied(float deltaTime)
@@ -810,13 +888,20 @@ public class GameEngine : IDisposable
                 _soundManager.PlaySound(SoundManager.SFX_GAME_OVER);
                 _soundManager.StopMusic();
 
-                // Save high score for arcade mode
+                // High Score speichern (Arcade)
                 if (_isArcadeMode)
                 {
                     if (_highScoreService.IsHighScore(_player.Score))
                     {
                         _highScoreService.AddScore("PLAYER", _player.Score, _arcadeWave);
                     }
+                }
+
+                // Trost-Coins (halber Score, abgerundet)
+                int coins = _player.Score / 2;
+                if (coins > 0)
+                {
+                    OnCoinsEarned?.Invoke(coins, _player.Score, false);
                 }
 
                 OnGameOver?.Invoke();
@@ -1068,7 +1153,8 @@ public class GameEngine : IDisposable
 
         _overlayTextPaint.Color = SKColors.Cyan;
         _overlayFont.Size = 24;
-        int timeBonus = (int)_timer.RemainingTime * 10;
+        int timeBonusMultiplier = _shopService.GetTimeBonusMultiplier();
+        int timeBonus = (int)_timer.RemainingTime * timeBonusMultiplier;
         canvas.DrawText(string.Format(_localizationService.GetString("TimeBonusFormat"), timeBonus), screenWidth / 2, screenHeight / 2 + 60, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
     }
 
