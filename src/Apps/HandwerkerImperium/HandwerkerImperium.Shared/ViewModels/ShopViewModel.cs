@@ -91,7 +91,6 @@ public partial class ShopViewModel : ObservableObject
 
         LoadShopData();
         LoadTools();
-        _rewardedAdService.InitializeAsync().FireAndForget();
     }
 
     private void OnPremiumStatusChanged(object? sender, EventArgs e)

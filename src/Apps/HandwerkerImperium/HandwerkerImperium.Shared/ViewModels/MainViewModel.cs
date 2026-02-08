@@ -62,6 +62,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly EventHandler<string> _buildingsNavHandler;
     private readonly EventHandler<string> _researchNavHandler;
 
+    // Gespeicherte Delegate-Referenzen fuer Alert/Confirmation Events (fuer Dispose-Unsubscribe)
+    private readonly Action<string, string, string> _alertHandler;
+    private readonly Func<string, string, string, string, Task<bool>> _confirmHandler;
+
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS FOR NAVIGATION AND DIALOGS
     // ═══════════════════════════════════════════════════════════════════════
@@ -431,18 +435,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
         BuildingsViewModel.NavigationRequested += _buildingsNavHandler;
         ResearchViewModel.NavigationRequested += _researchNavHandler;
 
-        // Wire up child VM alert/confirmation events
-        SettingsViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        SettingsViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
-        ShopViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        ShopViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
-        OrderViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
-        WorkerMarketViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        WorkerProfileViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        WorkerProfileViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
-        BuildingsViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        ResearchViewModel.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
-        ResearchViewModel.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+        // Wire up child VM alert/confirmation events (gespeicherte Delegates fuer Dispose-Unsubscribe)
+        _alertHandler = (t, m, b) => ShowAlertDialog(t, m, b);
+        _confirmHandler = (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
+
+        SettingsViewModel.AlertRequested += _alertHandler;
+        SettingsViewModel.ConfirmationRequested += _confirmHandler;
+        ShopViewModel.AlertRequested += _alertHandler;
+        ShopViewModel.ConfirmationRequested += _confirmHandler;
+        OrderViewModel.ConfirmationRequested += _confirmHandler;
+        StatisticsViewModel.AlertRequested += _alertHandler;
+        WorkerMarketViewModel.AlertRequested += _alertHandler;
+        WorkerProfileViewModel.AlertRequested += _alertHandler;
+        WorkerProfileViewModel.ConfirmationRequested += _confirmHandler;
+        BuildingsViewModel.AlertRequested += _alertHandler;
+        ResearchViewModel.AlertRequested += _alertHandler;
+        ResearchViewModel.ConfirmationRequested += _confirmHandler;
 
         // Subscribe to premium status changes
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
@@ -1220,6 +1228,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Child-VMs aktualisieren
         WorkerMarketViewModel.UpdateLocalizedTexts();
+        WorkerProfileViewModel.UpdateLocalizedTexts();
+        BuildingsViewModel.UpdateLocalizedTexts();
         ResearchViewModel.UpdateLocalizedTexts();
         ShopViewModel.LoadTools();
     }
@@ -1310,6 +1320,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         WorkerProfileViewModel.NavigationRequested -= _workerProfileNavHandler;
         BuildingsViewModel.NavigationRequested -= _buildingsNavHandler;
         ResearchViewModel.NavigationRequested -= _researchNavHandler;
+
+        // Unsubscribe child VM alert/confirmation events
+        SettingsViewModel.AlertRequested -= _alertHandler;
+        SettingsViewModel.ConfirmationRequested -= _confirmHandler;
+        ShopViewModel.AlertRequested -= _alertHandler;
+        ShopViewModel.ConfirmationRequested -= _confirmHandler;
+        OrderViewModel.ConfirmationRequested -= _confirmHandler;
+        StatisticsViewModel.AlertRequested -= _alertHandler;
+        WorkerMarketViewModel.AlertRequested -= _alertHandler;
+        WorkerProfileViewModel.AlertRequested -= _alertHandler;
+        WorkerProfileViewModel.ConfirmationRequested -= _confirmHandler;
+        BuildingsViewModel.AlertRequested -= _alertHandler;
+        ResearchViewModel.AlertRequested -= _alertHandler;
+        ResearchViewModel.ConfirmationRequested -= _confirmHandler;
 
         _gameStateService.MoneyChanged -= OnMoneyChanged;
         _gameStateService.GoldenScrewsChanged -= OnGoldenScrewsChanged;

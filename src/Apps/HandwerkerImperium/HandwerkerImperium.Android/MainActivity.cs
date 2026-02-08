@@ -18,6 +18,7 @@ namespace HandwerkerImperium;
 public class MainActivity : AvaloniaMainActivity<App>
 {
     private AdMobHelper? _adMobHelper;
+    private RewardedAdHelper? _rewardedAdHelper;
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
@@ -27,6 +28,12 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
+        // Rewarded Ad Helper + Factory MUSS vor base.OnCreate (DI) registriert werden
+        _rewardedAdHelper = new RewardedAdHelper();
+        App.RewardedAdServiceFactory = sp =>
+            new MeineApps.Core.Premium.Ava.Droid.AndroidRewardedAdService(
+                _rewardedAdHelper!, sp.GetRequiredService<IPurchaseService>(), "HandwerkerImperium");
+
         base.OnCreate(savedInstanceState);
 
         // Google Mobile Ads + GDPR consent
@@ -38,6 +45,9 @@ public class MainActivity : AvaloniaMainActivity<App>
         var adService = App.Services.GetRequiredService<IAdService>();
         var purchaseService = App.Services.GetRequiredService<IPurchaseService>();
         _adMobHelper.AttachToActivity(this, AdConfig.GetBannerAdUnitId("HandwerkerImperium"), adService, purchaseService, 64);
+
+        // Rewarded Ad laden (nach DI-Build)
+        _rewardedAdHelper.Load(this, AdConfig.GetRewardedAdUnitId("HandwerkerImperium"));
     }
 
     protected override void OnResume()
@@ -54,6 +64,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 
     protected override void OnDestroy()
     {
+        _rewardedAdHelper?.Dispose();
         _adMobHelper?.Dispose();
         base.OnDestroy();
     }

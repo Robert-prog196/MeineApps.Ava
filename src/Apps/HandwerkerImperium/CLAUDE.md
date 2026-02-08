@@ -384,6 +384,11 @@ dotnet build HandwerkerImperium.Android/HandwerkerImperium.Android.csproj
 - ~18 neue/umbenannte resx-Keys in 6 Sprachen (GoldenScrews, ShopGoldenScrews75/200/600, InstantFinish, HiringScrewCost, etc.)
 - NextRotation Duplikate in 5 resx-Dateien entfernt (MSB3568 Fix)
 
+## MainViewModel Event-Fixes (07.02.2026)
+- **Fehlende StatisticsViewModel.AlertRequested Subscription**: Event existierte aber wurde nie abonniert → Alerts aus StatisticsVM kamen nie an
+- **OnLanguageChanged erweitert**: `BuildingsViewModel.UpdateLocalizedTexts()` + `WorkerProfileViewModel.UpdateLocalizedTexts()` fehlten
+- **Memory Leak behoben**: Alle AlertRequested/ConfirmationRequested Subscriptions (12 Events) nutzten anonyme Lambdas die in Dispose() nicht unsubscribed werden konnten → gespeicherte `_alertHandler`/`_confirmHandler` Delegates + vollstaendiges Unsubscribe in Dispose()
+
 ## Version
 - v2.0.2 (vc7) - Release mit Store Assets
 - v2.0.1 (vc6) - Bugfixes, Deep Reviews
