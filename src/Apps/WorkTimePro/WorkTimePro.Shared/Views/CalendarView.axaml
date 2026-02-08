@@ -220,6 +220,9 @@
           </StackPanel>
         </Border>
 
+        <!-- Bottom Spacer (Ad-Banner) -->
+        <Border Height="60" />
+
       </StackPanel>
     </ScrollViewer>
 
@@ -385,6 +388,9 @@
               <TextBlock Text="{loc:Translate Cancel}" />
             </Button>
           </StackPanel>
+
+          <!-- Bottom Spacer (Ad-Banner) -->
+          <Border Height="60" />
 
         </StackPanel>
       </ScrollViewer>

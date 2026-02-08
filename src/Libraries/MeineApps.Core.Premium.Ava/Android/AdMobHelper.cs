@@ -29,9 +29,9 @@ public sealed class AdMobHelper : IDisposable
         {
             MobileAds.Initialize(activity);
         }
-        catch
+        catch (Exception ex)
         {
-            // Init failure must not crash the app
+            Android.Util.Log.Error("AdMobHelper", $"Initialize failed: {ex.Message}");
         }
     }
 
@@ -63,9 +63,9 @@ public sealed class AdMobHelper : IDisposable
                 }),
                 new ConsentFailureListener(_ => { }));
         }
-        catch
+        catch (Exception ex)
         {
-            // Consent failure must not crash the app
+            Android.Util.Log.Error("AdMobHelper", $"RequestConsent failed: {ex.Message}");
         }
     }
 
@@ -115,9 +115,9 @@ public sealed class AdMobHelper : IDisposable
                 AndroidX.Core.View.ViewCompat.SetOnApplyWindowInsetsListener(_adView,
                     new AdInsetListener(baseBottomMarginPx));
             }
-            catch
+            catch (Exception ex)
             {
-                // Non-critical: ad position may be slightly off on some devices
+                Android.Util.Log.Warn("AdMobHelper", $"Inset listener failed: {ex.Message}");
             }
 
             // Load the first ad
@@ -126,9 +126,9 @@ public sealed class AdMobHelper : IDisposable
             // Notify ad service that banner is visible
             _adService.ShowBanner();
         }
-        catch
+        catch (Exception ex)
         {
-            // Ad creation failure must not crash the app
+            Android.Util.Log.Error("AdMobHelper", $"AttachToActivity failed: {ex.Message}");
         }
     }
 

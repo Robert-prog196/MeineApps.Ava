@@ -233,7 +233,7 @@
         </Border>
 
         <!-- Bottom Spacer -->
-        <Border Height="32" />
+        <Border Height="60" />
 
       </StackPanel>
     </ScrollViewer>

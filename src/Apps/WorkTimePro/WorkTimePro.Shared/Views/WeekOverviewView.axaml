@@ -210,6 +210,9 @@
         </StackPanel>
       </Border>
 
+      <!-- Bottom Spacer (Ad-Banner) -->
+      <Border Height="60" />
+
     </StackPanel>
   </ScrollViewer>
 

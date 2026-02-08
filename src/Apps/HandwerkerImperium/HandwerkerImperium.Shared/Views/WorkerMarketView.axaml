@@ -209,7 +209,7 @@
         <!-- Wird NICHT angezeigt wenn "Keine freien Plaetze" Banner sichtbar ist -->
 
         <!-- Bottom Spacer -->
-        <Border Height="20" />
+        <Border Height="60" />
 
       </StackPanel>
     </ScrollViewer>

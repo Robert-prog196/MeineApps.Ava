@@ -539,8 +539,8 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Bottom Spacer -->
-        <Border Height="16" />
+        <!-- Bottom Spacer (60dp fuer Ad-Banner Overlay) -->
+        <Border Height="60" />
       </StackPanel>
     </ScrollViewer>
 

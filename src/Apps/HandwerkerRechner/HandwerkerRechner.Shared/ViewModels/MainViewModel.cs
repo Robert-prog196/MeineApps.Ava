@@ -55,6 +55,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
+        // Banner beim Start anzeigen (fuer Desktop + Fallback falls AdMobHelper fehlschlaegt)
+        if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+            _adService.ShowBanner();
+
         // Wire Projects navigation (open project in calculator)
         ProjectsViewModel.NavigationRequested += OnProjectNavigation;
 

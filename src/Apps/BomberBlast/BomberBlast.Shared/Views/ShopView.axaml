@@ -60,7 +60,7 @@
       </Border>
 
       <!-- Upgrade-Liste -->
-      <ScrollViewer Grid.Row="1" Padding="12,8">
+      <ScrollViewer Grid.Row="1" Padding="12,8,12,60">
         <ItemsControl ItemsSource="{Binding ShopItems}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

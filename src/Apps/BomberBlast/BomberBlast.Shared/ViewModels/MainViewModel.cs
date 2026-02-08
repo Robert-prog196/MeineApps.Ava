@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace BomberBlast.ViewModels;
 
@@ -52,6 +53,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isShopActive;
+
+    [ObservableProperty]
+    private bool _isAdBannerVisible;
 
     // ═══════════════════════════════════════════════════════════════════════
     // DIALOG PROPERTIES
@@ -110,7 +114,9 @@ public partial class MainViewModel : ObservableObject
         PauseViewModel pauseVm,
         HelpViewModel helpVm,
         ShopViewModel shopVm,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        IAdService adService,
+        IPurchaseService purchaseService)
     {
         MenuVm = menuVm;
         GameVm = gameVm;
@@ -121,6 +127,12 @@ public partial class MainViewModel : ObservableObject
         PauseVm = pauseVm;
         HelpVm = helpVm;
         ShopVm = shopVm;
+
+        // Ad-Banner Verdrahtung
+        IsAdBannerVisible = adService.BannerVisible;
+        adService.AdsStateChanged += (_, _) => IsAdBannerVisible = adService.BannerVisible;
+        if (adService.AdsEnabled && !purchaseService.IsPremium)
+            adService.ShowBanner();
 
         // Wire up navigation from child VMs
         WireNavigation(menuVm);

@@ -7,7 +7,7 @@
     android:supportsRtl="true"
     android:label="HandwerkerImperium">
     <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
-               android:value="ca-app-pub-2588160251469436~1938872706" />
+               android:value="ca-app-pub-2588160251469436~3907946957" />
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

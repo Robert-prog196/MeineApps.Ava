@@ -8,7 +8,7 @@
              x:DataType="vm:MainViewModel">
 
   <Panel>
-  <ScrollViewer Padding="0,0,0,16">
+  <ScrollViewer Padding="0,0,0,60">
     <StackPanel Spacing="0">
 
       <!-- ========== A) Hero-Header ========== -->

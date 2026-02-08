@@ -312,6 +312,12 @@ dotnet build src/Apps/BomberBlast/BomberBlast.Android/BomberBlast.Android.csproj
   - GameVM DoubleScore: "score_double"
 - **Lokalisierung**: 4 neue Keys (ScoreDoubleTitle, ScoreDoubleDesc, WatchVideoDouble, ContinueWithout) in 6 Sprachen + Designer.cs
 
+## Ad-Banner Bottom Padding Fix (08.02.2026)
+- **SettingsView**: Bottom-Spacer von 16dp auf 60dp erhoeht (ScrollViewer-Content wird sonst vom nativen Ad-Banner-Overlay ueberdeckt)
+- **HelpView**: Bottom-Spacer von 16dp auf 60dp erhoeht (gleicher Grund)
+- **ShopView**: ScrollViewer Padding von `12,8` auf `12,8,12,60` geaendert (hatte keinen Bottom-Spacer)
+- Nicht betroffen: MainMenuView (kein ScrollViewer, zentrierter Content), GameOverView (kein ScrollViewer), HighScoresView (kein ScrollViewer), LevelSelectView (Footer Grid.Row="2" reserviert bereits Platz), GameView (SkiaSharp Canvas)
+
 ## Status
 - Build: All 3 projects compile successfully (0 errors, 0 warnings)
 - Ported from: BomberBlast MAUI v1.2.0

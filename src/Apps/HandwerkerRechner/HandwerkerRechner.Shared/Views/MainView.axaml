@@ -477,8 +477,8 @@
 
             </StackPanel>
 
-            <!-- Abstand unten -->
-            <Border Height="16" />
+            <!-- Abstand unten (60dp fuer Ad-Banner Overlay) -->
+            <Border Height="60" />
 
           </StackPanel>
         </ScrollViewer>

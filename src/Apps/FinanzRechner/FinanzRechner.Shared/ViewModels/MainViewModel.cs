@@ -62,6 +62,10 @@ public partial class MainViewModel : ObservableObject
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
 
+        // Banner beim Start anzeigen (fuer Desktop + Fallback falls AdMobHelper fehlschlaegt)
+        if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+            _adService.ShowBanner();
+
         ExpenseTrackerViewModel = expenseTrackerViewModel;
         StatisticsViewModel = statisticsViewModel;
         SettingsViewModel = settingsViewModel;

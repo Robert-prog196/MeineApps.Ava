@@ -45,7 +45,8 @@
       </StackPanel>
 
       <!-- Project List -->
-      <ScrollViewer IsVisible="{Binding HasProjects}">
+      <ScrollViewer IsVisible="{Binding HasProjects}"
+                    Padding="0,0,0,60">
         <ItemsControl ItemsSource="{Binding Projects}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:Project">

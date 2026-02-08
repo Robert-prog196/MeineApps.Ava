@@ -300,8 +300,8 @@
           </StackPanel>
         </Border>
 
-        <!-- Bottom Spacer -->
-        <Border Height="16" />
+        <!-- Bottom Spacer (Ad-Banner) -->
+        <Border Height="60" />
 
       </StackPanel>
     </ScrollViewer>

@@ -835,3 +835,23 @@ F:\Meine_Apps_Ava\
   - YearOverviewVM: ShowAdAsync("export")
   - StatisticsVM: ShowAdAsync("monthly_stats") + IPreferencesService, Extended Stats Gate (Quartal/Jahr → 24h Zugang via Rewarded Ad)
   - Build: 0 Fehler
+
+### 08.02.2026
+- **Banner-Ads Fix (alle 5 Apps, 08.02.2026):**
+  - Root Cause: Nur HandwerkerImperium rief explizit `_adService.ShowBanner()` auf. Andere 5 Apps verliessen sich auf AdMobHelper.AttachToActivity() das Fehler stillschweigend verschluckt.
+  - Fix 1: Expliziter `_adService.ShowBanner()` Aufruf im MainViewModel-Constructor aller 5 Apps (HandwerkerRechner, FinanzRechner, FitnessRechner, WorkTimePro, BomberBlast)
+  - Fix 2: BomberBlast hatte KEINE IAdService-Integration → IAdService + IPurchaseService im Constructor, IsAdBannerVisible Property, Ad-Banner Spacer in MainView.axaml (Grid RowDefinitions="*,Auto")
+  - Fix 3: HandwerkerImperium AndroidManifest App-ID falsch (`~1938872706` = HandwerkerRechner statt `~3907946957`) → korrigiert
+  - Fix 4: AdMobHelper.cs catch-Bloecke loggen jetzt via `Android.Util.Log.Error/Warn` statt Fehler stillschweigend zu verschlucken
+  - AdMob-ID-Verifizierung: Alle Banner-IDs + Rewarded-IDs + App-IDs gegen AdMob.docx abgeglichen → alle korrekt (ausser HandwerkerImperium Manifest, jetzt gefixt)
+  - Build: Alle 5 Shared + 5 Android + HandwerkerImperium Android = 0 Fehler
+- **Ad-Banner Content-Overlap Fix (alle 6 Apps, 08.02.2026):**
+  - Problem: Native Android Banner-Overlay (50dp) verdeckt den letzten Inhalt in ScrollViewern, obwohl MainView-Grid Ad-Spacer vorhanden
+  - Loesung: Bottom-Spacer in allen internen ScrollViewer-Views auf mindestens 60dp erhoeht
+  - HandwerkerImperium: 6 Views gefixt (DashboardView, WorkerMarketView, ResearchView, ShopView, StatisticsView, SettingsView) - AchievementsView hatte bereits 60dp
+  - FinanzRechner: 6 Views gefixt (HomeView, ExpenseTrackerView, StatisticsView, SettingsView, BudgetsView, RecurringTransactionsView)
+  - HandwerkerRechner: 3 Views gefixt (MainView Home-Content, ProjectsView, SettingsView)
+  - FitnessRechner: 4 Views gefixt (HomeView, ProgressView, FoodSearchView, SettingsView)
+  - WorkTimePro: 11 Views gefixt (TodayView, CalendarView 2x, WeekOverviewView, StatisticsView, SettingsView, DayDetailView, MonthOverviewView, YearOverviewView, VacationView, ShiftPlanView)
+  - BomberBlast: 3 Views gefixt (SettingsView, HelpView, ShopView)
+  - Build: Alle 6 Shared-Projekte = 0 Fehler

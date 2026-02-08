@@ -59,7 +59,7 @@
     <!-- ============================================ -->
     <!-- Row 2: Content Area (Scrollable)             -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="2" Padding="16">
+    <ScrollViewer Grid.Row="2" Padding="16,16,16,60">
       <StackPanel Spacing="16">
 
         <!-- Favorites Section -->

@@ -147,6 +147,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private string _quickJobTimerDisplay = string.Empty;
 
     [ObservableProperty]
+    private bool _isQuickJobsExpanded = true;
+
+    [ObservableProperty]
+    private string _quickJobsExpandIconKind = "ChevronUp";
+
+    [ObservableProperty]
     private string _challengesExpandIconKind = "ChevronUp";
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -288,8 +294,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public bool IsTabBarVisible => !IsWorkshopDetailActive && !IsOrderDetailActive &&
                                     !IsSawingGameActive && !IsPipePuzzleActive &&
                                     !IsWiringGameActive && !IsPaintingGameActive &&
-                                    !IsWorkerMarketActive && !IsWorkerProfileActive &&
-                                    !IsBuildingsActive && !IsResearchActive;
+                                    !IsWorkerProfileActive && !IsBuildingsActive;
 
     // Zaehler fuer Seitenwechsel → Banner bei jedem 10. Aufruf
     private int _pageViewCount;
@@ -969,6 +974,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         IsChallengesExpanded = !IsChallengesExpanded;
         ChallengesExpandIconKind = IsChallengesExpanded ? "ChevronUp" : "ChevronDown";
+    }
+
+    [RelayCommand]
+    private void ToggleQuickJobsExpanded()
+    {
+        IsQuickJobsExpanded = !IsQuickJobsExpanded;
+        QuickJobsExpandIconKind = IsQuickJobsExpanded ? "ChevronUp" : "ChevronDown";
     }
 
     [RelayCommand]
