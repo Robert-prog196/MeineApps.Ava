@@ -243,5 +243,8 @@ Esempi:
   <data name="ShiftEarlyShort" xml:space="preserve"><value>M</value></data>
   <data name="ShiftLateShort" xml:space="preserve"><value>P</value></data>
   <data name="ShiftNightShort" xml:space="preserve"><value>N</value></data>
+  <data name="TimerDone" xml:space="preserve">
+    <value>Fatto!</value>
+  </data>
 
 </root>

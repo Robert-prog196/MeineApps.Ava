@@ -178,3 +178,16 @@ dotnet build src/Apps/FitnessRechner/FitnessRechner.Android/FitnessRechner.Andro
 #### Lokalisierung
 - 11 neue resx-Keys in 6 Sprachen: WeeklyAnalysis, WeeklyAnalysisDesc, AvgWeight, AvgCalories, AvgWater, WeightTrend, CalorieTarget, ExportTracking, ExportTrackingDesc, ExtendedFoodDb, ExtendedFoodDbDesc
 - AppStrings.Designer.cs: 11 neue Properties
+
+### Game Juice - FloatingText + Celebration (08.02.2026)
+
+#### Aenderungen
+- **ProgressViewModel**: `FloatingTextRequested` + `CelebrationRequested` Events
+  - `AddEntry()`: Zeigt Floating Text mit Typ-spezifischem Format (kg/BMI/%/ml)
+  - `QuickAddWater()`: Zeigt "+{amount} ml" Floating Text
+  - `AddFoodToLog()`: Zeigt "+{calories} kcal" Floating Text
+  - `UpdateWaterStatus()`: Confetti + "Ziel erreicht" bei Wasser-Zielerreichung (einmal pro Session via `_wasWaterGoalReached`)
+- **MainViewModel**: `FloatingTextRequested` + `CelebrationRequested` Events, Weiterleitung von ProgressViewModel
+- **MainView.axaml**: `FloatingTextOverlay` (ZIndex=15) + `CelebrationOverlay` (ZIndex=16) Controls, xmlns:controls
+- **MainView.axaml.cs**: Event-Handler fuer FloatingText (Farbe: success=#22C55E, info=#3B82F6) + Confetti
+- Build: 0 Fehler

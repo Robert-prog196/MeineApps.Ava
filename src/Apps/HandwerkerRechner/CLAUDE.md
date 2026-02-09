@@ -207,3 +207,21 @@ dotnet build src/Apps/HandwerkerRechner/HandwerkerRechner.Android/HandwerkerRech
   - Extended-History-Ad-Overlay (ZIndex=100, ShowExtendedHistoryOverlay, Confirm/Cancel Bindings, History-Icon)
   - Extended-History-Karte auf Home-Tab (Blue-Gradient Icon, Titel + Beschreibung, Chevron, ShowExtendedHistoryAdCommand)
 - Build: Shared + Desktop + Android 0 Fehler
+
+### Game Juice - FloatingTextOverlay + CelebrationOverlay (08.02.2026)
+
+#### Funktionsweise
+- Beim Speichern eines Projekts (ConfirmSaveProject) erscheint ein Floating-Text "Projekt wurde gespeichert!" + Confetti-Effekt
+- Alle 9 Calculator VMs (4 Floor + 5 Premium) feuern FloatingTextRequested Event
+
+#### Aenderungen
+- **9 Calculator VMs** (Tile, Wallpaper, Paint, Flooring, Drywall, Electrical, Metal, Garden, RoofSolar):
+  - `FloatingTextRequested` Event hinzugefuegt
+  - Nach erfolgreichem Save: `FloatingTextRequested?.Invoke(ProjectSaved, "success")`
+- **MainViewModel**:
+  - `FloatingTextRequested` + `CelebrationRequested` Events
+  - `OnChildFloatingText()`: Leitet Text weiter + feuert Confetti bei "success" Kategorie
+  - `WireCalculatorEvents()`: Alle 9 VMs FloatingTextRequested → OnChildFloatingText
+- **MainView.axaml**: `FloatingTextOverlay` (ZIndex=15) + `CelebrationOverlay` (ZIndex=16), xmlns:controls
+- **MainView.axaml.cs**: Event-Handler (success=#22C55E gruen) + Confetti
+- Build: 0 Fehler

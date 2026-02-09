@@ -403,6 +403,15 @@ namespace WorkTimePro.Resources.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die End of day! ähnelt.
+        /// </summary>
+        internal static string EndOfDay {
+            get {
+                return ResourceManager.GetString("EndOfDay", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die End break ähnelt.
         /// </summary>
         internal static string EndPause {

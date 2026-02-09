@@ -318,6 +318,14 @@ dotnet build src/Apps/BomberBlast/BomberBlast.Android/BomberBlast.Android.csproj
 - **ShopView**: ScrollViewer Padding von `12,8` auf `12,8,12,60` geaendert (hatte keinen Bottom-Spacer)
 - Nicht betroffen: MainMenuView (kein ScrollViewer, zentrierter Content), GameOverView (kein ScrollViewer), HighScoresView (kein ScrollViewer), LevelSelectView (Footer Grid.Row="2" reserviert bereits Platz), GameView (SkiaSharp Canvas)
 
+## Game Juice Overlays (08.02.2026)
+- **FloatingTextOverlay + CelebrationOverlay** aus MeineApps.UI.Controls eingebunden
+- **GameOverViewModel**: `FloatingTextRequested` Event, feuert "x2!" (gold) bei Coins-Verdopplung
+- **LevelSelectViewModel**: `CelebrationRequested` Event + `_previousTotalStars` Tracking, feuert Confetti bei neuer Welt-Freischaltung
+- **MainViewModel**: Events weiterleiten (GameOverVm.FloatingTextRequested, LevelSelectVm.CelebrationRequested), `_localizationService` Feld gespeichert, Level-Complete → Confetti + FloatingText("LevelComplete", "success")
+- **MainView.axaml**: `xmlns:controls="using:MeineApps.UI.Controls"`, FloatingTextCanvas + CelebrationCanvas im aeusseren Grid (Grid.RowSpan="2", ZIndex 15/16)
+- **MainView.axaml.cs**: DataContextChanged Event-Handler, OnFloatingText (Farbe nach Kategorie: success=gruen, gold=gold, default=blau), OnCelebration
+
 ## Status
 - Build: All 3 projects compile successfully (0 errors, 0 warnings)
 - Ported from: BomberBlast MAUI v1.2.0

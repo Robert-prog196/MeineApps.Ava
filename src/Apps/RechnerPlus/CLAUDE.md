@@ -14,6 +14,7 @@ Scientific Calculator mit Unit Converter - Avalonia Version
 - 4 Themes (Midnight, Aurora, Daylight, Forest) - dynamisches Switching
 - 6 Sprachen (DE, EN, ES, FR, IT, PT) - vollständig lokalisiert
 - Keyboard-Support (Desktop): Ziffern, Operatoren, Enter, Backspace, Escape
+- Floating Text Overlay (Game Juice): Ergebnis schwebt nach oben bei Berechnung
 - Android + Windows + Linux
 
 ## Struktur
@@ -30,11 +31,11 @@ RechnerPlus/
 │   │   └── SettingsViewModel.cs    # Theme/Language Selection, Privacy/Feedback
 │   ├── Views/
 │   │   ├── MainWindow.axaml        # Desktop Window (400x700, min 360x500)
-│   │   ├── MainView.axaml          # Tab-Content, Fade-Transition, History Bottom-Sheet
+│   │   ├── MainView.axaml          # Tab-Content, Fade-Transition, History Bottom-Sheet, FloatingTextOverlay
 │   │   ├── CalculatorView.axaml    # Button Grid + Scientific Panel + Memory Row
 │   │   ├── CalculatorView.axaml.cs # KeyDown Handler für Desktop Keyboard-Input
 │   │   ├── ConverterView.axaml     # Category+Unit ComboBoxes, FAB Swap, Result
-│   │   ├── MainView.axaml.cs       # Swipe-Gesten (Up=ShowHistory, Down=HideHistory)
+│   │   ├── MainView.axaml.cs       # Swipe-Gesten, FloatingText Event-Handler
 │   │   └── SettingsView.axaml      # Theme Preview (neutrale Hintergründe, farbiger Rahmen), Language, About
 │   └── Resources/Strings/
 │       ├── AppStrings.resx         # EN (Base) - 80+ Keys
@@ -107,6 +108,13 @@ dotnet publish src/Apps/RechnerPlus/RechnerPlus.Android -c Release
 - Ausgewaehlter Button: farbiger Border (Primary-Farbe) + CheckCircle-Icon
 - Nicht-ausgewaehlter Button: subtiler Border
 - Swatch-Kreise (20px) immer gut sichtbar auf neutralem Hintergrund
+
+### Floating Text (Game Juice)
+- CalculatorViewModel: `FloatingTextRequested` Event wird nach Calculate() gefeuert
+- MainViewModel: Leitet Event vom Calculator weiter
+- MainView.axaml: `FloatingTextOverlay` Control (aus MeineApps.UI) im Root-Panel
+- MainView.axaml.cs: `OnDataContextChanged` subscribed auf Event, `OnFloatingText` ruft `ShowFloatingText` auf
+- Farbe: Indigo (#6366F1), dezent (FontSize 14), Position 30%/30% des Canvas
 
 ### Keyboard (CalculatorView.axaml.cs)
 - KeyDown-Handler auf dem UserControl (Focusable=true)

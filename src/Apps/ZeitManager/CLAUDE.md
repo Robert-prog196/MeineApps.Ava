@@ -13,6 +13,7 @@
 - **Notifications:** Desktop (Windows Toast / Linux notify-send), Android (Foreground Service + AlarmManager)
 - 4 Themes (Midnight/Aurora/Daylight/Forest), 6 Sprachen
 - Material Icons, Empty States, Dialog Overlays
+- **Game Juice:** FloatingTextOverlay (Stoppuhr-Runden, Timer fertig) + CelebrationOverlay (Confetti bei Timer-Ende)
 
 ## Architektur
 
@@ -75,6 +76,7 @@ MainView nutzt `Border.TabContent` + `.Active` CSS-Klassen (wie RechnerPlus):
 - **ProgressPercent:** Math.Clamp(0, 100) gegen negative/ueberlaufende Werte
 - **CustomShiftPattern:** ShortName() nutzt LocalizationManager.GetString() fuer lokalisierte Schicht-Kuerzel
 - **AlarmItem.NotifyLocalizationChanged():** Public Methode fuer Sprachwechsel-Benachrichtigung (RepeatDaysFormatted)
+- **Game Juice:** FloatingTextOverlay + CelebrationOverlay in MainView.axaml (MeineApps.UI.Controls), Events via MainViewModel.FloatingTextRequested/CelebrationRequested, StopwatchVM.FloatingTextRequested wird weitergeleitet
 
 ### Android-Services
 ```
@@ -93,7 +95,7 @@ ZeitManager.Android/Services/
 - Neue Avalonia-Keys: ThemeMidnight, ThemeAurora, ThemeDaylight, ThemeForest, FeedbackButton, PrivacyPolicy
 - Alle View-Strings lokalisiert (keine hardcodierten Texte in AXAML/Models)
 - AlarmItem.RepeatDaysFormatted nutzt LocalizationManager.GetString() (statischer Zugriff in Model)
-- Neue Keys: ConfirmDeleteTitle/Message, ConfirmDeactivateTitle/Message, ShiftEarlyShort/LateShort/NightShort
+- Neue Keys: ConfirmDeleteTitle/Message, ConfirmDeactivateTitle/Message, ShiftEarlyShort/LateShort/NightShort, TimerDone
 
 ## Abhängigkeiten
 - MeineApps.Core.Ava (Themes, Localization, Preferences)
@@ -140,3 +142,9 @@ ZeitManager.Android/Services/
   - AlarmItem: NotifyLocalizationChanged() fuer RepeatDaysFormatted bei Sprachwechsel
   - AlarmViewModel: OnLanguageChanged ruft NotifyLocalizationChanged() auf allen Alarmen
   - Build: Desktop 0 Fehler/0 Warnungen, Android 0 Fehler/11 CA1416 (erwartet)
+- **v2.0.0-gamejuice** - Game Juice Overlays:
+  - FloatingTextOverlay + CelebrationOverlay in MainView eingebaut (MeineApps.UI.Controls)
+  - StopwatchViewModel: FloatingTextRequested Event bei Lap (zeigt "#N" als info)
+  - MainViewModel: FloatingTextRequested + CelebrationRequested Events, Timer-Ende zeigt "TimerDone" + Confetti
+  - MainView.axaml.cs: Event-Handler fuer Floating Text + Celebration
+  - Neuer resx-Key "TimerDone" in 6 Sprachen (EN: Done!, DE: Fertig!, ES: Listo!, FR: Fini!, IT: Fatto!, PT: Pronto!)

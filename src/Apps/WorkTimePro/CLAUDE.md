@@ -234,3 +234,18 @@ dotnet build src/Apps/WorkTimePro/WorkTimePro.Android/WorkTimePro.Android.csproj
 
 ### Lokalisierung
 - 6 neue resx-Keys in 6 Sprachen: PremiumFeatureTitle, PremiumFeatureDesc, WatchVideoOnce, BuyPremiumUnlimited, VideoRewardSuccess, VideoAdFailed
+
+## Game Juice - FloatingTextOverlay + CelebrationOverlay (08.02.2026)
+
+### Funktionsweise
+- Beim Check-Out (Feierabend) erscheint ein Floating-Text "Feierabend!" mit Confetti-Effekt
+- Falls Ueberstunden vorhanden, wird zusaetzlich "+X.Xh" als Floating-Text angezeigt
+
+### Aenderungen
+- **MainViewModel**: `FloatingTextRequested` + `CelebrationRequested` Events hinzugefuegt
+- **MainViewModel.ToggleTrackingAsync()**: Nach CheckOut: Feierabend-Text + Confetti + optionale Ueberstunden-Anzeige
+- **MainView.axaml**: `FloatingTextOverlay` + `CelebrationOverlay` Controls (ZIndex 15/16, Grid.RowSpan="3")
+- **MainView.axaml.cs**: Event-Handler fuer FloatingText (gruen=success, orange=overtime) + Confetti
+
+### Lokalisierung
+- 1 neuer resx-Key in 6 Sprachen: EndOfDay (EN: "End of day!", DE: "Feierabend!", ES/FR/IT/PT)

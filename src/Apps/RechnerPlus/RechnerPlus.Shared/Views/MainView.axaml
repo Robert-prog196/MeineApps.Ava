@@ -4,6 +4,7 @@
              xmlns:views="using:RechnerPlus.Views"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:calc="using:MeineApps.CalcLib"
+             xmlns:controls="using:MeineApps.UI.Controls"
              x:Class="RechnerPlus.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -201,6 +202,10 @@
       </Border>
 
     </Grid>
+
+    <!-- Floating Text Overlay -->
+    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   IsHitTestVisible="False" />
 
     <!-- ============================================ -->
     <!-- History Bottom Sheet Overlay                  -->

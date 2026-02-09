@@ -5,6 +5,7 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:views="using:FitnessRechner.Views"
              xmlns:calcViews="using:FitnessRechner.Views.Calculators"
+             xmlns:controls="using:MeineApps.UI.Controls"
              x:Class="FitnessRechner.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -248,6 +249,16 @@
 
       </Grid>
     </Border>
+
+    <!-- Game Juice Overlays -->
+    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   Grid.RowSpan="99"
+                                   ZIndex="15"
+                                   IsHitTestVisible="False" />
+    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
+                                  Grid.RowSpan="99"
+                                  ZIndex="16"
+                                  IsHitTestVisible="False" />
 
   </Grid>
 

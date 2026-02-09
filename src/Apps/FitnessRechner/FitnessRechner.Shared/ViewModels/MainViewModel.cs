@@ -31,6 +31,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public event Action<string, string>? MessageRequested;
 
+    /// <summary>
+    /// Floating Text anzeigen (text, category).
+    /// </summary>
+    public event Action<string, string>? FloatingTextRequested;
+
+    /// <summary>
+    /// Confetti-Celebration ausloesen.
+    /// </summary>
+    public event Action? CelebrationRequested;
+
     public MainViewModel(
         IPurchaseService purchaseService,
         IAdService adService,
@@ -60,6 +70,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         SettingsViewModel = settingsViewModel;
         ProgressViewModel = progressViewModel;
         FoodSearchViewModel = foodSearchViewModel;
+
+        // Game Juice Events vom ProgressViewModel weiterleiten
+        progressViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+        progressViewModel.CelebrationRequested += () => CelebrationRequested?.Invoke();
 
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
         settingsViewModel.LanguageChanged += OnLanguageChanged;

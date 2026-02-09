@@ -48,6 +48,16 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     /// </summary>
     public event Action<string, string>? MessageRequested;
 
+    /// <summary>
+    /// Floating Text anzeigen (text, category: "info"/"success").
+    /// </summary>
+    public event Action<string, string>? FloatingTextRequested;
+
+    /// <summary>
+    /// Confetti-Celebration ausloesen.
+    /// </summary>
+    public event Action? CelebrationRequested;
+
     public ProgressViewModel(
         ITrackingService trackingService,
         IPurchaseService purchaseService,
@@ -117,6 +127,9 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private TrackingEntry? _recentlyDeletedEntry;
     private FoodLogEntry? _recentlyDeletedMeal;
     private CancellationTokenSource? _undoCancellation;
+
+    // Ziel-Flag: Confetti nur einmal pro Session
+    private bool _wasWaterGoalReached;
 
     #endregion
 
@@ -418,6 +431,17 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         ShowAddForm = false;
         ResetForm();
         await LoadCurrentTabDataAsync();
+
+        // Floating Text Feedback je nach Tracking-Typ
+        var displayText = type switch
+        {
+            TrackingType.Weight => $"{entry.Value:F1} kg",
+            TrackingType.Bmi => $"BMI {entry.Value:F1}",
+            TrackingType.BodyFat => $"{entry.Value:F1}%",
+            TrackingType.Water => $"+{entry.Value:F0} ml",
+            _ => $"{entry.Value:F1}"
+        };
+        FloatingTextRequested?.Invoke(displayText, "info");
     }
 
     [RelayCommand]
@@ -533,6 +557,9 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
             }
 
             await LoadWaterDataAsync();
+
+            // Floating Text fuer Wasser-Hinzufuegung
+            FloatingTextRequested?.Invoke($"+{amount} ml", "info");
         }
         catch (Exception)
         {
@@ -651,6 +678,9 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         };
 
         await _foodSearchService.SaveFoodLogAsync(entry);
+
+        // Floating Text fuer hinzugefuegtes Essen
+        FloatingTextRequested?.Invoke($"+{entry.Calories:F0} kcal", "info");
 
         SelectedFood = null;
         SearchQuery = "";
@@ -1058,6 +1088,14 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         else
         {
             WaterStatusText = AppStrings.GoalReached;
+
+            // Wasser-Ziel erreicht - nur einmal Confetti pro Session
+            if (!_wasWaterGoalReached)
+            {
+                _wasWaterGoalReached = true;
+                FloatingTextRequested?.Invoke(AppStrings.GoalReached, "success");
+                CelebrationRequested?.Invoke();
+            }
         }
     }
 

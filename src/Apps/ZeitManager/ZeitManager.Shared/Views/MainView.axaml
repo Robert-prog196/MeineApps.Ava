@@ -3,6 +3,7 @@
              xmlns:vm="using:ZeitManager.ViewModels"
              xmlns:views="using:ZeitManager.Views"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:controls="using:MeineApps.UI.Controls"
              x:Class="ZeitManager.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -213,6 +214,16 @@
 
       </Grid>
     </Border>
+
+    <!-- Game Juice Overlays -->
+    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   Grid.Row="0" Grid.RowSpan="2"
+                                   ZIndex="10"
+                                   IsHitTestVisible="False" />
+    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
+                                  Grid.Row="0" Grid.RowSpan="2"
+                                  ZIndex="20"
+                                  IsHitTestVisible="False" />
 
     <!-- Snackbar Message -->
     <Border Grid.Row="0" Grid.RowSpan="2"

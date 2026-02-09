@@ -22,6 +22,7 @@ public partial class RoofSolarViewModel : ObservableObject
 
     public event Action<string>? NavigationRequested;
     public event Action<string, string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
     private void NavigateTo(string route) => NavigationRequested?.Invoke(route);
 
     public RoofSolarViewModel(
@@ -399,6 +400,7 @@ public partial class RoofSolarViewModel : ObservableObject
             MessageRequested?.Invoke(
                 _localization.GetString("Success"),
                 _localization.GetString("ProjectSaved"));
+            FloatingTextRequested?.Invoke(_localization.GetString("ProjectSaved"), "success");
         }
         catch (Exception)
         {

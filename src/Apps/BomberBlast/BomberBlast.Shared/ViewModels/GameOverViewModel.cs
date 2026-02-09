@@ -23,6 +23,7 @@ public partial class GameOverViewModel : ObservableObject
     // ═══════════════════════════════════════════════════════════════════════
 
     public event Action<string>? NavigationRequested;
+    public event Action<string, string>? FloatingTextRequested;
 
     /// <summary>Werbung sichtbar (nicht Premium)</summary>
     public bool ShowAds => !_purchaseService.IsPremium;
@@ -163,6 +164,7 @@ public partial class GameOverViewModel : ObservableObject
         {
             CoinsEarned *= 2;
             CoinsEarnedText = $"+{CoinsEarned:N0}";
+            FloatingTextRequested?.Invoke("x2!", "gold");
             HasDoubled = true;
             CanDoubleCoins = false;
             DoubleCoinsButtonText = _localizationService.GetString("CoinsDoubled");

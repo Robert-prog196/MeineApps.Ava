@@ -45,6 +45,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSnackbarVisible;
 
+    public event Action<string, string>? FloatingTextRequested;
+    public event Action? CelebrationRequested;
+
     // Localized tab labels
     public string NavTimerText => _localization.GetString("Timer");
     public string NavStopwatchText => _localization.GetString("Stopwatch");
@@ -89,6 +92,9 @@ public partial class MainViewModel : ObservableObject
         // Wire up overlay dismiss
         _alarmOverlayViewModel.DismissRequested += (_, _) => IsAlarmOverlayVisible = false;
 
+        // Floating Text Events von Kind-ViewModels weiterleiten
+        _stopwatchViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+
         // Wire up MessageRequested from child ViewModels
         _timerViewModel.MessageRequested += OnChildMessageRequested;
         _alarmViewModel.MessageRequested += OnChildMessageRequested;
@@ -98,6 +104,8 @@ public partial class MainViewModel : ObservableObject
 
     private void OnTimerFinished(object? sender, TimerItem timer)
     {
+        FloatingTextRequested?.Invoke(_localization.GetString("TimerDone"), "success");
+        CelebrationRequested?.Invoke();
         AlarmOverlayViewModel.ShowForTimer(timer);
         IsAlarmOverlayVisible = true;
     }

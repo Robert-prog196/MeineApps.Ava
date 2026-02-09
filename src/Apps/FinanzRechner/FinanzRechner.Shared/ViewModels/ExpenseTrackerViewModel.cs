@@ -26,6 +26,7 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     private readonly IRewardedAdService _rewardedAdService;
 
     public event Action<string, string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
 
     public ExpenseTrackerViewModel(IExpenseService expenseService, ILocalizationService localizationService,
         IExportService exportService, IFileDialogService fileDialogService,
@@ -722,6 +723,11 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
                 };
 
                 await _expenseService.AddExpenseAsync(expense);
+
+                // Floating Text fuer visuelles Feedback
+                var prefix = expense.Type == TransactionType.Income ? "+" : "-";
+                var cat = expense.Type == TransactionType.Income ? "income" : "expense";
+                FloatingTextRequested?.Invoke($"{prefix}{expense.Amount:N2}\u20ac", cat);
 
                 // Create recurring transaction if toggled
                 if (IsRecurring)

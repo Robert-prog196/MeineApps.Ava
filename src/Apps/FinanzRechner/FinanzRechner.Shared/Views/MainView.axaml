@@ -3,6 +3,7 @@
              xmlns:vm="using:FinanzRechner.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:conv="using:FinanzRechner.Converters"
+             xmlns:controls="using:MeineApps.UI.Controls"
              xmlns:views="using:FinanzRechner.Views"
              xmlns:calcViews="using:FinanzRechner.Views.Calculators"
              x:Class="FinanzRechner.Views.MainView"
@@ -241,6 +242,16 @@
         </StackPanel>
       </Border>
     </Panel>
+
+    <!-- Game Juice Overlays -->
+    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   Grid.RowSpan="99"
+                                   ZIndex="15"
+                                   IsHitTestVisible="False" />
+    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
+                                  Grid.RowSpan="99"
+                                  ZIndex="16"
+                                  IsHitTestVisible="False" />
 
     <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->
     <Border Grid.Row="1" Height="50"

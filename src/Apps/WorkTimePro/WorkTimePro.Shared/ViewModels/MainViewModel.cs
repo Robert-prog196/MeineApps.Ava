@@ -63,6 +63,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private bool _isAdBannerVisible;
 
     public event Action<string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
+    public event Action? CelebrationRequested;
 
     public MainViewModel(
         ITimeTrackingService timeTracking,
@@ -280,6 +282,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
                 case TrackingStatus.Working:
                     await _timeTracking.CheckOutAsync();
+
+                    // Feierabend-Celebration
+                    FloatingTextRequested?.Invoke(AppStrings.EndOfDay, "success");
+                    CelebrationRequested?.Invoke();
+
+                    // Ueberstunden anzeigen falls vorhanden
+                    var workTime = await _timeTracking.GetCurrentWorkTimeAsync();
+                    var today = await _timeTracking.GetTodayAsync();
+                    var overtime = workTime - today.TargetWorkTime;
+                    if (overtime.TotalMinutes > 1)
+                        FloatingTextRequested?.Invoke($"+{overtime.TotalHours:F1}h", "overtime");
+
                     break;
 
                 case TrackingStatus.OnBreak:

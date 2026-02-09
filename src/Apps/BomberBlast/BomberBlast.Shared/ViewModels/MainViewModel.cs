@@ -13,6 +13,13 @@ namespace BomberBlast.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     // ═══════════════════════════════════════════════════════════════════════
+    // EVENTS (Game Juice)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    public event Action<string, string>? FloatingTextRequested;
+    public event Action? CelebrationRequested;
+
+    // ═══════════════════════════════════════════════════════════════════════
     // CHILD VIEWMODELS
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -95,6 +102,8 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private bool _returnToGameFromSettings;
 
+    private readonly ILocalizationService _localizationService;
+
     /// <summary>
     /// Zaehlt Fehlversuche pro Level (fuer Level-Skip nach 3x Game Over)
     /// </summary>
@@ -127,6 +136,11 @@ public partial class MainViewModel : ObservableObject
         PauseVm = pauseVm;
         HelpVm = helpVm;
         ShopVm = shopVm;
+        _localizationService = localization;
+
+        // Game Juice Events weiterleiten
+        GameOverVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+        LevelSelectVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
 
         // Ad-Banner Verdrahtung
         IsAdBannerVisible = adService.BannerVisible;
@@ -298,6 +312,15 @@ public partial class MainViewModel : ObservableObject
                     }
 
                     GameOverVm.SetParameters(score, level, isHighScore, mode, coins, levelComplete, canContinue, fails);
+
+                    // Level Complete → Confetti + Floating Text
+                    if (levelComplete)
+                    {
+                        CelebrationRequested?.Invoke();
+                        FloatingTextRequested?.Invoke(
+                            _localizationService.GetString("LevelComplete") ?? "Level Complete!",
+                            "success");
+                    }
                 }
                 break;
 

@@ -35,6 +35,9 @@ public partial class MainViewModel : ObservableObject
     public bool IsConverterActive => SelectedTabIndex == 1;
     public bool IsSettingsActive => SelectedTabIndex == 2;
 
+    /// <summary>Event fuer Floating-Text-Anzeige (Text, Kategorie).</summary>
+    public event Action<string, string>? FloatingTextRequested;
+
     public MainViewModel(
         IThemeService themeService,
         ILocalizationService localization,
@@ -49,6 +52,9 @@ public partial class MainViewModel : ObservableObject
         _settingsViewModel = settingsViewModel;
 
         _localization.LanguageChanged += OnLanguageChanged;
+
+        // Floating-Text-Events vom Calculator weiterleiten
+        _calculatorViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)

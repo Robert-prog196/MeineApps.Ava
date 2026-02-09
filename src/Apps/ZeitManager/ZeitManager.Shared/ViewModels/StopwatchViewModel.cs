@@ -45,6 +45,8 @@ public partial class StopwatchViewModel : ObservableObject, IDisposable
     public string ResetText => _localization.GetString("Reset");
     public string UndoResetText => _localization.GetString("UndoReset");
 
+    public event Action<string, string>? FloatingTextRequested;
+
     public bool HasLaps => Laps.Count > 0;
 
     public StopwatchViewModel(ILocalizationService localization)
@@ -125,6 +127,7 @@ public partial class StopwatchViewModel : ObservableObject, IDisposable
         var lap = new StopwatchLap(Laps.Count + 1, lapTime, totalTime, DateTime.Now);
         Laps.Insert(0, lap);
         OnPropertyChanged(nameof(HasLaps));
+        FloatingTextRequested?.Invoke($"#{Laps.Count}", "info");
     }
 
     private void EnsureUiTimer()

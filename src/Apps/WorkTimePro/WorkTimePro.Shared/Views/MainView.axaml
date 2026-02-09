@@ -4,6 +4,7 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:views="using:WorkTimePro.Views"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:controls="using:MeineApps.UI.Controls"
              x:Class="WorkTimePro.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -51,6 +52,16 @@
       <views:ShiftPlanView DataContext="{Binding ShiftPlanVm}"
                             IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsShiftPlanActive}" />
     </Panel>
+
+    <!-- Game Juice Overlays -->
+    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   Grid.RowSpan="3"
+                                   ZIndex="15"
+                                   IsHitTestVisible="False" />
+    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
+                                  Grid.RowSpan="3"
+                                  ZIndex="16"
+                                  IsHitTestVisible="False" />
 
     <!-- ============================================ -->
     <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->

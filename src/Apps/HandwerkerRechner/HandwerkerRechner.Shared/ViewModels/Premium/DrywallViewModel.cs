@@ -22,6 +22,7 @@ public partial class DrywallViewModel : ObservableObject
 
     public event Action<string>? NavigationRequested;
     public event Action<string, string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
     private void NavigateTo(string route) => NavigationRequested?.Invoke(route);
 
     public DrywallViewModel(
@@ -222,6 +223,7 @@ public partial class DrywallViewModel : ObservableObject
             MessageRequested?.Invoke(
                 _localization.GetString("Success"),
                 _localization.GetString("ProjectSaved"));
+            FloatingTextRequested?.Invoke(_localization.GetString("ProjectSaved"), "success");
         }
         catch (Exception)
         {

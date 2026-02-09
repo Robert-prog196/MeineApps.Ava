@@ -614,5 +614,8 @@ Examples:
   <data name="ShiftNightShort" xml:space="preserve">
     <value>N</value>
   </data>
+  <data name="TimerDone" xml:space="preserve">
+    <value>Done!</value>
+  </data>
 
 </root>

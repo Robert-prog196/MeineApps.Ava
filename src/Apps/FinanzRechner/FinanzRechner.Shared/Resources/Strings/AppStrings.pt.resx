@@ -1007,5 +1007,8 @@
   <data name="AccessFor24h" xml:space="preserve">
     <value>Acesso por 24 horas</value>
   </data>
+  <data name="BudgetGoalReached" xml:space="preserve">
+    <value>Meta atingida!</value>
+  </data>
 
 </root>

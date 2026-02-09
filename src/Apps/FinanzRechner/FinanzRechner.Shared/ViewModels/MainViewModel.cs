@@ -24,6 +24,8 @@ public partial class MainViewModel : ObservableObject
     private bool _isAdBannerVisible;
 
     public event Action<string, string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
+    public event Action? CelebrationRequested;
 
     public ExpenseTrackerViewModel ExpenseTrackerViewModel { get; }
     public StatisticsViewModel StatisticsViewModel { get; }
@@ -67,6 +69,10 @@ public partial class MainViewModel : ObservableObject
             _adService.ShowBanner();
 
         ExpenseTrackerViewModel = expenseTrackerViewModel;
+
+        // ExpenseTracker FloatingText weiterleiten
+        expenseTrackerViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+
         StatisticsViewModel = statisticsViewModel;
         SettingsViewModel = settingsViewModel;
         BudgetsViewModel = budgetsViewModel;
@@ -815,6 +821,11 @@ public partial class MainViewModel : ObservableObject
             await _expenseService.AddExpenseAsync(expense);
             ShowQuickAdd = false;
             await LoadMonthlyDataAsync();
+
+            // Floating Text fuer Quick-Add Feedback
+            var prefix = expense.Type == TransactionType.Income ? "+" : "-";
+            var cat = expense.Type == TransactionType.Income ? "income" : "expense";
+            FloatingTextRequested?.Invoke($"{prefix}{expense.Amount:N2}\u20ac", cat);
         }
         catch (Exception ex)
         {

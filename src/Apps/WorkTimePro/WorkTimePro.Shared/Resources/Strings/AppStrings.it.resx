@@ -387,5 +387,8 @@
   <data name="VideoAdFailed" xml:space="preserve">
     <value>Impossibile caricare il video</value>
   </data>
+  <data name="EndOfDay" xml:space="preserve">
+    <value>Fine giornata!</value>
+  </data>
 
 </root>

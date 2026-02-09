@@ -30,6 +30,7 @@ public partial class PaintCalculatorViewModel : ObservableObject
     /// Event for showing alerts/messages to the user (title, message)
     /// </summary>
     public event Action<string, string>? MessageRequested;
+    public event Action<string, string>? FloatingTextRequested;
 
     [ObservableProperty]
     private bool _showSaveDialog;
@@ -284,6 +285,7 @@ public partial class PaintCalculatorViewModel : ObservableObject
             MessageRequested?.Invoke(
                 _localization.GetString("Success"),
                 _localization.GetString("ProjectSaved"));
+            FloatingTextRequested?.Invoke(_localization.GetString("ProjectSaved"), "success");
         }
         catch (Exception)
         {

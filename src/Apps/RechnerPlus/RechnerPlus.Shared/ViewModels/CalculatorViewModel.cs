@@ -63,6 +63,9 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
 
     private bool _isNewCalculation = true;
 
+    /// <summary>Event fuer Floating-Text-Anzeige (Text, Kategorie).</summary>
+    public event Action<string, string>? FloatingTextRequested;
+
     public CalculatorViewModel(CalculatorEngine engine, ExpressionParser parser,
                                 ILocalizationService localization, IHistoryService historyService)
     {
@@ -184,6 +187,7 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
                 var formattedResult = FormatResult(result.Value);
                 _historyService.AddEntry(fullExpression, formattedResult, result.Value);
                 Display = formattedResult;
+                FloatingTextRequested?.Invoke($"= {formattedResult}", "result");
                 Expression = "";
                 _isNewCalculation = true;
             }

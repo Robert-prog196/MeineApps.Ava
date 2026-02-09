@@ -289,3 +289,22 @@ Komplettes Redesign der HomeView mit modernem Dashboard-Layout:
 - Designer.cs: 8 neue Properties
 
 #### Build: 0 Fehler (nur bekannte SixLabors.ImageSharp Warnungen)
+
+### Game Juice - FloatingText + Celebration Overlays (08.02.2026)
+
+#### FloatingTextOverlay + CelebrationOverlay
+- **MainView.axaml**: `controls:FloatingTextOverlay` + `controls:CelebrationOverlay` aus MeineApps.UI eingebaut (ZIndex 15/16, Grid.RowSpan=99, IsHitTestVisible=False)
+- **MainView.axaml**: xmlns `controls="using:MeineApps.UI.Controls"` hinzugefuegt
+- **MainView.axaml.cs**: Event-Handler fuer FloatingTextRequested (farbig nach Kategorie: income=gruen, expense=rot, default=blau) und CelebrationRequested (Confetti)
+
+#### ViewModel Events
+- **MainViewModel**: `FloatingTextRequested` + `CelebrationRequested` Events deklariert
+- **MainViewModel**: ExpenseTrackerViewModel.FloatingTextRequested im Constructor weitergeleitet
+- **MainViewModel.SaveQuickExpenseAsync()**: FloatingText nach Quick-Add ("+/-Betrag" mit Kategorie-Farbe)
+- **ExpenseTrackerViewModel**: `FloatingTextRequested` Event deklariert
+- **ExpenseTrackerViewModel.SaveExpenseAsync()**: FloatingText im "Add new" Zweig nach AddExpenseAsync
+
+#### Lokalisierung
+- 1 neuer resx-Key in 6 Sprachen: BudgetGoalReached (EN/DE/ES/FR/IT/PT)
+
+#### Build: 0 Fehler (nur bekannte SixLabors.ImageSharp Warnungen + CS0067 CelebrationRequested unused)

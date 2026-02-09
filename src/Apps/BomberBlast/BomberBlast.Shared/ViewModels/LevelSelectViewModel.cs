@@ -27,6 +27,7 @@ public partial class LevelSelectViewModel : ObservableObject
     // ═══════════════════════════════════════════════════════════════════════
 
     public event Action<string>? NavigationRequested;
+    public event Action? CelebrationRequested;
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -68,6 +69,9 @@ public partial class LevelSelectViewModel : ObservableObject
 
     private string _pendingBoostType = "";
 
+    /// <summary>Vorheriger Stern-Stand fuer Welt-Freischaltungs-Erkennung</summary>
+    private int _previousTotalStars = -1;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -102,6 +106,22 @@ public partial class LevelSelectViewModel : ObservableObject
     {
         Levels.Clear();
         int totalStars = _progressService.GetTotalStars();
+
+        // Neue Welt freigeschaltet erkennen → Confetti
+        if (_previousTotalStars >= 0 && totalStars > _previousTotalStars)
+        {
+            for (int w = 2; w <= 5; w++)
+            {
+                int firstLevelOfWorld = ((w - 1) * 10) + 1;
+                int required = _progressService.GetWorldStarsRequired(firstLevelOfWorld);
+                if (required > 0 && _previousTotalStars < required && totalStars >= required)
+                {
+                    CelebrationRequested?.Invoke();
+                    break;
+                }
+            }
+        }
+        _previousTotalStars = totalStars;
 
         for (int i = 1; i <= _progressService.TotalLevels; i++)
         {
