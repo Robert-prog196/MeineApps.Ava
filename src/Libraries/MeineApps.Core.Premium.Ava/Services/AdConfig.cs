@@ -7,6 +7,13 @@ namespace MeineApps.Core.Premium.Ava.Services;
 /// </summary>
 public static class AdConfig
 {
+    /// <summary>
+    /// Test-Device-ID fuer Roberts Testgeraet (Sony Xperia).
+    /// Muss registriert werden damit AdMob Test-Ads ausliefert.
+    /// Neue Geraete: Logcat nach "setTestDeviceIds" suchen und ID hier eintragen.
+    /// </summary>
+    public const string TestDeviceId = "E2D5405C98B542FED211EF6D24EC35DE";
+
     // Test Ad Unit IDs (fuer Entwicklung)
     public static class Test
     {
@@ -32,21 +39,21 @@ public static class AdConfig
     public static class HandwerkerRechner
     {
         public const string AppId = "ca-app-pub-2588160251469436~1938872706";
-        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/2627273757";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/2922272572";
         // Rewarded Ad Placements
-        public const string RewardedExtendedHistory = "ca-app-pub-2588160251469436/6068740844";
-        public const string RewardedPremiumAccess = "ca-app-pub-2588160251469436/2014913097";
-        public const string RewardedProjectExport = "ca-app-pub-2588160251469436/8243171620";
-        public const string RewardedMaterialPdf = "ca-app-pub-2588160251469436/5190252147";
+        public const string RewardedExtendedHistory = "ca-app-pub-2588160251469436/6069708884";
+        public const string RewardedPremiumAccess = "ca-app-pub-2588160251469436/2014913801";
+        public const string RewardedProjectExport = "ca-app-pub-2588160251469436/6341171628";
+        public const string RewardedMaterialPdf = "ca-app-pub-2588160251469436/5100242147";
     }
 
     public static class FinanzRechner
     {
         public const string AppId = "ca-app-pub-2588160251469436~8528331789";
-        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/3301929804";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5301023904";
         // Rewarded Ad Placements
-        public const string RewardedBudgetAnalysis = "ca-app-pub-2588160251469436/5671834572";
-        public const string RewardedExtendedStats = "ca-app-pub-2588160251469436/9554899549";
+        public const string RewardedBudgetAnalysis = "ca-app-pub-2588160251469436/5671823872";
+        public const string RewardedExtendedStats = "ca-app-pub-2588160251469436/6984905545";
         public const string RewardedExportPdf = "ca-app-pub-2588160251469436/3424934485";
         public const string RewardedExportCsv = "ca-app-pub-2588160251469436/1356438259";
     }
@@ -54,32 +61,32 @@ public static class AdConfig
     public static class FitnessRechner
     {
         public const string AppId = "ca-app-pub-2588160251469436~1827192061";
-        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/9276806163";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/3276005103";
         // Rewarded Ad Placements
-        public const string RewardedBarcodeScan = "ca-app-pub-2588160251469436/7073938526";
-        public const string RewardedDetailAnalysis = "ca-app-pub-2588160251469436/6443957290";
-        public const string RewardedExtendedFoodDb = "ca-app-pub-2588160251469436/9527063494";
-        public const string RewardedTrackingExport = "ca-app-pub-2588160251469436/9681815382";
+        public const string RewardedBarcodeScan = "ca-app-pub-2588160251469436/7079538226";
+        public const string RewardedDetailAnalysis = "ca-app-pub-2588160251469436/6445957290";
+        public const string RewardedExtendedFoodDb = "ca-app-pub-2588160251469436/9527308404";
+        public const string RewardedTrackingExport = "ca-app-pub-2588160251469436/8688133362";
     }
 
     public static class WorkTimePro
     {
         public const string AppId = "ca-app-pub-2588160251469436~9866108383";
-        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/8916171963";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/8991611030";
         // Rewarded Ad Placements
-        public const string RewardedExport = "ca-app-pub-2588160251469436/4893502974";
-        public const string RewardedMonthlyStats = "ca-app-pub-2588160251469436/6900114506";
+        public const string RewardedExport = "ca-app-pub-2588160251469436/4893202474";
+        public const string RewardedMonthlyStats = "ca-app-pub-2588160251469436/6901145068";
         public const string RewardedVacationEntry = "ca-app-pub-2588160251469436/1747320492";
     }
 
     public static class BomberBlast
     {
         public const string AppId = "ca-app-pub-2588160251469436~8809763733";
-        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5894462078";
+        public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5589430378";
         // Rewarded Ad Placements
-        public const string RewardedContinue = "ca-app-pub-2588160251469436/1459117529";
-        public const string RewardedLevelSkip = "ca-app-pub-2588160251469436/6792383855";
-        public const string RewardedPowerUp = "ca-app-pub-2588160251469436/8246016521";
+        public const string RewardedContinue = "ca-app-pub-2588160251469436/1959917378";
+        public const string RewardedLevelSkip = "ca-app-pub-2588160251469436/6793333855";
+        public const string RewardedPowerUp = "ca-app-pub-2588160251469436/8246016321";
         public const string RewardedScoreDouble = "ca-app-pub-2588160251469436/6242669514";
     }
 
@@ -87,9 +94,10 @@ public static class AdConfig
     {
         public const string AppId = "ca-app-pub-2588160251469436~3907946957";
         public const string BannerAdUnitId = "ca-app-pub-2588160251469436/5062090417";
-        public const string InterstitialAdUnitId = "ca-app-pub-2588160251469436/3553567622";
-        // Rewarded: HandwerkerImperium nutzt aktuell keine separaten Placements
-        public const string RewardedDefault = "";
+        // Rewarded Ad Placements
+        public const string RewardedGoldenScrews = "ca-app-pub-2588160251469436/6824989999";
+        public const string RewardedScoreDouble = "ca-app-pub-2588160251469436/5743852354";
+        public const string RewardedMarketRefresh = "ca-app-pub-2588160251469436/4873623815";
     }
 
     /// <summary>Banner Ad-Unit-ID je nach Build-Konfiguration</summary>
@@ -161,7 +169,10 @@ public static class AdConfig
             ("WorkTimePro", _) => WorkTimePro.RewardedExport,
 
             // HandwerkerImperium
-            ("HandwerkerImperium", _) => HandwerkerImperium.RewardedDefault,
+            ("HandwerkerImperium", "golden_screws") => HandwerkerImperium.RewardedGoldenScrews,
+            ("HandwerkerImperium", "score_double") => HandwerkerImperium.RewardedScoreDouble,
+            ("HandwerkerImperium", "market_refresh") => HandwerkerImperium.RewardedMarketRefresh,
+            ("HandwerkerImperium", _) => HandwerkerImperium.RewardedGoldenScrews,
 
             _ => ""
         };
