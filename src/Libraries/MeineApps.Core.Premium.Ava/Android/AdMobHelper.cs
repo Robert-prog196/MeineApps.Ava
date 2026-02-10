@@ -20,18 +20,32 @@ public sealed class AdMobHelper : IDisposable
     private bool _disposed;
 
     /// <summary>
-    /// Initialize Google Mobile Ads SDK.
-    /// Call once in OnCreate before any ad operations.
+    /// Initialize Google Mobile Ads SDK mit Callback.
+    /// Ads duerfen erst nach onComplete geladen werden, da das SDK intern asynchron initialisiert.
+    /// Ohne Callback: "Failed to instantiate ClientApi class" + Error Code 0.
     /// </summary>
-    public static void Initialize(Activity activity)
+    public static void Initialize(Activity activity, Action? onComplete = null)
     {
         try
         {
-            MobileAds.Initialize(activity);
+            // Test-Device registrieren damit Test-Ads ausgeliefert werden
+            // (Pflicht fuer Apps im geschlossenen Test / noch nicht fuer Live-Ads freigeschaltet)
+            var requestConfig = new RequestConfiguration.Builder()
+                .SetTestDeviceIds(new[] { AdConfig.TestDeviceId })
+                .Build();
+            MobileAds.RequestConfiguration = requestConfig;
+
+            MobileAds.Initialize(activity, new InitCompleteListener(() =>
+            {
+                Android.Util.Log.Info("AdMobHelper", "SDK Initialisierung abgeschlossen");
+                // Sicherstellen dass Callback auf UI-Thread laeuft
+                activity.RunOnUiThread(() => onComplete?.Invoke());
+            }));
         }
         catch (Exception ex)
         {
             Android.Util.Log.Error("AdMobHelper", $"Initialize failed: {ex.Message}");
+            onComplete?.Invoke();
         }
     }
 
@@ -137,8 +151,10 @@ public sealed class AdMobHelper : IDisposable
                 Android.Util.Log.Warn("AdMobHelper", $"Inset listener failed: {ex.Message}");
             }
 
-            // Banner wird NICHT sofort geladen - erst nach Consent via LoadBannerAd()
-            // Notify ad service that banner is visible (Layout ist bereit)
+            // Banner sofort laden - AdMob SDK handhabt Consent-Status intern
+            _adView.LoadAd(new AdRequest.Builder().Build());
+
+            // Notify ad service that banner is visible
             _adService.ShowBanner();
         }
         catch (Exception ex)
@@ -218,13 +234,23 @@ public sealed class AdMobHelper : IDisposable
         {
             if (v == null || insets == null) return insets;
             var navBars = insets.GetInsets(AndroidX.Core.View.WindowInsetsCompat.Type.NavigationBars());
-            if (v.LayoutParameters is FrameLayout.LayoutParams lp)
+            if (navBars != null && v.LayoutParameters is FrameLayout.LayoutParams lp)
             {
                 lp.BottomMargin = _baseBottomMarginPx + navBars.Bottom;
                 v.LayoutParameters = lp;
             }
             return insets;
         }
+    }
+
+    // SDK Initialisierungs-Callback
+    private sealed class InitCompleteListener : Java.Lang.Object,
+        Android.Gms.Ads.Initialization.IOnInitializationCompleteListener
+    {
+        private readonly Action _onComplete;
+        public InitCompleteListener(Action onComplete) => _onComplete = onComplete;
+        public void OnInitializationComplete(Android.Gms.Ads.Initialization.IInitializationStatus status)
+            => _onComplete();
     }
 
     // UMP callback wrappers
