@@ -61,9 +61,6 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isShopActive;
 
-    [ObservableProperty]
-    private bool _isAdBannerVisible;
-
     // ═══════════════════════════════════════════════════════════════════════
     // DIALOG PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -142,9 +139,7 @@ public partial class MainViewModel : ObservableObject
         GameOverVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
         LevelSelectVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
 
-        // Ad-Banner Verdrahtung
-        IsAdBannerVisible = adService.BannerVisible;
-        adService.AdsStateChanged += (_, _) => IsAdBannerVisible = adService.BannerVisible;
+        // Ad-Banner starten
         if (adService.AdsEnabled && !purchaseService.IsPremium)
             adService.ShowBanner();
 

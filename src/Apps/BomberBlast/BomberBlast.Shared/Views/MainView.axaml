@@ -7,8 +7,7 @@
              x:Class="BomberBlast.Views.MainView"
              x:DataType="vm:MainViewModel">
 
-  <Grid RowDefinitions="*,Auto">
-    <Panel Grid.Row="0">
+  <Panel>
     <!-- Main Menu -->
     <views:MainMenuView DataContext="{Binding MenuVm}"
                          IsVisible="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).IsMainMenuActive}" />
@@ -89,22 +88,14 @@
         </StackPanel>
       </Border>
     </Border>
-  </Panel>
 
     <!-- Game Juice Overlays -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
-                                   Grid.RowSpan="2"
                                    ZIndex="15"
                                    IsHitTestVisible="False" />
     <controls:CelebrationOverlay x:Name="CelebrationCanvas"
-                                  Grid.RowSpan="2"
                                   ZIndex="16"
                                   IsHitTestVisible="False" />
-
-    <!-- Ad-Banner Spacer (Platz fuer native Android Banner-Overlay) -->
-    <Border Grid.Row="1" Height="50"
-            IsVisible="{Binding IsAdBannerVisible}"
-            Background="Transparent" />
-  </Grid>
+  </Panel>
 
 </UserControl>
