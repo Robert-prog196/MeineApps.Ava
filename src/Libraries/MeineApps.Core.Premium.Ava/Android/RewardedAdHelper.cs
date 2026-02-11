@@ -12,6 +12,9 @@ namespace MeineApps.Core.Premium.Ava.Droid;
 /// </summary>
 public sealed class RewardedAdHelper : IDisposable
 {
+    private const string Tag = "RewardedAdHelper";
+    private const int LoadTimeoutMs = 30000; // 30 Sekunden Timeout fuer Ad-Laden
+
     private RewardedAd? _rewardedAd;
     private Activity? _activity;
     private string _defaultAdUnitId = "";
@@ -26,24 +29,31 @@ public sealed class RewardedAdHelper : IDisposable
     {
         _activity = activity;
         _defaultAdUnitId = adUnitId;
+        Android.Util.Log.Info(Tag, $"Load aufgerufen mit AdUnitId: {adUnitId}");
         LoadInternal(adUnitId);
     }
 
     private void LoadInternal(string adUnitId)
     {
-        if (_isLoading || _activity == null || _disposed) return;
+        if (_isLoading || _activity == null || _disposed)
+        {
+            Android.Util.Log.Warn(Tag, $"LoadInternal abgebrochen: isLoading={_isLoading}, activity={_activity != null}, disposed={_disposed}");
+            return;
+        }
         _isLoading = true;
 
         try
         {
             var adRequest = new AdRequest.Builder().Build();
+            Android.Util.Log.Info(Tag, $"Lade Rewarded Ad: {adUnitId}");
             _activity.RunOnUiThread(() =>
             {
                 RewardedAd.Load(_activity, adUnitId, adRequest, new LoadCallback(this));
             });
         }
-        catch
+        catch (Exception ex)
         {
+            Android.Util.Log.Error(Tag, $"LoadInternal Exception: {ex.Message}");
             _isLoading = false;
         }
     }
@@ -52,20 +62,26 @@ public sealed class RewardedAdHelper : IDisposable
     public Task<bool> ShowAsync()
     {
         if (_rewardedAd == null || _activity == null)
+        {
+            Android.Util.Log.Warn(Tag, $"ShowAsync abgebrochen: rewardedAd={_rewardedAd != null}, activity={_activity != null}");
             return Task.FromResult(false);
+        }
 
         var tcs = new TaskCompletionSource<bool>();
-        var callback = new ShowCallback(tcs);
+        var fullScreenCallback = new FullScreenCallback(tcs, this);
+        var rewardCallback = new RewardCallback(fullScreenCallback);
 
+        Android.Util.Log.Info(Tag, "ShowAsync: Zeige vorgeladene Rewarded Ad");
         _activity.RunOnUiThread(() =>
         {
             try
             {
-                _rewardedAd!.FullScreenContentCallback = callback;
-                _rewardedAd.Show(_activity!, callback);
+                _rewardedAd!.FullScreenContentCallback = fullScreenCallback;
+                _rewardedAd.Show(_activity!, rewardCallback);
             }
-            catch
+            catch (Exception ex)
             {
+                Android.Util.Log.Error(Tag, $"ShowAsync Exception: {ex.Message}");
                 tcs.TrySetResult(false);
             }
         });
@@ -78,10 +94,13 @@ public sealed class RewardedAdHelper : IDisposable
     /// Fuer Placements die nicht vorgeladen werden (On-Demand).
     /// Gibt true zurueck wenn User Belohnung verdient hat.
     /// </summary>
-    public Task<bool> LoadAndShowAsync(string adUnitId)
+    public async Task<bool> LoadAndShowAsync(string adUnitId)
     {
         if (_activity == null || _disposed)
-            return Task.FromResult(false);
+        {
+            Android.Util.Log.Warn(Tag, $"LoadAndShowAsync abgebrochen: activity={_activity != null}, disposed={_disposed}");
+            return false;
+        }
 
         var tcs = new TaskCompletionSource<bool>();
         var activity = _activity;
@@ -89,27 +108,42 @@ public sealed class RewardedAdHelper : IDisposable
         try
         {
             var adRequest = new AdRequest.Builder().Build();
+            Android.Util.Log.Info(Tag, $"LoadAndShowAsync: Lade Ad on-demand: {adUnitId}");
             activity.RunOnUiThread(() =>
             {
                 RewardedAd.Load(activity, adUnitId, adRequest, new OnDemandLoadCallback(this, activity, tcs));
             });
         }
-        catch
+        catch (Exception ex)
         {
+            Android.Util.Log.Error(Tag, $"LoadAndShowAsync Exception: {ex.Message}");
             tcs.TrySetResult(false);
         }
 
-        return tcs.Task;
+        // Timeout damit der await nicht ewig haengt falls Callback nie feuert
+        var timeoutTask = Task.Delay(LoadTimeoutMs);
+        var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+
+        if (completedTask == timeoutTask)
+        {
+            Android.Util.Log.Error(Tag, $"LoadAndShowAsync TIMEOUT nach {LoadTimeoutMs}ms fuer: {adUnitId}");
+            tcs.TrySetResult(false);
+            return false;
+        }
+
+        return await tcs.Task;
     }
 
     private void OnAdLoaded(RewardedAd ad)
     {
+        Android.Util.Log.Info(Tag, "Pre-Load: Rewarded Ad erfolgreich geladen");
         _rewardedAd = ad;
         _isLoading = false;
     }
 
-    private void OnAdFailedToLoad()
+    private void OnAdFailedToLoad(LoadAdError error)
     {
+        Android.Util.Log.Error(Tag, $"Pre-Load FEHLGESCHLAGEN: Code={error.Code}, Message={error.Message}, Domain={error.Domain}");
         _rewardedAd = null;
         _isLoading = false;
     }
@@ -117,6 +151,7 @@ public sealed class RewardedAdHelper : IDisposable
     private void OnAdDismissed()
     {
         // Nach dem Schliessen neue Default-Ad laden fuer naechste Nutzung
+        Android.Util.Log.Info(Tag, "Ad geschlossen, lade naechste Default-Ad");
         _rewardedAd = null;
         if (!string.IsNullOrEmpty(_defaultAdUnitId))
             LoadInternal(_defaultAdUnitId);
@@ -141,7 +176,7 @@ public sealed class RewardedAdHelper : IDisposable
         [Android.Runtime.Register("onAdLoaded", "(Lcom/google/android/gms/ads/rewarded/RewardedAd;)V", "")]
         public void OnAdLoaded(RewardedAd ad) => _helper.OnAdLoaded(ad);
 
-        public override void OnAdFailedToLoad(LoadAdError error) => _helper.OnAdFailedToLoad();
+        public override void OnAdFailedToLoad(LoadAdError error) => _helper.OnAdFailedToLoad(error);
     }
 
     /// <summary>Callback fuer On-Demand Load+Show (laedt Ad und zeigt sie sofort)</summary>
@@ -161,17 +196,20 @@ public sealed class RewardedAdHelper : IDisposable
         [Android.Runtime.Register("onAdLoaded", "(Lcom/google/android/gms/ads/rewarded/RewardedAd;)V", "")]
         public void OnAdLoaded(RewardedAd ad)
         {
+            Android.Util.Log.Info(Tag, "On-Demand: Rewarded Ad geladen, zeige sofort");
             // Ad geladen → sofort zeigen
-            var showCallback = new ShowCallback(_tcs);
+            var fullScreenCallback = new FullScreenCallback(_tcs, null);
+            var rewardCallback = new RewardCallback(fullScreenCallback);
             _activity.RunOnUiThread(() =>
             {
                 try
                 {
-                    ad.FullScreenContentCallback = showCallback;
-                    ad.Show(_activity, showCallback);
+                    ad.FullScreenContentCallback = fullScreenCallback;
+                    ad.Show(_activity, rewardCallback);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Android.Util.Log.Error(Tag, $"On-Demand Show Exception: {ex.Message}");
                     _tcs.TrySetResult(false);
                 }
             });
@@ -179,31 +217,60 @@ public sealed class RewardedAdHelper : IDisposable
 
         public override void OnAdFailedToLoad(LoadAdError error)
         {
+            Android.Util.Log.Error(Tag, $"On-Demand Load FEHLGESCHLAGEN: Code={error.Code}, Message={error.Message}, Domain={error.Domain}");
             _tcs.TrySetResult(false);
         }
     }
 
-    /// <summary>Callback fuer Ad-Anzeige + Belohnung</summary>
-    private sealed class ShowCallback : FullScreenContentCallback, IOnUserEarnedRewardListener
+    /// <summary>
+    /// Separater Callback fuer FullScreenContent (Ad-Anzeige-Lifecycle).
+    /// GETRENNT von IOnUserEarnedRewardListener um ACW-Probleme bei Dual-Inheritance zu vermeiden.
+    /// </summary>
+    private sealed class FullScreenCallback : FullScreenContentCallback
     {
         private readonly TaskCompletionSource<bool> _tcs;
-        private bool _rewarded;
+        private readonly RewardedAdHelper? _helper;
+        internal bool Rewarded;
 
-        public ShowCallback(TaskCompletionSource<bool> tcs) => _tcs = tcs;
-
-        public void OnUserEarnedReward(IRewardItem reward)
+        public FullScreenCallback(TaskCompletionSource<bool> tcs, RewardedAdHelper? helper)
         {
-            _rewarded = true;
+            _tcs = tcs;
+            _helper = helper;
+        }
+
+        public override void OnAdShowedFullScreenContent()
+        {
+            Android.Util.Log.Info(Tag, "Rewarded Ad wird angezeigt (Fullscreen)");
         }
 
         public override void OnAdDismissedFullScreenContent()
         {
-            _tcs.TrySetResult(_rewarded);
+            Android.Util.Log.Info(Tag, $"Rewarded Ad geschlossen, Belohnung verdient: {Rewarded}");
+            _tcs.TrySetResult(Rewarded);
+            _helper?.OnAdDismissed();
         }
 
         public override void OnAdFailedToShowFullScreenContent(AdError error)
         {
+            Android.Util.Log.Error(Tag, $"Rewarded Ad Show FEHLGESCHLAGEN: Code={error.Code}, Message={error.Message}, Domain={error.Domain}");
             _tcs.TrySetResult(false);
+        }
+    }
+
+    /// <summary>
+    /// Separater Callback fuer Belohnung (IOnUserEarnedRewardListener).
+    /// Eigene Klasse statt Dual-Inheritance auf FullScreenContentCallback.
+    /// </summary>
+    private sealed class RewardCallback : Java.Lang.Object, IOnUserEarnedRewardListener
+    {
+        private readonly FullScreenCallback _fullScreenCallback;
+
+        public RewardCallback(FullScreenCallback fullScreenCallback) => _fullScreenCallback = fullScreenCallback;
+
+        public void OnUserEarnedReward(IRewardItem reward)
+        {
+            Android.Util.Log.Info(Tag, $"Belohnung verdient: Type={reward.Type}, Amount={reward.Amount}");
+            _fullScreenCallback.Rewarded = true;
         }
     }
 }
