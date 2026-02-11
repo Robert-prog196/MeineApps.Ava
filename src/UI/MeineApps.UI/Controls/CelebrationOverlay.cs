@@ -17,6 +17,7 @@ public class CelebrationOverlay : Canvas
     private const int MaxParticles = 50;
     private readonly ParticleData[] _particles = new ParticleData[MaxParticles];
     private readonly Border[] _particleControls = new Border[MaxParticles];
+    private readonly RotateTransform[] _rotateTransforms = new RotateTransform[MaxParticles];
 
     private DispatcherTimer? _timer;
     private DateTime _animationStart;
@@ -57,13 +58,16 @@ public class CelebrationOverlay : Canvas
         // Partikel-Controls vorab erstellen (Pool)
         for (int i = 0; i < MaxParticles; i++)
         {
+            var rotateTransform = new RotateTransform(0);
             var border = new Border
             {
                 IsHitTestVisible = false,
                 IsVisible = false,
                 CornerRadius = new CornerRadius(1),
-                RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative)
+                RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative),
+                RenderTransform = rotateTransform
             };
+            _rotateTransforms[i] = rotateTransform;
             _particleControls[i] = border;
             Children.Add(border);
         }
@@ -187,7 +191,7 @@ public class CelebrationOverlay : Canvas
             SetLeft(border, p.X);
             SetTop(border, p.Y);
             border.Opacity = Math.Clamp(globalOpacity, 0, 1);
-            border.RenderTransform = new RotateTransform(p.Rotation);
+            _rotateTransforms[i].Angle = p.Rotation;
         }
 
         // Alle Partikel ausserhalb → Animation beenden

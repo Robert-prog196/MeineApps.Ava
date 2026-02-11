@@ -22,7 +22,6 @@ public class ThemeService : IThemeService
     public ThemeService(IPreferencesService preferences)
     {
         _preferences = preferences;
-        LoadThemeResources();
         LoadSavedTheme();
     }
 
@@ -45,13 +44,19 @@ public class ThemeService : IThemeService
         ThemeChanged?.Invoke(this, theme);
     }
 
-    private void LoadThemeResources()
+    /// <summary>
+    /// Lädt ein Theme-StyleInclude on-demand (Lazy-Loading).
+    /// Nur das aktive Theme wird geladen, nicht alle 4 beim Start.
+    /// </summary>
+    private StyleInclude GetOrLoadThemeStyle(AppTheme theme)
     {
-        foreach (var theme in AvailableThemes)
+        if (!_themeStyles.TryGetValue(theme, out var style))
         {
             var themeUri = new Uri($"avares://MeineApps.Core.Ava/Themes/{theme}Theme.axaml");
-            _themeStyles[theme] = new StyleInclude(themeUri) { Source = themeUri };
+            style = new StyleInclude(themeUri) { Source = themeUri };
+            _themeStyles[theme] = style;
         }
+        return style;
     }
 
     private void ApplyTheme(AppTheme theme)
@@ -61,26 +66,24 @@ public class ThemeService : IThemeService
 
         void DoApply()
         {
-            // Remove current dynamic theme
+            // Altes Theme entfernen
             if (_currentThemeStyle != null)
             {
                 app.Styles.Remove(_currentThemeStyle);
             }
 
-            // Add new theme
-            if (_themeStyles.TryGetValue(theme, out var style))
-            {
-                _currentThemeStyle = style;
-                app.Styles.Add(style);
-            }
+            // Neues Theme lazy laden und anwenden
+            var style = GetOrLoadThemeStyle(theme);
+            _currentThemeStyle = style;
+            app.Styles.Add(style);
 
-            // Toggle light/dark for FluentTheme base styles
+            // Light/Dark Toggle für FluentTheme
             app.RequestedThemeVariant = IsDarkTheme
                 ? ThemeVariant.Dark
                 : ThemeVariant.Light;
         }
 
-        // Apply synchronously if on UI thread, otherwise post
+        // Synchron auf UI-Thread, sonst posten
         if (Dispatcher.UIThread.CheckAccess())
         {
             DoApply();
