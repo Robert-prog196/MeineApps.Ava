@@ -25,11 +25,15 @@ public record BudgetStatus(
     double Spent,
     double Remaining,
     double PercentageUsed,
-    BudgetAlertLevel AlertLevel)
+    BudgetAlertLevel AlertLevel,
+    string? LocalizedCategoryName = null)
 {
     public bool IsExceeded => AlertLevel == BudgetAlertLevel.Exceeded;
     public bool IsWarning => AlertLevel == BudgetAlertLevel.Warning;
-    public string CategoryName => Category.ToString();
+    /// <summary>
+    /// Lokalisierter Kategorie-Name. Faellt auf Enum-Name zurueck wenn nicht gesetzt.
+    /// </summary>
+    public string CategoryName => LocalizedCategoryName ?? Category.ToString();
     public string CategoryIcon => Category switch
     {
         ExpenseCategory.Food => "\U0001F354",

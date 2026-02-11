@@ -6,14 +6,14 @@
 
 Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 5 Finanz-Rechnern.
 
-**Version:** 2.0.0 | **Package-ID:** com.meineapps.finanzrechner | **Status:** Geschlossener Test
+**Version:** 2.0.2 | **Package-ID:** com.meineapps.finanzrechner | **Status:** Geschlossener Test
 
 ## Features
 
 - **4 Tabs**: Home (Dashboard + Quick-Add), Tracker, Statistics, Settings
 - **Expense Tracking**: CRUD mit Filter/Sort, Undo-Delete, Kategorie-Icons
 - **Budget Management**: Budget-Limits pro Kategorie, Fortschrittsanzeige, Alert-Levels
-- **Recurring Transactions**: Dauerauftraege mit Auto-Processing bei App-Start
+- **Recurring Transactions**: Dauerauftraege mit Auto-Processing bei App-Start (verpasste Zeitraeume werden nachgeholt)
 - **5 Finanz-Rechner**: CompoundInterest, SavingsPlan, Loan, Amortization, Yield
 - **Charts**: LiveCharts (ProgressBar, PieChart, LineSeries)
 - **Export**: CSV + PDF (PdfSharpCore), plattformspezifisches File-Sharing
@@ -21,7 +21,7 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 5 Finan
 ## App-spezifische Services
 
 - **IExpenseService / ExpenseService**: SQLite CRUD (Expense, Budget, RecurringTransaction Models)
-- **IExportService / ExportService**: CSV + PDF Export mit optionalem targetPath Parameter
+- **IExportService / ExportService**: CSV + PDF Export mit optionalem targetPath Parameter und Datum-Range-Filterung
 - **IFileDialogService / FileDialogService**: Avalonia StorageProvider.SaveFilePickerAsync
 - **IFileShareService**: Plattformspezifisch (Desktop: Process.Start, Android: FileProvider + Intent.ActionSend)
 - **CategoryLocalizationHelper**: Statische Kategorie-Namen/Icons/Farben pro Sprache
@@ -56,12 +56,19 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 5 Finan
 - Recent Transactions (3 neueste mit Kategorie-Icon)
 - Calculator-ScrollView (5 kompakte Karten, farbiger Accent-Balken)
 
+### SettingsView Events
+- **BackupCreated**: Datei teilen via IFileShareService
+- **RestoreFileRequested**: StorageProvider.OpenFilePickerAsync fuer JSON-Restore
+- **OpenUrlRequested**: URL im Standardbrowser oeffnen (Process.Start)
+- **FeedbackRequested**: mailto-Link fuer Feedback-E-Mail
+
 ### Game Juice
 - **FloatingText**: Quick-Add (+/- Betrag, income=gruen, expense=rot)
-- **Celebration**: Confetti bei Zielerreichung (Budget-Analyse abgeschlossen)
+- **Celebration**: Confetti bei Budget-Analyse (CelebrationRequested Event in MainViewModel)
 
 ## Changelog (Highlights)
 
+- **11.02.2026**: Bugfix-Review: Dauerauftraege nachholen bei laengerem Nicht-Benutzen, PremiumPrice 3.99 in allen 6 RESX, SettingsView Events verdrahtet (Backup/Restore/URL/Feedback), CSV/PDF-Export mit Datum-Range statt nur einem Monat, Undo-Delete Queue statt Einzelvariable, ClearAllExpensesAsync mit Semaphore, CelebrationRequested implementiert, KW lokalisiert, CategoryStatistic/BudgetStatus lokalisiert, InflationResult entfernt (toter Code), DateTime.UtcNow in Backup-Metadaten, hardcodierte Error-Strings lokalisiert, doppeltes Laden bei PreviousMonth/NextMonth behoben
 - **08.02.2026**: FloatingTextOverlay + CelebrationOverlay (Game Juice)
 - **07.02.2026**: 4 Rewarded Ad Features, Android FileProvider Export, HomeView Redesign
 - **06.02.2026**: Calculator Views Redesign, Export mit File-Dialog + Feedback, vollstaendige Lokalisierung

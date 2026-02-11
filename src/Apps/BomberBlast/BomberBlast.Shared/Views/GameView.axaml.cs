@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Threading;
 using BomberBlast.ViewModels;
 using SkiaSharp;
 using Avalonia.Labs.Controls;
@@ -10,7 +9,6 @@ namespace BomberBlast.Views;
 public partial class GameView : UserControl
 {
     private int _renderWidth, _renderHeight;
-    private DispatcherTimer? _renderTimer;
 
     public GameView()
     {
@@ -25,40 +23,11 @@ public partial class GameView : UserControl
         KeyDown += OnKeyDown;
         KeyUp += OnKeyUp;
 
-        // Start/stop render loop when visibility changes
-        PropertyChanged += (_, args) =>
-        {
-            if (args.Property == IsVisibleProperty)
-            {
-                if (IsVisible)
-                    StartRenderLoop();
-                else
-                    StopRenderLoop();
-            }
-        };
+        // Render-Loop wird vom GameViewModel gesteuert via InvalidateCanvasRequested
+        // Kein separater DispatcherTimer noetig (vermeidet doppeltes Rendering)
     }
 
     private GameViewModel? ViewModel => DataContext as GameViewModel;
-
-    private void StartRenderLoop()
-    {
-        if (_renderTimer != null) return;
-
-        _renderTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(16) // ~60 FPS
-        };
-        _renderTimer.Tick += (_, _) => GameCanvas.InvalidateSurface();
-        _renderTimer.Start();
-    }
-
-    private void StopRenderLoop()
-    {
-        if (_renderTimer == null) return;
-
-        _renderTimer.Stop();
-        _renderTimer = null;
-    }
 
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {

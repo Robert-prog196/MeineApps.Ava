@@ -891,7 +891,7 @@
 
   <!-- Premium Price -->
   <data name="PremiumPrice" xml:space="preserve">
-    <value>From €0.99</value>
+    <value>From €3.99</value>
   </data>
 
   <!-- Tab Bar Titles -->
@@ -1009,6 +1009,9 @@
   </data>
   <data name="BudgetGoalReached" xml:space="preserve">
     <value>Goal reached!</value>
+  </data>
+  <data name="CalendarWeekAbbreviation" xml:space="preserve">
+    <value>CW</value>
   </data>
   <data name="AdVideoNotAvailableTitle" xml:space="preserve">
     <value>No video available</value>

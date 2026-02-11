@@ -200,8 +200,18 @@ public class ExpenseService : IExpenseService, IDisposable
 
     public async Task ClearAllExpensesAsync()
     {
-        _expenses.Clear();
-        await SaveExpensesAsync();
+        await InitializeAsync();
+
+        await _semaphore.WaitAsync();
+        try
+        {
+            _expenses.Clear();
+            await SaveExpensesAsync();
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     #region Budget Management
@@ -283,7 +293,8 @@ public class ExpenseService : IExpenseService, IDisposable
                         percentageUsed >= budget.WarningThreshold ? BudgetAlertLevel.Warning :
                         BudgetAlertLevel.Safe;
 
-        return new BudgetStatus(category, budget.MonthlyLimit, spent, remaining, percentageUsed, alertLevel);
+        var localizedName = CategoryLocalizationHelper.GetLocalizedName(category, _localizationService);
+        return new BudgetStatus(category, budget.MonthlyLimit, spent, remaining, percentageUsed, alertLevel, localizedName);
     }
 
     public async Task<IReadOnlyList<BudgetStatus>> GetAllBudgetStatusAsync()
@@ -304,7 +315,8 @@ public class ExpenseService : IExpenseService, IDisposable
             var alertLevel = percentageUsed >= 100 ? BudgetAlertLevel.Exceeded :
                             percentageUsed >= budget.WarningThreshold ? BudgetAlertLevel.Warning :
                             BudgetAlertLevel.Safe;
-            statusList.Add(new BudgetStatus(budget.Category, budget.MonthlyLimit, spent, remaining, percentageUsed, alertLevel));
+            var localizedName = CategoryLocalizationHelper.GetLocalizedName(budget.Category, _localizationService);
+            statusList.Add(new BudgetStatus(budget.Category, budget.MonthlyLimit, spent, remaining, percentageUsed, alertLevel, localizedName));
         }
         return statusList;
     }
@@ -384,12 +396,21 @@ public class ExpenseService : IExpenseService, IDisposable
             var count = 0;
             foreach (var recurring in _recurringTransactions.Where(r => r.IsActive))
             {
-                if (!recurring.IsDue(today)) continue;
-                var expense = recurring.CreateExpense(today);
-                expense.Id = Guid.NewGuid().ToString();
-                _expenses.Add(expense);
-                recurring.LastExecuted = today;
-                count++;
+                // Alle verpassten Zeitraeume nachholen (z.B. wenn App laenger nicht geoeffnet wurde)
+                while (recurring.IsDue(today))
+                {
+                    var dueDate = recurring.GetNextDueDate();
+                    // Faelligkeitsdatum nicht in der Zukunft
+                    if (dueDate > today) dueDate = today;
+                    // Enddatum pruefen
+                    if (recurring.EndDate.HasValue && dueDate > recurring.EndDate.Value) break;
+
+                    var expense = recurring.CreateExpense(dueDate);
+                    expense.Id = Guid.NewGuid().ToString();
+                    _expenses.Add(expense);
+                    recurring.LastExecuted = dueDate;
+                    count++;
+                }
             }
             // Batch-Save: Alles auf einmal statt pro Expense einzeln
             if (count > 0)
@@ -420,7 +441,7 @@ public class ExpenseService : IExpenseService, IDisposable
         await _semaphore.WaitAsync();
         try
         {
-            var backup = new BackupData("1.0", DateTime.Now,
+            var backup = new BackupData("1.0", DateTime.UtcNow,
                 _expenses.ToList(), _budgets.ToList(), _recurringTransactions.ToList());
             return JsonSerializer.Serialize(backup, _jsonWriteOptions);
         }

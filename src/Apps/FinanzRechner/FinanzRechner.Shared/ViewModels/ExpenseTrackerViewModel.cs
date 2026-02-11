@@ -139,6 +139,11 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
 
     private List<Expense> _allExpenses = []; // Unfiltered list
 
+    /// <summary>
+    /// Unterdrueckt doppeltes Laden bei PreviousMonth/NextMonth (Year+Month aendern sich gleichzeitig).
+    /// </summary>
+    private bool _suppressLoad;
+
     [ObservableProperty]
     private int _selectedYear;
 
@@ -166,17 +171,30 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     // Legacy compatibility
     public string TotalDisplay => Summary != null ? $"{Summary.TotalAmount:N2} \u20ac" : "0,00 \u20ac";
 
-    partial void OnSelectedYearChanged(int value) => LoadExpensesAsync().ContinueWith(t =>
+    partial void OnSelectedYearChanged(int value)
     {
-        if (t.IsFaulted) MessageRequested?.Invoke("Error", t.Exception?.Message ?? "Unknown error");
-    }, TaskScheduler.Default);
+        if (_suppressLoad) return;
+        LoadExpensesAsync().ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                var errorTitle = _localizationService.GetString("Error") ?? "Error";
+                MessageRequested?.Invoke(errorTitle, t.Exception?.Message ?? string.Empty);
+            }
+        }, TaskScheduler.Default);
+    }
 
     partial void OnSelectedMonthChanged(int value)
     {
         OnPropertyChanged(nameof(MonthYearDisplay));
+        if (_suppressLoad) return;
         LoadExpensesAsync().ContinueWith(t =>
         {
-            if (t.IsFaulted) MessageRequested?.Invoke("Error", t.Exception?.Message ?? "Unknown error");
+            if (t.IsFaulted)
+            {
+                var errorTitle = _localizationService.GetString("Error") ?? "Error";
+                MessageRequested?.Invoke(errorTitle, t.Exception?.Message ?? string.Empty);
+            }
         }, TaskScheduler.Default);
     }
 
@@ -425,7 +443,10 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _undoMessage = string.Empty;
 
-    private Expense? _deletedExpense;
+    /// <summary>
+    /// Queue fuer geloeschte Expenses (verhindert Race Condition bei schnellem doppeltem Delete).
+    /// </summary>
+    private readonly Queue<Expense> _deletedExpenses = new();
     private CancellationTokenSource? _undoCancellation;
 
     #endregion
@@ -794,18 +815,18 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task DeleteExpenseAsync(Expense expense)
     {
-        // Save for undo
-        _deletedExpense = expense;
+        // In Queue speichern (statt einzelner Variable - verhindert Race Condition)
+        _deletedExpenses.Enqueue(expense);
 
-        // Remove from list (UI)
+        // Aus UI-Liste entfernen
         _allExpenses.Remove(expense);
         ApplyFilterAndSort();
 
-        // Show undo notification
+        // Undo-Nachricht anzeigen
         UndoMessage = $"{_localizationService.GetString("TransactionDeleted") ?? "Transaction deleted"} - {expense.Description}";
         ShowUndoDelete = true;
 
-        // Start timer for permanent deletion (5 seconds)
+        // Timer fuer permanente Loeschung neu starten (5 Sekunden)
         _undoCancellation?.Cancel();
         _undoCancellation?.Dispose();
         _undoCancellation = new CancellationTokenSource();
@@ -814,43 +835,53 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
         {
             await Task.Delay(5000, _undoCancellation.Token);
 
-            // Permanent deletion after 5 seconds
-            if (_deletedExpense != null)
-            {
-                await _expenseService.DeleteExpenseAsync(_deletedExpense.Id);
-                _deletedExpense = null;
-                ShowUndoDelete = false;
-            }
+            // Alle in der Queue permanent loeschen
+            await PermanentlyDeleteQueuedExpensesAsync();
+            ShowUndoDelete = false;
         }
         catch (TaskCanceledException)
         {
-            // Undo was triggered - do nothing
+            // Undo wurde ausgeloest - nichts tun
+        }
+    }
+
+    /// <summary>
+    /// Loescht alle Expenses in der Queue permanent aus dem Storage.
+    /// </summary>
+    private async Task PermanentlyDeleteQueuedExpensesAsync()
+    {
+        while (_deletedExpenses.Count > 0)
+        {
+            var expense = _deletedExpenses.Dequeue();
+            await _expenseService.DeleteExpenseAsync(expense.Id);
         }
     }
 
     [RelayCommand]
     private async Task UndoDeleteAsync()
     {
-        // Stop timer
+        // Timer stoppen
         _undoCancellation?.Cancel();
         _undoCancellation?.Dispose();
 
-        // Restore deleted transaction
-        if (_deletedExpense != null)
+        // Alle geloeschten Transaktionen wiederherstellen
+        while (_deletedExpenses.Count > 0)
         {
-            _allExpenses.Add(_deletedExpense);
-            ApplyFilterAndSort();
-            await LoadExpensesAsync(); // Update summary
-            _deletedExpense = null;
+            var expense = _deletedExpenses.Dequeue();
+            _allExpenses.Add(expense);
         }
+        ApplyFilterAndSort();
+        await LoadExpensesAsync(); // Summary aktualisieren
 
         ShowUndoDelete = false;
     }
 
     [RelayCommand]
-    private void DismissUndo()
+    private async Task DismissUndoAsync()
     {
         ShowUndoDelete = false;
+        // Bei Dismiss alle geloeschten Expenses permanent loeschen
+        await PermanentlyDeleteQueuedExpensesAsync();
     }
 
     [RelayCommand]
@@ -858,8 +889,10 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     {
         if (SelectedMonth == 1)
         {
-            SelectedMonth = 12;
+            _suppressLoad = true;
             SelectedYear--;
+            _suppressLoad = false;
+            SelectedMonth = 12;
         }
         else
         {
@@ -872,8 +905,10 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     {
         if (SelectedMonth == 12)
         {
-            SelectedMonth = 1;
+            _suppressLoad = true;
             SelectedYear++;
+            _suppressLoad = false;
+            SelectedMonth = 1;
         }
         else
         {
@@ -884,8 +919,14 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void GoToCurrentMonth()
     {
-        SelectedYear = DateTime.Today.Year;
-        SelectedMonth = DateTime.Today.Month;
+        var today = DateTime.Today;
+        if (SelectedYear == today.Year && SelectedMonth == today.Month)
+            return;
+
+        _suppressLoad = true;
+        SelectedYear = today.Year;
+        _suppressLoad = false;
+        SelectedMonth = today.Month;
     }
 
     [RelayCommand]

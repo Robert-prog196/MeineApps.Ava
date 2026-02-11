@@ -592,6 +592,18 @@
   <data name="PowerUpBoost" xml:space="preserve">
     <value>Power-Up Boost</value>
   </data>
+  <data name="PowerUpBoostDesc" xml:space="preserve">
+    <value>Regarde une vidéo pour obtenir un boost de pouvoir aléatoire !</value>
+  </data>
+  <data name="BoostSpeed" xml:space="preserve">
+    <value>Speed Boost</value>
+  </data>
+  <data name="BoostFire" xml:space="preserve">
+    <value>+1 Feu</value>
+  </data>
+  <data name="BoostBomb" xml:space="preserve">
+    <value>+1 Bombe</value>
+  </data>
   <data name="WatchVideo" xml:space="preserve">
     <value>Regarder la Vidéo</value>
   </data>

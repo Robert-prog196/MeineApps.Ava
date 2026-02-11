@@ -162,7 +162,11 @@ public partial class StatisticsViewModel : ObservableObject
 
         LoadStatisticsAsync().ContinueWith(t =>
         {
-            if (t.IsFaulted) MessageRequested?.Invoke("Error", t.Exception?.Message ?? "Unknown error");
+            if (t.IsFaulted)
+            {
+                var errorTitle = _localizationService.GetString("Error") ?? "Error";
+                MessageRequested?.Invoke(errorTitle, t.Exception?.Message ?? string.Empty);
+            }
         }, TaskScheduler.Default);
     }
 
@@ -170,7 +174,11 @@ public partial class StatisticsViewModel : ObservableObject
     {
         LoadStatisticsAsync().ContinueWith(t =>
         {
-            if (t.IsFaulted) MessageRequested?.Invoke("Error", t.Exception?.Message ?? "Unknown error");
+            if (t.IsFaulted)
+            {
+                var errorTitle = _localizationService.GetString("Error") ?? "Error";
+                MessageRequested?.Invoke(errorTitle, t.Exception?.Message ?? string.Empty);
+            }
         }, TaskScheduler.Default);
     }
 
@@ -366,7 +374,8 @@ public partial class StatisticsViewModel : ObservableObject
                 .Select(kvp => new CategoryStatistic(
                     kvp.Key,
                     kvp.Value,
-                    totalExpenses > 0 ? kvp.Value / totalExpenses : 0))
+                    totalExpenses > 0 ? kvp.Value / totalExpenses : 0,
+                    GetCategoryName(kvp.Key)))
                 .OrderByDescending(c => c.Amount)
                 .ToList();
 
@@ -381,7 +390,8 @@ public partial class StatisticsViewModel : ObservableObject
                 .Select(kvp => new CategoryStatistic(
                     kvp.Key,
                     kvp.Value,
-                    totalIncome > 0 ? kvp.Value / totalIncome : 0))
+                    totalIncome > 0 ? kvp.Value / totalIncome : 0,
+                    GetCategoryName(kvp.Key)))
                 .OrderByDescending(c => c.Amount)
                 .ToList();
 
@@ -613,7 +623,7 @@ public partial class StatisticsViewModel : ObservableObject
     {
         return SelectedPeriod switch
         {
-            TimePeriod.Week => $"KW {GetWeekNumber(start)} - {start:dd.MM} bis {end:dd.MM.yyyy}",
+            TimePeriod.Week => $"{_localizationService.GetString("CalendarWeekAbbreviation") ?? "CW"} {GetWeekNumber(start)} - {start:dd.MM} - {end:dd.MM.yyyy}",
             TimePeriod.Month => start.ToString("MMMM yyyy"),
             TimePeriod.Quarter => $"Q{((start.Month - 1) / 3) + 1} {start.Year}",
             TimePeriod.HalfYear => start.Month == 1 ? $"H1 {start.Year}" : $"H2 {start.Year}",
@@ -766,7 +776,7 @@ public partial class StatisticsViewModel : ObservableObject
             }
 
             var filePath = await _exportService.ExportToCsvAsync(
-                startDate.Year, startDate.Month, targetPath);
+                startDate, endDate, targetPath);
 
             await _fileShareService.ShareFileAsync(filePath, title, "text/csv");
 
@@ -852,7 +862,8 @@ public partial class StatisticsViewModel : ObservableObject
             }
 
             IsExportingPdf = true;
-            var filePath = await _exportService.ExportStatisticsToPdfAsync(PeriodLabel, targetPath);
+            var (pdfStartDate, pdfEndDate) = GetDateRange();
+            var filePath = await _exportService.ExportStatisticsToPdfAsync(PeriodLabel, pdfStartDate, pdfEndDate, targetPath);
 
             // Datei teilen/oeffnen
             await _fileShareService.ShareFileAsync(filePath, title, "application/pdf");
@@ -892,12 +903,12 @@ public enum TimePeriod
 public record CategoryStatistic(
     ExpenseCategory Category,
     double Amount,
-    double Percentage)
+    double Percentage,
+    string CategoryName)
 {
     public string AmountDisplay => $"{Amount:N2} \u20ac";
     public string PercentageDisplay => $"{Percentage * 100:F1}%";
     public double BarHeight => Percentage * 200; // Max 200 pixel
-    public string CategoryName => Category.ToString();
     public string CategoryIcon => Category switch
     {
         ExpenseCategory.Food => "\U0001F354",

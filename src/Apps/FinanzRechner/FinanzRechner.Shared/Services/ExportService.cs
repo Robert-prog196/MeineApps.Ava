@@ -30,6 +30,14 @@ public class ExportService : IExportService
         return await GenerateCsvAsync(expenses, $"transactions_{year}_{month:D2}", targetPath);
     }
 
+    public async Task<string> ExportToCsvAsync(DateTime startDate, DateTime endDate, string? targetPath = null)
+    {
+        var filter = new ExpenseFilter { StartDate = startDate, EndDate = endDate };
+        var expenses = await _expenseService.GetExpensesAsync(filter);
+        var fileName = $"transactions_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}";
+        return await GenerateCsvAsync(expenses, fileName, targetPath);
+    }
+
     public async Task<string> ExportAllToCsvAsync(string? targetPath = null)
     {
         var expenses = await _expenseService.GetAllExpensesAsync();
@@ -69,9 +77,30 @@ public class ExportService : IExportService
         return filePath;
     }
 
-    public async Task<string> ExportStatisticsToPdfAsync(string period, string? targetPath = null)
+    public Task<string> ExportStatisticsToPdfAsync(string period, string? targetPath = null)
     {
-        var allExpenses = await _expenseService.GetAllExpensesAsync();
+        // Ohne Datum-Range: Alle Expenses exportieren (Fallback/Legacy)
+        return ExportStatisticsToPdfInternal(period, null, null, targetPath);
+    }
+
+    public Task<string> ExportStatisticsToPdfAsync(string period, DateTime startDate, DateTime endDate, string? targetPath = null)
+    {
+        return ExportStatisticsToPdfInternal(period, startDate, endDate, targetPath);
+    }
+
+    private async Task<string> ExportStatisticsToPdfInternal(string period, DateTime? startDate, DateTime? endDate, string? targetPath = null)
+    {
+        // Gefiltert nach Datum-Range, oder alle Expenses wenn kein Range angegeben
+        IReadOnlyList<Expense> allExpenses;
+        if (startDate.HasValue && endDate.HasValue)
+        {
+            var filter = new ExpenseFilter { StartDate = startDate.Value, EndDate = endDate.Value };
+            allExpenses = await _expenseService.GetExpensesAsync(filter);
+        }
+        else
+        {
+            allExpenses = await _expenseService.GetAllExpensesAsync();
+        }
 
         var document = new PdfDocument();
         document.Info.Title = $"Financial Statistics - {period}";

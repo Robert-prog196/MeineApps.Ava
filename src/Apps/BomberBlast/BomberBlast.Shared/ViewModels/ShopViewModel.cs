@@ -8,9 +8,10 @@ using MeineApps.Core.Ava.Localization;
 namespace BomberBlast.ViewModels;
 
 /// <summary>
-/// ViewModel fuer den Shop - zeigt Upgrades und Coin-Stand
+/// ViewModel fuer den Shop - zeigt Upgrades und Coin-Stand.
+/// Implementiert IDisposable fuer BalanceChanged-Unsubscription.
 /// </summary>
-public partial class ShopViewModel : ObservableObject
+public partial class ShopViewModel : ObservableObject, IDisposable
 {
     private readonly IShopService _shopService;
     private readonly ICoinService _coinService;
@@ -137,5 +138,10 @@ public partial class ShopViewModel : ObservableObject
     private void GoBack()
     {
         NavigationRequested?.Invoke("..");
+    }
+
+    public void Dispose()
+    {
+        _coinService.BalanceChanged -= OnBalanceChanged;
     }
 }

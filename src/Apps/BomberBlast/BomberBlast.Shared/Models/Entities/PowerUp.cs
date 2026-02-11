@@ -53,12 +53,12 @@ public class PowerUp : Entity
     protected override int GetAnimationFrameCount() => 2;
 
     /// <summary>
-    /// Create power-up at grid position
+    /// PowerUp an Grid-Position erstellen
     /// </summary>
     public static PowerUp CreateAtGrid(int gridX, int gridY, PowerUpType type)
     {
-        float x = gridX * 32 + 16; // CELL_SIZE / 2
-        float y = gridY * 32 + 16;
+        float x = gridX * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
+        float y = gridY * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
         return new PowerUp(x, y, type);
     }
 }

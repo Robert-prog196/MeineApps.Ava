@@ -154,24 +154,7 @@ public class FinanceEngine
 
     #endregion
 
-    #region Inflation
-
-    public InflationResult CalculateInflation(double currentAmount, double inflationRate, int years)
-    {
-        var rate = inflationRate / 100;
-        var realValue = currentAmount / Math.Pow(1 + rate, years);
-        var purchasingPowerLoss = currentAmount - realValue;
-        var purchasingPowerLossPercent = (purchasingPowerLoss / currentAmount) * 100;
-
-        return new InflationResult
-        {
-            CurrentAmount = currentAmount, InflationRate = inflationRate, Years = years,
-            RealValue = realValue, PurchasingPowerLoss = purchasingPowerLoss,
-            PurchasingPowerLossPercent = purchasingPowerLossPercent
-        };
-    }
-
-    #endregion
+    // Inflation-Rechner entfernt (nicht verwendet, kein ViewModel/View vorhanden)
 }
 
 #region Result Types
@@ -234,16 +217,6 @@ public record YieldResult
     public double TotalReturn { get; init; }
     public double TotalReturnPercent { get; init; }
     public double EffectiveAnnualRate { get; init; }
-}
-
-public record InflationResult
-{
-    public double CurrentAmount { get; init; }
-    public double InflationRate { get; init; }
-    public int Years { get; init; }
-    public double RealValue { get; init; }
-    public double PurchasingPowerLoss { get; init; }
-    public double PurchasingPowerLossPercent { get; init; }
 }
 
 #endregion

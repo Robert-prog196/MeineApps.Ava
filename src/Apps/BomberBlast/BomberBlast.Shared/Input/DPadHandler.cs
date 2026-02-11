@@ -4,19 +4,23 @@ using SkiaSharp;
 namespace BomberBlast.Input;
 
 /// <summary>
-/// Classic fixed D-Pad input handler
+/// Klassischer fester D-Pad Input-Handler
 /// </summary>
-public class DPadHandler : IInputHandler
+public class DPadHandler : IInputHandler, IDisposable
 {
     public string Name => "Classic D-Pad";
 
-    // D-Pad configuration
+    // D-Pad Konfiguration
     private float _dpadSize = 150f;
     private float _buttonSize = 45f;
     private float _dpadX, _dpadY;
     private float _bombButtonX, _bombButtonY;
     private float _bombButtonRadius = 50f;
     private float _opacity = 0.8f;
+
+    // Gecachte SKFont/SKPaint (einmalig erstellt, vermeidet per-Frame Allokationen)
+    private readonly SKFont _arrowFont = new() { Size = 24 };
+    private readonly SKPaint _arrowTextPaint = new() { IsAntialias = true };
 
     // Touch state
     private Direction _currentDirection = Direction.None;
@@ -163,8 +167,8 @@ public class DPadHandler : IInputHandler
             IsAntialias = true
         };
 
-        // Cross shape background
-        var crossPath = new SKPath();
+        // Kreuz-Form Hintergrund
+        using var crossPath = new SKPath();
         float cs = _buttonSize; // Cross segment size
         float cd = buttonDist; // Cross distance from center
 
@@ -208,14 +212,9 @@ public class DPadHandler : IInputHandler
             };
             canvas.DrawCircle(bx, by, _buttonSize, borderPaint);
 
-            // Arrow symbol
-            using var font = new SKFont { Size = 24 };
-            using var textPaint = new SKPaint
-            {
-                Color = new SKColor(255, 255, 255, alpha),
-                IsAntialias = true
-            };
-            canvas.DrawText(symbol, bx, by + 8, SKTextAlign.Center, font, textPaint);
+            // Pfeil-Symbol (gecachte Font/Paint wiederverwenden)
+            _arrowTextPaint.Color = new SKColor(255, 255, 255, alpha);
+            canvas.DrawText(symbol, bx, by + 8, SKTextAlign.Center, _arrowFont, _arrowTextPaint);
         }
 
         // Draw bomb button
@@ -247,11 +246,17 @@ public class DPadHandler : IInputHandler
             StrokeWidth = 3,
             IsAntialias = true
         };
-        var fusePath = new SKPath();
+        using var fusePath = new SKPath();
         fusePath.MoveTo(_bombButtonX, _bombButtonY - bombSize);
         fusePath.QuadTo(
             _bombButtonX + bombSize * 0.3f, _bombButtonY - bombSize - 10,
             _bombButtonX + bombSize * 0.5f, _bombButtonY - bombSize - 5);
         canvas.DrawPath(fusePath, fusePaint);
+    }
+
+    public void Dispose()
+    {
+        _arrowFont.Dispose();
+        _arrowTextPaint.Dispose();
     }
 }

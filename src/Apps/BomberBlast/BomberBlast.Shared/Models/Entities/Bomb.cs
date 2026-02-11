@@ -90,12 +90,12 @@ public class Bomb : Entity
     protected override int GetAnimationFrameCount() => 4;
 
     /// <summary>
-    /// Create bomb at grid position
+    /// Bombe an Grid-Position erstellen
     /// </summary>
     public static Bomb CreateAtGrid(int gridX, int gridY, Player owner)
     {
-        float x = gridX * 32 + 16; // CELL_SIZE / 2
-        float y = gridY * 32 + 16;
+        float x = gridX * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
+        float y = gridY * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
         return new Bomb(x, y, owner, owner.FireRange, owner.HasDetonator);
     }
 }

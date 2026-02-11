@@ -106,7 +106,7 @@ public class ProgressService : IProgressService
         if (score == 0)
             return 0;
 
-        // Star thresholds (adjust based on level difficulty)
+        // Stern-Schwellwerte (skaliert nach Level-Schwierigkeit)
         int baseScore = 1000 + level * 500;
 
         if (score >= baseScore * 3)
@@ -116,7 +116,8 @@ public class ProgressService : IProgressService
         if (score >= baseScore)
             return 1;
 
-        return 0;
+        // Abgeschlossene Level bekommen mindestens 1 Stern
+        return 1;
     }
 
     public void ResetProgress()

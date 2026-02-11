@@ -4,27 +4,31 @@ using SkiaSharp;
 namespace BomberBlast.Input;
 
 /// <summary>
-/// Swipe-based input handler
+/// Wisch-basierter Input-Handler
 /// </summary>
-public class SwipeGestureHandler : IInputHandler
+public class SwipeGestureHandler : IInputHandler, IDisposable
 {
     public string Name => "Swipe Gestures";
 
-    // Touch state
+    // Touch-Zustand
     private float _startX, _startY;
     private float _currentX, _currentY;
     private bool _isTouching;
     private float _touchTime;
 
-    // Swipe detection
+    // Swipe-Erkennung
     private const float MIN_SWIPE_DISTANCE = 30f;
     private const float TAP_MAX_TIME = 0.3f;
     private const float TAP_MAX_DISTANCE = 20f;
 
-    // Current input state
+    // Aktueller Input-Zustand
     private Direction _currentDirection = Direction.None;
     private bool _bombPressed;
     private bool _bombConsumed;
+
+    // Gecachte SKFont/SKPaint (einmalig erstellt, vermeidet per-Frame Allokationen)
+    private readonly SKFont _hintFont = new() { Size = 16 };
+    private readonly SKPaint _hintTextPaint = new() { IsAntialias = true };
 
     public Direction MovementDirection => _currentDirection;
     public bool BombPressed => _bombPressed && !_bombConsumed;
@@ -165,16 +169,15 @@ public class SwipeGestureHandler : IInputHandler
             }
         }
 
-        // Show hint text
-        using var font = new SKFont { Size = 16 };
-        using var textPaint = new SKPaint
-        {
-            Color = new SKColor(255, 255, 255, 100),
-            IsAntialias = true
-        };
-
-        // TODO: Use localized strings once resource system is set up
+        // Hinweis-Text (gecachte Font/Paint, englisch = Gaming-Konvention)
+        _hintTextPaint.Color = new SKColor(255, 255, 255, 100);
         canvas.DrawText("Swipe to move, Tap to bomb",
-            screenWidth / 2, screenHeight - 14, SKTextAlign.Center, font, textPaint);
+            screenWidth / 2, screenHeight - 14, SKTextAlign.Center, _hintFont, _hintTextPaint);
+    }
+
+    public void Dispose()
+    {
+        _hintFont.Dispose();
+        _hintTextPaint.Dispose();
     }
 }

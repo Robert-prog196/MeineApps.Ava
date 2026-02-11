@@ -119,7 +119,8 @@ public class GameEngine : IDisposable
         InputManager inputManager,
         ILocalizationService localizationService,
         IGameStyleService gameStyleService,
-        IShopService shopService)
+        IShopService shopService,
+        GameRenderer renderer)
     {
         _soundManager = soundManager;
         _spriteSheet = spriteSheet;
@@ -130,7 +131,7 @@ public class GameEngine : IDisposable
         _gameStyleService = gameStyleService;
         _shopService = shopService;
 
-        _renderer = new GameRenderer(_spriteSheet, _gameStyleService);
+        _renderer = renderer;
         _grid = new GameGrid();
         _timer = new GameTimer();
         _enemyAI = new EnemyAI(_grid);
@@ -270,11 +271,14 @@ public class GameEngine : IDisposable
     /// </summary>
     public void DoubleScore()
     {
+        // Score vor Verdopplung merken fuer korrekte Coins-Differenz
+        int scoreBefore = _player.Score;
         _player.Score *= 2;
+        int coinsEarned = _player.Score - scoreBefore;
         OnScoreChanged?.Invoke(_player.Score);
 
-        // Coins-Event ebenfalls mit verdoppeltem Score aktualisieren
-        OnCoinsEarned?.Invoke(_player.Score, _player.Score, true);
+        // Coins-Event mit der tatsaechlich verdienten Differenz
+        OnCoinsEarned?.Invoke(coinsEarned, _player.Score, true);
     }
 
     /// <summary>
@@ -632,10 +636,14 @@ public class GameEngine : IDisposable
     {
         cell.IsDestroying = true;
 
-        // Schedule block removal and power-up reveal on UI thread
+        // Block-Entfernung und PowerUp-Anzeige auf UI-Thread planen
         Dispatcher.UIThread.Post(async () =>
         {
-            await Task.Delay(300); // Destruction animation time
+            await Task.Delay(300); // Zerstoerungsanimation
+
+            // State-Check: Nur weitermachen wenn Spiel noch laeuft
+            if (_state != GameState.Playing && _state != GameState.Starting)
+                return;
 
             if (cell.Type != CellType.Block)
                 return;
@@ -995,15 +1003,25 @@ public class GameEngine : IDisposable
 
     private void SpawnPontanPunishment()
     {
-        // Spawn Pontans as punishment
+        // Pontans als Strafe spawnen - nur auf begehbaren Zellen
         var random = new Random();
-        for (int i = 0; i < 4; i++)
+        int spawned = 0;
+        int maxAttempts = 50; // Endlosschleife vermeiden
+        int attempts = 0;
+
+        while (spawned < 4 && attempts < maxAttempts)
         {
+            attempts++;
             int x = random.Next(3, GameGrid.WIDTH - 1);
             int y = random.Next(3, GameGrid.HEIGHT - 1);
 
+            var cell = _grid.TryGetCell(x, y);
+            if (cell == null || cell.Type != CellType.Empty)
+                continue;
+
             var enemy = Enemy.CreateAtGrid(x, y, EnemyType.Pontan);
             _enemies.Add(enemy);
+            spawned++;
         }
     }
 

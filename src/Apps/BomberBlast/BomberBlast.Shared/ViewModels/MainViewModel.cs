@@ -101,6 +101,7 @@ public partial class MainViewModel : ObservableObject
     private bool _returnToGameFromSettings;
 
     private readonly ILocalizationService _localizationService;
+    private readonly IRewardedAdService _rewardedAdService;
 
     /// <summary>
     /// Zaehlt Fehlversuche pro Level (fuer Level-Skip nach 3x Game Over)
@@ -136,6 +137,7 @@ public partial class MainViewModel : ObservableObject
         HelpVm = helpVm;
         ShopVm = shopVm;
         _localizationService = localization;
+        _rewardedAdService = rewardedAdService;
 
         // Game Juice Events weiterleiten
         GameOverVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
@@ -145,9 +147,12 @@ public partial class MainViewModel : ObservableObject
         if (adService.AdsEnabled && !purchaseService.IsPremium)
             adService.ShowBanner();
 
-        // Ad-Unavailable Meldung anzeigen
-        rewardedAdService.AdUnavailable += () =>
-            ShowAlertDialog(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage, AppStrings.OK);
+        // Ad-Unavailable Meldung anzeigen (benannte Methode statt Lambda fuer Unsubscribe)
+        _rewardedAdService.AdUnavailable += OnAdUnavailable;
+
+        // PauseVM Resume/Restart Events mit GameVM verbinden
+        pauseVm.ResumeRequested += () => gameVm.ResumeCommand.Execute(null);
+        pauseVm.RestartRequested += () => gameVm.RestartCommand.Execute(null);
 
         // Wire up navigation from child VMs
         WireNavigation(menuVm);
@@ -410,5 +415,13 @@ public partial class MainViewModel : ObservableObject
     {
         IsConfirmDialogVisible = false;
         _confirmDialogTcs?.TrySetResult(false);
+    }
+
+    /// <summary>
+    /// Benannter Handler fuer AdUnavailable (statt Lambda, damit Unsubscribe moeglich)
+    /// </summary>
+    private void OnAdUnavailable()
+    {
+        ShowAlertDialog(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage, AppStrings.OK);
     }
 }

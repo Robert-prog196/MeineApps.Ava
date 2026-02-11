@@ -1119,6 +1119,30 @@ namespace BomberBlast.Resources.Strings {
             }
         }
 
+        internal static string PowerUpBoostDesc {
+            get {
+                return ResourceManager.GetString("PowerUpBoostDesc", resourceCulture);
+            }
+        }
+
+        internal static string BoostSpeed {
+            get {
+                return ResourceManager.GetString("BoostSpeed", resourceCulture);
+            }
+        }
+
+        internal static string BoostFire {
+            get {
+                return ResourceManager.GetString("BoostFire", resourceCulture);
+            }
+        }
+
+        internal static string BoostBomb {
+            get {
+                return ResourceManager.GetString("BoostBomb", resourceCulture);
+            }
+        }
+
         internal static string WatchVideo {
             get {
                 return ResourceManager.GetString("WatchVideo", resourceCulture);

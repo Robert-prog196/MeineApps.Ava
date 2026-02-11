@@ -234,7 +234,7 @@ public class FloatingJoystick : IInputHandler
             StrokeWidth = 3,
             IsAntialias = true
         };
-        var fusePath = new SKPath();
+        using var fusePath = new SKPath();
         fusePath.MoveTo(_bombButtonX, _bombButtonY - bombSize);
         fusePath.QuadTo(
             _bombButtonX + bombSize * 0.3f, _bombButtonY - bombSize - 10,

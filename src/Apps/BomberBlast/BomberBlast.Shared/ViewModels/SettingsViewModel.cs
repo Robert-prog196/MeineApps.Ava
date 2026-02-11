@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using BomberBlast.Core;
+using BomberBlast.Input;
 using BomberBlast.Services;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
@@ -8,8 +10,9 @@ using MeineApps.Core.Premium.Ava.Services;
 namespace BomberBlast.ViewModels;
 
 /// <summary>
-/// ViewModel for the settings page.
-/// Manages input mode, sound volume, language selection, and premium status.
+/// ViewModel fuer die Einstellungen.
+/// Verwaltet Input-Modus, Sound-Lautstärke, Sprache und Premium-Status.
+/// Persistiert alle Einstellungen via InputManager und SoundManager.
 /// </summary>
 public partial class SettingsViewModel : ObservableObject
 {
@@ -18,6 +21,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IPurchaseService _purchaseService;
     private readonly IGameStyleService _gameStyleService;
+    private readonly InputManager _inputManager;
+    private readonly SoundManager _soundManager;
 
     private bool _isInitializing = true;
 
@@ -181,13 +186,17 @@ public partial class SettingsViewModel : ObservableObject
         IHighScoreService highScoreService,
         ILocalizationService localizationService,
         IPurchaseService purchaseService,
-        IGameStyleService gameStyleService)
+        IGameStyleService gameStyleService,
+        InputManager inputManager,
+        SoundManager soundManager)
     {
         _progressService = progressService;
         _highScoreService = highScoreService;
         _localizationService = localizationService;
         _purchaseService = purchaseService;
         _gameStyleService = gameStyleService;
+        _inputManager = inputManager;
+        _soundManager = soundManager;
 
         // Version info
         var assembly = System.Reflection.Assembly.GetEntryAssembly();
@@ -207,10 +216,19 @@ public partial class SettingsViewModel : ObservableObject
 
     private void LoadSettings()
     {
-        // Input settings are loaded from Preferences (will be implemented when InputManager is ported)
-        // For now, default values are used
+        // Input-Einstellungen aus InputManager laden
+        SelectedInputType = (int)_inputManager.CurrentInputType;
+        JoystickSize = _inputManager.JoystickSize;
+        JoystickOpacity = _inputManager.JoystickOpacity;
+        HapticEnabled = _inputManager.HapticEnabled;
 
-        // Language
+        // Sound-Einstellungen aus SoundManager laden
+        SfxEnabled = _soundManager.SfxEnabled;
+        SfxVolume = _soundManager.SfxVolume;
+        MusicEnabled = _soundManager.MusicEnabled;
+        MusicVolume = _soundManager.MusicVolume;
+
+        // Sprache
         SelectedLanguage = _localizationService.CurrentLanguage;
 
         // Premium
@@ -236,45 +254,70 @@ public partial class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(IsSwipeSelected));
         OnPropertyChanged(nameof(IsDPadSelected));
         if (_isInitializing) return;
+
+        // InputType im InputManager setzen und persistieren
+        _inputManager.CurrentInputType = (InputType)value;
+        _inputManager.SaveSettings();
     }
 
     partial void OnJoystickSizeChanged(double value)
     {
         JoystickSizeText = $"{(int)value}";
         if (_isInitializing) return;
+
+        _inputManager.JoystickSize = (float)value;
+        _inputManager.SaveSettings();
     }
 
     partial void OnJoystickOpacityChanged(double value)
     {
         JoystickOpacityText = $"{(int)(value * 100)}%";
         if (_isInitializing) return;
+
+        _inputManager.JoystickOpacity = (float)value;
+        _inputManager.SaveSettings();
     }
 
     partial void OnHapticEnabledChanged(bool value)
     {
         if (_isInitializing) return;
+
+        _inputManager.HapticEnabled = value;
+        _inputManager.SaveSettings();
     }
 
     partial void OnSfxEnabledChanged(bool value)
     {
         if (_isInitializing) return;
+
+        _soundManager.SfxEnabled = value;
+        _soundManager.SaveSettings();
     }
 
     partial void OnSfxVolumeChanged(double value)
     {
         SfxVolumeText = $"{(int)(value * 100)}%";
         if (_isInitializing) return;
+
+        _soundManager.SfxVolume = (float)value;
+        _soundManager.SaveSettings();
     }
 
     partial void OnMusicEnabledChanged(bool value)
     {
         if (_isInitializing) return;
+
+        _soundManager.MusicEnabled = value;
+        _soundManager.SaveSettings();
     }
 
     partial void OnMusicVolumeChanged(double value)
     {
         MusicVolumeText = $"{(int)(value * 100)}%";
         if (_isInitializing) return;
+
+        _soundManager.MusicVolume = (float)value;
+        _soundManager.SaveSettings();
     }
 
     // ═══════════════════════════════════════════════════════════════════════

@@ -126,7 +126,10 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// </summary>
     public async Task OnAppearingAsync()
     {
-        // Subscribe to game events
+        // Erst Unsubscribe (idempotent), dann Subscribe → verhindert doppelte Subscriptions
+        _gameEngine.OnGameOver -= HandleGameOver;
+        _gameEngine.OnLevelComplete -= HandleLevelComplete;
+        _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
         _gameEngine.OnGameOver += HandleGameOver;
         _gameEngine.OnLevelComplete += HandleLevelComplete;
         _gameEngine.OnCoinsEarned += HandleCoinsEarned;

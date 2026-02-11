@@ -33,7 +33,7 @@ public class HighScoreService : IHighScoreService
             playerName.ToUpper().Substring(0, Math.Min(10, playerName.Length)),
             score,
             level,
-            DateTime.Now);
+            DateTime.UtcNow);
 
         _scores.Add(entry);
         _scores = _scores.OrderByDescending(s => s.Score).Take(MAX_SCORES).ToList();
@@ -100,7 +100,7 @@ public class HighScoreService : IHighScoreService
 
         foreach (var (name, score, level) in defaults)
         {
-            _scores.Add(new HighScoreEntry(name, score, level, DateTime.Now.AddDays(-1)));
+            _scores.Add(new HighScoreEntry(name, score, level, DateTime.UtcNow.AddDays(-1)));
         }
 
         _scores = _scores.OrderByDescending(s => s.Score).ToList();

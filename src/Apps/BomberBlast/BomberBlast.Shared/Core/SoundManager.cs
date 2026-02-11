@@ -150,11 +150,12 @@ public class SoundManager : IDisposable
     }
 
     /// <summary>
-    /// Stop background music
+    /// Hintergrundmusik stoppen und Zustand zuruecksetzen
     /// </summary>
     public void StopMusic()
     {
         _soundService.StopMusic();
+        _currentMusic = null;
     }
 
     /// <summary>

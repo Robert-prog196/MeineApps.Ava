@@ -14,7 +14,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 ### SkiaSharp Rendering (GameRenderer.cs)
 - Volle 2D-Engine via SKCanvasView (Avalonia.Skia)
 - Zwei Visual Styles: Classic HD + Neon/Cyberpunk (IGameStyleService)
-- 60fps Game Loop (DispatcherTimer, InvalidateSurface alle 16ms)
+- 60fps Game Loop (render-driven via GameViewModel.InvalidateCanvasRequested, kein DispatcherTimer)
 - DPI-Handling: `canvas.LocalClipBounds` statt `e.Info.Width/Height`
 - GC-Optimierung: Gepoolte SKPaint/SKFont/SKPath (6 per-frame Allokationen eliminiert)
 - HUD: Side-Panel rechts (TIME, SCORE, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
@@ -79,7 +79,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Touch-Koordinaten**: Proportionale Skalierung (Render-Bounds / Control-Bounds Ratio) fuer DPI-korrektes Mapping
 - **Invalidierung**: IMMER `InvalidateSurface()` (InvalidateVisual feuert NICHT PaintSurface bei SKCanvasView)
 - **Keyboard Input**: Window-Level KeyDown/KeyUp in MainWindow.axaml.cs → GameViewModel
-- **DI**: 10 ViewModels, 8 Services, GameEngine + SpriteSheet in App.axaml.cs
+- **DI**: 10 ViewModels, 8 Services, GameEngine + GameRenderer + SpriteSheet in App.axaml.cs (GameRenderer per DI in GameEngine injiziert)
 
 ## Game Juice
 
@@ -91,6 +91,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **11.02.2026 (2)**: Umfangreicher Bug-Fix: DoubleScore Coins-Berechnung, PowerUpBoostDesc + BoostSpeed/Fire/Bomb RESX-Keys, Settings-Persistierung (InputManager + SoundManager), doppelte Render-Schleife entfernt, SKPath Memory-Leaks gefixt, per-Frame SKFont-Allokationen gecacht (DPadHandler/SwipeGestureHandler), doppelte Event-Subscriptions verhindert, Race-Condition in DestroyBlock, ShopVM IDisposable, GameRenderer per DI, ProgressService min. 1 Stern, SoundManager._currentMusic reset, PauseVM Events verbunden, SpawnPontan Zell-Validierung, Magic Numbers durch GameGrid.CELL_SIZE ersetzt, DateTime.UtcNow in HighScoreService, AdUnavailable Lambda-Leak gefixt
 - **11.02.2026**: Banner-Ad im GameView erst ab Level 5, Top-Position (nicht stoerend fuer Controls/HUD/Sichtfeld). IAdService.SetBannerPosition + GameRenderer.BannerTopOffset
 - **09.02.2026**: ShopVM.UpdateLocalizedTexts() bei Sprachwechsel, Nullable-Warnings in HighScoreService + ProgressService gefixt
 - **08.02.2026**: FloatingText + Celebration Overlays, Ad-Banner Padding Fix

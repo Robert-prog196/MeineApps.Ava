@@ -222,9 +222,9 @@ public partial class LevelSelectViewModel : ObservableObject
 
         BoostPowerUpName = _pendingBoostType switch
         {
-            "speed" => "Speed Boost",
-            "fire" => "+1 Fire",
-            "bombs" => "+1 Bomb",
+            "speed" => _localizationService.GetString("BoostSpeed"),
+            "fire" => _localizationService.GetString("BoostFire"),
+            "bombs" => _localizationService.GetString("BoostBomb"),
             _ => ""
         };
     }

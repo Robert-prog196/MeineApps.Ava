@@ -238,7 +238,7 @@ public partial class SettingsViewModel : ObservableObject
             IsBackupInProgress = true;
 
             var json = await _expenseService.ExportToJsonAsync();
-            var fileName = $"FinanzRechner_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            var fileName = $"FinanzRechner_Backup_{DateTime.UtcNow:yyyyMMdd_HHmmss}.json";
             var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
             await File.WriteAllTextAsync(filePath, json);
@@ -274,8 +274,16 @@ public partial class SettingsViewModel : ObservableObject
         {
             IsBackupInProgress = true;
 
-            // Request file pick from view
-            RestoreFileRequested?.Invoke();
+            // View muss File-Picker oeffnen und ProcessRestoreFileAsync aufrufen
+            if (RestoreFileRequested != null)
+            {
+                RestoreFileRequested.Invoke();
+            }
+            else
+            {
+                // Kein Handler registriert - sofort zuruecksetzen
+                IsBackupInProgress = false;
+            }
         }
         catch (Exception ex)
         {
