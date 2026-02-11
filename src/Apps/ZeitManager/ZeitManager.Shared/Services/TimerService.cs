@@ -8,6 +8,7 @@ namespace ZeitManager.Services;
 public class TimerService : ITimerService, IDisposable
 {
     private readonly IDatabaseService _database;
+    private readonly INotificationService _notificationService;
     private readonly List<TimerItem> _timers = [];
     private readonly object _lock = new();
     private Timer? _uiTimer;
@@ -26,9 +27,10 @@ public class TimerService : ITimerService, IDisposable
     public event EventHandler<TimerItem>? TimerTick;
     public event EventHandler? TimersChanged;
 
-    public TimerService(IDatabaseService database)
+    public TimerService(IDatabaseService database, INotificationService notificationService)
     {
         _database = database;
+        _notificationService = notificationService;
     }
 
     public async Task LoadTimersAsync()
@@ -68,6 +70,14 @@ public class TimerService : ITimerService, IDisposable
         await _database.SaveTimerAsync(timer);
         EnsureUiTimer();
         TimersChanged?.Invoke(this, EventArgs.Empty);
+
+        // System-Notification fuer den erwarteten Fertigstellungszeitpunkt planen
+        var finishAt = DateTime.Now.Add(timer.RemainingTime);
+        await _notificationService.ScheduleNotificationAsync(
+            $"timer_{timer.Id}",
+            timer.Name,
+            "Timer abgelaufen!",
+            finishAt);
     }
 
     public async Task PauseTimerAsync(TimerItem timer)
@@ -81,6 +91,7 @@ public class TimerService : ITimerService, IDisposable
         await _database.SaveTimerAsync(timer);
         CheckStopUiTimer();
         TimersChanged?.Invoke(this, EventArgs.Empty);
+        await _notificationService.CancelNotificationAsync($"timer_{timer.Id}");
     }
 
     public async Task StopTimerAsync(TimerItem timer)
@@ -89,6 +100,7 @@ public class TimerService : ITimerService, IDisposable
         await _database.DeleteTimerAsync(timer);
         CheckStopUiTimer();
         TimersChanged?.Invoke(this, EventArgs.Empty);
+        await _notificationService.CancelNotificationAsync($"timer_{timer.Id}");
     }
 
     public async Task SnoozeTimerAsync(TimerItem timer, int minutes = 1)
@@ -113,6 +125,7 @@ public class TimerService : ITimerService, IDisposable
         await _database.DeleteTimerAsync(timer);
         CheckStopUiTimer();
         TimersChanged?.Invoke(this, EventArgs.Empty);
+        await _notificationService.CancelNotificationAsync($"timer_{timer.Id}");
     }
 
     public TimeSpan GetRemainingTime(TimerItem timer)
@@ -160,6 +173,8 @@ public class TimerService : ITimerService, IDisposable
                     lock (_lock) _timers.Remove(timer);
                     TimersChanged?.Invoke(this, EventArgs.Empty);
                     TimerFinished?.Invoke(this, timer);
+                    // System-Notification canceln (App war im Vordergrund, Overlay wird gezeigt)
+                    _ = _notificationService.CancelNotificationAsync($"timer_{timer.Id}");
                 }
                 else
                 {

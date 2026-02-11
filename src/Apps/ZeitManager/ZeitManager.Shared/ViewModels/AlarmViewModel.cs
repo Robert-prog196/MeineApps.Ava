@@ -12,6 +12,7 @@ public partial class AlarmViewModel : ObservableObject
     private readonly IDatabaseService _database;
     private readonly ILocalizationService _localization;
     private readonly IAudioService _audioService;
+    private readonly IAlarmSchedulerService _alarmScheduler;
 
     [ObservableProperty]
     private ObservableCollection<AlarmItem> _alarms = [];
@@ -100,11 +101,12 @@ public partial class AlarmViewModel : ObservableObject
 
     public IReadOnlyList<SoundItem> AvailableSounds => _audioService.AvailableSounds;
 
-    public AlarmViewModel(IDatabaseService database, ILocalizationService localization, IAudioService audioService, ShiftScheduleViewModel shiftScheduleViewModel)
+    public AlarmViewModel(IDatabaseService database, ILocalizationService localization, IAudioService audioService, IAlarmSchedulerService alarmScheduler, ShiftScheduleViewModel shiftScheduleViewModel)
     {
         _database = database;
         _localization = localization;
         _audioService = audioService;
+        _alarmScheduler = alarmScheduler;
         _shiftScheduleViewModel = shiftScheduleViewModel;
         _localization.LanguageChanged += OnLanguageChanged;
         _ = LoadAlarms();
@@ -167,7 +169,8 @@ public partial class AlarmViewModel : ObservableObject
         alarm.ChallengeDifficulty = SelectedDifficulty;
         alarm.IsEnabled = true;
 
-        await _database.SaveAlarmAsync(alarm);
+        // ScheduleAlarmAsync speichert in DB + plant System-Notification
+        await _alarmScheduler.ScheduleAlarmAsync(alarm);
         IsEditMode = false;
         await LoadAlarms();
     }
@@ -191,6 +194,8 @@ public partial class AlarmViewModel : ObservableObject
     {
         if (_alarmToDelete != null)
         {
+            // Erst System-Notification canceln, dann aus DB löschen
+            await _alarmScheduler.CancelAlarmAsync(_alarmToDelete);
             await _database.DeleteAlarmAsync(_alarmToDelete);
             _alarmToDelete = null;
             await LoadAlarms();
@@ -209,7 +214,11 @@ public partial class AlarmViewModel : ObservableObject
     private async Task ToggleAlarm(AlarmItem alarm)
     {
         alarm.IsEnabled = !alarm.IsEnabled;
-        await _database.SaveAlarmAsync(alarm);
+        // ScheduleAlarmAsync/CancelAlarmAsync speichert in DB + plant/cancelt System-Notification
+        if (alarm.IsEnabled)
+            await _alarmScheduler.ScheduleAlarmAsync(alarm);
+        else
+            await _alarmScheduler.CancelAlarmAsync(alarm);
     }
 
     [RelayCommand]

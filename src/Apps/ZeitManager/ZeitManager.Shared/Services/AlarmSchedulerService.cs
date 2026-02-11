@@ -8,6 +8,7 @@ namespace ZeitManager.Services;
 public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 {
     private readonly IDatabaseService _database;
+    private readonly INotificationService _notificationService;
     private Timer? _checkTimer;
     private readonly List<AlarmItem> _activeAlarms = [];
     private readonly HashSet<int> _triggeredToday = [];
@@ -15,9 +16,10 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 
     public event EventHandler<AlarmItem>? AlarmTriggered;
 
-    public AlarmSchedulerService(IDatabaseService database)
+    public AlarmSchedulerService(IDatabaseService database, INotificationService notificationService)
     {
         _database = database;
+        _notificationService = notificationService;
     }
 
     public async Task InitializeAsync()
@@ -26,6 +28,12 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         _activeAlarms.Clear();
         _activeAlarms.AddRange(alarms.Where(a => a.IsEnabled && !a.IsShiftAlarm));
         EnsureCheckTimer();
+
+        // Alle aktiven Alarme beim Android AlarmManager registrieren
+        foreach (var alarm in _activeAlarms)
+        {
+            await ScheduleSystemNotificationAsync(alarm);
+        }
     }
 
     public async Task ScheduleAlarmAsync(AlarmItem alarm)
@@ -38,6 +46,12 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         }
         await _database.SaveAlarmAsync(alarm);
         EnsureCheckTimer();
+
+        // Android AlarmManager: planen oder canceln
+        if (alarm.IsEnabled)
+            await ScheduleSystemNotificationAsync(alarm);
+        else
+            await _notificationService.CancelNotificationAsync(alarm.Id.ToString());
     }
 
     public async Task CancelAlarmAsync(AlarmItem alarm)
@@ -46,6 +60,7 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         alarm.CurrentSnoozeCount = 0;
         await _database.SaveAlarmAsync(alarm);
         CheckStopTimer();
+        await _notificationService.CancelNotificationAsync(alarm.Id.ToString());
     }
 
     public async Task SnoozeAlarmAsync(AlarmItem alarm)
@@ -59,6 +74,13 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         if (!_activeAlarms.Any(a => a.Id == alarm.Id))
             _activeAlarms.Add(alarm);
         EnsureCheckTimer();
+
+        // Snooze-Notification beim System planen
+        await _notificationService.ScheduleNotificationAsync(
+            alarm.Id.ToString(),
+            string.IsNullOrEmpty(alarm.Name) ? "Alarm" : alarm.Name,
+            alarm.TimeFormatted,
+            alarm.NextTriggerDateTime.Value);
     }
 
     public async Task DismissAlarmAsync(AlarmItem alarm)
@@ -73,6 +95,69 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         }
 
         await _database.SaveAlarmAsync(alarm);
+        await _notificationService.CancelNotificationAsync(alarm.Id.ToString());
+
+        // Wiederholenden Alarm fuer den naechsten Auslösezeitpunkt neu planen
+        if (alarm.IsRepeating && alarm.IsEnabled)
+            await ScheduleSystemNotificationAsync(alarm);
+    }
+
+    /// <summary>
+    /// Plant eine System-Notification (Android AlarmManager / Desktop Task.Delay)
+    /// fuer den naechsten Auslösezeitpunkt des Alarms.
+    /// </summary>
+    private async Task ScheduleSystemNotificationAsync(AlarmItem alarm)
+    {
+        var nextTrigger = CalculateNextTriggerTime(alarm);
+        if (nextTrigger == null) return;
+
+        await _notificationService.ScheduleNotificationAsync(
+            alarm.Id.ToString(),
+            string.IsNullOrEmpty(alarm.Name) ? "Alarm" : alarm.Name,
+            alarm.TimeFormatted,
+            nextTrigger.Value);
+    }
+
+    /// <summary>
+    /// Berechnet den naechsten Auslösezeitpunkt fuer einen Alarm.
+    /// </summary>
+    private static DateTime? CalculateNextTriggerTime(AlarmItem alarm)
+    {
+        // Snoozed: NextTriggerDateTime verwenden
+        if (alarm.NextTriggerDateTime != null)
+            return alarm.NextTriggerDateTime.Value;
+
+        var now = DateTime.Now;
+        var alarmToday = now.Date + alarm.Time.ToTimeSpan();
+
+        if (!alarm.IsRepeating)
+        {
+            // Einmalig: heute wenn in der Zukunft, sonst morgen
+            return alarmToday > now ? alarmToday : alarmToday.AddDays(1);
+        }
+
+        // Wiederholend: naechsten passenden Wochentag finden
+        for (int i = 0; i < 7; i++)
+        {
+            var candidate = alarmToday.AddDays(i);
+            var dayFlag = candidate.DayOfWeek switch
+            {
+                DayOfWeek.Monday => WeekDays.Monday,
+                DayOfWeek.Tuesday => WeekDays.Tuesday,
+                DayOfWeek.Wednesday => WeekDays.Wednesday,
+                DayOfWeek.Thursday => WeekDays.Thursday,
+                DayOfWeek.Friday => WeekDays.Friday,
+                DayOfWeek.Saturday => WeekDays.Saturday,
+                DayOfWeek.Sunday => WeekDays.Sunday,
+                _ => WeekDays.None
+            };
+
+            if (alarm.RepeatDaysEnum.HasFlag(dayFlag) && candidate > now)
+                return candidate;
+        }
+
+        // Fallback
+        return alarmToday.AddDays(1);
     }
 
     private void EnsureCheckTimer()
