@@ -11,10 +11,8 @@
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
 
-    <!-- UI Frameworks -->
-    <PackageReference Include="Material.Avalonia" />
+    <!-- Icons -->
     <PackageReference Include="Material.Icons.Avalonia" />
-    <PackageReference Include="DialogHost.Avalonia" />
 
     <!-- Behaviors -->
     <PackageReference Include="Xaml.Behaviors.Avalonia" />
