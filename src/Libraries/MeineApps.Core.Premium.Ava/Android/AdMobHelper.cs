@@ -125,10 +125,22 @@ public sealed class AdMobHelper : IDisposable
             var contentParent = activity.FindViewById<FrameLayout>(global::Android.Resource.Id.Content);
             if (contentParent == null) return;
 
-            // Banner ad as overlay on top of AvaloniaView
+            // Banner ad als Overlay ueber der AvaloniaView (volle Breite, adaptive Hoehe)
             _adView = new AdView(activity);
-            _adView.AdSize = AdSize.Banner;
             _adView.AdUnitId = adUnitId;
+
+            // Adaptiver Banner: Volle Bildschirmbreite statt fester 320x50dp
+            // Vermeidet schwarze Streifen links/rechts auf breiten Geraeten
+            var displayMetrics = activity.Resources?.DisplayMetrics;
+            if (displayMetrics != null)
+            {
+                var widthDp = (int)(displayMetrics.WidthPixels / displayMetrics.Density);
+                _adView.AdSize = AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, widthDp);
+            }
+            else
+            {
+                _adView.AdSize = AdSize.Banner;
+            }
 
             var density = activity.Resources?.DisplayMetrics?.Density ?? 1f;
             var baseBottomMarginPx = (int)(tabBarHeightDp * density);
