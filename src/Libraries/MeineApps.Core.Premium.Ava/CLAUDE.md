@@ -73,9 +73,11 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 
 ### Ad Placement: FrameLayout Overlay
 - Banner-Ad wird als nativer Android FrameLayout-Overlay positioniert (kein LinearLayout-Wrapper)
-- `GravityFlags.Bottom | GravityFlags.CenterHorizontal` mit `BottomMargin = tabBarHeightDp * density`
-- Positioniert die Werbung direkt UEBER der Avalonia Tab-Bar
+- **Standard**: `GravityFlags.Bottom | GravityFlags.CenterHorizontal` mit `BottomMargin = tabBarHeightDp * density`
+- **Top-Position**: `IAdService.SetBannerPosition(true)` wechselt auf `GravityFlags.Top` (z.B. BomberBlast GameView)
+- Positioniert die Werbung direkt UEBER der Avalonia Tab-Bar (Bottom) oder am oberen Rand (Top)
 - `AdInsetListener` passt BottomMargin fuer Navigation-Bar-Insets an (Edge-to-Edge)
+- `OnAdsStateChanged` reagiert auf `BannerVisible` (Show/Hide) UND `IsBannerTop` (Position-Wechsel)
 
 ### Tab-Bar-Hoehen (tabBarHeightDp Parameter)
 | App | tabBarHeightDp | Grund |

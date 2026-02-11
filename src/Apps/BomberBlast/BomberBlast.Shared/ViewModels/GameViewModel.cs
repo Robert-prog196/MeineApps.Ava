@@ -16,10 +16,15 @@ namespace BomberBlast.ViewModels;
 public partial class GameViewModel : ObservableObject, IDisposable
 {
     private const float MAX_DELTA_TIME = 0.1f;
+    /// <summary>Höhe des Banners in Canvas-Einheiten (~dp) für Viewport-Verschiebung</summary>
+    private const float BANNER_AD_HEIGHT = 55f;
+    /// <summary>Ab diesem Level wird der Banner im GameView angezeigt</summary>
+    private const int BANNER_MIN_LEVEL = 5;
 
     private readonly GameEngine _gameEngine;
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IAdService _adService;
     private readonly Stopwatch _frameStopwatch = new();
     private bool _isInitialized;
     private bool _disposed;
@@ -90,11 +95,13 @@ public partial class GameViewModel : ObservableObject, IDisposable
     public GameViewModel(
         GameEngine gameEngine,
         IRewardedAdService rewardedAdService,
-        IPurchaseService purchaseService)
+        IPurchaseService purchaseService,
+        IAdService adService)
     {
         _gameEngine = gameEngine;
         _rewardedAdService = rewardedAdService;
         _purchaseService = purchaseService;
+        _adService = adService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -138,6 +145,9 @@ public partial class GameViewModel : ObservableObject, IDisposable
             }
         }
 
+        // Banner-Steuerung: Ab Level 5 oben anzeigen, darunter verstecken
+        UpdateBannerForLevel(_gameEngine.CurrentLevel);
+
         IsLoading = false;
         _frameStopwatch.Restart();
         StartGameLoop();
@@ -150,6 +160,14 @@ public partial class GameViewModel : ObservableObject, IDisposable
     {
         StopGameLoop();
         _gameEngine.Pause();
+
+        // Banner: Position zurücksetzen auf unten (Standard für andere Views)
+        _gameEngine.BannerTopOffset = 0;
+        if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+        {
+            _adService.SetBannerPosition(false);
+            _adService.ShowBanner();
+        }
 
         // Unsubscribe from game events to prevent memory leaks
         _gameEngine.OnGameOver -= HandleGameOver;
@@ -193,6 +211,37 @@ public partial class GameViewModel : ObservableObject, IDisposable
         {
             _gameEngine.ApplyBoostPowerUp(_boostType);
             _boostType = "";
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BANNER-STEUERUNG
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Banner ab Level 5 oben anzeigen, darunter verstecken.
+    /// Setzt auch BannerTopOffset im GameEngine/Renderer.
+    /// </summary>
+    private void UpdateBannerForLevel(int level)
+    {
+        if (_purchaseService.IsPremium || !_adService.AdsEnabled)
+        {
+            _gameEngine.BannerTopOffset = 0;
+            return;
+        }
+
+        if (level >= BANNER_MIN_LEVEL)
+        {
+            // Banner oben anzeigen, Viewport nach unten verschieben
+            _adService.SetBannerPosition(true);
+            _adService.ShowBanner();
+            _gameEngine.BannerTopOffset = BANNER_AD_HEIGHT;
+        }
+        else
+        {
+            // Banner verstecken (Level 1-4)
+            _adService.HideBanner();
+            _gameEngine.BannerTopOffset = 0;
         }
     }
 
@@ -429,6 +478,9 @@ public partial class GameViewModel : ObservableObject, IDisposable
             // Naechstes Level
             await _gameEngine.NextLevelAsync();
             _frameStopwatch.Restart();
+
+            // Banner-Status aktualisieren (z.B. Wechsel Level 4 → 5)
+            UpdateBannerForLevel(_gameEngine.CurrentLevel);
         }
     }
 

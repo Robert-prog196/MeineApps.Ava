@@ -36,6 +36,16 @@ public interface IAdService
     void DisableAds();
 
     /// <summary>
+    /// Banner-Position: true = oben, false = unten (Standard)
+    /// </summary>
+    bool IsBannerTop { get; }
+
+    /// <summary>
+    /// Banner-Position setzen (true = oben, false = unten)
+    /// </summary>
+    void SetBannerPosition(bool top);
+
+    /// <summary>
     /// Event fired when ads state changes
     /// </summary>
     event EventHandler? AdsStateChanged;

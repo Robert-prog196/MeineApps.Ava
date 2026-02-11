@@ -22,6 +22,12 @@ public class GameRenderer : IDisposable
     // HUD constants
     private const float HUD_LOGICAL_WIDTH = 120f;
 
+    /// <summary>
+    /// Verschiebung nach unten fuer Banner-Ad oben (in Canvas-Einheiten).
+    /// Wenn > 0, werden Grid und HUD nach unten verschoben.
+    /// </summary>
+    public float BannerTopOffset { get; set; }
+
     // Animation timing
     private float _globalTimer;
 
@@ -235,26 +241,29 @@ public class GameRenderer : IDisposable
         if (screenWidth <= 0 || screenHeight <= 0 || gridPixelWidth <= 0 || gridPixelHeight <= 0)
             return;
 
+        // Effektive Höhe: abzüglich Banner-Ad oben
+        float effectiveHeight = screenHeight - BannerTopOffset;
+
         // Reserve HUD space on the right side
         float hudReserved = HUD_LOGICAL_WIDTH;
 
         // Scale to fit grid in remaining area
         float availableWidth = screenWidth - hudReserved;
         float scaleX = availableWidth / gridPixelWidth;
-        float scaleY = screenHeight / gridPixelHeight;
+        float scaleY = effectiveHeight / gridPixelHeight;
         _scale = Math.Min(scaleX, scaleY);
 
-        // Center the game field vertically
+        // Center the game field vertically (unterhalb des Banners)
         float scaledGridWidth = gridPixelWidth * _scale;
         float scaledGridHeight = gridPixelHeight * _scale;
         _offsetX = (availableWidth - scaledGridWidth) / 2f;
-        _offsetY = (screenHeight - scaledGridHeight) / 2f;
+        _offsetY = BannerTopOffset + (effectiveHeight - scaledGridHeight) / 2f;
 
-        // HUD panel position (right side, full height)
+        // HUD panel position (right side, unterhalb des Banners)
         _hudX = availableWidth;
-        _hudY = 0;
+        _hudY = BannerTopOffset;
         _hudWidth = hudReserved;
-        _hudHeight = screenHeight;
+        _hudHeight = effectiveHeight;
     }
 
     /// <summary>

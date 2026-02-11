@@ -49,6 +49,13 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Preis**: 3,99 EUR (`remove_ads`)
 - Kostenlos spielbar, Upgrades grindbar, Ads optional
 
+### Banner im GameView (Level-basiert)
+- **Level 1-4**: Kein Banner (ungestoertes Spielerlebnis)
+- **Ab Level 5**: Banner oben (Top-Position), Viewport verschiebt sich nach unten
+- **GameRenderer.BannerTopOffset** (55f): Grid + HUD werden nach unten verschoben, Controls (D-Pad/Bomb) bleiben unten
+- **IAdService.SetBannerPosition(true)**: Wechselt nativen Android-Banner von Bottom auf Top
+- Beim Verlassen des GameView: Position zurueck auf Bottom (Standard fuer andere Views)
+
 ### Rewarded (4 Placements)
 1. `continue` → GameOver: Coins verdoppeln / Weitermachen (1x pro Versuch)
 2. `level_skip` → GameOver: Level ueberspringen (nach 3 Fails)
@@ -84,6 +91,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **11.02.2026**: Banner-Ad im GameView erst ab Level 5, Top-Position (nicht stoerend fuer Controls/HUD/Sichtfeld). IAdService.SetBannerPosition + GameRenderer.BannerTopOffset
 - **09.02.2026**: ShopVM.UpdateLocalizedTexts() bei Sprachwechsel, Nullable-Warnings in HighScoreService + ProgressService gefixt
 - **08.02.2026**: FloatingText + Celebration Overlays, Ad-Banner Padding Fix
 - **07.02.2026**: Score-Verdopplung, 4 Rewarded Ads, Coins-Economy + Shop, Neon Visual Fixes, Performance (Object Pooling AStar/EnemyAI)

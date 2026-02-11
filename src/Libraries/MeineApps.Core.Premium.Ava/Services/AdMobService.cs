@@ -14,9 +14,11 @@ public class AdMobService : IAdService
     private string? _bannerId;
     private bool _adsEnabled = true;
     private bool _bannerVisible;
+    private bool _isBannerTop;
 
     public bool AdsEnabled => _adsEnabled;
     public bool BannerVisible => _bannerVisible;
+    public bool IsBannerTop => _isBannerTop;
 
     public event EventHandler? AdsStateChanged;
 
@@ -42,6 +44,13 @@ public class AdMobService : IAdService
     public void HideBanner()
     {
         _bannerVisible = false;
+        AdsStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void SetBannerPosition(bool top)
+    {
+        if (_isBannerTop == top) return;
+        _isBannerTop = top;
         AdsStateChanged?.Invoke(this, EventArgs.Empty);
     }
 

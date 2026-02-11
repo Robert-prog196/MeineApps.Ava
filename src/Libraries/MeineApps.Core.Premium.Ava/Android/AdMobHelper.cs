@@ -17,6 +17,8 @@ public sealed class AdMobHelper : IDisposable
     private AdView? _adView;
     private IAdService? _adService;
     private IPurchaseService? _purchaseService;
+    private Activity? _activity;
+    private int _baseBottomMarginPx;
     private bool _disposed;
 
     /// <summary>
@@ -111,6 +113,7 @@ public sealed class AdMobHelper : IDisposable
     {
         _adService = adService;
         _purchaseService = purchaseService;
+        _activity = activity;
 
         // Subscribe to premium/ad status changes
         _adService.AdsStateChanged += OnAdsStateChanged;
@@ -143,13 +146,13 @@ public sealed class AdMobHelper : IDisposable
             }
 
             var density = activity.Resources?.DisplayMetrics?.Density ?? 1f;
-            var baseBottomMarginPx = (int)(tabBarHeightDp * density);
+            _baseBottomMarginPx = (int)(tabBarHeightDp * density);
 
             var adParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MatchParent,
                 ViewGroup.LayoutParams.WrapContent,
                 GravityFlags.Bottom | GravityFlags.CenterHorizontal);
-            adParams.BottomMargin = baseBottomMarginPx;
+            adParams.BottomMargin = _baseBottomMarginPx;
 
             contentParent.AddView(_adView, adParams);
 
@@ -157,7 +160,7 @@ public sealed class AdMobHelper : IDisposable
             try
             {
                 AndroidX.Core.View.ViewCompat.SetOnApplyWindowInsetsListener(_adView,
-                    new AdInsetListener(baseBottomMarginPx));
+                    new AdInsetListener(_baseBottomMarginPx));
             }
             catch (Exception ex)
             {
@@ -203,20 +206,60 @@ public sealed class AdMobHelper : IDisposable
 
     private void OnAdsStateChanged(object? sender, EventArgs e)
     {
-        if (_adService != null && !_adService.AdsEnabled)
-            HideBanner();
+        if (_adService == null || _adView == null) return;
+
+        _activity?.RunOnUiThread(() =>
+        {
+            if (_adView == null) return;
+
+            if (!_adService.AdsEnabled)
+            {
+                _adView.Visibility = ViewStates.Gone;
+                return;
+            }
+
+            // Banner sichtbar/unsichtbar schalten
+            _adView.Visibility = _adService.BannerVisible
+                ? ViewStates.Visible
+                : ViewStates.Gone;
+
+            // Position aktualisieren (Top/Bottom)
+            UpdateBannerPosition(_adService.IsBannerTop);
+        });
     }
 
     private void OnPremiumStatusChanged(object? sender, EventArgs e)
     {
         if (_purchaseService?.IsPremium == true)
-            HideBanner();
+        {
+            _activity?.RunOnUiThread(() =>
+            {
+                if (_adView != null)
+                    _adView.Visibility = ViewStates.Gone;
+            });
+        }
     }
 
-    private void HideBanner()
+    /// <summary>
+    /// Banner-Position zwischen oben und unten wechseln.
+    /// Top: Fuer Landscape-Games (Controls unten). Bottom: Standard (ueber Tab-Bar).
+    /// </summary>
+    private void UpdateBannerPosition(bool top)
     {
-        if (_adView != null)
-            _adView.Visibility = ViewStates.Gone;
+        if (_adView?.LayoutParameters is not FrameLayout.LayoutParams lp) return;
+
+        if (top)
+        {
+            lp.Gravity = GravityFlags.Top | GravityFlags.CenterHorizontal;
+            lp.BottomMargin = 0;
+        }
+        else
+        {
+            lp.Gravity = GravityFlags.Bottom | GravityFlags.CenterHorizontal;
+            lp.BottomMargin = _baseBottomMarginPx;
+        }
+
+        _adView.LayoutParameters = lp;
     }
 
     public void Dispose()

@@ -85,6 +85,15 @@ public class GameEngine : IDisposable
     /// <summary>Ob Continue moeglich ist (nur Story, nur 1x pro Level-Versuch)</summary>
     public bool CanContinue => !_continueUsed && !_isArcadeMode;
 
+    /// <summary>
+    /// Verschiebung nach unten fuer Banner-Ad oben (Proxy fuer GameRenderer).
+    /// </summary>
+    public float BannerTopOffset
+    {
+        get => _renderer.BannerTopOffset;
+        set => _renderer.BannerTopOffset = value;
+    }
+
     // Touch input forwarding
     public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
         => _inputManager.OnTouchStart(x, y, screenWidth, screenHeight);
