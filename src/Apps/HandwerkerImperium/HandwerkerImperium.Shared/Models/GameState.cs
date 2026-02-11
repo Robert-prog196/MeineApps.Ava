@@ -212,7 +212,7 @@ public class GameState
     public bool HapticsEnabled { get; set; } = true;
 
     [JsonPropertyName("language")]
-    public string Language { get; set; } = "en";
+    public string Language { get; set; } = "";
 
     // ═══════════════════════════════════════════════════════════════════════
     // PREMIUM STATUS

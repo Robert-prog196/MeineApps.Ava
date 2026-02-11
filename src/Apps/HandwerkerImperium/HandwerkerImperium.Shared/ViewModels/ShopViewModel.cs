@@ -246,7 +246,7 @@ public partial class ShopViewModel : ObservableObject
                 Type = tool.Type,
                 Name = name,
                 Level = tool.Level,
-                LevelDisplay = $"Lv.{tool.Level}",
+                LevelDisplay = $"Lv. {tool.Level}",
                 UpgradeCostScrews = tool.UpgradeCostScrews,
                 UpgradeCostDisplay = $"{tool.UpgradeCostScrews}",
                 CanUpgrade = tool.CanUpgrade,
@@ -284,7 +284,7 @@ public partial class ShopViewModel : ObservableObject
         var name = _localizationService.GetString(tool.NameKey) ?? tool.NameKey;
         ShowAlert(
             _localizationService.GetString("ToolUpgrade") ?? "Upgrade",
-            $"{name} → Lv.{tool.Level}",
+            $"{name} → Lv. {tool.Level}",
             "OK");
     }
 

@@ -507,11 +507,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
         }
 
-        // Sync language from game state to localization service
+        // Sprache synchronisieren: gespeicherte Sprache laden oder Gerätesprache übernehmen
         var savedLang = _gameStateService.State.Language;
         if (!string.IsNullOrEmpty(savedLang))
         {
             _localizationService.SetLanguage(savedLang);
+        }
+        else
+        {
+            // Neues Spiel: Gerätesprache in GameState übernehmen
+            _gameStateService.State.Language = _localizationService.CurrentLanguage;
         }
 
         // Reload settings in SettingsVM now that game state is loaded
@@ -763,6 +768,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
             IsUnlocked = isUnlocked,
             UnlockLevel = type.GetUnlockLevel(),
             RequiredPrestige = type.GetRequiredPrestige(),
+            UnlockDisplay = type.GetRequiredPrestige() > 0
+                ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
+                : $"Lv. {type.GetUnlockLevel()}",
             CanUpgrade = workshop?.CanUpgrade ?? true,
             CanHireWorker = workshop?.CanHireWorker ?? false,
             CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100),
@@ -770,11 +778,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         };
     }
 
-    private static void UpdateWorkshopDisplay(WorkshopDisplayModel model, GameState state, WorkshopType type)
+    private void UpdateWorkshopDisplay(WorkshopDisplayModel model, GameState state, WorkshopType type)
     {
         var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
         bool isUnlocked = state.IsWorkshopUnlocked(type);
 
+        model.Name = _localizationService.GetString(type.GetLocalizationKey());
         model.Level = workshop?.Level ?? 1;
         model.IconKind = GetWorkshopIconKind(type, model.Level);
         model.WorkerCount = workshop?.Workers.Count ?? 0;
@@ -783,6 +792,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         model.UpgradeCost = workshop?.UpgradeCost ?? 100;
         model.HireWorkerCost = workshop?.HireWorkerCost ?? 50;
         model.IsUnlocked = isUnlocked;
+        model.UnlockDisplay = type.GetRequiredPrestige() > 0
+            ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
+            : $"Lv. {type.GetUnlockLevel()}";
         model.CanUpgrade = workshop?.CanUpgrade ?? true;
         model.CanHireWorker = workshop?.CanHireWorker ?? false;
         model.CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100);
@@ -1535,7 +1547,7 @@ public partial class WorkshopDisplayModel : ObservableObject
     private bool _canAffordWorker;
 
     public int RequiredPrestige { get; set; }
-    public string UnlockDisplay => RequiredPrestige > 0 ? $"Prestige {RequiredPrestige}" : $"Lvl {UnlockLevel}";
+    public string UnlockDisplay { get; set; } = "";
     public string WorkerDisplay => $"👷×{WorkerCount}";
     public string IncomeDisplay => IncomePerSecond > 0 ? $"{IncomePerSecond:N0}€/s" : "-";
     public string UpgradeCostDisplay => $"{UpgradeCost:N0}€";
@@ -1564,6 +1576,7 @@ public partial class WorkshopDisplayModel : ObservableObject
     /// </summary>
     public void NotifyAllChanged()
     {
+        OnPropertyChanged(nameof(Name));
         OnPropertyChanged(nameof(Level));
         OnPropertyChanged(nameof(IconKind));
         OnPropertyChanged(nameof(WorkerCount));
@@ -1572,6 +1585,7 @@ public partial class WorkshopDisplayModel : ObservableObject
         OnPropertyChanged(nameof(UpgradeCost));
         OnPropertyChanged(nameof(HireWorkerCost));
         OnPropertyChanged(nameof(IsUnlocked));
+        OnPropertyChanged(nameof(UnlockDisplay));
         OnPropertyChanged(nameof(CanUpgrade));
         OnPropertyChanged(nameof(CanHireWorker));
         OnPropertyChanged(nameof(WorkerDisplay));
