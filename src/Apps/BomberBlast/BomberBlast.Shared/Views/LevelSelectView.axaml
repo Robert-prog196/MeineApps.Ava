@@ -144,29 +144,14 @@
       <Border Grid.Row="2"
               Background="{DynamicResource SurfaceBrush}"
               Padding="12,8">
-        <Grid ColumnDefinitions="*,Auto">
-          <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-            <TextBlock Text="{Binding ProgressText}"
-                       FontSize="13"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
-            <TextBlock Text="{Binding StarsText}"
-                       FontSize="13"
-                       Foreground="{DynamicResource AccentBrush}" />
-          </StackPanel>
-
-          <!-- Ad Banner Platzhalter -->
-          <Border Grid.Column="1"
-                  Height="50" Width="320"
-                  IsVisible="{Binding ShowAds}"
-                  Background="{DynamicResource SurfaceBrush}"
-                  CornerRadius="8">
-            <TextBlock Text="Ad Banner"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource TextMutedBrush}"
-                       FontSize="12" />
-          </Border>
-        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+          <TextBlock Text="{Binding ProgressText}"
+                     FontSize="13"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+          <TextBlock Text="{Binding StarsText}"
+                     FontSize="13"
+                     Foreground="{DynamicResource AccentBrush}" />
+        </StackPanel>
       </Border>
 
     </Grid>

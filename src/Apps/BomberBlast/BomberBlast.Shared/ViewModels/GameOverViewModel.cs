@@ -25,9 +25,6 @@ public partial class GameOverViewModel : ObservableObject
     public event Action<string>? NavigationRequested;
     public event Action<string, string>? FloatingTextRequested;
 
-    /// <summary>Werbung sichtbar (nicht Premium)</summary>
-    public bool ShowAds => !_purchaseService.IsPremium;
-
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════

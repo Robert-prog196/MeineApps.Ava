@@ -161,11 +161,6 @@ public partial class SettingsViewModel : ObservableObject
     /// <summary>Alias for VersionText used in the View.</summary>
     public string AppVersion => VersionText;
 
-    /// <summary>
-    /// Indicates whether ads should be shown (not premium).
-    /// </summary>
-    public bool ShowAds => !_purchaseService.IsPremium;
-
     // Available languages for the UI
     public List<LanguageOption> Languages { get; } =
     [
@@ -228,7 +223,7 @@ public partial class SettingsViewModel : ObservableObject
     public void OnAppearing()
     {
         IsPremium = _purchaseService.IsPremium;
-        OnPropertyChanged(nameof(ShowAds));
+
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -379,7 +374,7 @@ public partial class SettingsViewModel : ObservableObject
             if (success)
             {
                 IsPremium = true;
-                OnPropertyChanged(nameof(ShowAds));
+        
                 ShowAlert(
                     _localizationService.GetString("ThankYou"),
                     _localizationService.GetString("PremiumActivated"),
@@ -416,7 +411,7 @@ public partial class SettingsViewModel : ObservableObject
             if (success && _purchaseService.IsPremium)
             {
                 IsPremium = true;
-                OnPropertyChanged(nameof(ShowAds));
+        
                 ShowAlert(
                     _localizationService.GetString("Restored"),
                     _localizationService.GetString("PurchaseRestored"),

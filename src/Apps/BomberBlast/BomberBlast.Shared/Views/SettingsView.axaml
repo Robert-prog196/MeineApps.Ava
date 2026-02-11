@@ -18,7 +18,7 @@
       </Border.Background>
     </Border>
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*">
 
       <!-- Header -->
       <Border Grid.Row="0"
@@ -442,19 +442,6 @@
 
         </StackPanel>
       </ScrollViewer>
-
-      <!-- Ad Banner placeholder -->
-      <Border Grid.Row="2"
-              Height="50"
-              IsVisible="{Binding ShowAds}"
-              Background="{DynamicResource SurfaceBrush}"
-              Padding="12,4">
-        <TextBlock Text="Ad Banner"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Foreground="{DynamicResource TextMutedBrush}"
-                   FontSize="12" />
-      </Border>
 
     </Grid>
   </Panel>

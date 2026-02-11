@@ -10,7 +10,7 @@
   <Panel Background="{DynamicResource BackgroundBrush}">
     <Border Background="{DynamicResource SurfaceBrush}" Opacity="0.3" />
 
-    <Grid RowDefinitions="*,Auto" Margin="24,16">
+    <Grid RowDefinitions="*" Margin="24,16">
 
       <!-- Main Content: 2-Column Layout -->
       <Grid Grid.Row="0"
@@ -150,21 +150,6 @@
 
         </Grid>
       </Grid>
-
-      <!-- Ad Banner Platzhalter -->
-      <Border Grid.Row="1"
-              Height="50"
-              IsVisible="{Binding ShowAds}"
-              Background="{DynamicResource SurfaceBrush}"
-              CornerRadius="8"
-              HorizontalAlignment="Stretch"
-              Margin="0,8,0,0">
-        <TextBlock Text="Ad Banner"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Foreground="{DynamicResource TextMutedBrush}"
-                   FontSize="12" />
-      </Border>
 
     </Grid>
   </Panel>

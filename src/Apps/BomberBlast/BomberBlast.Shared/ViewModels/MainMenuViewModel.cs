@@ -45,11 +45,6 @@ public partial class MainMenuViewModel : ObservableObject
     // ═══════════════════════════════════════════════════════════════════════
 
     /// <summary>
-    /// Whether ads should be shown (not premium).
-    /// </summary>
-    public bool ShowAds => !_purchaseService.IsPremium;
-
-    /// <summary>
     /// Whether the player has progress to continue (alias for ShowContinueButton).
     /// </summary>
     public bool HasProgress => ShowContinueButton;
@@ -81,7 +76,6 @@ public partial class MainMenuViewModel : ObservableObject
         CoinBalance = _coinService.Balance;
         CoinsText = _coinService.Balance.ToString("N0");
         OnPropertyChanged(nameof(HasProgress));
-        OnPropertyChanged(nameof(ShowAds));
     }
 
     // ═══════════════════════════════════════════════════════════════════════

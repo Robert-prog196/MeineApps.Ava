@@ -76,8 +76,6 @@ public partial class LevelSelectViewModel : ObservableObject
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
-    public bool ShowAds => !_purchaseService.IsPremium;
-
     public LevelSelectViewModel(
         IProgressService progressService,
         IPurchaseService purchaseService,

@@ -39,11 +39,6 @@ public partial class HighScoresViewModel : ObservableObject
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Whether ads should be shown (not premium).
-    /// </summary>
-    public bool ShowAds => !_purchaseService.IsPremium;
-
     public HighScoresViewModel(IHighScoreService highScoreService, IPurchaseService purchaseService)
     {
         _highScoreService = highScoreService;
