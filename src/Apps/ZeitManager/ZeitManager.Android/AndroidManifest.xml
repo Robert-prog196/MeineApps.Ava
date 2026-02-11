@@ -16,7 +16,9 @@
 
     <application
         android:icon="@mipmap/appicon"
-        android:roundIcon="@mipmap/appicon_round">
+        android:roundIcon="@mipmap/appicon_round"
+        android:label="ZeitManager"
+        android:theme="@style/MyTheme.NoActionBar">
         <service android:name=".TimerForegroundService"
                  android:foregroundServiceType="mediaPlayback"
                  android:exported="false" />

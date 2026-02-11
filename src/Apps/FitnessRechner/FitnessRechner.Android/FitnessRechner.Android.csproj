@@ -13,6 +13,10 @@
     <!-- Android Settings -->
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
     <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
+
+    <!-- Release-Crash-Fix: AOT-Compiler produziert korrupte Binaries -->
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

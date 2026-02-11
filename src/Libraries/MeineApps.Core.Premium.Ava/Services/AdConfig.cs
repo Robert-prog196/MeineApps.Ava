@@ -24,17 +24,7 @@ public static class AdConfig
 
     // Production Ad Unit IDs
 
-    public static class RechnerPlus
-    {
-        // Werbefrei - keine Ads
-        public const string BannerAdUnitId = "ca-app-pub-2667921454778639/420594339";
-    }
-
-    public static class ZeitManager
-    {
-        // Werbefrei - keine Ads
-        public const string BannerAdUnitId = "ca-app-pub-2667921454778639/1020047866";
-    }
+    // RechnerPlus + ZeitManager: Werbefrei, keine AdMob-Integration
 
     public static class HandwerkerRechner
     {
@@ -108,8 +98,6 @@ public static class AdConfig
 #else
         return appName switch
         {
-            "RechnerPlus" => RechnerPlus.BannerAdUnitId,
-            "ZeitManager" => ZeitManager.BannerAdUnitId,
             "HandwerkerRechner" => HandwerkerRechner.BannerAdUnitId,
             "FinanzRechner" => FinanzRechner.BannerAdUnitId,
             "FitnessRechner" => FitnessRechner.BannerAdUnitId,

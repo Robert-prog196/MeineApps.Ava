@@ -21,6 +21,12 @@ public partial class App : Application
     public static IServiceProvider Services { get; private set; } = null!;
 
     /// <summary>
+    /// Factory fuer plattformspezifischen IFileShareService.
+    /// Wird von Android-MainActivity gesetzt bevor DI gestartet wird.
+    /// </summary>
+    public static Func<IFileShareService>? FileShareServiceFactory { get; set; }
+
+    /// <summary>
     /// Factory fuer plattformspezifischen IRewardedAdService (Android setzt RewardedAdHelper).
     /// Nimmt IServiceProvider entgegen fuer Lazy-Resolution von Abhaengigkeiten.
     /// </summary>
@@ -87,8 +93,11 @@ public partial class App : Application
         services.AddSingleton<IProjectService, ProjectService>();
         services.AddSingleton<IPremiumAccessService, PremiumAccessService>();
 
-        // Export Services
-        services.AddSingleton<IFileShareService, DesktopFileShareService>();
+        // Export Services - Plattformspezifisch: Android setzt Factory, Desktop nutzt Default
+        if (FileShareServiceFactory != null)
+            services.AddSingleton(FileShareServiceFactory());
+        else
+            services.AddSingleton<IFileShareService, DesktopFileShareService>();
         services.AddSingleton<IMaterialExportService, MaterialExportService>();
 
         // Engine

@@ -71,6 +71,7 @@ Handwerker-App mit 9 Rechnern (4 Free Floor + 5 Premium), Projektverwaltung und 
 
 ## Changelog (Highlights)
 
+- **10.02.2026**: FileProvider-Infrastruktur hinzugefuegt (AndroidManifest, file_paths.xml, AndroidFileShareService.cs Link, FileShareServiceFactory), ACCESS_NETWORK_STATE Permission
 - **08.02.2026**: FloatingTextOverlay + CelebrationOverlay, Export-Buttons (9 Calculator + Projects), Extended-History
 - **07.02.2026**: 4 Rewarded Ad Features, Design-Redesign, AppChecker Fixes
 - **06.02.2026**: Vollstaendige Lokalisierung, Deep Code Review (36x Debug.WriteLine entfernt)

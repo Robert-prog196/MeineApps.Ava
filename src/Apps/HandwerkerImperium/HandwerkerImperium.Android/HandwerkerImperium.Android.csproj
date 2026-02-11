@@ -10,9 +10,9 @@
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
     <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
 
-    <!-- Trimming+AOT deaktivieren - System.Text.Json Serialisierung braucht Reflection-Metadaten -->
-    <PublishTrimmed>false</PublishTrimmed>
+    <!-- Release-Crash-Fix: AOT-Compiler produziert korrupte Binaries -->
     <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

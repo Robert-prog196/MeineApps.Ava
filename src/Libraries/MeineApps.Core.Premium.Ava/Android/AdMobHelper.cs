@@ -28,12 +28,13 @@ public sealed class AdMobHelper : IDisposable
     {
         try
         {
-            // Test-Device registrieren damit Test-Ads ausgeliefert werden
-            // (Pflicht fuer Apps im geschlossenen Test / noch nicht fuer Live-Ads freigeschaltet)
+#if DEBUG
+            // Test-Device registrieren damit Test-Ads ausgeliefert werden (nur Debug)
             var requestConfig = new RequestConfiguration.Builder()
                 .SetTestDeviceIds(new[] { AdConfig.TestDeviceId })
                 .Build();
             MobileAds.RequestConfiguration = requestConfig;
+#endif
 
             MobileAds.Initialize(activity, new InitCompleteListener(() =>
             {

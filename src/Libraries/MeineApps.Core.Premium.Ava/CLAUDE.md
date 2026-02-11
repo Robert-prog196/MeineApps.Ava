@@ -47,11 +47,9 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 - Kein Plugin.InAppBilling direkt - Billing wird in Android-Projekten implementiert
 - DI via IServiceCollection statt MauiAppBuilder
 
-## Apps
+## Apps (nur werbe-unterstuetzte)
 | App | Premium | Modell |
 |-----|---------|--------|
-| RechnerPlus | Nein | Kostenlos |
-| ZeitManager | Nein | Kostenlos |
 | HandwerkerRechner | Ja | 3,99 EUR remove_ads |
 | FinanzRechner | Ja | 3,99 EUR remove_ads |
 | FitnessRechner | Ja | 3,99 EUR remove_ads |
@@ -64,7 +62,7 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 - `premium_monthly` - Abo (WorkTimePro)
 - `premium_lifetime` - Einmalkauf (WorkTimePro)
 
-**WICHTIG:** RechnerPlus und ZeitManager referenzieren NICHT Core.Premium!
+**WICHTIG:** RechnerPlus und ZeitManager sind werbefrei und referenzieren NICHT Core.Premium! Keine Ad-IDs in AdConfig.cs fuer diese Apps.
 
 ## Android AdMob Integration (07.02.2026)
 
@@ -144,3 +142,7 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 #### DI-Registrierung
 - `AddMeineAppsPremium()` registriert `IRewardedAdService` als Singleton (RewardedAdService)
 - Apps ueberschreiben via `RewardedAdServiceFactory` Property fuer Android-Implementierung
+
+### Changelog (Premium Library)
+
+- **10.02.2026**: TrialService DateTime.Now → DateTime.UtcNow + TryParse mit CultureInfo.InvariantCulture + DateTimeStyles.RoundtripKind. AdMobHelper TestDeviceId nur noch in DEBUG-Builds registriert.
