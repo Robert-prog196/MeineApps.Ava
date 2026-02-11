@@ -76,12 +76,12 @@ public class WorkDay
     /// <summary>
     /// Erstellt am
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Zuletzt geändert
     /// </summary>
-    public DateTime ModifiedAt { get; set; } = DateTime.Now;
+    public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
 
     // === Berechnete Properties ===
 

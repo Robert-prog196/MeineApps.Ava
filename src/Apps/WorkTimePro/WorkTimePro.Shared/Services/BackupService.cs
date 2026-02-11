@@ -172,7 +172,7 @@ public class BackupService : IBackupService
 
     public async Task<BackupResult> CreateBackupAsync()
     {
-        var result = new BackupResult { Timestamp = DateTime.Now };
+        var result = new BackupResult { Timestamp = DateTime.UtcNow };
 
         try
         {
@@ -215,7 +215,7 @@ public class BackupService : IBackupService
             result.FileName = fileName;
             result.FileSizeBytes = bytes.Length;
 
-            LastBackupDate = DateTime.Now;
+            LastBackupDate = DateTime.UtcNow;
             SaveSettings();
 
             ProgressChanged?.Invoke(this, 100);
@@ -244,7 +244,7 @@ public class BackupService : IBackupService
         return new BackupData
         {
             Version = "1.0",
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             DeviceName = Environment.MachineName,
             AppVersion = "1.0.0", // TODO: Get from app assembly
             Settings = settings,
@@ -448,7 +448,7 @@ public class BackupService : IBackupService
 
     public async Task<SyncResult> SyncNowAsync()
     {
-        var result = new SyncResult { Timestamp = DateTime.Now };
+        var result = new SyncResult { Timestamp = DateTime.UtcNow };
 
         try
         {
@@ -474,7 +474,7 @@ public class BackupService : IBackupService
             result.Direction = SyncDirection.UploadOnly;
             result.UploadedItems = 1;
 
-            LastSyncDate = DateTime.Now;
+            LastSyncDate = DateTime.UtcNow;
             SaveSettings();
 
             return result;

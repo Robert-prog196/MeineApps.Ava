@@ -1,5 +1,6 @@
 using System.Timers;
 using Avalonia.Threading;
+using MeineApps.Core.Ava.Localization;
 using ZeitManager.Models;
 using Timer = System.Timers.Timer;
 
@@ -9,6 +10,7 @@ public class TimerService : ITimerService, IDisposable
 {
     private readonly IDatabaseService _database;
     private readonly INotificationService _notificationService;
+    private readonly ILocalizationService _localization;
     private readonly List<TimerItem> _timers = [];
     private readonly object _lock = new();
     private Timer? _uiTimer;
@@ -27,10 +29,11 @@ public class TimerService : ITimerService, IDisposable
     public event EventHandler<TimerItem>? TimerTick;
     public event EventHandler? TimersChanged;
 
-    public TimerService(IDatabaseService database, INotificationService notificationService)
+    public TimerService(IDatabaseService database, INotificationService notificationService, ILocalizationService localization)
     {
         _database = database;
         _notificationService = notificationService;
+        _localization = localization;
     }
 
     public async Task LoadTimersAsync()
@@ -76,7 +79,7 @@ public class TimerService : ITimerService, IDisposable
         await _notificationService.ScheduleNotificationAsync(
             $"timer_{timer.Id}",
             timer.Name,
-            "Timer abgelaufen!",
+            _localization.GetString("TimerFinishedNotification"),
             finishAt);
     }
 

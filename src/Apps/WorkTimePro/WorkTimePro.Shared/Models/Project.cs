@@ -52,7 +52,7 @@ public class Project
     /// <summary>
     /// Erstellt am
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Archiviert am (wenn nicht mehr aktiv)
@@ -155,7 +155,7 @@ public class ProjectTimeEntry
     /// <summary>
     /// Erstellt am
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // === Berechnete Properties ===
 

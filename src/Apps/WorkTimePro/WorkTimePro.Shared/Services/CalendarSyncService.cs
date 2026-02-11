@@ -179,7 +179,7 @@ public class CalendarSyncService : ICalendarSyncService
 
     public async Task<CalendarSyncResult> SyncWorkDaysAsync(DateTime start, DateTime end)
     {
-        var result = new CalendarSyncResult { Timestamp = DateTime.Now };
+        var result = new CalendarSyncResult { Timestamp = DateTime.UtcNow };
 
         try
         {
@@ -224,7 +224,7 @@ public class CalendarSyncService : ICalendarSyncService
             }
 
             result.Success = result.Errors.Count == 0;
-            LastSyncDate = DateTime.Now;
+            LastSyncDate = DateTime.UtcNow;
             SaveSettings();
         }
         catch (Exception ex)

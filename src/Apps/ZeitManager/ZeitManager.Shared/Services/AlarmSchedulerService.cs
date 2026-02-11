@@ -1,5 +1,6 @@
 using System.Timers;
 using Avalonia.Threading;
+using MeineApps.Core.Ava.Localization;
 using ZeitManager.Models;
 using Timer = System.Timers.Timer;
 
@@ -9,28 +10,36 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 {
     private readonly IDatabaseService _database;
     private readonly INotificationService _notificationService;
+    private readonly ILocalizationService _localization;
     private Timer? _checkTimer;
     private readonly List<AlarmItem> _activeAlarms = [];
+    private readonly object _lock = new();
     private readonly HashSet<int> _triggeredToday = [];
     private DateOnly _lastTriggerDate = DateOnly.MinValue;
 
     public event EventHandler<AlarmItem>? AlarmTriggered;
 
-    public AlarmSchedulerService(IDatabaseService database, INotificationService notificationService)
+    public AlarmSchedulerService(IDatabaseService database, INotificationService notificationService, ILocalizationService localization)
     {
         _database = database;
         _notificationService = notificationService;
+        _localization = localization;
     }
 
     public async Task InitializeAsync()
     {
         var alarms = await _database.GetAlarmsAsync();
-        _activeAlarms.Clear();
-        _activeAlarms.AddRange(alarms.Where(a => a.IsEnabled && !a.IsShiftAlarm));
+        lock (_lock)
+        {
+            _activeAlarms.Clear();
+            _activeAlarms.AddRange(alarms.Where(a => a.IsEnabled && !a.IsShiftAlarm));
+        }
         EnsureCheckTimer();
 
         // Alle aktiven Alarme beim Android AlarmManager registrieren
-        foreach (var alarm in _activeAlarms)
+        List<AlarmItem> snapshot;
+        lock (_lock) snapshot = _activeAlarms.ToList();
+        foreach (var alarm in snapshot)
         {
             await ScheduleSystemNotificationAsync(alarm);
         }
@@ -38,11 +47,14 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 
     public async Task ScheduleAlarmAsync(AlarmItem alarm)
     {
-        _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
-        if (alarm.IsEnabled)
+        lock (_lock)
         {
-            alarm.CurrentSnoozeCount = 0;
-            _activeAlarms.Add(alarm);
+            _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
+            if (alarm.IsEnabled)
+            {
+                alarm.CurrentSnoozeCount = 0;
+                _activeAlarms.Add(alarm);
+            }
         }
         await _database.SaveAlarmAsync(alarm);
         EnsureCheckTimer();
@@ -56,7 +68,7 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 
     public async Task CancelAlarmAsync(AlarmItem alarm)
     {
-        _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
+        lock (_lock) _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
         alarm.CurrentSnoozeCount = 0;
         await _database.SaveAlarmAsync(alarm);
         CheckStopTimer();
@@ -71,14 +83,18 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         alarm.NextTriggerDateTime = DateTime.Now.AddMinutes(alarm.SnoozeDurationMinutes);
         await _database.SaveAlarmAsync(alarm);
 
-        if (!_activeAlarms.Any(a => a.Id == alarm.Id))
-            _activeAlarms.Add(alarm);
+        lock (_lock)
+        {
+            if (!_activeAlarms.Any(a => a.Id == alarm.Id))
+                _activeAlarms.Add(alarm);
+        }
         EnsureCheckTimer();
 
         // Snooze-Notification beim System planen
+        var alarmName = string.IsNullOrEmpty(alarm.Name) ? _localization.GetString("Alarm") : alarm.Name;
         await _notificationService.ScheduleNotificationAsync(
             alarm.Id.ToString(),
-            string.IsNullOrEmpty(alarm.Name) ? "Alarm" : alarm.Name,
+            alarmName,
             alarm.TimeFormatted,
             alarm.NextTriggerDateTime.Value);
     }
@@ -91,7 +107,7 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         if (!alarm.IsRepeating)
         {
             alarm.IsEnabled = false;
-            _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
+            lock (_lock) _activeAlarms.RemoveAll(a => a.Id == alarm.Id);
         }
 
         await _database.SaveAlarmAsync(alarm);
@@ -111,9 +127,10 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
         var nextTrigger = CalculateNextTriggerTime(alarm);
         if (nextTrigger == null) return;
 
+        var alarmName = string.IsNullOrEmpty(alarm.Name) ? _localization.GetString("Alarm") : alarm.Name;
         await _notificationService.ScheduleNotificationAsync(
             alarm.Id.ToString(),
-            string.IsNullOrEmpty(alarm.Name) ? "Alarm" : alarm.Name,
+            alarmName,
             alarm.TimeFormatted,
             nextTrigger.Value);
     }
@@ -170,7 +187,9 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
 
     private void CheckStopTimer()
     {
-        if (_activeAlarms.Count == 0 && _checkTimer != null)
+        int count;
+        lock (_lock) count = _activeAlarms.Count;
+        if (count == 0 && _checkTimer != null)
         {
             _checkTimer.Stop();
             _checkTimer.Dispose();
@@ -192,7 +211,9 @@ public class AlarmSchedulerService : IAlarmSchedulerService, IDisposable
                 _lastTriggerDate = today;
             }
 
-            foreach (var alarm in _activeAlarms.ToList())
+            List<AlarmItem> alarms;
+            lock (_lock) alarms = _activeAlarms.ToList();
+            foreach (var alarm in alarms)
             {
                 if (ShouldTrigger(alarm, now))
                 {

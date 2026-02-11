@@ -125,7 +125,7 @@ public class DatabaseService : IDatabaseService
     public async Task<int> SaveWorkDayAsync(WorkDay workDay)
     {
         var db = await GetDatabaseAsync();
-        workDay.ModifiedAt = DateTime.Now;
+        workDay.ModifiedAt = DateTime.UtcNow;
 
         if (workDay.Id == 0)
         {
@@ -142,7 +142,7 @@ public class DatabaseService : IDatabaseService
                 return workDay.Id;
             }
 
-            workDay.CreatedAt = DateTime.Now;
+            workDay.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(workDay);
             workDay.Id = newId;
             return newId;
@@ -191,7 +191,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (entry.Id == 0)
         {
-            entry.CreatedAt = DateTime.Now;
+            entry.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(entry);
             entry.Id = newId;
             return newId;
@@ -233,7 +233,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (entry.Id == 0)
         {
-            entry.CreatedAt = DateTime.Now;
+            entry.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(entry);
             entry.Id = newId;
             return newId;
@@ -268,7 +268,7 @@ public class DatabaseService : IDatabaseService
     public async Task SaveSettingsAsync(WorkSettings settings)
     {
         var db = await GetDatabaseAsync();
-        settings.ModifiedAt = DateTime.Now;
+        settings.ModifiedAt = DateTime.UtcNow;
         await db.UpdateAsync(settings);
     }
 
@@ -288,7 +288,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (vacation.Id == 0)
         {
-            vacation.CreatedAt = DateTime.Now;
+            vacation.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(vacation);
             vacation.Id = newId;
             return newId;
@@ -428,7 +428,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (project.Id == 0)
         {
-            project.CreatedAt = DateTime.Now;
+            project.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(project);
             project.Id = newId;
             return newId;
@@ -473,7 +473,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (entry.Id == 0)
         {
-            entry.CreatedAt = DateTime.Now;
+            entry.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(entry);
             entry.Id = newId;
             return newId;
@@ -515,7 +515,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (employer.Id == 0)
         {
-            employer.CreatedAt = DateTime.Now;
+            employer.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(employer);
             employer.Id = newId;
             return newId;
@@ -560,7 +560,7 @@ public class DatabaseService : IDatabaseService
             patterns = ShiftPattern.GetDefaultPatterns();
             foreach (var pattern in patterns)
             {
-                pattern.CreatedAt = DateTime.Now;
+                pattern.CreatedAt = DateTime.UtcNow;
                 await db.InsertAsync(pattern);
             }
         }
@@ -573,7 +573,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (pattern.Id == 0)
         {
-            pattern.CreatedAt = DateTime.Now;
+            pattern.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(pattern);
             pattern.Id = newId;
             return newId;
@@ -635,7 +635,7 @@ public class DatabaseService : IDatabaseService
         var db = await GetDatabaseAsync();
         if (assignment.Id == 0)
         {
-            assignment.CreatedAt = DateTime.Now;
+            assignment.CreatedAt = DateTime.UtcNow;
             var newId = await db.InsertAsync(assignment);
             assignment.Id = newId;
             return newId;

@@ -99,7 +99,7 @@ public partial class App : Application
         services.AddTransient<StopwatchViewModel>();
         services.AddTransient<AlarmViewModel>();
         services.AddTransient<SettingsViewModel>();
-        services.AddTransient<AlarmOverlayViewModel>();
+        services.AddSingleton<AlarmOverlayViewModel>();
         services.AddTransient<ShiftScheduleViewModel>();
     }
 }

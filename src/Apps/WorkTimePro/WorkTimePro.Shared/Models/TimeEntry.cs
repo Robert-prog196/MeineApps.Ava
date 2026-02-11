@@ -1,5 +1,6 @@
 using Material.Icons;
 using SQLite;
+using WorkTimePro.Resources.Strings;
 
 namespace WorkTimePro.Models;
 
@@ -56,7 +57,7 @@ public class TimeEntry
     /// <summary>
     /// Erstellt am
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Formatierte Uhrzeit für Anzeige
@@ -74,7 +75,7 @@ public class TimeEntry
     /// Typ als Text (Arbeitsbeginn/Arbeitsende)
     /// </summary>
     [Ignore]
-    public string TypeText => Type == EntryType.CheckIn ? "Arbeitsbeginn" : "Arbeitsende";
+    public string TypeText => Type == EntryType.CheckIn ? AppStrings.CheckIn : AppStrings.CheckOut;
 
     /// <summary>
     /// Vollständige Anzeige (z.B. "Arbeitsbeginn: 15:00")

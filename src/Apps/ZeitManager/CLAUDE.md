@@ -42,10 +42,10 @@ ZeitManager.Android/Services/
 ## Architektur-Entscheidungen
 
 - **Alarm/Timer-Notifications (Hintergrund):** AlarmSchedulerService und TimerService nutzen INotificationService, um System-Notifications zu planen (Android: AlarmManager.SetAlarmClock, Desktop: Task.Delay). Dadurch funktionieren Alarme/Timer auch wenn die App minimiert/geschlossen ist. AlarmViewModel nutzt IAlarmSchedulerService statt direkt die DB, damit Notifications konsistent geplant/gecancelt werden.
-- **AlarmActivity:** Dedizierte Android Activity (ShowWhenLocked, TurnScreenOn) fuer Fullscreen-Alarm über Lockscreen. Wird von AlarmReceiver gestartet (via AlarmManager).
+- **AlarmActivity:** Dedizierte Android Activity (ShowWhenLocked, TurnScreenOn) fuer Fullscreen-Alarm über Lockscreen. Wird von AlarmReceiver gestartet (via AlarmManager). Buttons (Dismiss/Snooze) lokalisiert via `App.Services.GetService<ILocalizationService>()`.
 - **UI-Thread:** System.Timers.Timer feuert auf ThreadPool → `Dispatcher.UIThread.Post()` fuer Property-Updates
 - **Stopwatch Undo:** TimeSpan _offset Pattern (Stopwatch unterstuetzt keine direkte Elapsed-Zuweisung)
-- **Thread-Safety:** TimerService nutzt `lock(_lock)` fuer _timers List, AudioService lock-swap fuer CTS, DesktopNotificationService ConcurrentDictionary
+- **Thread-Safety:** TimerService und AlarmSchedulerService nutzen `lock(_lock)` fuer List-Zugriffe, AudioService lock-swap fuer CTS, DesktopNotificationService ConcurrentDictionary
 - **AlarmItem:** Erbt ObservableObject, IsEnabled nutzt SetProperty fuer UI-Notification
 - **CustomShiftPattern:** ShortName() nutzt LocalizationManager.GetString() fuer lokalisierte Schicht-Kuerzel
 
@@ -57,6 +57,7 @@ ZeitManager.Android/Services/
 
 ## Changelog (Highlights)
 
+- **11.02.2026**: Bugfix-Review: AlarmSchedulerService Thread-Safety (lock um _activeAlarms), TimerService Notification-Text lokalisiert, AlarmActivity Buttons lokalisiert (Dismiss/Snooze), AlarmOverlayViewModel von Transient zu Singleton
 - **v2.0.0-notifications**: AlarmSchedulerService + TimerService mit INotificationService verbunden → Alarme/Timer funktionieren jetzt auch bei minimierter App (Android AlarmManager + AlarmReceiver + AlarmActivity). AlarmViewModel nutzt AlarmSchedulerService statt direkt DB.
 - **v2.0.0-review**: DatabaseService SemaphoreSlim, StopwatchVM Dispatcher, AlarmScheduler Double-Trigger-Schutz, Delete-Bestaetigungen, Android Runtime Permissions
 - **v2.0.0-gamejuice**: FloatingTextOverlay + CelebrationOverlay eingebaut

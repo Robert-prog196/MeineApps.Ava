@@ -214,7 +214,6 @@ public partial class CalendarViewModel : ObservableObject
 
         // Check existing status
         var hasSpecialStatus = day.Status != DayStatus.WorkDay &&
-                               day.Status != DayStatus.Work &&
                                day.Status != DayStatus.Weekend;
         OverlayHasExistingStatus = hasSpecialStatus;
         if (hasSpecialStatus)
@@ -488,6 +487,5 @@ public class CalendarDay
     };
 
     public bool HasStatusIcon => Status != DayStatus.WorkDay &&
-                                  Status != DayStatus.Work &&
                                   Status != DayStatus.Weekend;
 }

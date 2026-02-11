@@ -45,7 +45,7 @@ public class PauseEntry
     /// <summary>
     /// Erstellt am
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Dauer der Pause

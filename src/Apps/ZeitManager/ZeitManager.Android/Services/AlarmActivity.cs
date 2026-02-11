@@ -7,6 +7,8 @@ using Android.Media;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using MeineApps.Core.Ava.Localization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ZeitManager.Android.Services;
 
@@ -175,7 +177,7 @@ public class AlarmActivity : Activity
                 Gravity = GravityFlags.CenterHorizontal,
                 BottomMargin = DpToPx(12)
             },
-            Text = "Dismiss", // Universell verstaendlich
+            Text = GetLocalizedString("Dismiss", "Dismiss"),
             TextSize = 18
         };
         dismissBtn.SetTextColor(Color.White);
@@ -195,7 +197,7 @@ public class AlarmActivity : Activity
             {
                 Gravity = GravityFlags.CenterHorizontal
             },
-            Text = "Snooze (5 min)",
+            Text = $"{GetLocalizedString("Snooze", "Snooze")} (5 min)",
             TextSize = 16
         };
         snoozeBtn.SetTextColor(Color.White);
@@ -372,6 +374,22 @@ public class AlarmActivity : Activity
     {
         // Back-Button soll den Alarm nicht versehentlich schliessen
         // Nutzer muss Dismiss oder Snooze druecken
+    }
+
+    /// <summary>
+    /// Lokalisierter String aus dem DI-Container (falls verfuegbar)
+    /// </summary>
+    private static string GetLocalizedString(string key, string fallback)
+    {
+        try
+        {
+            var localization = ZeitManager.App.Services?.GetService<ILocalizationService>();
+            return localization?.GetString(key) ?? fallback;
+        }
+        catch
+        {
+            return fallback;
+        }
     }
 
     private int DpToPx(int dp)
