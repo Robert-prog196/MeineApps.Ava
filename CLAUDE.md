@@ -99,7 +99,7 @@ Alle 8 Apps im geschlossenen Test, warten auf 12 Tester fuer Produktion.
 | Daylight | Light, Blue Primary |
 | Forest | Dark, Green Primary |
 
-Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via `app.Styles.Add(StyleInclude)`. KEIN statisches Theme in App.axaml.
+Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via `app.Styles.Add(StyleInclude)`. KEIN statisches Theme in App.axaml. Lazy-Loading: Nur das aktive Theme wird geladen, weitere bei Bedarf.
 
 ---
 
@@ -108,12 +108,11 @@ Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via
 | Package | Version | Zweck |
 |---------|---------|-------|
 | Avalonia | 11.3.11 | UI Framework |
-| Material.Avalonia | 3.13.4 | Material Design |
 | Material.Icons.Avalonia | 2.4.1 | 7000+ SVG Icons |
-| DialogHost.Avalonia | 0.10.4 | Dialogs |
 | CommunityToolkit.Mvvm | 8.4.0 | MVVM |
 | Xaml.Behaviors.Avalonia | 11.3.9.3 | Behaviors |
 | LiveChartsCore.SkiaSharpView.Avalonia | 2.0.0-rc6.1 | Charts |
+| SkiaSharp | 3.119.2 | 2D Graphics |
 | sqlite-net-pcl | 1.9.172 | Database |
 
 ---
@@ -276,7 +275,7 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | Material Icons unsichtbar | `MaterialIconStyles` nicht in App.axaml registriert | `<materialIcons:MaterialIconStyles />` in `<Application.Styles>` |
 | AdMob Crash auf Android | UMP Namespace hat Typo | `Xamarin.Google.UserMesssagingPlatform` (3x 's') |
 | DateTime Timer falsch (1h) | UTC→Lokal Konvertierung | `DateTimeStyles.RoundtripKind` bei Parse |
-| Release-Build crasht (Debug OK) | R8/Linker Problem | `AndroidLinkMode=None` + `AndroidEnableProguard=false` |
+| Release-Build crasht (Debug OK) | Meist stale Build-Artefakte oder falsche Flags | obj/bin löschen, clean rebuild. SDK-Defaults (.NET 10) funktionieren - keine extra Flags nötig |
 | SKCanvasView updatet nicht | `InvalidateVisual()` verwendet | `InvalidateSurface()` verwenden |
 | CSS translate() Exception | Fehlende px-Einheiten | `translate(0px, 400px)` statt `translate(0, 400)` |
 | AAPT2260 Fehler | grantUriPermissions ohne 's' | `android:grantUriPermissions="true"` (mit 's') |
@@ -284,6 +283,7 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | Icons in Tab-Leiste fehlen | Material.Icons xmlns fehlt | `xmlns:materialIcons="using:Material.Icons.Avalonia"` |
 | VersionCode Ablehnung | Code bereits im Play Store | VOR Release aktuelle Codes im Play Store pruefen |
 | Ads Error Code 0 + "Failed to instantiate ClientApi" | Ads vor SDK-Init geladen | `Initialize(activity, callback)` nutzen, Ads erst im Callback laden |
+| Release-App schließt sich beim 1. Start (VS) | VS kann in Release keinen Debugger anhängen | App manuell starten - funktioniert. Kein App-Bug, VS-Verhalten |
 
 ---
 
