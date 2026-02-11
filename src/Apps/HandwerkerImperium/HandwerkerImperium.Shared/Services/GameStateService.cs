@@ -275,6 +275,24 @@ public class GameStateService : IGameStateService
         return _state.IsWorkshopUnlocked(type);
     }
 
+    public bool ForceUnlockWorkshop(WorkshopType type)
+    {
+        lock (_stateLock)
+        {
+            // Bereits freigeschaltet
+            if (_state.UnlockedWorkshopTypes.Contains(type))
+                return false;
+
+            _state.UnlockedWorkshopTypes.Add(type);
+
+            // Workshop erstellen falls noch nicht vorhanden
+            var workshop = _state.GetOrCreateWorkshop(type);
+            workshop.IsUnlocked = true;
+        }
+
+        return true;
+    }
+
     // ===================================================================
     // ORDER OPERATIONS
     // ===================================================================

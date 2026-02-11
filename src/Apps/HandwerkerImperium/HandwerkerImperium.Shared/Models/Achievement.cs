@@ -93,6 +93,12 @@ public class Achievement
     public DateTime? UnlockedAt { get; set; }
 
     /// <summary>
+    /// Ob der Spieler bereits per Rewarded Ad einen Boost genutzt hat (max 1x pro Achievement).
+    /// </summary>
+    [JsonPropertyName("hasUsedAdBoost")]
+    public bool HasUsedAdBoost { get; set; }
+
+    /// <summary>
     /// Progress percentage (0-100).
     /// </summary>
     [JsonIgnore]

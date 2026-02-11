@@ -49,6 +49,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IAdService _adService;
     private readonly IQuickJobService _quickJobService;
     private readonly IDailyChallengeService _dailyChallengeService;
+    private readonly IRewardedAdService _rewardedAdService;
     private bool _disposed;
     private decimal _pendingOfflineEarnings;
     private QuickJob? _activeQuickJob;
@@ -377,6 +378,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ISaveGameService saveGameService,
         IQuickJobService quickJobService,
         IDailyChallengeService dailyChallengeService,
+        IRewardedAdService rewardedAdService,
         ShopViewModel shopViewModel,
         StatisticsViewModel statisticsViewModel,
         AchievementsViewModel achievementsViewModel,
@@ -405,6 +407,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _saveGameService = saveGameService;
         _quickJobService = quickJobService;
         _dailyChallengeService = dailyChallengeService;
+        _rewardedAdService = rewardedAdService;
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
@@ -812,8 +815,33 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (!workshop.IsUnlocked)
         {
-            // Show message about unlock level
-            await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+            // Ad-Unlock Option anbieten (nur wenn Werbung aktiv)
+            if (ShowAds)
+            {
+                var watchAd = await ShowConfirmDialog(
+                    _localizationService.GetString("WatchAdToUnlock"),
+                    _localizationService.GetString("UnlockWorkshopWithAd"),
+                    _localizationService.GetString("WatchAdToUnlock"),
+                    _localizationService.GetString("Cancel"));
+
+                if (watchAd)
+                {
+                    var success = await _rewardedAdService.ShowAdAsync("workshop_unlock");
+                    if (success)
+                    {
+                        _gameStateService.ForceUnlockWorkshop(workshop.Type);
+                        RefreshWorkshops();
+                        ShowAlertDialog(
+                            _localizationService.GetString("WorkshopUnlockedWithAd"),
+                            _localizationService.GetString(workshop.Type.GetLocalizationKey()),
+                            "OK");
+                    }
+                }
+            }
+            else
+            {
+                await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+            }
             return;
         }
 
@@ -1016,6 +1044,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         _dailyChallengeService.ClaimAllCompletedBonus();
         RefreshChallenges();
+    }
+
+    [RelayCommand]
+    private async Task RetryChallengeWithAdAsync(DailyChallenge? challenge)
+    {
+        if (challenge == null || challenge.IsCompleted || challenge.HasRetriedWithAd || challenge.CurrentValue == 0)
+            return;
+
+        var success = await _rewardedAdService.ShowAdAsync("daily_challenge_retry");
+        if (success)
+        {
+            _dailyChallengeService.RetryChallenge(challenge.Id);
+            RefreshChallenges();
+            ShowAlertDialog(
+                _localizationService.GetString("ChallengeRetried"),
+                challenge.DisplayDescription,
+                "OK");
+        }
     }
 
     private void RefreshQuickJobs()

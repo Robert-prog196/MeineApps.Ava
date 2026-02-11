@@ -234,6 +234,23 @@
           </StackPanel>
         </Border>
 
+        <!-- Ad Speedup Button (2h Produktionsertrag) -->
+        <Border Classes="Card"
+                IsVisible="{Binding CanWatchSpeedupAd}">
+          <Button Classes="Secondary"
+                  Command="{Binding WatchAdForSpeedupCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="12,10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Video" Width="20" Height="20"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}" />
+              <TextBlock Text="{loc:Translate WatchAdForSpeedup}"
+                         FontSize="14" FontWeight="SemiBold" />
+            </StackPanel>
+          </Button>
+        </Border>
+
         <!-- Bottom Spacer -->
         <Border Height="20" />
 

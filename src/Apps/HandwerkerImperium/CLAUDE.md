@@ -6,7 +6,7 @@
 
 Idle-Game: Baue dein Handwerker-Imperium auf, stelle Mitarbeiter ein, kaufe Werkzeuge, erforsche Upgrades, schalte neue Workshop-Typen frei. Verdiene Geld durch automatische Auftraege oder spiele Mini-Games.
 
-**Version:** 2.0.2 | **Package-ID:** com.meineapps.handwerkerimperium | **Status:** Geschlossener Test
+**Version:** 2.0.3 | **Package-ID:** com.meineapps.handwerkerimperium | **Status:** Geschlossener Test
 
 ## Haupt-Features
 
@@ -25,14 +25,16 @@ Idle-Game: Baue dein Handwerker-Imperium auf, stelle Mitarbeiter ein, kaufe Werk
 - **Preis**: 4,99 EUR (Lifetime)
 - **Vorteile**: +50% Einkommen, +100% Goldschrauben aus Mini-Games, keine Werbung
 
-### Rewarded (7 Placements)
-1. `workshop_speedup` → Workshop 2h ueberbruecken
-2. `workshop_unlock` → Workshop ohne Level freischalten
-3. `worker_hire_bonus` → Extra Worker-Slot
-4. `research_speedup` → Forschung abschliessen
-5. `daily_challenge_retry` → Challenge wiederholen nach Fail
-6. `golden_screw_reward` → 50 Goldschrauben
-7. `achievement_boost` → Achievement Progress +20%
+### Rewarded (9 Placements)
+1. `golden_screws` → 5 Goldschrauben (Dashboard)
+2. `score_double` → Mini-Game Score verdoppeln
+3. `market_refresh` → Arbeitermarkt-Pool neu wuerfeln
+4. `workshop_speedup` → 2h Produktionsertrag sofort (WorkshopView)
+5. `workshop_unlock` → Workshop ohne Level freischalten (Dashboard)
+6. `worker_hire_bonus` → +1 Worker-Slot persistent (WorkerMarket)
+7. `research_speedup` → Forschung sofort fertig gratis (ResearchView)
+8. `daily_challenge_retry` → Challenge-Fortschritt zuruecksetzen (Dashboard)
+9. `achievement_boost` → Achievement Progress +20% (AchievementsView)
 
 ## Architektur-Besonderheiten
 
@@ -52,7 +54,7 @@ Jeder Typ hat: `BaseIncome`, `BaseUpgradeCost`, `UnlockLevel`, `UnlockCost`
 1. Mini-Games (3-10 Schrauben pro Win)
 2. Daily Challenges (20 Schrauben)
 3. Achievements (5-50 Schrauben)
-4. Rewarded Ad (50 Schrauben)
+4. Rewarded Ad (5 Schrauben)
 5. IAP-Paket (100/500/2000 Schrauben)
 
 ### Research Tree
@@ -101,6 +103,7 @@ Jedes Research braucht: `GoldScrews` + `ResearchPoints` (verdient via Workshop-P
 
 ## Changelog Highlights
 
+- **v2.0.3 (11.02.2026)**: 6 neue Rewarded-Ad-Placements implementiert (workshop_speedup, workshop_unlock, worker_hire_bonus, research_speedup, daily_challenge_retry, achievement_boost). Models erweitert (HasRetriedWithAd, HasUsedAdBoost, AdBonusWorkerSlots). Service-Methoden: RetryChallenge, ForceUnlockWorkshop, BoostAchievement. Lokalisierung in 6 Sprachen.
 - **v2.0.2 (09.02.2026)**: Daily-Challenge-Bug: MiniGame-Ergebnisse werden jetzt via Event an DailyChallengeService gemeldet; 18 fehlende Lokalisierungs-Keys in 6 Sprachen ergaenzt; Farbkonsistenz-Fix: Alle Views auf warme Craft-Palette, Button-Style-Overrides, Workshop/Tier/Branch-Farben waermer
 - **v2.0.2 (08.02.2026)**: Banner-Ad Overlap-Fix, WorkshopColorConverter, CelebrationOverlay + FloatingTextOverlay, Golden Screw Shimmer
 - **v2.0.1 (07.02.2026)**: Rewarded Ads 7 Placements, Premium-Modell Sync (4,99)

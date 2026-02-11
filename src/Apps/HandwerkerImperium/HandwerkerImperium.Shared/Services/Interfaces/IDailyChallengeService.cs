@@ -14,4 +14,9 @@ public interface IDailyChallengeService
     bool AreAllCompleted { get; }
     bool HasUnclaimedRewards { get; }
     decimal AllCompletedBonusAmount { get; }
+
+    /// <summary>
+    /// Setzt den Fortschritt einer Challenge zurueck (Retry per Rewarded Ad, max 1x pro Challenge).
+    /// </summary>
+    bool RetryChallenge(string challengeId);
 }

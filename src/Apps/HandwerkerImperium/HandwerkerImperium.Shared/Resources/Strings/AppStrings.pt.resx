@@ -2015,4 +2015,45 @@
     <value>Toque para pintar</value>
   </data>
 
+  <!-- Rewarded Ad Placements -->
+  <data name="WatchAdForSpeedup" xml:space="preserve">
+    <value>2h Speedup (V&#237;deo)</value>
+  </data>
+  <data name="SpeedupRewardFormat" xml:space="preserve">
+    <value>+{0} EUR recebidos!</value>
+  </data>
+  <data name="WatchAdToUnlock" xml:space="preserve">
+    <value>Desbloquear com V&#237;deo</value>
+  </data>
+  <data name="UnlockWorkshopWithAd" xml:space="preserve">
+    <value>Assista um v&#237;deo para desbloquear esta oficina de gra&#231;a!</value>
+  </data>
+  <data name="WatchAdForWorkerSlot" xml:space="preserve">
+    <value>+1 Vaga (V&#237;deo)</value>
+  </data>
+  <data name="WorkerSlotBonusDesc" xml:space="preserve">
+    <value>Vaga extra para trabalhador adicionada!</value>
+  </data>
+  <data name="WatchAdToFinishResearch" xml:space="preserve">
+    <value>Gr&#225;tis (V&#237;deo)</value>
+  </data>
+  <data name="ResearchFinishedFree" xml:space="preserve">
+    <value>Pesquisa conclu&#237;da de gra&#231;a!</value>
+  </data>
+  <data name="WatchAdToRetry" xml:space="preserve">
+    <value>Tentar novamente (V&#237;deo)</value>
+  </data>
+  <data name="ChallengeRetried" xml:space="preserve">
+    <value>Progresso do desafio reiniciado - tente novamente!</value>
+  </data>
+  <data name="WatchAdForBoost" xml:space="preserve">
+    <value>Boost (V&#237;deo)</value>
+  </data>
+  <data name="AchievementBoostedFormat" xml:space="preserve">
+    <value>Conquista impulsionada em {0}%!</value>
+  </data>
+  <data name="WorkshopUnlockedWithAd" xml:space="preserve">
+    <value>Oficina desbloqueada!</value>
+  </data>
+
 </root>

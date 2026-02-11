@@ -20,6 +20,7 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
     private readonly IAudioService _audioService;
     private readonly ILocalizationService _localizationService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IRewardedAdService _rewardedAdService;
     private bool _disposed;
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -107,16 +108,25 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool ShowAds => !_purchaseService.IsPremium;
 
+    /// <summary>
+    /// Ob der 2h-Speedup-Ad-Button angezeigt werden soll (Werbung aktiv + Workshop hat Einkommen).
+    /// </summary>
+    public bool CanWatchSpeedupAd => ShowAds && IncomePerSecond > 0;
+
+    partial void OnIncomePerSecondChanged(decimal value) => OnPropertyChanged(nameof(CanWatchSpeedupAd));
+
     public WorkshopViewModel(
         IGameStateService gameStateService,
         IAudioService audioService,
         ILocalizationService localizationService,
-        IPurchaseService purchaseService)
+        IPurchaseService purchaseService,
+        IRewardedAdService rewardedAdService)
     {
         _gameStateService = gameStateService;
         _audioService = audioService;
         _localizationService = localizationService;
         _purchaseService = purchaseService;
+        _rewardedAdService = rewardedAdService;
 
         _gameStateService.MoneyChanged += OnMoneyChanged;
         _gameStateService.WorkshopUpgraded += OnWorkshopUpgraded;
@@ -186,6 +196,22 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         if (_gameStateService.TryUpgradeWorkshop(WorkshopType))
         {
             await _audioService.PlaySoundAsync(GameSound.Upgrade);
+            LoadWorkshop();
+        }
+    }
+
+    [RelayCommand]
+    private async Task WatchAdForSpeedupAsync()
+    {
+        if (!CanWatchSpeedupAd) return;
+
+        var workshop = _gameStateService.State.GetOrCreateWorkshop(WorkshopType);
+        var earnings = workshop.GrossIncomePerSecond * 7200; // 2h Ertrag
+
+        var success = await _rewardedAdService.ShowAdAsync("workshop_speedup");
+        if (success)
+        {
+            _gameStateService.AddMoney(earnings);
             LoadWorkshop();
         }
     }

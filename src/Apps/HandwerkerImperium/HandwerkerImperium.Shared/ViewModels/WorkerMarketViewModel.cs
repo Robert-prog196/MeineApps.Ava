@@ -73,6 +73,18 @@ public partial class WorkerMarketViewModel : ObservableObject
     [ObservableProperty]
     private string _noSlotsMessage = string.Empty;
 
+    /// <summary>
+    /// Ob es volle Workshops gibt, denen ein Extra-Slot per Ad hinzugefuegt werden kann.
+    /// </summary>
+    public bool HasFullWorkshops => _gameStateService.State.Workshops
+        .Any(w => _gameStateService.State.IsWorkshopUnlocked(w.Type) &&
+                  w.Workers.Count >= w.MaxWorkers);
+
+    /// <summary>
+    /// Ob der Extra-Slot-Button sichtbar sein soll.
+    /// </summary>
+    public bool ShowExtraSlotButton => HasFullWorkshops && !HasAvailableSlots;
+
     // Workshop-Auswahl Properties (Bug 3: Spieler waehlt Workshop beim Einstellen)
     [ObservableProperty]
     private bool _showWorkshopSelection;
@@ -140,6 +152,8 @@ public partial class WorkerMarketViewModel : ObservableObject
 
         UpdateTimer();
         UpdateCanHire();
+        OnPropertyChanged(nameof(HasFullWorkshops));
+        OnPropertyChanged(nameof(ShowExtraSlotButton));
     }
 
     /// <summary>
@@ -196,6 +210,30 @@ public partial class WorkerMarketViewModel : ObservableObject
                 _localizationService.GetString("Info"),
                 _localizationService.GetString("WatchAdToRefresh"),
                 "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task WatchAdForWorkerSlotAsync()
+    {
+        // Erste volle Workshop finden
+        var fullWorkshop = _gameStateService.State.Workshops
+            .FirstOrDefault(w => _gameStateService.State.IsWorkshopUnlocked(w.Type) &&
+                                 w.Workers.Count >= w.MaxWorkers);
+
+        if (fullWorkshop == null) return;
+
+        var success = await _rewardedAdService.ShowAdAsync("worker_hire_bonus");
+        if (success)
+        {
+            fullWorkshop.AdBonusWorkerSlots += 1;
+            _gameStateService.MarkDirty();
+            LoadMarket();
+
+            AlertRequested?.Invoke(
+                _localizationService.GetString("WorkerSlotBonusDesc"),
+                _localizationService.GetString(fullWorkshop.Type.GetLocalizationKey()),
+                _localizationService.GetString("Great"));
         }
     }
 

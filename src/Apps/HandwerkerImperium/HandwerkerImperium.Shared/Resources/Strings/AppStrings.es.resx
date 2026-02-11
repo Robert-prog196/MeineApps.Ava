@@ -2015,4 +2015,45 @@
     <value>Toca para pintar</value>
   </data>
 
+  <!-- Rewarded Ad Placements -->
+  <data name="WatchAdForSpeedup" xml:space="preserve">
+    <value>2h Speedup (Video)</value>
+  </data>
+  <data name="SpeedupRewardFormat" xml:space="preserve">
+    <value>+{0} EUR recibidos!</value>
+  </data>
+  <data name="WatchAdToUnlock" xml:space="preserve">
+    <value>Desbloquear con Video</value>
+  </data>
+  <data name="UnlockWorkshopWithAd" xml:space="preserve">
+    <value>&#161;Mira un video para desbloquear este taller gratis!</value>
+  </data>
+  <data name="WatchAdForWorkerSlot" xml:space="preserve">
+    <value>+1 Plaza (Video)</value>
+  </data>
+  <data name="WorkerSlotBonusDesc" xml:space="preserve">
+    <value>&#161;Plaza extra para trabajador a&#241;adida!</value>
+  </data>
+  <data name="WatchAdToFinishResearch" xml:space="preserve">
+    <value>Gratis (Video)</value>
+  </data>
+  <data name="ResearchFinishedFree" xml:space="preserve">
+    <value>&#161;Investigaci&#243;n completada gratis!</value>
+  </data>
+  <data name="WatchAdToRetry" xml:space="preserve">
+    <value>Reintentar (Video)</value>
+  </data>
+  <data name="ChallengeRetried" xml:space="preserve">
+    <value>&#161;Progreso del desaf&#237;o reiniciado - int&#233;ntalo de nuevo!</value>
+  </data>
+  <data name="WatchAdForBoost" xml:space="preserve">
+    <value>Boost (Video)</value>
+  </data>
+  <data name="AchievementBoostedFormat" xml:space="preserve">
+    <value>&#161;Logro mejorado en {0}%!</value>
+  </data>
+  <data name="WorkshopUnlockedWithAd" xml:space="preserve">
+    <value>&#161;Taller desbloqueado!</value>
+  </data>
+
 </root>

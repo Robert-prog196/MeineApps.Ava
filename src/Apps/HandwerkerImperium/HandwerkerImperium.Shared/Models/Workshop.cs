@@ -47,17 +47,23 @@ public class Workshop
     public int BaseMaxWorkers => Math.Min(10, 1 + (Level - 1) / 5);
 
     /// <summary>
-    /// Total max workers including building bonus.
+    /// Total max workers including building bonus + Ad-Bonus.
     /// Set by external systems that know about buildings.
     /// </summary>
     [JsonIgnore]
-    public int MaxWorkers => BaseMaxWorkers + ExtraWorkerSlots;
+    public int MaxWorkers => BaseMaxWorkers + ExtraWorkerSlots + AdBonusWorkerSlots;
 
     /// <summary>
     /// Extra worker slots from buildings/research (set externally).
     /// </summary>
     [JsonIgnore]
     public int ExtraWorkerSlots { get; set; }
+
+    /// <summary>
+    /// Extra Worker-Slots durch Rewarded Ads (persistent).
+    /// </summary>
+    [JsonPropertyName("adBonusWorkerSlots")]
+    public int AdBonusWorkerSlots { get; set; }
 
     /// <summary>
     /// Base income per worker per second at current level.

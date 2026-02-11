@@ -48,6 +48,18 @@ public class DailyChallenge
     [JsonPropertyName("isClaimed")]
     public bool IsClaimed { get; set; }
 
+    /// <summary>
+    /// Ob der Spieler bereits per Rewarded Ad einen Retry genutzt hat (max 1x pro Challenge).
+    /// </summary>
+    [JsonPropertyName("hasRetriedWithAd")]
+    public bool HasRetriedWithAd { get; set; }
+
+    /// <summary>
+    /// Ob ein Retry per Video-Ad moeglich ist: Nicht geschafft, noch nicht genutzt, Fortschritt > 0.
+    /// </summary>
+    [JsonIgnore]
+    public bool CanRetryWithAd => !IsCompleted && !HasRetriedWithAd && CurrentValue > 0;
+
     [JsonIgnore]
     public double Progress => TargetValue > 0 ? Math.Clamp((double)CurrentValue / TargetValue, 0, 1) : 0;
 

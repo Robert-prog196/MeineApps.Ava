@@ -117,6 +117,21 @@
             </StackPanel>
           </Button>
         </Grid>
+
+        <!-- Gratis per Video-Ad fertigstellen -->
+        <Button Classes="Secondary"
+                Padding="10,6"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                IsVisible="{Binding CanWatchAdToFinish}"
+                Command="{Binding WatchAdToFinishResearchCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <mi:MaterialIcon Kind="Video" Width="18" Height="18"
+                             Foreground="{StaticResource CraftPrimaryLightBrush}" />
+            <TextBlock Text="{loc:Translate WatchAdToFinishResearch}"
+                       FontSize="13" FontWeight="SemiBold" />
+          </StackPanel>
+        </Button>
       </StackPanel>
     </Border>
 

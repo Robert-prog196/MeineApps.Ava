@@ -5,6 +5,7 @@ using HandwerkerImperium.Models;
 using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerImperium.ViewModels;
 
@@ -16,12 +17,18 @@ public partial class AchievementsViewModel : ObservableObject
     private readonly IAchievementService _achievementService;
     private readonly ILocalizationService _localizationService;
     private readonly IAudioService _audioService;
+    private readonly IRewardedAdService _rewardedAdService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
     // ═══════════════════════════════════════════════════════════════════════
 
     public event Action<string>? NavigationRequested;
+
+    /// <summary>
+    /// Event to show an alert dialog. Parameters: title, message, buttonText.
+    /// </summary>
+    public event Action<string, string, string>? AlertRequested;
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -48,11 +55,13 @@ public partial class AchievementsViewModel : ObservableObject
     public AchievementsViewModel(
         IAchievementService achievementService,
         ILocalizationService localizationService,
-        IAudioService audioService)
+        IAudioService audioService,
+        IRewardedAdService rewardedAdService)
     {
         _achievementService = achievementService;
         _localizationService = localizationService;
         _audioService = audioService;
+        _rewardedAdService = rewardedAdService;
 
         LoadAchievements();
     }
@@ -82,7 +91,8 @@ public partial class AchievementsViewModel : ObservableObject
                 MoneyReward = achievement.MoneyReward,
                 XpReward = achievement.XpReward,
                 IsUnlocked = achievement.IsUnlocked,
-                IsCloseToUnlock = achievement.IsCloseToUnlock
+                IsCloseToUnlock = achievement.IsCloseToUnlock,
+                HasUsedAdBoost = achievement.HasUsedAdBoost
             });
         }
     }
@@ -98,6 +108,24 @@ public partial class AchievementsViewModel : ObservableObject
     {
         SelectedCategory = category;
         // Filtering can be done in the UI with ItemsRepeater/ListBox
+    }
+
+    [RelayCommand]
+    private async Task BoostAchievementAsync(AchievementDisplayModel? achievement)
+    {
+        if (achievement == null || !achievement.CanBoost) return;
+
+        var success = await _rewardedAdService.ShowAdAsync("achievement_boost");
+        if (success)
+        {
+            _achievementService.BoostAchievement(achievement.Id, 0.20);
+            LoadAchievements();
+
+            AlertRequested?.Invoke(
+                _localizationService.GetString("AchievementBoostedFormat"),
+                achievement.Title,
+                _localizationService.GetString("Great"));
+        }
     }
 }
 
@@ -118,6 +146,12 @@ public class AchievementDisplayModel
     public int XpReward { get; set; }
     public bool IsUnlocked { get; set; }
     public bool IsCloseToUnlock { get; set; }
+    public bool HasUsedAdBoost { get; set; }
+
+    /// <summary>
+    /// Ob ein Ad-Boost moeglich ist: Nicht freigeschaltet, noch kein Boost genutzt, Fortschritt > 0.
+    /// </summary>
+    public bool CanBoost => !IsUnlocked && !HasUsedAdBoost && Progress > 0;
 
     public string RewardText => MoneyReward > 0 && XpReward > 0
         ? $"+{MoneyReward:N0}€ +{XpReward} XP"

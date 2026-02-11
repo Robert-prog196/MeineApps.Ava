@@ -47,4 +47,9 @@ public interface IAchievementService
     /// Setzt alle Achievements zurueck (bei Spielstand-Reset).
     /// </summary>
     void Reset();
+
+    /// <summary>
+    /// Boosted den Fortschritt eines Achievements per Rewarded Ad (max 1x pro Achievement).
+    /// </summary>
+    bool BoostAchievement(string achievementId, double boostPercent);
 }

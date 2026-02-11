@@ -2015,4 +2015,45 @@
     <value>Appuyez pour peindre</value>
   </data>
 
+  <!-- Rewarded Ad Placements -->
+  <data name="WatchAdForSpeedup" xml:space="preserve">
+    <value>2h Speedup (Vid&#233;o)</value>
+  </data>
+  <data name="SpeedupRewardFormat" xml:space="preserve">
+    <value>+{0} EUR re&#231;us !</value>
+  </data>
+  <data name="WatchAdToUnlock" xml:space="preserve">
+    <value>D&#233;bloquer avec Vid&#233;o</value>
+  </data>
+  <data name="UnlockWorkshopWithAd" xml:space="preserve">
+    <value>Regardez une vid&#233;o pour d&#233;bloquer cet atelier gratuitement !</value>
+  </data>
+  <data name="WatchAdForWorkerSlot" xml:space="preserve">
+    <value>+1 Place (Vid&#233;o)</value>
+  </data>
+  <data name="WorkerSlotBonusDesc" xml:space="preserve">
+    <value>Place suppl&#233;mentaire pour ouvrier ajout&#233;e !</value>
+  </data>
+  <data name="WatchAdToFinishResearch" xml:space="preserve">
+    <value>Gratuit (Vid&#233;o)</value>
+  </data>
+  <data name="ResearchFinishedFree" xml:space="preserve">
+    <value>Recherche termin&#233;e gratuitement !</value>
+  </data>
+  <data name="WatchAdToRetry" xml:space="preserve">
+    <value>R&#233;essayer (Vid&#233;o)</value>
+  </data>
+  <data name="ChallengeRetried" xml:space="preserve">
+    <value>Progr&#232;s du d&#233;fi r&#233;initialis&#233; - r&#233;essayez !</value>
+  </data>
+  <data name="WatchAdForBoost" xml:space="preserve">
+    <value>Boost (Vid&#233;o)</value>
+  </data>
+  <data name="AchievementBoostedFormat" xml:space="preserve">
+    <value>Succ&#232;s boost&#233; de {0}% !</value>
+  </data>
+  <data name="WorkshopUnlockedWithAd" xml:space="preserve">
+    <value>Atelier d&#233;bloqu&#233; !</value>
+  </data>
+
 </root>

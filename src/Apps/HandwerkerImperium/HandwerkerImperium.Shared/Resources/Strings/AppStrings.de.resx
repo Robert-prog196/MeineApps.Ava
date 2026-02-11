@@ -2023,4 +2023,45 @@
     <value>Tippe zum Malen</value>
   </data>
 
+  <!-- Rewarded Ad Placements -->
+  <data name="WatchAdForSpeedup" xml:space="preserve">
+    <value>2h Speedup (Video)</value>
+  </data>
+  <data name="SpeedupRewardFormat" xml:space="preserve">
+    <value>+{0} EUR erhalten!</value>
+  </data>
+  <data name="WatchAdToUnlock" xml:space="preserve">
+    <value>Mit Video freischalten</value>
+  </data>
+  <data name="UnlockWorkshopWithAd" xml:space="preserve">
+    <value>Schau ein Video um diese Werkstatt gratis freizuschalten!</value>
+  </data>
+  <data name="WatchAdForWorkerSlot" xml:space="preserve">
+    <value>+1 Platz (Video)</value>
+  </data>
+  <data name="WorkerSlotBonusDesc" xml:space="preserve">
+    <value>Extra Arbeiterplatz hinzugefügt!</value>
+  </data>
+  <data name="WatchAdToFinishResearch" xml:space="preserve">
+    <value>Gratis (Video)</value>
+  </data>
+  <data name="ResearchFinishedFree" xml:space="preserve">
+    <value>Forschung gratis abgeschlossen!</value>
+  </data>
+  <data name="WatchAdToRetry" xml:space="preserve">
+    <value>Nochmal (Video)</value>
+  </data>
+  <data name="ChallengeRetried" xml:space="preserve">
+    <value>Challenge zurückgesetzt - versuche es nochmal!</value>
+  </data>
+  <data name="WatchAdForBoost" xml:space="preserve">
+    <value>Boost (Video)</value>
+  </data>
+  <data name="AchievementBoostedFormat" xml:space="preserve">
+    <value>Achievement um {0}% geboostet!</value>
+  </data>
+  <data name="WorkshopUnlockedWithAd" xml:space="preserve">
+    <value>Werkstatt freigeschaltet!</value>
+  </data>
+
 </root>

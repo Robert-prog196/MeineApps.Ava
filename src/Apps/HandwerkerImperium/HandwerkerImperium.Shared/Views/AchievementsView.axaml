@@ -132,7 +132,7 @@
 
                   <!-- Progress Bar (if not unlocked) -->
                   <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-                        ColumnDefinitions="*,Auto"
+                        ColumnDefinitions="*,Auto,Auto"
                         ColumnSpacing="8"
                         IsVisible="{Binding !IsUnlocked}">
                     <ProgressBar Value="{Binding ProgressFraction}"
@@ -145,6 +145,22 @@
                                FontSize="10"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                VerticalAlignment="Center" />
+
+                    <!-- Ad-Boost Button (+20%) -->
+                    <Button Grid.Column="2"
+                            Classes="Text"
+                            Padding="4,2"
+                            IsVisible="{Binding CanBoost}"
+                            Command="{Binding $parent[ItemsControl].((vm:AchievementsViewModel)DataContext).BoostAchievementCommand}"
+                            CommandParameter="{Binding .}">
+                      <StackPanel Orientation="Horizontal" Spacing="2">
+                        <mi:MaterialIcon Kind="Video" Width="14" Height="14"
+                                         Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                        <TextBlock Text="+20%"
+                                   FontSize="10" FontWeight="SemiBold"
+                                   Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                      </StackPanel>
+                    </Button>
                   </Grid>
 
                 </Grid>

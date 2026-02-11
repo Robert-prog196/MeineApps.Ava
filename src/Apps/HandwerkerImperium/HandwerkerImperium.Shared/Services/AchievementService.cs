@@ -67,6 +67,28 @@ public class AchievementService : IAchievementService, IDisposable
         LoadFromGameState();
     }
 
+    public bool BoostAchievement(string achievementId, double boostPercent)
+    {
+        var achievement = _achievements.FirstOrDefault(a => a.Id == achievementId);
+        if (achievement == null || achievement.IsUnlocked || achievement.HasUsedAdBoost)
+            return false;
+
+        // Fortschritt um boostPercent des Zielwerts erhoehen
+        var boost = (int)(achievement.TargetValue * boostPercent);
+        if (boost < 1) boost = 1;
+        achievement.CurrentValue += boost;
+        achievement.HasUsedAdBoost = true;
+
+        // Pruefen ob Achievement jetzt freigeschaltet
+        if (achievement.CurrentValue >= achievement.TargetValue)
+        {
+            UnlockAchievement(achievement);
+        }
+
+        _gameStateService.MarkDirty();
+        return true;
+    }
+
     public void CheckAchievements()
     {
         UpdateProgress();

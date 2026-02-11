@@ -100,15 +100,31 @@
         <!-- KEINE FREIEN PLAETZE INFO (Warnung, blockiert nicht den Markt) -->
         <Border Classes="CardElevated" Padding="16,12"
                 IsVisible="{Binding !HasAvailableSlots}">
-          <StackPanel Orientation="Horizontal" Spacing="12"
-                      HorizontalAlignment="Center">
-            <mi:MaterialIcon Kind="AlertCircleOutline" Width="24" Height="24"
-                             Foreground="{DynamicResource WarningBrush}" />
-            <TextBlock Text="{Binding NoSlotsMessage}"
-                       FontSize="13"
-                       Foreground="{DynamicResource WarningBrush}"
-                       TextWrapping="Wrap"
-                       VerticalAlignment="Center" />
+          <StackPanel Spacing="10">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="AlertCircleOutline" Width="24" Height="24"
+                               Foreground="{DynamicResource WarningBrush}" />
+              <TextBlock Text="{Binding NoSlotsMessage}"
+                         FontSize="13"
+                         Foreground="{DynamicResource WarningBrush}"
+                         TextWrapping="Wrap"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Extra-Slot per Video-Ad Button -->
+            <Button Classes="Secondary"
+                    Command="{Binding WatchAdForWorkerSlotCommand}"
+                    IsVisible="{Binding ShowExtraSlotButton}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Padding="12,8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="Video" Width="18" Height="18"
+                                 Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                <TextBlock Text="{loc:Translate WatchAdForWorkerSlot}" FontSize="13" />
+              </StackPanel>
+            </Button>
           </StackPanel>
         </Border>
 

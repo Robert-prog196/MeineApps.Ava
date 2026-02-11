@@ -5,6 +5,7 @@ using HandwerkerImperium.Models;
 using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Premium.Ava.Services;
 
 namespace HandwerkerImperium.ViewModels;
 
@@ -18,6 +19,7 @@ public partial class ResearchViewModel : ObservableObject
     private readonly IResearchService _researchService;
     private readonly IGameStateService _gameStateService;
     private readonly ILocalizationService _localizationService;
+    private readonly IRewardedAdService _rewardedAdService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
@@ -117,14 +119,23 @@ public partial class ResearchViewModel : ObservableObject
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
+    /// <summary>
+    /// Ob der Ad-Speedup-Button sichtbar sein soll (aktive Forschung vorhanden + Werbung aktiv).
+    /// </summary>
+    public bool CanWatchAdToFinish => HasActiveResearch && _rewardedAdService != null;
+
+    partial void OnHasActiveResearchChanged(bool value) => OnPropertyChanged(nameof(CanWatchAdToFinish));
+
     public ResearchViewModel(
         IResearchService researchService,
         IGameStateService gameStateService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IRewardedAdService rewardedAdService)
     {
         _researchService = researchService;
         _gameStateService = gameStateService;
         _localizationService = localizationService;
+        _rewardedAdService = rewardedAdService;
 
         _researchService.ResearchCompleted += OnResearchCompleted;
 
@@ -316,6 +327,24 @@ public partial class ResearchViewModel : ObservableObject
         if (_researchService.InstantFinishResearch())
         {
             LoadResearchTree();
+        }
+    }
+
+    [RelayCommand]
+    private async Task WatchAdToFinishResearchAsync()
+    {
+        if (!HasActiveResearch || ActiveResearch == null) return;
+
+        var success = await _rewardedAdService.ShowAdAsync("research_speedup");
+        if (success)
+        {
+            _researchService.InstantFinishResearch();
+            LoadResearchTree();
+
+            AlertRequested?.Invoke(
+                _localizationService.GetString("ResearchFinishedFree"),
+                _localizationService.GetString(ActiveResearch.NameKey),
+                _localizationService.GetString("Great"));
         }
     }
 

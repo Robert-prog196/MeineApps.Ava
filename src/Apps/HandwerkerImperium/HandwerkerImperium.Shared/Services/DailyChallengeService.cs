@@ -92,6 +92,21 @@ public class DailyChallengeService : IDailyChallengeService, IDisposable
         return true;
     }
 
+    public bool RetryChallenge(string challengeId)
+    {
+        var challenge = _gameStateService.State.DailyChallengeState.Challenges
+            .FirstOrDefault(c => c.Id == challengeId);
+
+        if (challenge == null || challenge.IsCompleted || challenge.HasRetriedWithAd || challenge.CurrentValue == 0)
+            return false;
+
+        challenge.CurrentValue = 0;
+        challenge.IsCompleted = false;
+        challenge.HasRetriedWithAd = true;
+        _gameStateService.MarkDirty();
+        return true;
+    }
+
     public bool ClaimAllCompletedBonus()
     {
         var state = _gameStateService.State.DailyChallengeState;

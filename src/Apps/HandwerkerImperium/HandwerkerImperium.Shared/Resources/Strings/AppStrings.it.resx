@@ -2015,4 +2015,45 @@
     <value>Tocca per dipingere</value>
   </data>
 
+  <!-- Rewarded Ad Placements -->
+  <data name="WatchAdForSpeedup" xml:space="preserve">
+    <value>2h Speedup (Video)</value>
+  </data>
+  <data name="SpeedupRewardFormat" xml:space="preserve">
+    <value>+{0} EUR ricevuti!</value>
+  </data>
+  <data name="WatchAdToUnlock" xml:space="preserve">
+    <value>Sblocca con Video</value>
+  </data>
+  <data name="UnlockWorkshopWithAd" xml:space="preserve">
+    <value>Guarda un video per sbloccare questa officina gratis!</value>
+  </data>
+  <data name="WatchAdForWorkerSlot" xml:space="preserve">
+    <value>+1 Posto (Video)</value>
+  </data>
+  <data name="WorkerSlotBonusDesc" xml:space="preserve">
+    <value>Posto extra per lavoratore aggiunto!</value>
+  </data>
+  <data name="WatchAdToFinishResearch" xml:space="preserve">
+    <value>Gratis (Video)</value>
+  </data>
+  <data name="ResearchFinishedFree" xml:space="preserve">
+    <value>Ricerca completata gratis!</value>
+  </data>
+  <data name="WatchAdToRetry" xml:space="preserve">
+    <value>Riprova (Video)</value>
+  </data>
+  <data name="ChallengeRetried" xml:space="preserve">
+    <value>Progresso della sfida azzerato - riprova!</value>
+  </data>
+  <data name="WatchAdForBoost" xml:space="preserve">
+    <value>Boost (Video)</value>
+  </data>
+  <data name="AchievementBoostedFormat" xml:space="preserve">
+    <value>Obiettivo potenziato del {0}%!</value>
+  </data>
+  <data name="WorkshopUnlockedWithAd" xml:space="preserve">
+    <value>Officina sbloccata!</value>
+  </data>
+
 </root>

@@ -122,6 +122,11 @@ public interface IGameStateService
     /// </summary>
     bool IsWorkshopUnlocked(WorkshopType type);
 
+    /// <summary>
+    /// Schaltet eine Werkstatt frei ohne Level-Anforderung (per Rewarded Ad).
+    /// </summary>
+    bool ForceUnlockWorkshop(WorkshopType type);
+
     // ===================================================================
     // ORDER OPERATIONS
     // ===================================================================
