@@ -6,6 +6,7 @@ using MeineApps.Core.Premium.Ava.Services;
 using FinanzRechner.Helpers;
 using FinanzRechner.Models;
 using FinanzRechner.Services;
+using FinanzRechner.Resources.Strings;
 using FinanzRechner.ViewModels.Calculators;
 
 // CategoryDisplayItem aus ExpenseTrackerViewModel wiederverwenden
@@ -59,6 +60,7 @@ public partial class MainViewModel : ObservableObject
         _localizationService = localizationService;
         _expenseService = expenseService;
         _rewardedAdService = rewardedAdService;
+        _rewardedAdService.AdUnavailable += () => MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;

@@ -1722,4 +1722,10 @@ Su superfici ruvide la resa diminuisce!</value>
   <data name="ProjectReport" xml:space="preserve">
     <value>Rapporto del progetto</value>
   </data>
+  <data name="AdVideoNotAvailableTitle" xml:space="preserve">
+    <value>Nessun video disponibile</value>
+  </data>
+  <data name="AdVideoNotAvailableMessage" xml:space="preserve">
+    <value>Nessun video pubblicitario è attualmente disponibile. Riprova più tardi.</value>
+  </data>
 </root>

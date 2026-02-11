@@ -34,4 +34,6 @@ public class RewardedAdService : IRewardedAdService
     {
         _isDisabled = true;
     }
+
+    public event Action? AdUnavailable;
 }

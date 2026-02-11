@@ -391,5 +391,11 @@
   <data name="EndOfDay" xml:space="preserve">
     <value>¡Fin del día!</value>
   </data>
+  <data name="AdVideoNotAvailableTitle" xml:space="preserve">
+    <value>Sin vídeo disponible</value>
+  </data>
+  <data name="AdVideoNotAvailableMessage" xml:space="preserve">
+    <value>Actualmente no hay ningún vídeo publicitario disponible. Inténtalo de nuevo más tarde.</value>
+  </data>
 
 </root>

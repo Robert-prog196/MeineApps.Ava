@@ -1,3 +1,4 @@
+using BomberBlast.Resources.Strings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MeineApps.Core.Ava.Localization;
@@ -122,7 +123,8 @@ public partial class MainViewModel : ObservableObject
         ShopViewModel shopVm,
         ILocalizationService localization,
         IAdService adService,
-        IPurchaseService purchaseService)
+        IPurchaseService purchaseService,
+        IRewardedAdService rewardedAdService)
     {
         MenuVm = menuVm;
         GameVm = gameVm;
@@ -142,6 +144,10 @@ public partial class MainViewModel : ObservableObject
         // Ad-Banner starten
         if (adService.AdsEnabled && !purchaseService.IsPremium)
             adService.ShowBanner();
+
+        // Ad-Unavailable Meldung anzeigen
+        rewardedAdService.AdUnavailable += () =>
+            ShowAlertDialog(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage, AppStrings.OK);
 
         // Wire up navigation from child VMs
         WireNavigation(menuVm);

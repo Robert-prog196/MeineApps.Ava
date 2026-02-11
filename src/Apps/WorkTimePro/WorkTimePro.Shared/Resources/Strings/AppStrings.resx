@@ -1014,5 +1014,11 @@
   <data name="EndOfDay" xml:space="preserve">
     <value>End of day!</value>
   </data>
+  <data name="AdVideoNotAvailableTitle" xml:space="preserve">
+    <value>No video available</value>
+  </data>
+  <data name="AdVideoNotAvailableMessage" xml:space="preserve">
+    <value>No ad video is currently available. Please try again later.</value>
+  </data>
 
 </root>

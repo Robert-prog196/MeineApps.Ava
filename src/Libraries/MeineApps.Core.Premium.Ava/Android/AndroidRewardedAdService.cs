@@ -17,6 +17,8 @@ public class AndroidRewardedAdService : IRewardedAdService
     private readonly string _appName;
     private bool _isDisabled;
 
+    public event Action? AdUnavailable;
+
     /// <param name="helper">RewardedAdHelper Instanz (wird in MainActivity erstellt)</param>
     /// <param name="purchaseService">Fuer Premium-Check</param>
     /// <param name="appName">App-Name fuer AdConfig Lookup (z.B. "BomberBlast")</param>
@@ -46,12 +48,16 @@ public class AndroidRewardedAdService : IRewardedAdService
             if (!_helper.IsLoaded)
             {
                 Android.Util.Log.Warn(Tag, "ShowAdAsync (default): Ad nach 2s immer noch nicht geladen");
+                AdUnavailable?.Invoke();
                 return false;
             }
         }
 
         Android.Util.Log.Info(Tag, "ShowAdAsync (default): Zeige vorgeladene Ad");
-        return await _helper.ShowAsync();
+        var result = await _helper.ShowAsync();
+        if (!result)
+            AdUnavailable?.Invoke();
+        return result;
     }
 
     public async Task<bool> ShowAdAsync(string placement)
@@ -69,6 +75,8 @@ public class AndroidRewardedAdService : IRewardedAdService
         // On-Demand laden und zeigen (eigene Ad-Unit-ID pro Placement)
         var result = await _helper.LoadAndShowAsync(adUnitId);
         Android.Util.Log.Info(Tag, $"ShowAdAsync ({placement}): Ergebnis={result}");
+        if (!result)
+            AdUnavailable?.Invoke();
         return result;
     }
 

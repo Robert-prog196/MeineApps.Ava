@@ -1173,5 +1173,18 @@ namespace BomberBlast.Resources.Strings {
                 return ResourceManager.GetString("ContinueWithout", resourceCulture);
             }
         }
+
+        // Ad Unavailable
+        internal static string AdVideoNotAvailableTitle {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableTitle", resourceCulture);
+            }
+        }
+
+        internal static string AdVideoNotAvailableMessage {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableMessage", resourceCulture);
+            }
+        }
     }
 }

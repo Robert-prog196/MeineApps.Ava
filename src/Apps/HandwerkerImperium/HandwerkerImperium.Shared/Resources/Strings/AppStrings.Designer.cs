@@ -1007,5 +1007,9 @@ namespace HandwerkerImperium.Resources.Strings {
                 return ResourceManager.GetString("SelectWorkshop", resourceCulture);
             }
         }
+
+        public static string AdVideoNotAvailableTitle => ResourceManager.GetString("AdVideoNotAvailableTitle", resourceCulture) ?? "";
+
+        public static string AdVideoNotAvailableMessage => ResourceManager.GetString("AdVideoNotAvailableMessage", resourceCulture) ?? "";
     }
 }

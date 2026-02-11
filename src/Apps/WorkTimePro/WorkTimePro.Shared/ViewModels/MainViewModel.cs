@@ -25,6 +25,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly ITrialService _trialService;
     private readonly IPurchaseService _purchaseService;
     private readonly IAdService _adService;
+    private readonly IRewardedAdService _rewardedAdService;
 
     private System.Timers.Timer? _updateTimer;
     private bool _disposed;
@@ -82,7 +83,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MonthOverviewViewModel monthVm,
         YearOverviewViewModel yearVm,
         VacationViewModel vacationVm,
-        ShiftPlanViewModel shiftPlanVm)
+        ShiftPlanViewModel shiftPlanVm,
+        IRewardedAdService rewardedAdService)
     {
         _timeTracking = timeTracking;
         _calculation = calculation;
@@ -91,6 +93,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _trialService = trialService;
         _purchaseService = purchaseService;
         _adService = adService;
+        _rewardedAdService = rewardedAdService;
+        _rewardedAdService.AdUnavailable += () => MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;

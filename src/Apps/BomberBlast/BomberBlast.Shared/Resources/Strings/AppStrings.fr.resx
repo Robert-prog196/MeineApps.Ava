@@ -622,4 +622,12 @@
     <value>Continuer</value>
   </data>
 
+  <!-- Ad Unavailable -->
+  <data name="AdVideoNotAvailableTitle" xml:space="preserve">
+    <value>Aucune vidéo disponible</value>
+  </data>
+  <data name="AdVideoNotAvailableMessage" xml:space="preserve">
+    <value>Aucune vidéo publicitaire n'est actuellement disponible. Veuillez réessayer plus tard.</value>
+  </data>
+
 </root>

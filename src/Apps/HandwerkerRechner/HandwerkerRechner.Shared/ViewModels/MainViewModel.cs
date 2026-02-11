@@ -6,6 +6,7 @@ using HandwerkerRechner.ViewModels.Premium;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Services;
+using HandwerkerRechner.Resources.Strings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HandwerkerRechner.ViewModels;
@@ -66,6 +67,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
         _premiumAccessService.AccessExpired += OnAccessExpired;
+        _rewardedAdService.AdUnavailable += () =>
+            MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);
 
         // Subscribe to language changes
         SettingsViewModel.LanguageChanged += OnLanguageChanged;

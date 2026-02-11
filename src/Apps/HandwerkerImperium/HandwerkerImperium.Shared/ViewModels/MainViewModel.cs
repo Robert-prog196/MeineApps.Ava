@@ -408,6 +408,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _quickJobService = quickJobService;
         _dailyChallengeService = dailyChallengeService;
         _rewardedAdService = rewardedAdService;
+        _rewardedAdService.AdUnavailable += () => ShowAlertDialog(
+            _localizationService.GetString("AdVideoNotAvailableTitle"),
+            _localizationService.GetString("AdVideoNotAvailableMessage"),
+            "OK");
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;

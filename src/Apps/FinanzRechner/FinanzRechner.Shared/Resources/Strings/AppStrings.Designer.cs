@@ -118,5 +118,18 @@ namespace FinanzRechner.Resources.Strings {
                 return ResourceManager.GetString("AccessFor24h", resourceCulture);
             }
         }
+
+        // Ad nicht verfügbar
+        internal static string AdVideoNotAvailableTitle {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableTitle", resourceCulture);
+            }
+        }
+
+        internal static string AdVideoNotAvailableMessage {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableMessage", resourceCulture);
+            }
+        }
     }
 }

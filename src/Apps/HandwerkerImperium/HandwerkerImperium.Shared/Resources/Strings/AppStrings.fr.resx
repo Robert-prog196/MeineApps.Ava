@@ -2055,5 +2055,11 @@
   <data name="WorkshopUnlockedWithAd" xml:space="preserve">
     <value>Atelier d&#233;bloqu&#233; !</value>
   </data>
+  <data name="AdVideoNotAvailableTitle" xml:space="preserve">
+    <value>Aucune vidéo disponible</value>
+  </data>
+  <data name="AdVideoNotAvailableMessage" xml:space="preserve">
+    <value>Aucune vidéo publicitaire n'est actuellement disponible. Veuillez réessayer plus tard.</value>
+  </data>
 
 </root>

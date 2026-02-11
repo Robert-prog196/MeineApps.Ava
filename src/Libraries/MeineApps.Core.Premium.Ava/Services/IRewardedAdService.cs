@@ -22,4 +22,7 @@ public interface IRewardedAdService
 
     /// <summary>Deaktiviert Rewarded Ads (z.B. nach Premium-Kauf)</summary>
     void Disable();
+
+    /// <summary>Wird gefeuert wenn kein Werbevideo verfuegbar ist (z.B. kein Fill, Timeout)</summary>
+    event Action? AdUnavailable;
 }

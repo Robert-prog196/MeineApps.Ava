@@ -2208,5 +2208,17 @@ namespace WorkTimePro.Resources.Strings {
                 return ResourceManager.GetString("VideoAdFailed", resourceCulture);
             }
         }
+
+        internal static string AdVideoNotAvailableTitle {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableTitle", resourceCulture);
+            }
+        }
+
+        internal static string AdVideoNotAvailableMessage {
+            get {
+                return ResourceManager.GetString("AdVideoNotAvailableMessage", resourceCulture);
+            }
+        }
     }
 }
