@@ -1,5 +1,4 @@
 <Project>
-  <!-- Android-specific settings (evaluated AFTER project files, so TargetFramework is available) -->
   <PropertyGroup Condition="$(TargetFramework.Contains('android'))">
     <!-- Signing -->
     <AndroidKeyStore>true</AndroidKeyStore>
@@ -8,14 +7,11 @@
     <AndroidSigningKeyPass>MeineApps2025</AndroidSigningKeyPass>
     <AndroidSigningStorePass>MeineApps2025</AndroidSigningStorePass>
 
-    <!-- Play Store requires AAB format -->
+    <!-- Play Store erfordert AAB -->
     <AndroidPackageFormat>aab</AndroidPackageFormat>
-
   </PropertyGroup>
 
-  <!-- D8/DEX Fix: Xamarin.GooglePlayServices.Ads.Lite transitiv bringt sowohl
-       compose.runtime.annotation.jvm als auch compose.runtime.annotation.android mit,
-       beide enthalten DoNotRetain.class → duplizierter Typ. JVM-Variante excluden. -->
+  <!-- D8/DEX: Duplizierter DoNotRetain.class aus Ads.Lite transitiver Dependency -->
   <ItemGroup Condition="$(TargetFramework.Contains('android'))">
     <PackageReference Include="Xamarin.AndroidX.Compose.Runtime.Annotation.Jvm"
                       ExcludeAssets="all" PrivateAssets="all" />
