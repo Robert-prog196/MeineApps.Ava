@@ -1728,4 +1728,7 @@ Su superfici ruvide la resa diminuisce!</value>
   <data name="AdVideoNotAvailableMessage" xml:space="preserve">
     <value>Nessun video pubblicitario è attualmente disponibile. Riprova più tardi.</value>
   </data>
+  <data name="OhmsLawMinValues" xml:space="preserve">
+    <value>Inserire almeno 2 valori</value>
+  </data>
 </root>

@@ -38,11 +38,7 @@ public partial class MainView : UserControl
 
     private void OnFloatingText(string text, string category)
     {
-        var color = category switch
-        {
-            "result" => Color.Parse("#6366F1"),
-            _ => Color.Parse("#6366F1")
-        };
+        var color = Color.Parse("#6366F1");
         var w = FloatingTextCanvas.Bounds.Width;
         if (w < 10) w = 300;
         var h = FloatingTextCanvas.Bounds.Height;
@@ -65,7 +61,11 @@ public partial class MainView : UserControl
         if (vm == null || !vm.IsCalculatorActive) return;
 
         var end = e.GetPosition(this);
+        var deltaX = end.X - _swipeStart.X;
         var deltaY = end.Y - _swipeStart.Y;
+
+        // Nur vertikale Swipes erkennen (nicht diagonal beim Scrollen)
+        if (Math.Abs(deltaX) > Math.Abs(deltaY)) return;
 
         if (deltaY < -SwipeThreshold)
         {

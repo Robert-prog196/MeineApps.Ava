@@ -42,11 +42,11 @@ public class BarcodeLookupService : IBarcodeLookupService
             // 1. Check cache (with invalidation after 30 days)
             if (_barcodeCache.TryGetValue(barcode, out var cachedEntry))
             {
-                if ((DateTime.Now - cachedEntry.CachedAt).TotalDays <= 30)
+                if ((DateTime.UtcNow - cachedEntry.CachedAt).TotalDays <= 30)
                 {
                     // Update scan statistics
                     cachedEntry.ScannedCount++;
-                    cachedEntry.LastScannedAt = DateTime.Now;
+                    cachedEntry.LastScannedAt = DateTime.UtcNow;
                     await SaveCacheInternalAsync();
                     return cachedEntry.Food;
                 }
@@ -112,9 +112,9 @@ public class BarcodeLookupService : IBarcodeLookupService
             {
                 Barcode = barcode,
                 Food = foodItem,
-                CachedAt = DateTime.Now,
+                CachedAt = DateTime.UtcNow,
                 ScannedCount = 1,
-                LastScannedAt = DateTime.Now
+                LastScannedAt = DateTime.UtcNow
             };
             await SaveCacheInternalAsync();
 
@@ -300,7 +300,7 @@ public class CachedBarcodeEntry
     public FoodItem Food { get; set; } = new();
     public DateTime CachedAt { get; set; }
     public int ScannedCount { get; set; } = 1;
-    public DateTime LastScannedAt { get; set; } = DateTime.Now;
+    public DateTime LastScannedAt { get; set; } = DateTime.UtcNow;
 }
 
 #endregion

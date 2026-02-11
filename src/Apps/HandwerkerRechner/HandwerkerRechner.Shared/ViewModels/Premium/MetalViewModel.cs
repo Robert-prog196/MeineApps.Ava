@@ -395,7 +395,7 @@ public partial class MetalViewModel : ObservableObject
                     inputs[_localization.GetString("LabelLengthM") ?? "Length"] = $"{Length:F2} m";
                     inputs[_localization.GetString("LabelDimension1Mm") ?? "Dim 1"] = $"{Dimension1} mm";
                     results[_localization.GetString("ResultWeight") ?? "Weight"] = $"{WeightResult.Weight:F2} kg";
-                    results[_localization.GetString("ResultVolume") ?? "Volume"] = $"{WeightResult.Volume:F4} m\u00b3";
+                    results[_localization.GetString("ResultVolume") ?? "Volume"] = $"{WeightResult.Volume:F4} cm\u00b3";
                     if (PricePerKg > 0)
                         results[_localization.GetString("ResultMaterialCost") ?? "Cost"] = $"{WeightResult.Weight * PricePerKg:F2} \u20ac";
                     break;

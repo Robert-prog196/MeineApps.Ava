@@ -1271,7 +1271,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         CurrentXp = e.CurrentXp;
         XpForNextLevel = e.XpForNextLevel;
-        LevelProgress = (double)e.CurrentXp / e.XpForNextLevel;
+        // Korrekte Formel aus GameState verwenden (berücksichtigt XP-Basis des aktuellen Levels)
+        LevelProgress = _gameStateService.State.LevelProgress;
     }
 
     private void OnWorkshopUpgraded(object? sender, WorkshopUpgradedEventArgs e)
@@ -1556,7 +1557,7 @@ public partial class WorkshopDisplayModel : ObservableObject
     public string IncomeDisplay => IncomePerSecond > 0 ? $"{IncomePerSecond:N0}€/s" : "-";
     public string UpgradeCostDisplay => $"{UpgradeCost:N0}€";
     public string HireCostDisplay => $"{HireWorkerCost:N0}€";
-    public double LevelProgress => Level / 50.0;
+    public double LevelProgress => Level / (double)Workshop.MaxLevel;
 
     // Phase 10.2: Level-basierte Farb-Intensitaet fuer Workshop-Streifen
     // Wird als ConverterParameter im AXAML verwendet

@@ -103,6 +103,7 @@ Jedes Research braucht: `GoldScrews` + `ResearchPoints` (verdient via Workshop-P
 
 ## Changelog Highlights
 
+- **v2.0.3 (11.02.2026)**: Bugfixes: Workshop-LevelProgress dividierte durch 10 statt MaxLevel (50), XP-Progress in OnXpGained nutzte falsche Formel (jetzt GameState.LevelProgress), DailyChallenge EarnMoney int-Cast→Math.Round, WorkshopView zeigte "/10" statt "/50", WorkshopDisplayModel hardcodierte 50.0→Workshop.MaxLevel
 - **v2.0.3 (11.02.2026)**: 6 neue Rewarded-Ad-Placements implementiert (workshop_speedup, workshop_unlock, worker_hire_bonus, research_speedup, daily_challenge_retry, achievement_boost). Models erweitert (HasRetriedWithAd, HasUsedAdBoost, AdBonusWorkerSlots). Service-Methoden: RetryChallenge, ForceUnlockWorkshop, BoostAchievement. Lokalisierung in 6 Sprachen.
 - **v2.0.2 (09.02.2026)**: Daily-Challenge-Bug: MiniGame-Ergebnisse werden jetzt via Event an DailyChallengeService gemeldet; 18 fehlende Lokalisierungs-Keys in 6 Sprachen ergaenzt; Farbkonsistenz-Fix: Alle Views auf warme Craft-Palette, Button-Style-Overrides, Workshop/Tier/Branch-Farben waermer
 - **v2.0.2 (08.02.2026)**: Banner-Ad Overlap-Fix, WorkshopColorConverter, CelebrationOverlay + FloatingTextOverlay, Golden Screw Shimmer

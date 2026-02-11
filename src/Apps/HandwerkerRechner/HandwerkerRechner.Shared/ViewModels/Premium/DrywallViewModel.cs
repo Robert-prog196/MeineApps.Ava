@@ -279,7 +279,9 @@ public partial class DrywallViewModel : ObservableObject
             {
                 [_localization.GetString("WallLength") ?? "Wall length"] = $"{WallLength:F1} m",
                 [_localization.GetString("RoomHeight") ?? "Height"] = $"{WallHeight:F1} m",
-                [_localization.GetString("DoublePlated") ?? "Double layered"] = DoublePlated ? "Yes" : "No"
+                [_localization.GetString("DoublePlated") ?? "Double layered"] = DoublePlated
+                    ? (_localization.GetString("Yes") ?? "Yes")
+                    : (_localization.GetString("No") ?? "No")
             };
             var results = new Dictionary<string, string>
             {

@@ -667,7 +667,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
         var entry = new FoodLogEntry
         {
-            Date = DateTime.Now,
+            Date = DateTime.Today,
             FoodName = SelectedFood.Name,
             Grams = PortionGrams,
             Calories = CalculatedCalories,

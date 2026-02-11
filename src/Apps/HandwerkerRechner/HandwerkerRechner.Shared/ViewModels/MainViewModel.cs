@@ -62,8 +62,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_adService.AdsEnabled && !_purchaseService.IsPremium)
             _adService.ShowBanner();
 
-        // Wire Projects navigation (open project in calculator)
+        // Wire Projects navigation und Messages
         ProjectsViewModel.NavigationRequested += OnProjectNavigation;
+        ProjectsViewModel.MessageRequested += (title, msg) => MessageRequested?.Invoke(title, msg);
+
+        // Wire Settings Messages
+        SettingsViewModel.MessageRequested += (title, msg) => MessageRequested?.Invoke(title, msg);
 
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
         _premiumAccessService.AccessExpired += OnAccessExpired;
@@ -183,11 +187,25 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     partial void OnCurrentPageChanged(string? value)
     {
+        // Altes Calculator-VM aufräumen (Event-Subscriptions entfernen)
+        CleanupCurrentCalculator();
+
         OnPropertyChanged(nameof(IsCalculatorOpen));
         if (value != null)
             CurrentCalculatorVm = CreateCalculatorVm(value);
         else
             CurrentCalculatorVm = null;
+    }
+
+    private void CleanupCurrentCalculator()
+    {
+        switch (CurrentCalculatorVm)
+        {
+            case TileCalculatorViewModel t: t.Cleanup(); break;
+            case WallpaperCalculatorViewModel w: w.Cleanup(); break;
+            case PaintCalculatorViewModel p: p.Cleanup(); break;
+            case FlooringCalculatorViewModel f: f.Cleanup(); break;
+        }
     }
 
     private ObservableObject? CreateCalculatorVm(string page)

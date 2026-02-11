@@ -343,6 +343,8 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Backspace()
     {
+        if (HasError) return;
+
         if (Display.Length > 1)
             Display = Display[..^1];
         else

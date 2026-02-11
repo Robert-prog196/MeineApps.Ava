@@ -1728,4 +1728,7 @@ Le rendement diminue sur les surfaces rugueuses !</value>
   <data name="AdVideoNotAvailableMessage" xml:space="preserve">
     <value>Aucune vidéo publicitaire n'est actuellement disponible. Veuillez réessayer plus tard.</value>
   </data>
+  <data name="OhmsLawMinValues" xml:space="preserve">
+    <value>Entrez au moins 2 valeurs</value>
+  </data>
 </root>

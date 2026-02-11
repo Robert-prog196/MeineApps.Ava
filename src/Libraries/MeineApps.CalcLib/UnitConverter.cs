@@ -72,7 +72,7 @@ public static class UnitConverter
         [UnitCategory.Speed] = new()
         {
             new("Meters per Second", "m/s", 1),
-            new("Kilometers per Hour", "km/h", 0.277778),
+            new("Kilometers per Hour", "km/h", 1.0 / 3.6),
             new("Miles per Hour", "mph", 0.44704),
             new("Knots", "kn", 0.514444),
             new("Feet per Second", "ft/s", 0.3048)
@@ -112,9 +112,11 @@ public static class UnitConverter
         // Spezialbehandlung für Temperatur (mit Offset)
         if (fromUnit.Offset.HasValue && toUnit.Offset.HasValue)
         {
-            // Temperatur: Erst auf Basis umrechnen, dann Offset anwenden
-            var celsius = (value + (fromUnit.Offset.Value * fromUnit.ToBaseMultiplier)) * fromUnit.ToBaseMultiplier;
-            return (celsius / toUnit.ToBaseMultiplier) - toUnit.Offset.Value;
+            // Temperatur: Erst in Celsius umrechnen, dann in Zieleinheit
+            // Formel: celsius = (value + Offset) * ToBaseMultiplier
+            // z.B. Fahrenheit→Celsius: (100 + (-32)) * 5/9 = 37.78
+            var celsius = (value + fromUnit.Offset.Value) * fromUnit.ToBaseMultiplier;
+            return celsius / toUnit.ToBaseMultiplier - toUnit.Offset.Value;
         }
 
         // Normale Einheiten: Erst zu Basis, dann zu Ziel

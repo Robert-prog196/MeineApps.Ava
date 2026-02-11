@@ -33,7 +33,7 @@ Handwerker-App mit 9 Rechnern (4 Free Floor + 5 Premium), Projektverwaltung und 
 ## App-spezifische Services
 
 - **ProjectService**: JSON-Persistenz (Project Model), DateTime.UtcNow
-- **CalculationHistoryService**: MaxItemsPerCalculator 30 (10 free / 30 extended)
+- **CalculationHistoryService**: MaxItemsPerCalculator 30 (5 free / 30 extended)
 - **UnitConverterService**: Laenge, Flaeche, Volumen, Gewicht
 - **IMaterialExportService / MaterialExportService**: PdfSharpCore A4 Export
 - **IPremiumAccessService / PremiumAccessService**: 30-Min temporaerer Zugang zu Premium-Rechnern, 24h Extended History

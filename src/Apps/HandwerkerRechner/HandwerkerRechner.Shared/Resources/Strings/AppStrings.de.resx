@@ -1755,4 +1755,7 @@ Auf rauem Untergrund sinkt die Ergiebigkeit!</value>
   <data name="AdVideoNotAvailableMessage" xml:space="preserve">
     <value>Derzeit ist kein Werbevideo verfügbar. Bitte versuche es später erneut.</value>
   </data>
+  <data name="OhmsLawMinValues" xml:space="preserve">
+    <value>Mindestens 2 Werte eingeben</value>
+  </data>
 </root>

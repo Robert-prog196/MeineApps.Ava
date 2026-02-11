@@ -287,7 +287,7 @@ public class DailyChallengeService : IDailyChallengeService, IDisposable
         // Nur bei Geldeinnahmen (nicht Ausgaben)
         if (e.NewAmount > e.OldAmount)
         {
-            var earned = (int)(e.NewAmount - e.OldAmount);
+            var earned = (int)Math.Round(e.NewAmount - e.OldAmount);
             IncrementChallenge(DailyChallengeType.EarnMoney, earned);
         }
     }

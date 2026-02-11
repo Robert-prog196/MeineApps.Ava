@@ -209,7 +209,7 @@ public partial class ElectricalViewModel : ObservableObject
                         HasResult = false;
                         MessageRequested?.Invoke(
                             _localization.GetString("InvalidInputTitle"),
-                            _localization.GetString("ValueMustBePositive"));
+                            _localization.GetString("OhmsLawMinValues") ?? "Enter at least 2 values");
                         return;
                     }
 

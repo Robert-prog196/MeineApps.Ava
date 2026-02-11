@@ -70,6 +70,7 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 
 ## Changelog (Highlights)
 
+- **11.02.2026**: Bugfixes: WaterViewModel speicherte Ziel in Liter statt Milliliter (Progress-Bar sofort 100% nach einem Glas), ProgressViewModel FoodLog DateTime.Now→DateTime.Today, BarcodeLookupService Cache-Timing DateTime.Now→DateTime.UtcNow
 - **11.02.2026**: Nativer Barcode-Scanner (CameraX + ML Kit) mit BarcodeScannerView, manuelle Eingabe auf Desktop, FoodSearchVM → MainVM Navigation verdrahtet
 - **08.02.2026**: FloatingTextOverlay + CelebrationOverlay (Game Juice)
 - **07.02.2026**: 4 Rewarded Ad Features, HomeView Redesign, LanguageChanged Fix

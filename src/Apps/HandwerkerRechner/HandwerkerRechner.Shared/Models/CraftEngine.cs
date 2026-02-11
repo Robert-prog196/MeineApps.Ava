@@ -58,6 +58,7 @@ public class CraftEngine
         }
 
         var stripsPerRoll = Math.Floor(rollLength / effectiveHeight);
+        if (stripsPerRoll < 1) stripsPerRoll = 1; // Schutz gegen Division durch 0 (Raumhöhe > Rollenlänge)
         var totalStrips = Math.Ceiling(perimeter / rollWidthM);
         var rollsNeeded = Math.Ceiling(totalStrips / stripsPerRoll);
 
@@ -423,6 +424,7 @@ public class CraftEngine
     /// </summary>
     public RoofPitchResult CalculateRoofPitch(double run, double rise)
     {
+        if (run <= 0) run = 0.001; // Schutz gegen Division durch 0
         var pitchRadians = Math.Atan(rise / run);
         var pitchDegrees = pitchRadians * 180 / Math.PI;
         var pitchPercent = (rise / run) * 100;

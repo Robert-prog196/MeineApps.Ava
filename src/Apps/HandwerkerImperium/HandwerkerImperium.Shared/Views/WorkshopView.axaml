@@ -75,7 +75,7 @@
                            Foreground="{StaticResource CraftPrimaryLightBrush}"
                            Height="12" />
               <TextBlock Grid.Column="1"
-                         Text="{Binding Level, StringFormat='{}{0}/10'}"
+                         Text="{Binding Level, StringFormat='{}{0}/50'}"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          Margin="8,0,0,0" />

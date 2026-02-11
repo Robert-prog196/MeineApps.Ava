@@ -215,7 +215,7 @@ public partial class FlooringCalculatorViewModel : ObservableObject
     {
         try
         {
-            var title = $"{RoomLength:F1} \u00d7 {RoomWidth:F1} m, {BoardLength}\u00d7{BoardWidth} cm";
+            var title = $"{RoomLength:F1} \u00d7 {RoomWidth:F1} m, {BoardLength} m \u00d7 {BoardWidth} cm";
             var data = new Dictionary<string, object>
             {
                 ["RoomLength"] = RoomLength,

@@ -103,8 +103,8 @@ public partial class WaterViewModel : ObservableObject
 
         try
         {
-            // Save water goal in preferences (in liters)
-            _preferences.Set("daily_water_goal", Result.TotalLiters);
+            // Wasserziel in Milliliter speichern (alle anderen VMs erwarten ml)
+            _preferences.Set("daily_water_goal", Result.TotalLiters * 1000);
 
             MessageRequested?.Invoke(
                 _localization.GetString("AlertSuccess"),

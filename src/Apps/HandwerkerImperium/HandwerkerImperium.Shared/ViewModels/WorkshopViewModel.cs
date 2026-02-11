@@ -162,7 +162,7 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         WorkshopIcon = WorkshopType.GetIcon();
         WorkshopName = _localizationService.GetString(WorkshopType.GetLocalizationKey());
         Level = workshop.Level;
-        LevelProgress = Level / 10.0;
+        LevelProgress = Level / (double)Workshop.MaxLevel;
         IncomePerSecond = workshop.IncomePerSecond;
         IncomeDisplay = $"{IncomePerSecond:N0} €/s";
         TotalEarned = workshop.TotalEarned;

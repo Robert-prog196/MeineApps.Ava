@@ -89,9 +89,9 @@ public partial class ConverterViewModel : ObservableObject
     {
         if (double.IsNaN(value) || double.IsInfinity(value))
             return _localization.GetString("Error");
-        if (Math.Abs(value) < 0.0001 && value != 0 || Math.Abs(value) >= 1_000_000)
-            return value.ToString("E4");
-        return value.ToString("N6").TrimEnd('0').TrimEnd('.');
+        if ((Math.Abs(value) < 0.0001 && value != 0) || Math.Abs(value) >= 1_000_000)
+            return value.ToString("E4", System.Globalization.CultureInfo.InvariantCulture);
+        return value.ToString("N6", System.Globalization.CultureInfo.InvariantCulture).TrimEnd('0').TrimEnd('.');
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)

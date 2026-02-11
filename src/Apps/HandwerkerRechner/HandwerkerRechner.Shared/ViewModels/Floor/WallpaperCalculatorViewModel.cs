@@ -200,6 +200,8 @@ public partial class WallpaperCalculatorViewModel : ObservableObject
                 return;
             }
 
+            // WallLength = Raumumfang (gesamte Wandlänge). Engine erwartet roomLength+roomWidth
+            // und berechnet perimeter = 2*(L+W). Mit L=Umfang/2, W=0 ergibt sich perimeter=Umfang.
             Result = _craftEngine.CalculateWallpaper(WallLength / 2, 0, RoomHeight, RollLength, RollWidth, PatternRepeat);
             HasResult = true;
 
