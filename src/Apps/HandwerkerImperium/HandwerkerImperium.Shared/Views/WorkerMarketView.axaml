@@ -183,15 +183,21 @@
                     </StackPanel>
                   </StackPanel>
 
-                  <!-- Row 2: Specialization + Efficiency -->
+                  <!-- Row 2: Specialization + Efficiency + Mehrwert -->
                   <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
                               Orientation="Horizontal" Spacing="12">
                     <TextBlock Text="{Binding Specialization}"
                                FontSize="12"
                                Foreground="{DynamicResource TextSecondaryBrush}" />
-                    <TextBlock Text="{Binding EffectiveEfficiency, StringFormat='Eff: {0:P0}'}"
-                               FontSize="12"
-                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}">
+                      <Run Text="Eff:" />
+                      <Run Text="{Binding Efficiency, StringFormat='{}{0:P0}'}" FontWeight="SemiBold" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding IncomeContributionDisplay}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SuccessBrush}"
+                               IsVisible="{Binding IncomeContribution}" />
                   </StackPanel>
 
                   <!-- Row 3: Hire Button (disabled wenn keine Plaetze frei) -->
@@ -239,14 +245,17 @@
     <Border Grid.RowSpan="2"
             ZIndex="50"
             IsVisible="{Binding ShowWorkshopSelection}"
-            Background="#80000000">
-      <Border Classes="CardElevated"
+            Background="#AA000000">
+      <Border Background="{DynamicResource BackgroundBrush}"
+              BorderBrush="{StaticResource CraftPrimaryBrush}"
+              BorderThickness="2"
               MaxWidth="400"
               Margin="24"
               Padding="20"
               CornerRadius="16"
               VerticalAlignment="Center"
-              HorizontalAlignment="Center">
+              HorizontalAlignment="Center"
+              BoxShadow="0 8 24 0 #40000000">
         <StackPanel Spacing="16">
 
           <!-- Overlay-Titel -->
@@ -283,21 +292,22 @@
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         Margin="0,0,0,8"
-                        Padding="12,10"
+                        Padding="16,14"
+                        MinHeight="56"
                         Command="{Binding $parent[ItemsControl].((vm:WorkerMarketViewModel)DataContext).ConfirmWorkshopSelectionCommand}"
                         CommandParameter="{Binding .}">
                   <Grid ColumnDefinitions="*,Auto">
-                    <StackPanel Spacing="2">
+                    <StackPanel Spacing="4">
                       <TextBlock Text="{Binding Name}"
-                                 FontSize="14" FontWeight="SemiBold"
+                                 FontSize="15" FontWeight="SemiBold"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                       <TextBlock Text="{Binding WorkerInfo}"
-                                 FontSize="12"
+                                 FontSize="13"
                                  Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                     <mi:MaterialIcon Grid.Column="1" Kind="ChevronRight"
-                                     Width="20" Height="20"
-                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     Width="24" Height="24"
+                                     Foreground="{StaticResource CraftPrimaryLightBrush}"
                                      VerticalAlignment="Center" />
                   </Grid>
                 </Button>
@@ -306,12 +316,13 @@
           </ItemsControl>
 
           <!-- Abbrechen Button -->
-          <Button Classes="Text"
-                  HorizontalAlignment="Center"
-                  Command="{Binding CancelWorkshopSelectionCommand}">
+          <Button Classes="Secondary"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Command="{Binding CancelWorkshopSelectionCommand}"
+                  Padding="12,10">
             <TextBlock Text="{Binding CancelText}"
-                       FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                       FontSize="14" />
           </Button>
 
         </StackPanel>

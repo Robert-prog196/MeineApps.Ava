@@ -94,6 +94,7 @@
         <ProgressBar Value="{Binding ActiveResearchProgress}"
                      Maximum="1"
                      Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     Background="{DynamicResource SurfaceBrush}"
                      Height="6" />
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock Text="{Binding ActiveResearchTimeRemaining}"
@@ -302,6 +303,7 @@
                       <ProgressBar Value="{Binding Progress}"
                                    Maximum="1"
                                    Foreground="{StaticResource CraftPrimaryLightBrush}"
+                                   Background="{DynamicResource SurfaceBrush}"
                                    Height="6" />
                     </StackPanel>
 

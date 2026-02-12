@@ -76,9 +76,8 @@ public class QuickJobService : IQuickJobService
             var miniGameType = AvailableMiniGames[_random.Next(AvailableMiniGames.Length)];
             var titleKey = TitleKeys[_random.Next(TitleKeys.Length)];
 
-            // Belohnung skaliert mit Level
-            var reward = Math.Min(100m, 20m + level * 5m);
-            var xpReward = Math.Min(25, 5 + level * 2);
+            // Belohnung skaliert mit Level und aktuellem Einkommen
+            var (reward, xpReward) = CalculateQuickJobRewards(level);
 
             state.QuickJobs.Add(new QuickJob
             {
@@ -122,8 +121,7 @@ public class QuickJobService : IQuickJobService
                 var workshopType = unlockedTypes[_random.Next(unlockedTypes.Count)];
                 var miniGameType = AvailableMiniGames[_random.Next(AvailableMiniGames.Length)];
                 var titleKey = TitleKeys[_random.Next(TitleKeys.Length)];
-                var reward = Math.Min(100m, 20m + level * 5m);
-                var xpReward = Math.Min(25, 5 + level * 2);
+                var (reward, xpReward) = CalculateQuickJobRewards(level);
 
                 state.QuickJobs.Add(new QuickJob
                 {
@@ -139,6 +137,22 @@ public class QuickJobService : IQuickJobService
 
         state.LastQuickJobRotation = DateTime.UtcNow;
         _gameStateService.MarkDirty();
+    }
+
+    /// <summary>
+    /// Berechnet QuickJob-Belohnungen basierend auf Level und aktuellem Einkommen.
+    /// Gibt ~5 Minuten Einkommen als Basis, mindestens Level-skaliert.
+    /// </summary>
+    private (decimal reward, int xpReward) CalculateQuickJobRewards(int level)
+    {
+        // Basis: ~5 Min Brutto-Einkommen (Mindestens Level * 50)
+        var fiveMinIncome = _gameStateService.State.TotalIncomePerSecond * 300m;
+        var reward = Math.Max(20m + level * 50m, fiveMinIncome);
+
+        // XP skaliert mit Level (kein starres Cap)
+        var xpReward = 5 + level * 3;
+
+        return (Math.Round(reward, 0), xpReward);
     }
 
     /// <summary>

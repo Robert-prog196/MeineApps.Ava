@@ -156,58 +156,69 @@ public class DailyChallengeService : IDailyChallengeService, IDisposable
 
     private DailyChallenge CreateChallenge(DailyChallengeType type, int level)
     {
-        // Level-Stufe bestimmen
-        int tier = level <= 10 ? 0 : level <= 20 ? 1 : 2;
+        // Level-Stufe bestimmen (0-4 statt nur 0-2)
+        int tier = level switch
+        {
+            <= 5 => 0,
+            <= 15 => 1,
+            <= 30 => 2,
+            <= 50 => 3,
+            _ => 4
+        };
+
+        // Basis-Multiplikator: Belohnung skaliert mit Level
+        // ~10 Minuten Brutto-Einkommen als Basis, mindestens Level * 30
+        var incomeBase = Math.Max(level * 30m, _gameStateService.State.TotalIncomePerSecond * 600m);
 
         var challenge = new DailyChallenge { Type = type };
 
         switch (type)
         {
             case DailyChallengeType.CompleteOrders:
-                challenge.TargetValue = tier switch { 0 => 2, 1 => 3, _ => 5 };
-                challenge.MoneyReward = 100m + tier * 100m;
-                challenge.XpReward = 20 + tier * 15;
+                challenge.TargetValue = tier switch { 0 => 2, 1 => 3, 2 => 4, _ => 5 };
+                challenge.MoneyReward = Math.Round(incomeBase * 0.8m, 0);
+                challenge.XpReward = 20 + level * 2;
                 break;
 
             case DailyChallengeType.EarnMoney:
-                challenge.TargetValue = tier switch { 0 => 200, 1 => 500, _ => 1000 };
-                challenge.MoneyReward = 80m + tier * 85m;
-                challenge.XpReward = 15 + tier * 13;
+                challenge.TargetValue = (int)Math.Max(200, incomeBase * 0.5m);
+                challenge.MoneyReward = Math.Round(incomeBase * 0.6m, 0);
+                challenge.XpReward = 15 + level * 2;
                 break;
 
             case DailyChallengeType.UpgradeWorkshop:
-                challenge.TargetValue = tier >= 2 ? 2 : 1;
-                challenge.MoneyReward = 150m + tier * 125m;
-                challenge.XpReward = 25 + tier * 18;
+                challenge.TargetValue = tier >= 3 ? 3 : tier >= 1 ? 2 : 1;
+                challenge.MoneyReward = Math.Round(incomeBase * 1.0m, 0);
+                challenge.XpReward = 25 + level * 2;
                 break;
 
             case DailyChallengeType.HireWorker:
                 challenge.TargetValue = 1;
-                challenge.MoneyReward = 100m + tier * 50m;
-                challenge.XpReward = 20 + tier * 5;
+                challenge.MoneyReward = Math.Round(incomeBase * 0.7m, 0);
+                challenge.XpReward = 20 + level * 2;
                 break;
 
             case DailyChallengeType.CompleteQuickJob:
-                challenge.TargetValue = tier switch { 0 => 1, 1 => 2, _ => 3 };
-                challenge.MoneyReward = 80m + tier * 60m;
-                challenge.XpReward = 15 + tier * 10;
+                challenge.TargetValue = tier switch { 0 => 1, 1 => 2, 2 => 3, _ => 4 };
+                challenge.MoneyReward = Math.Round(incomeBase * 0.5m, 0);
+                challenge.XpReward = 15 + level * 2;
                 break;
 
             case DailyChallengeType.PlayMiniGames:
-                challenge.TargetValue = tier switch { 0 => 3, 1 => 5, _ => 7 };
-                challenge.MoneyReward = 100m + tier * 75m;
-                challenge.XpReward = 20 + tier * 13;
+                challenge.TargetValue = tier switch { 0 => 3, 1 => 4, 2 => 5, _ => 7 };
+                challenge.MoneyReward = Math.Round(incomeBase * 0.7m, 0);
+                challenge.XpReward = 20 + level * 2;
                 break;
 
             case DailyChallengeType.AchieveMinigameScore:
-                challenge.TargetValue = tier switch { 0 => 70, 1 => 80, _ => 90 };
-                challenge.MoneyReward = 120m + tier * 115m;
-                challenge.XpReward = 25 + tier * 15;
+                challenge.TargetValue = tier switch { 0 => 70, 1 => 75, 2 => 80, _ => 90 };
+                challenge.MoneyReward = Math.Round(incomeBase * 1.0m, 0);
+                challenge.XpReward = 25 + level * 2;
                 break;
         }
 
-        // Goldschrauben-Belohnung: 1-2 je nach Level-Stufe (gedeckelt auf 2)
-        challenge.GoldenScrewReward = Math.Min(1 + tier, 2);
+        // Goldschrauben-Belohnung: 1-3 je nach Level-Stufe
+        challenge.GoldenScrewReward = Math.Min(1 + tier, 3);
 
         return challenge;
     }

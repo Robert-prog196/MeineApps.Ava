@@ -148,7 +148,7 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_small",
                 Name = _localizationService.GetString("ShopCashSmallName"),
-                Description = string.Format(_localizationService.GetString("ShopCashSmallDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 500m)),
+                Description = string.Format(_localizationService.GetString("ShopCashSmallDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(GetInstantCashAmount("instant_cash_small"))),
                 Icon = "💰",
                 Price = _localizationService.GetString("WatchVideo"),
                 IsAdReward = true
@@ -157,7 +157,7 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_large",
                 Name = _localizationService.GetString("ShopCashLargeName"),
-                Description = string.Format(_localizationService.GetString("ShopCashLargeDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 2_000m)),
+                Description = string.Format(_localizationService.GetString("ShopCashLargeDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(GetInstantCashAmount("instant_cash_large"))),
                 Icon = "💵",
                 Price = "0,99 €",
                 IsPremiumItem = true
@@ -166,7 +166,7 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_huge",
                 Name = _localizationService.GetString("ShopCashHugeName"),
-                Description = string.Format(_localizationService.GetString("ShopCashHugeDesc") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 10_000m)),
+                Description = string.Format(_localizationService.GetString("ShopCashHugeDesc") ?? "{0}", MoneyFormatter.FormatCompact(GetInstantCashAmount("instant_cash_huge"))),
                 Icon = "💎",
                 Price = "2,49 €",
                 IsPremiumItem = true
@@ -175,9 +175,9 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_mega",
                 Name = _localizationService.GetString("ShopCashMegaName"),
-                Description = string.Format(_localizationService.GetString("ShopCashMegaDesc") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 50_000m)),
+                Description = string.Format(_localizationService.GetString("ShopCashMegaDesc") ?? "{0}", MoneyFormatter.FormatCompact(GetInstantCashAmount("instant_cash_mega"))),
                 Icon = "👑",
-                Price = "4,99 €",
+                Price = "3,99 €",
                 IsPremiumItem = true
             },
             new ShopItem
@@ -399,13 +399,7 @@ public partial class ShopViewModel : ObservableObject
                 }
                 else if (item.Id is "instant_cash_large" or "instant_cash_huge" or "instant_cash_mega")
                 {
-                    var cashAmount = item.Id switch
-                    {
-                        "instant_cash_large" => _gameStateService.State.PlayerLevel * 2_000m,
-                        "instant_cash_huge" => _gameStateService.State.PlayerLevel * 10_000m,
-                        "instant_cash_mega" => _gameStateService.State.PlayerLevel * 50_000m,
-                        _ => 0m
-                    };
+                    var cashAmount = GetInstantCashAmount(item.Id);
                     if (cashAmount > 0)
                     {
                         // TODO: Echten IAP-Kauf via PurchaseService implementieren
@@ -508,7 +502,7 @@ public partial class ShopViewModel : ObservableObject
                 break;
 
             case "instant_cash_small":
-                var cashSmall = _gameStateService.State.PlayerLevel * 500m;
+                var cashSmall = GetInstantCashAmount("instant_cash_small");
                 _gameStateService.AddMoney(cashSmall);
                 CurrentBalance = FormatMoney(_gameStateService.State.Money);
                 await _audioService.PlaySoundAsync(GameSound.MoneyEarned);
@@ -541,6 +535,26 @@ public partial class ShopViewModel : ObservableObject
         }
 
         await _saveGameService.SaveAsync();
+    }
+
+    /// <summary>
+    /// Berechnet den Instant-Cash-Betrag basierend auf stündlichem Einkommen.
+    /// Mindestens Level-basierter Fallback für Spieler ohne Workshops.
+    /// </summary>
+    private decimal GetInstantCashAmount(string itemId)
+    {
+        var state = _gameStateService.State;
+        // Basis: Stündliches Brutto-Einkommen (oder Fallback auf Level * 100)
+        var hourlyIncome = Math.Max(state.TotalIncomePerSecond * 3600m, state.PlayerLevel * 100m);
+
+        return itemId switch
+        {
+            "instant_cash_small" => Math.Max(500m, hourlyIncome * 4m),      // ~4h Einkommen (Video-Ad)
+            "instant_cash_large" => Math.Max(2_000m, hourlyIncome * 8m),    // ~8h Einkommen (0,99€)
+            "instant_cash_huge" => Math.Max(10_000m, hourlyIncome * 24m),   // ~24h Einkommen (2,49€)
+            "instant_cash_mega" => Math.Max(50_000m, hourlyIncome * 48m),   // ~48h Einkommen (3,99€)
+            _ => 0m
+        };
     }
 
     private static string FormatMoney(decimal amount) => MoneyFormatter.Format(amount, 2);

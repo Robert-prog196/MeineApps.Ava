@@ -753,6 +753,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Aktualisiert nur einen einzelnen Workshop (statt alle) → weniger UI-Churn bei Upgrade/Hire.
+    /// </summary>
+    private void RefreshSingleWorkshop(WorkshopType type)
+    {
+        var state = _gameStateService.State;
+        var index = Array.IndexOf(_workshopTypes, type);
+        if (index >= 0 && index < Workshops.Count)
+        {
+            UpdateWorkshopDisplay(Workshops[index], state, type);
+        }
+    }
+
     private WorkshopDisplayModel CreateWorkshopDisplay(GameState state, WorkshopType type)
     {
         var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
@@ -772,6 +785,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             IsUnlocked = isUnlocked,
             UnlockLevel = type.GetUnlockLevel(),
             RequiredPrestige = type.GetRequiredPrestige(),
+            UnlockCost = type.GetUnlockCost(),
+            CanBuyUnlock = _gameStateService.CanPurchaseWorkshop(type),
             UnlockDisplay = type.GetRequiredPrestige() > 0
                 ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
                 : $"Lv. {type.GetUnlockLevel()}",
@@ -796,6 +811,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         model.UpgradeCost = workshop?.UpgradeCost ?? 100;
         model.HireWorkerCost = workshop?.HireWorkerCost ?? 50;
         model.IsUnlocked = isUnlocked;
+        model.UnlockCost = type.GetUnlockCost();
+        model.CanBuyUnlock = _gameStateService.CanPurchaseWorkshop(type);
         model.UnlockDisplay = type.GetRequiredPrestige() > 0
             ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
             : $"Lv. {type.GetUnlockLevel()}";
@@ -831,32 +848,102 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (!workshop.IsUnlocked)
         {
-            // Ad-Unlock Option anbieten (nur wenn Werbung aktiv)
+            // Level-Anforderung prüfen
+            if (!_gameStateService.CanPurchaseWorkshop(workshop.Type))
+            {
+                var reqLevel = workshop.Type.GetUnlockLevel();
+                var reqPrestige = workshop.Type.GetRequiredPrestige();
+                string reason = reqPrestige > 0
+                    ? $"{_localizationService.GetString("Prestige")} {reqPrestige}"
+                    : $"Level {reqLevel}";
+                ShowAlertDialog(
+                    _localizationService.GetString("WorkshopLocked"),
+                    $"{_localizationService.GetString("RequiresLevel")}: {reason}",
+                    "OK");
+                await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+                return;
+            }
+
+            // Level erreicht → Kauf anbieten
+            var unlockCost = workshop.Type.GetUnlockCost();
+            var costDisplay = MoneyFormatter.FormatCompact(unlockCost);
+
+            // Video-Rabatt: 50% Kosten (nur wenn Werbung aktiv)
             if (ShowAds)
             {
+                var halfCost = unlockCost / 2m;
+                var halfCostDisplay = MoneyFormatter.FormatCompact(halfCost);
+
                 var watchAd = await ShowConfirmDialog(
-                    _localizationService.GetString("WatchAdToUnlock"),
-                    _localizationService.GetString("UnlockWorkshopWithAd"),
-                    _localizationService.GetString("WatchAdToUnlock"),
-                    _localizationService.GetString("Cancel"));
+                    _localizationService.GetString("UnlockWorkshop"),
+                    $"{_localizationService.GetString("UnlockWorkshopCost")}: {costDisplay}\n{_localizationService.GetString("WatchAdForHalfPrice")}: {halfCostDisplay}",
+                    _localizationService.GetString("WatchAdForDiscount"),
+                    $"{_localizationService.GetString("BuyFull")} ({costDisplay})");
 
                 if (watchAd)
                 {
+                    // Video schauen → 50% Rabatt
                     var success = await _rewardedAdService.ShowAdAsync("workshop_unlock");
                     if (success)
                     {
-                        _gameStateService.ForceUnlockWorkshop(workshop.Type);
+                        if (_gameStateService.TryPurchaseWorkshop(workshop.Type, halfCost))
+                        {
+                            RefreshWorkshops();
+                            ShowAlertDialog(
+                                _localizationService.GetString("WorkshopUnlocked"),
+                                _localizationService.GetString(workshop.Type.GetLocalizationKey()),
+                                "OK");
+                            CelebrationRequested?.Invoke();
+                        }
+                        else
+                        {
+                            ShowAlertDialog(
+                                _localizationService.GetString("NotEnoughMoney"),
+                                $"{_localizationService.GetString("Required")}: {halfCostDisplay}",
+                                "OK");
+                        }
+                    }
+                }
+                else
+                {
+                    // Voll-Preis kaufen
+                    if (_gameStateService.TryPurchaseWorkshop(workshop.Type))
+                    {
                         RefreshWorkshops();
                         ShowAlertDialog(
-                            _localizationService.GetString("WorkshopUnlockedWithAd"),
+                            _localizationService.GetString("WorkshopUnlocked"),
                             _localizationService.GetString(workshop.Type.GetLocalizationKey()),
+                            "OK");
+                        CelebrationRequested?.Invoke();
+                    }
+                    else
+                    {
+                        ShowAlertDialog(
+                            _localizationService.GetString("NotEnoughMoney"),
+                            $"{_localizationService.GetString("Required")}: {costDisplay}",
                             "OK");
                     }
                 }
             }
             else
             {
-                await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+                // Kein Werbung → direkt kaufen
+                if (_gameStateService.TryPurchaseWorkshop(workshop.Type))
+                {
+                    RefreshWorkshops();
+                    ShowAlertDialog(
+                        _localizationService.GetString("WorkshopUnlocked"),
+                        _localizationService.GetString(workshop.Type.GetLocalizationKey()),
+                        "OK");
+                    CelebrationRequested?.Invoke();
+                }
+                else
+                {
+                    ShowAlertDialog(
+                        _localizationService.GetString("NotEnoughMoney"),
+                        $"{_localizationService.GetString("Required")}: {costDisplay}",
+                        "OK");
+                }
             }
             return;
         }
@@ -877,9 +964,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_gameStateService.TryUpgradeWorkshop(workshop.Type))
         {
             await _audioService.PlaySoundAsync(GameSound.Upgrade);
-            // Explizit aktualisieren (Event-Handler macht das auch, aber sicherheitshalber)
-            RefreshWorkshops();
-            // FloatingText fuer Level-Up Feedback
+            // RefreshWorkshops() wird bereits vom WorkshopUpgraded-Event-Handler aufgerufen
             FloatingTextRequested?.Invoke("+1 Level!", "level");
         }
     }
@@ -956,6 +1041,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         DeactivateAllTabs();
         IsDashboardActive = true;
         NotifyTabBarVisibility();
+
+        // Aufträge sicherstellen (falls leer z.B. nach Spielabbruch)
+        if (_gameStateService.IsInitialized && _gameStateService.State.AvailableOrders.Count == 0)
+        {
+            _orderGeneratorService.RefreshOrders();
+            RefreshOrders();
+        }
     }
 
     [RelayCommand]
@@ -964,6 +1056,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         DeactivateAllTabs();
         IsStatisticsActive = true;
         NotifyTabBarVisibility();
+        StatisticsViewModel.RefreshStatisticsCommand.Execute(null);
     }
 
     [RelayCommand]
@@ -1277,12 +1370,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnWorkshopUpgraded(object? sender, WorkshopUpgradedEventArgs e)
     {
-        RefreshWorkshops();
+        // Nur den betroffenen Workshop aktualisieren statt alle
+        RefreshSingleWorkshop(e.WorkshopType);
     }
 
     private void OnWorkerHired(object? sender, WorkerHiredEventArgs e)
     {
-        RefreshWorkshops();
+        // Nur den betroffenen Workshop aktualisieren statt alle
+        RefreshSingleWorkshop(e.WorkshopType);
     }
 
     private void OnOrderCompleted(object? sender, OrderCompletedEventArgs e)
@@ -1356,7 +1451,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             FloatingTextRequested?.Invoke($"+{newIncome:N0}\u20AC", "money");
         }
 
-        // QuickJob-Timer aktualisieren
+        // QuickJob-Timer aktualisieren + Rotation wenn abgelaufen
+        if (_quickJobService.NeedsRotation())
+        {
+            _quickJobService.RotateIfNeeded();
+            RefreshQuickJobs();
+        }
         var remaining = _quickJobService.TimeUntilNextRotation;
         QuickJobTimerDisplay = remaining.TotalMinutes >= 1
             ? $"{(int)remaining.TotalMinutes}:{remaining.Seconds:D2}"
@@ -1552,7 +1652,13 @@ public partial class WorkshopDisplayModel : ObservableObject
     private bool _canAffordWorker;
 
     public int RequiredPrestige { get; set; }
+    public decimal UnlockCost { get; set; }
     public string UnlockDisplay { get; set; } = "";
+    public string UnlockCostDisplay => MoneyFormatter.FormatCompact(UnlockCost);
+    /// <summary>
+    /// Ob das Level für die Freischaltung erreicht ist (aber noch nicht gekauft).
+    /// </summary>
+    public bool CanBuyUnlock { get; set; }
     public string WorkerDisplay => $"👷×{WorkerCount}";
     public string IncomeDisplay => IncomePerSecond > 0 ? MoneyFormatter.FormatPerSecond(IncomePerSecond, 1) : "-";
     public string UpgradeCostDisplay => MoneyFormatter.FormatCompact(UpgradeCost);
@@ -1593,6 +1699,9 @@ public partial class WorkshopDisplayModel : ObservableObject
         OnPropertyChanged(nameof(HireWorkerCost));
         OnPropertyChanged(nameof(IsUnlocked));
         OnPropertyChanged(nameof(UnlockDisplay));
+        OnPropertyChanged(nameof(UnlockCost));
+        OnPropertyChanged(nameof(UnlockCostDisplay));
+        OnPropertyChanged(nameof(CanBuyUnlock));
         OnPropertyChanged(nameof(CanUpgrade));
         OnPropertyChanged(nameof(CanHireWorker));
         OnPropertyChanged(nameof(WorkerDisplay));
