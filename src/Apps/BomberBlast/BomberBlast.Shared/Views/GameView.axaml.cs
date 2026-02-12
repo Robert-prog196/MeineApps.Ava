@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Threading;
 using BomberBlast.ViewModels;
 using SkiaSharp;
 using Avalonia.Labs.Controls;
@@ -9,6 +10,8 @@ namespace BomberBlast.Views;
 public partial class GameView : UserControl
 {
     private int _renderWidth, _renderHeight;
+    private GameViewModel? _subscribedVm;
+    private DispatcherTimer? _renderTimer;
 
     public GameView()
     {
@@ -23,36 +26,100 @@ public partial class GameView : UserControl
         KeyDown += OnKeyDown;
         KeyUp += OnKeyUp;
 
-        // Render-Loop wird vom GameViewModel gesteuert via InvalidateCanvasRequested
-        // Kein separater DispatcherTimer noetig (vermeidet doppeltes Rendering)
+        // InvalidateCanvasRequested bei DataContext-Wechsel abonnieren
+        DataContextChanged += OnDataContextChanged;
     }
 
     private GameViewModel? ViewModel => DataContext as GameViewModel;
+
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        // Altes ViewModel abmelden
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.InvalidateCanvasRequested -= OnInvalidateRequested;
+            _subscribedVm = null;
+        }
+
+        // Neues ViewModel abonnieren
+        if (DataContext is GameViewModel vm)
+        {
+            _subscribedVm = vm;
+            vm.InvalidateCanvasRequested += OnInvalidateRequested;
+        }
+    }
+
+    private void OnInvalidateRequested()
+    {
+        // Initialen Frame rendern + Render-Timer starten
+        GameCanvas.InvalidateSurface();
+        StartRenderTimer();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // RENDER-TIMER (~60fps, selbes Pattern wie CelebrationOverlay)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void StartRenderTimer()
+    {
+        if (_renderTimer != null) return;
+
+        _renderTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        _renderTimer.Tick += OnRenderTick;
+        _renderTimer.Start();
+    }
+
+    private void StopRenderTimer()
+    {
+        if (_renderTimer == null) return;
+        _renderTimer.Stop();
+        _renderTimer.Tick -= OnRenderTick;
+        _renderTimer = null;
+    }
+
+    private void OnRenderTick(object? sender, EventArgs e)
+    {
+        if (ViewModel?.IsGameLoopRunning == true)
+        {
+            GameCanvas.InvalidateSurface();
+        }
+        else
+        {
+            // Game-Loop gestoppt → Timer stoppen
+            StopRenderTimer();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // RENDERING
+    // ═══════════════════════════════════════════════════════════════════════
 
     private void OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
 
-        // Use canvas.LocalClipBounds instead of e.Info to get correct dimensions.
-        // e.Info.Width/Height reports physical pixels (DPI-scaled), but the canvas
-        // coordinate system may be in logical pixels (if DPI transform is applied).
+        // canvas.LocalClipBounds statt e.Info fuer korrekte DPI-Dimensionen
         var bounds = canvas.LocalClipBounds;
         int width = (int)bounds.Width;
         int height = (int)bounds.Height;
 
-        // Fallback to e.Info if bounds are invalid
+        // Fallback auf e.Info falls Bounds ungueltig
         if (width <= 0 || height <= 0)
         {
             width = e.Info.Width;
             height = e.Info.Height;
         }
 
-        // Store for touch coordinate conversion
+        // Fuer Touch-Koordinaten-Konvertierung speichern
         _renderWidth = width;
         _renderHeight = height;
 
         ViewModel?.OnPaintSurface(canvas, width, height);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // INPUT
+    // ═══════════════════════════════════════════════════════════════════════
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {

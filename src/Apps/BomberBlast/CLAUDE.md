@@ -14,7 +14,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 ### SkiaSharp Rendering (GameRenderer.cs)
 - Volle 2D-Engine via SKCanvasView (Avalonia.Skia)
 - Zwei Visual Styles: Classic HD + Neon/Cyberpunk (IGameStyleService)
-- 60fps Game Loop (render-driven via GameViewModel.InvalidateCanvasRequested, kein DispatcherTimer)
+- 60fps Game Loop via DispatcherTimer (16ms) in GameView.axaml.cs, InvalidateSurface() treibt PaintSurface
 - DPI-Handling: `canvas.LocalClipBounds` statt `e.Info.Width/Height`
 - GC-Optimierung: Gepoolte SKPaint/SKFont/SKPath (6 per-frame Allokationen eliminiert)
 - HUD: Side-Panel rechts (TIME, SCORE, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
@@ -80,7 +80,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Architektur-Entscheidungen
 
-- **Game Loop**: Render-driven Update (OnPaintSurface macht GameEngine.Update + Render)
+- **Game Loop**: DispatcherTimer (16ms) in GameView → InvalidateSurface() → OnPaintSurface → GameEngine.Update + Render
 - **Touch-Koordinaten**: Proportionale Skalierung (Render-Bounds / Control-Bounds Ratio) fuer DPI-korrektes Mapping
 - **Invalidierung**: IMMER `InvalidateSurface()` (InvalidateVisual feuert NICHT PaintSurface bei SKCanvasView)
 - **Keyboard Input**: Window-Level KeyDown/KeyUp in MainWindow.axaml.cs → GameViewModel

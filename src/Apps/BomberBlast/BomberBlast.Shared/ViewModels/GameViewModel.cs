@@ -91,6 +91,11 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// </summary>
     public GameEngine Engine => _gameEngine;
 
+    /// <summary>
+    /// Ob der Game-Loop laeuft (fuer View-seitige Render-Steuerung).
+    /// </summary>
+    public bool IsGameLoopRunning => _isGameLoopRunning;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -297,13 +302,6 @@ public partial class GameViewModel : ObservableObject, IDisposable
 
         // Always render current state
         _gameEngine.Render(canvas, width, height);
-
-        // Schedule next frame (render-driven loop)
-        if (_isGameLoopRunning)
-        {
-            Dispatcher.UIThread.Post(() => InvalidateCanvasRequested?.Invoke(),
-                DispatcherPriority.Render);
-        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
