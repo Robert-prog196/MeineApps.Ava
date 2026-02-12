@@ -6,7 +6,7 @@
              x:Class="FitnessRechner.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
-  <Grid RowDefinitions="Auto,*" Margin="16">
+  <Grid RowDefinitions="Auto,*" Margin="12">
 
     <!-- Header -->
     <TextBlock Grid.Row="0"
@@ -15,7 +15,7 @@
                Margin="0,8,0,16" />
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1">
+    <ScrollViewer Grid.Row="1" Padding="0,0,0,80">
       <StackPanel Spacing="16">
 
         <!-- ==================== Theme Selection Card ==================== -->

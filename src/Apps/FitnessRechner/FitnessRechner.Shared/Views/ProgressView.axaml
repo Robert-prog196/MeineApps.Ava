@@ -133,40 +133,55 @@
     <!-- ============================================ -->
     <!-- Row 2: Tab Content (Scrollable)              -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="2" Padding="16,16,16,60">
+    <ScrollViewer Grid.Row="2" Padding="12,12,12,80">
       <Panel>
 
         <!-- ==================== WEIGHT TAB ==================== -->
         <StackPanel Spacing="16" IsVisible="{Binding IsWeightTab}">
 
           <!-- Stats Card -->
-          <Border Classes="Card" Padding="16">
-            <Grid ColumnDefinitions="*,*,*">
-              <StackPanel HorizontalAlignment="Center">
-                <TextBlock Text="{Binding WeightCurrentDisplay}"
-                           FontSize="24" FontWeight="Bold"
-                           Foreground="{DynamicResource SuccessBrush}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
-                <TextBlock Text="{loc:Translate Current}" Classes="Caption" HorizontalAlignment="Center" />
-              </StackPanel>
-              <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding WeightAverageDisplay}"
-                           FontSize="18" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
-                <TextBlock Text="{loc:Translate Average}" Classes="Caption" HorizontalAlignment="Center" />
-              </StackPanel>
-              <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding WeightTrendDisplay}"
-                           FontSize="18" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="kg" Classes="Caption" HorizontalAlignment="Center" />
-                <TextBlock Text="{loc:Translate Trend}" Classes="Caption" HorizontalAlignment="Center" />
-              </StackPanel>
-            </Grid>
+          <Border Classes="Card" Padding="0" ClipToBounds="True">
+            <StackPanel>
+              <!-- Gradient Header -->
+              <Border Padding="12,10" CornerRadius="12,12,0,0">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#8B5CF6" Offset="0" />
+                    <GradientStop Color="#7C3AED" Offset="1" />
+                  </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <mi:MaterialIcon Kind="ScaleBathroom" Width="18" Height="18" Foreground="White" />
+                  <TextBlock Text="{loc:Translate TrackingWeight}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                </StackPanel>
+              </Border>
+              <Grid ColumnDefinitions="*,*,*" Margin="16,14,16,16">
+                <StackPanel HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding WeightCurrentDisplay}"
+                             FontSize="26" FontWeight="Bold"
+                             Foreground="#8B5CF6"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="kg" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Current}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding WeightAverageDisplay}"
+                             FontSize="18" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="kg" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Average}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                  <TextBlock Text="{Binding WeightTrendDisplay}"
+                             FontSize="18" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="kg" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Trend}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
           </Border>
 
           <!-- Chart Card -->
@@ -175,10 +190,12 @@
               <TextBlock Text="{loc:Translate WeightStats30Days}"
                          FontSize="16" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <lvc:CartesianChart Height="200"
+              <lvc:CartesianChart Height="220"
                                   Series="{Binding WeightChartSeries}"
                                   XAxes="{Binding XAxes}"
                                   YAxes="{Binding YAxesWeight}"
+                                  DrawMarginFrame="{Binding ChartFrame}"
+                                  Background="{DynamicResource CardBrush}"
                                   ZoomMode="None" />
             </StackPanel>
           </Border>
@@ -302,11 +319,21 @@
           <StackPanel Spacing="16" IsVisible="{Binding IsBmiSelected}">
 
             <!-- BMI Stats -->
-            <Border Classes="Card" Padding="16">
-              <StackPanel Spacing="12">
-                <TextBlock Text="{loc:Translate BmiStats30Days}"
-                           FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Border Classes="Card" Padding="0" ClipToBounds="True">
+              <StackPanel>
+                <Border Padding="12,10" CornerRadius="12,12,0,0">
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                      <GradientStop Color="#3B82F6" Offset="0" />
+                      <GradientStop Color="#2563EB" Offset="1" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="ScaleBalance" Width="18" Height="18" Foreground="White" />
+                    <TextBlock Text="{loc:Translate BmiStats30Days}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                  </StackPanel>
+                </Border>
+              <StackPanel Spacing="12" Margin="16,14,16,16">
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                   <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding BmiCurrentDisplay}"
@@ -345,15 +372,19 @@
                   </StackPanel>
                 </Grid>
               </StackPanel>
+              </StackPanel>
             </Border>
 
             <!-- BMI Chart -->
             <Border Classes="Card" Padding="16">
               <StackPanel Spacing="8">
-                <lvc:CartesianChart Height="200"
+                <lvc:CartesianChart Height="220"
                                     Series="{Binding BmiChartSeries}"
                                     XAxes="{Binding XAxes}"
                                     YAxes="{Binding YAxesBmi}"
+                                    Sections="{Binding BmiSections}"
+                                    DrawMarginFrame="{Binding ChartFrame}"
+                                    Background="{DynamicResource CardBrush}"
                                     ZoomMode="None" />
                 <TextBlock Text="{loc:Translate HealthyBmiRange}" Classes="Caption"
                            HorizontalAlignment="Center" />
@@ -409,11 +440,21 @@
           <StackPanel Spacing="16" IsVisible="{Binding IsBodyFatSelected}">
 
             <!-- Body Fat Stats -->
-            <Border Classes="Card" Padding="16">
-              <StackPanel Spacing="12">
-                <TextBlock Text="{loc:Translate BodyFatStats30Days}"
-                           FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Border Classes="Card" Padding="0" ClipToBounds="True">
+              <StackPanel>
+                <Border Padding="12,10" CornerRadius="12,12,0,0">
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                      <GradientStop Color="#F59E0B" Offset="0" />
+                      <GradientStop Color="#D97706" Offset="1" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="PercentCircle" Width="18" Height="18" Foreground="White" />
+                    <TextBlock Text="{loc:Translate BodyFatStats30Days}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                  </StackPanel>
+                </Border>
+              <StackPanel Spacing="12" Margin="16,14,16,16">
                 <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                   <StackPanel HorizontalAlignment="Center">
                     <TextBlock Text="{Binding BodyFatCurrentDisplay}"
@@ -452,14 +493,17 @@
                   </StackPanel>
                 </Grid>
               </StackPanel>
+              </StackPanel>
             </Border>
 
             <!-- Body Fat Chart -->
             <Border Classes="Card" Padding="16">
-              <lvc:CartesianChart Height="200"
+              <lvc:CartesianChart Height="220"
                                   Series="{Binding BodyFatChartSeries}"
                                   XAxes="{Binding XAxes}"
                                   YAxes="{Binding YAxesBodyFat}"
+                                  DrawMarginFrame="{Binding ChartFrame}"
+                                  Background="{DynamicResource CardBrush}"
                                   ZoomMode="None" />
             </Border>
 
@@ -546,24 +590,38 @@
         <StackPanel Spacing="16" IsVisible="{Binding IsWaterTab}">
 
           <!-- Water Progress Card -->
-          <Border Classes="Card" Padding="16">
-            <StackPanel Spacing="12">
-              <TextBlock Text="{loc:Translate WaterToday}"
-                         FontSize="16" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <ProgressBar Value="{Binding WaterProgress}"
-                             Maximum="1"
-                             Foreground="{DynamicResource InfoBrush}"
-                             Height="12" />
-                <TextBlock Grid.Column="1"
-                           Text="{Binding TodayWater, StringFormat='{}{0:F0} ml'}"
-                           FontSize="16" FontWeight="Bold"
-                           Foreground="{DynamicResource InfoBrush}"
-                           VerticalAlignment="Center" />
-              </Grid>
-              <TextBlock Text="{Binding WaterStatusText}" Classes="Caption"
-                         HorizontalAlignment="Center" />
+          <Border Classes="Card" Padding="0" ClipToBounds="True">
+            <StackPanel>
+              <!-- Gradient Header -->
+              <Border Padding="12,10" CornerRadius="12,12,0,0">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#06B6D4" Offset="0" />
+                    <GradientStop Color="#3B82F6" Offset="1" />
+                  </LinearGradientBrush>
+                </Border.Background>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="Water" Width="18" Height="18" Foreground="White" />
+                    <TextBlock Text="{loc:Translate WaterToday}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2" Text="{Binding WaterStatusText}"
+                             FontSize="12" Foreground="#EEFFFFFF" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <StackPanel Spacing="10" Margin="16,14,16,16">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <ProgressBar Value="{Binding WaterProgress}"
+                               Maximum="1"
+                               Foreground="#06B6D4"
+                               Height="14" />
+                  <TextBlock Grid.Column="1"
+                             Text="{Binding TodayWater, StringFormat='{}{0:F0} ml'}"
+                             FontSize="18" FontWeight="Bold"
+                             Foreground="#06B6D4"
+                             VerticalAlignment="Center" />
+                </Grid>
+              </StackPanel>
             </StackPanel>
           </Border>
 
@@ -622,36 +680,57 @@
         <StackPanel Spacing="16" IsVisible="{Binding IsCaloriesTab}">
 
           <!-- Calorie Overview Card -->
-          <Border Classes="Card" Padding="16">
-            <StackPanel Spacing="12">
-              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+          <Border Classes="Card" Padding="0" ClipToBounds="True">
+            <StackPanel>
+              <!-- Gradient Header -->
+              <Border Padding="12,10" CornerRadius="12,12,0,0">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#F59E0B" Offset="0" />
+                    <GradientStop Color="#EF4444" Offset="1" />
+                  </LinearGradientBrush>
+                </Border.Background>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <mi:MaterialIcon Kind="Fire" Width="18" Height="18" Foreground="White" />
+                    <TextBlock Text="{loc:Translate TabCalories}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2" Text="{Binding CalorieStatusText}"
+                             FontSize="12" Foreground="#EEFFFFFF" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12" Margin="16,14,16,16">
                 <StackPanel HorizontalAlignment="Center">
                   <TextBlock Text="{Binding DailyCalorieGoal, StringFormat='{}{0:F0}'}"
-                             FontSize="20" FontWeight="Bold"
+                             FontSize="22" FontWeight="Bold"
                              Foreground="{DynamicResource TextPrimaryBrush}"
                              HorizontalAlignment="Center" />
-                  <TextBlock Text="{loc:Translate GoalLabel}" Classes="Caption"
+                  <TextBlock Text="kcal" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate GoalLabel}" FontSize="11"
+                             Foreground="{DynamicResource TextMutedBrush}"
                              HorizontalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                   <TextBlock Text="{Binding ConsumedCalories, StringFormat='{}{0:F0}'}"
-                             FontSize="20" FontWeight="Bold"
-                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             FontSize="22" FontWeight="Bold"
+                             Foreground="#F59E0B"
                              HorizontalAlignment="Center" />
-                  <TextBlock Text="{loc:Translate Consumed}" Classes="Caption"
+                  <TextBlock Text="kcal" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Consumed}" FontSize="11"
+                             Foreground="{DynamicResource TextMutedBrush}"
                              HorizontalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                   <TextBlock Text="{Binding RemainingCalories, StringFormat='{}{0:F0}'}"
-                             FontSize="20" FontWeight="Bold"
+                             FontSize="22" FontWeight="Bold"
                              Foreground="{DynamicResource AccentBrush}"
                              HorizontalAlignment="Center" />
-                  <TextBlock Text="{loc:Translate Remaining}" Classes="Caption"
+                  <TextBlock Text="kcal" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate Remaining}" FontSize="11"
+                             Foreground="{DynamicResource TextMutedBrush}"
                              HorizontalAlignment="Center" />
                 </StackPanel>
               </Grid>
-              <TextBlock Text="{Binding CalorieStatusText}" Classes="Caption"
-                         HorizontalAlignment="Center" />
             </StackPanel>
           </Border>
 
@@ -760,6 +839,7 @@
           <!-- Add Food Button -->
           <Button Classes="Primary"
                   Command="{Binding ToggleFoodSearchCommand}"
+                  IsVisible="{Binding !ShowFoodSearch}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
             <StackPanel Orientation="Horizontal" Spacing="6">
@@ -767,6 +847,147 @@
               <TextBlock Text="{loc:Translate AddFood}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
+
+          <!-- ==================== INLINE FOOD SEARCH ==================== -->
+          <StackPanel Spacing="12" IsVisible="{Binding ShowFoodSearch}">
+
+            <!-- Suchleiste -->
+            <Border Classes="Card" Padding="12">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <mi:MaterialIcon Kind="Magnify" Width="20" Height="20"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,10,0" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding SearchQuery}"
+                         Watermark="{loc:Translate SearchFoodPlaceholder}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Height="NaN" />
+                <Button Grid.Column="2" Classes="Text Small"
+                        Command="{Binding ToggleFoodSearchCommand}">
+                  <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                </Button>
+              </Grid>
+            </Border>
+
+            <!-- Ausgewähltes Lebensmittel - Portion & Hinzufügen -->
+            <Border Classes="Card" Padding="16"
+                    IsVisible="{Binding ShowAddFoodPanel}">
+              <StackPanel Spacing="12">
+                <TextBlock Text="{Binding SelectedFood.Name}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           TextWrapping="Wrap" />
+
+                <!-- Portion -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <TextBox Text="{Binding PortionGrams}"
+                           Watermark="{loc:Translate AmountGrams}" />
+                  <TextBlock Grid.Column="1" Text="g"
+                             Foreground="{DynamicResource TextMutedBrush}"
+                             VerticalAlignment="Center" FontSize="14" />
+                </Grid>
+
+                <!-- Nährwert-Vorschau -->
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="4">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding CalculatedCalories, StringFormat='{}{0:F0}'}"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="kcal" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding CalculatedProtein, StringFormat='{}{0:F1}g'}"
+                               FontSize="13" Foreground="{DynamicResource SuccessBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Protein}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding CalculatedCarbs, StringFormat='{}{0:F1}g'}"
+                               FontSize="13" Foreground="{DynamicResource WarningBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Carbs}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding CalculatedFat, StringFormat='{}{0:F1}g'}"
+                               FontSize="13" Foreground="{DynamicResource ErrorBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate Fat}" FontSize="10"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+                </Grid>
+
+                <!-- Mahlzeit-Auswahl -->
+                <ComboBox ItemsSource="{Binding Meals}"
+                          SelectedIndex="{Binding SelectedMeal}"
+                          HorizontalAlignment="Stretch" />
+
+                <!-- Buttons -->
+                <Grid ColumnDefinitions="*,8,*">
+                  <Button Grid.Column="0" Classes="Outlined"
+                          Command="{Binding CancelAddFoodCommand}"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Center">
+                    <TextBlock Text="{loc:Translate Cancel}" />
+                  </Button>
+                  <Button Grid.Column="2" Classes="Success"
+                          Command="{Binding AddFoodToLogCommand}"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <mi:MaterialIcon Kind="Plus" Width="18" Height="18" />
+                      <TextBlock Text="{loc:Translate Add}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- Suchergebnisse -->
+            <ItemsControl ItemsSource="{Binding SearchResults}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:FoodSearchResult">
+                  <Button Classes="Text" Padding="0" Height="NaN" Margin="0,2"
+                          Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).SelectFoodItemCommand}"
+                          CommandParameter="{Binding .}"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                    <Border Classes="Card Compact" Padding="12" Cursor="Hand">
+                      <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                          <TextBlock Text="{Binding Food.Name}"
+                                     FontSize="14" FontWeight="SemiBold"
+                                     Foreground="{DynamicResource TextPrimaryBrush}" />
+                          <TextBlock Text="{Binding Food.CaloriesPer100g, StringFormat='{}{0:F0} kcal / 100g'}"
+                                     FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+                        </StackPanel>
+                        <mi:MaterialIcon Grid.Column="1" Kind="Plus" Width="20" Height="20"
+                                         Foreground="{DynamicResource PrimaryBrush}"
+                                         VerticalAlignment="Center" />
+                      </Grid>
+                    </Border>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Hinweis wenn keine Suche -->
+            <TextBlock Text="{loc:Translate SearchFoodPlaceholder}"
+                       Classes="Caption"
+                       HorizontalAlignment="Center"
+                       Margin="0,8"
+                       IsVisible="{Binding !SearchResults.Count}" />
+          </StackPanel>
 
           <!-- Calorie Goal Input -->
           <Border Classes="Card" Padding="16">

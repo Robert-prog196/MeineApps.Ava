@@ -367,4 +367,11 @@
   <data name="AlertInvalidInput" xml:space="preserve"><value>Bitte überprüfe deine Eingabewerte. Einige Werte liegen außerhalb des gültigen Bereichs.</value></data>
   <data name="AlertBodyFatMeasurement" xml:space="preserve"><value>Der Taillenumfang muss größer als der Halsumfang sein.</value></data>
   <data name="BarcodeScanHint" xml:space="preserve"><value>Barcode in den Rahmen halten</value></data>
+
+  <!-- Calculator Input Labels -->
+  <data name="Input" xml:space="preserve"><value>Eingabe</value></data>
+  <data name="BrocaWeight" xml:space="preserve"><value>Broca-Gewicht</value></data>
+  <data name="CreffWeight" xml:space="preserve"><value>Creff-Gewicht</value></data>
+  <data name="Years" xml:space="preserve"><value>Jahre</value></data>
+  <data name="Minutes" xml:space="preserve"><value>Minuten</value></data>
 </root>

@@ -367,4 +367,11 @@
   <data name="AlertInvalidInput" xml:space="preserve"><value>Veuillez vérifier vos valeurs. Certaines valeurs sont en dehors de la plage valide.</value></data>
   <data name="AlertBodyFatMeasurement" xml:space="preserve"><value>Le tour de taille doit être supérieur au tour de cou.</value></data>
   <data name="BarcodeScanHint" xml:space="preserve"><value>Maintenir le code-barres dans le cadre</value></data>
+
+  <!-- Calculator Input Labels -->
+  <data name="Input" xml:space="preserve"><value>Saisie</value></data>
+  <data name="BrocaWeight" xml:space="preserve"><value>Poids Broca</value></data>
+  <data name="CreffWeight" xml:space="preserve"><value>Poids Creff</value></data>
+  <data name="Years" xml:space="preserve"><value>Ans</value></data>
+  <data name="Minutes" xml:space="preserve"><value>Minutes</value></data>
 </root>

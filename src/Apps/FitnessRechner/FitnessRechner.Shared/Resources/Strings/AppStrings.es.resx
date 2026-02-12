@@ -367,4 +367,11 @@
   <data name="AlertInvalidInput" xml:space="preserve"><value>Por favor, verifica los valores ingresados. Algunos valores están fuera del rango válido.</value></data>
   <data name="AlertBodyFatMeasurement" xml:space="preserve"><value>La circunferencia de la cintura debe ser mayor que la del cuello.</value></data>
   <data name="BarcodeScanHint" xml:space="preserve"><value>Mantén el código de barras en el marco</value></data>
+
+  <!-- Calculator Input Labels -->
+  <data name="Input" xml:space="preserve"><value>Entrada</value></data>
+  <data name="BrocaWeight" xml:space="preserve"><value>Peso Broca</value></data>
+  <data name="CreffWeight" xml:space="preserve"><value>Peso Creff</value></data>
+  <data name="Years" xml:space="preserve"><value>Años</value></data>
+  <data name="Minutes" xml:space="preserve"><value>Minutos</value></data>
 </root>

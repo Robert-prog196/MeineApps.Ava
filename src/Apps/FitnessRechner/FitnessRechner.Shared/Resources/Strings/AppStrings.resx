@@ -369,4 +369,11 @@
   <data name="AlertInvalidInput" xml:space="preserve"><value>Please check your input values. Some values are outside the valid range.</value></data>
   <data name="AlertBodyFatMeasurement" xml:space="preserve"><value>Waist circumference must be greater than neck circumference.</value></data>
   <data name="BarcodeScanHint" xml:space="preserve"><value>Hold barcode in frame</value></data>
+
+  <!-- Calculator Input Labels -->
+  <data name="Input" xml:space="preserve"><value>Input</value></data>
+  <data name="BrocaWeight" xml:space="preserve"><value>Broca Weight</value></data>
+  <data name="CreffWeight" xml:space="preserve"><value>Creff Weight</value></data>
+  <data name="Years" xml:space="preserve"><value>Years</value></data>
+  <data name="Minutes" xml:space="preserve"><value>Minutes</value></data>
 </root>

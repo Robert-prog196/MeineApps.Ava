@@ -8,6 +8,7 @@ using FitnessRechner.Resources.Strings;
 using FitnessRechner.Services;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using MeineApps.Core.Ava.Services;
@@ -344,6 +345,24 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private Axis[] _yAxesBodyFat = [];
+
+    // Chart-Rahmen: subtiler Rand, Fill kommt vom AXAML-Background
+    public DrawMarginFrame ChartFrame { get; } = new()
+    {
+        Fill = new SolidColorPaint(SKColors.Transparent),
+        Stroke = new SolidColorPaint(new SKColor(128, 128, 128, 30)) { StrokeThickness = 1 }
+    };
+
+    // Gesunde BMI-Zone (18.5-25) als grüner Bereich im Chart
+    public RectangularSection[] BmiSections { get; } =
+    [
+        new RectangularSection
+        {
+            Yi = 18.5,
+            Yj = 25,
+            Fill = new SolidColorPaint(new SKColor(76, 175, 80, 30))
+        }
+    ];
 
     #endregion
 
@@ -1182,12 +1201,15 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 new LineSeries<DateTimePoint>
                 {
                     Values = data,
-                    Fill = new SolidColorPaint(new SKColor(76, 175, 80, 50)),
+                    Fill = new LinearGradientPaint(
+                        [new SKColor(76, 175, 80, 150), new SKColor(76, 175, 80, 10)],
+                        new SKPoint(0.5f, 0f),
+                        new SKPoint(0.5f, 1f)),
                     Stroke = new SolidColorPaint(new SKColor(76, 175, 80)) { StrokeThickness = 3 },
                     GeometryFill = new SolidColorPaint(new SKColor(76, 175, 80)),
                     GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 10,
-                    LineSmoothness = 0.3,
+                    GeometrySize = 12,
+                    LineSmoothness = 0.5,
                     Name = AppStrings.TrackingWeight
                 }
             ];
@@ -1202,6 +1224,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                     MinLimit = Math.Floor(minVal - 5),
                     MaxLimit = Math.Ceiling(maxVal + 5),
                     LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
                     TextSize = 12,
                     Labeler = value => $"{value:F0}"
                 }
@@ -1226,12 +1249,15 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 new LineSeries<DateTimePoint>
                 {
                     Values = bmiData,
-                    Fill = new SolidColorPaint(new SKColor(33, 150, 243, 50)),
+                    Fill = new LinearGradientPaint(
+                        [new SKColor(33, 150, 243, 150), new SKColor(33, 150, 243, 10)],
+                        new SKPoint(0.5f, 0f),
+                        new SKPoint(0.5f, 1f)),
                     Stroke = new SolidColorPaint(new SKColor(33, 150, 243)) { StrokeThickness = 3 },
                     GeometryFill = new SolidColorPaint(new SKColor(33, 150, 243)),
                     GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 10,
-                    LineSmoothness = 0.3,
+                    GeometrySize = 12,
+                    LineSmoothness = 0.5,
                     Name = "BMI"
                 }
             ];
@@ -1243,6 +1269,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                     MinLimit = 15,
                     MaxLimit = 40,
                     LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
                     TextSize = 12,
                     Labeler = value => $"{value:F1}"
                 }
@@ -1262,12 +1289,15 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 new LineSeries<DateTimePoint>
                 {
                     Values = bodyFatData,
-                    Fill = new SolidColorPaint(new SKColor(255, 152, 0, 50)),
+                    Fill = new LinearGradientPaint(
+                        [new SKColor(255, 152, 0, 150), new SKColor(255, 152, 0, 10)],
+                        new SKPoint(0.5f, 0f),
+                        new SKPoint(0.5f, 1f)),
                     Stroke = new SolidColorPaint(new SKColor(255, 152, 0)) { StrokeThickness = 3 },
                     GeometryFill = new SolidColorPaint(new SKColor(255, 152, 0)),
                     GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 10,
-                    LineSmoothness = 0.3,
+                    GeometrySize = 12,
+                    LineSmoothness = 0.5,
                     Name = AppStrings.BodyFat
                 }
             ];
@@ -1279,6 +1309,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                     MinLimit = 5,
                     MaxLimit = 45,
                     LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
                     TextSize = 12,
                     Labeler = value => $"{value:F0}%"
                 }
@@ -1308,6 +1339,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 },
                 LabelsRotation = -45,
                 LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 25)) { StrokeThickness = 1 },
                 TextSize = 10,
                 UnitWidth = TimeSpan.FromDays(1).Ticks
             }
