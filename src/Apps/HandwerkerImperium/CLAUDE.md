@@ -16,7 +16,7 @@ Idle-Game: Baue dein Handwerker-Imperium auf, stelle Mitarbeiter ein, kaufe Werk
 - **Goldschrauben-Economy** (Premium-Waehrung fuer Boosts/Unlock)
 - **Research Tree** (16 Upgrades in 4 Kategorien)
 - **Daily Challenges** (3 pro Tag)
-- **Achievements** (24 Erfolge)
+- **Achievements** (33 Erfolge, inkl. Workshop-Level 100/250/500/1000, Player-Level 100/250/500/1000, Worker-Tiers SS/SSS/Legendary, 10B EUR)
 - **Statistiken** (Gesamt-Verdienst, Workshop-Verteilung)
 
 ## Premium & Ads
@@ -47,8 +47,9 @@ Enum: `Carpentry`, `Painting`, `Plumbing`, `Electrical`, `Landscaping`, `Renovat
 Jeder Typ hat: `BaseIncome`, `BaseUpgradeCost`, `UnlockLevel`, `UnlockCost`
 
 ### Worker-System
-3 Tiers via Enum: `Apprentice` (1x), `Journeyman` (1.5x), `Master` (2.5x)
+10 Tiers via Enum: `F` (0.5x), `E` (0.75x), `D` (1.0x), `C` (1.3x), `B` (1.7x), `A` (2.2x), `S` (3.0x), `SS` (4.5x), `SSS` (7.0x), `Legendary` (12.0x)
 `HireWorker()` → kostet Geld, erhoeht Workshop-Effizienz
+Tier-Farben: F=Grau, E=Gruen, D=#0E7490(Teal), C=#B45309(DarkOrange), B=Amber, A=Rot, S=Gold, SS=Lila, SSS=Cyan, Legendary=Rainbow-Gradient
 
 ### Goldschrauben-Quellen
 1. Mini-Games (3-10 Schrauben pro Win)
@@ -73,7 +74,7 @@ Jedes Research braucht: `GoldScrews` + `ResearchPoints` (verdient via Workshop-P
 | `GameLoopService` | 60 FPS Update-Loop |
 | `AutoSaveService` | Alle 5 Min GameState → SQLite |
 | `DailyChallengeService` | 3 Challenges/Tag generieren (00:00 Reset) |
-| `AchievementService` | 24 Erfolge tracken + Goldschrauben-Rewards |
+| `AchievementService` | 33 Erfolge tracken + Goldschrauben-Rewards |
 | `WorkshopColorConverter` | Enum → Brush Mapping (warme Palette, keine kalten Farben) |
 
 ## Game Juice
@@ -103,6 +104,9 @@ Jedes Research braucht: `GoldScrews` + `ResearchPoints` (verdient via Workshop-P
 
 ## Changelog Highlights
 
+- **v2.0.3 (11.02.2026)**: Worker-Tiers erweitert auf 10 (F/E/D/C/B/A/S/SS/SSS/Legendary). 9 neue Achievements (Workshop 100/250/500/1000, Level 100/250/500/1000, Worker SS/SSS/Legendary, 10B EUR). 2 neue Shop-Items (Huge/Mega Instant Cash). Lokalisierung in 6 Sprachen (33 neue Keys in AppStrings.resx/.de/.es/.fr/.it/.pt + AppStrings.Designer.cs)
+- **v2.0.3 (11.02.2026)**: Order-Rewards: Doppel-Multiplikator-Bug gefixt (Difficulty wurde in BaseReward UND FinalReward angewendet → quadriert), Basis von 100 auf 300 erhöht für spürbar höhere Auftragsbelohnungen. Worker-Tiles in WorkshopView klickbar → navigiert zum Worker-Profil (Fire/Transfer/Train). Dashboard ScrollViewer HorizontalScrollBarVisibility=Disabled (rechter Rand Fix)
+- **v2.0.3 (11.02.2026)**: Workshop-Karten im Dashboard auf 2-Spalten-Layout umgestellt (UniformGrid Columns=2). Vertikale Karten mit farbigem Header (Workshop-Farbe 10% Opacity), Icon+Name+Level-Badge, Worker/Income-Stats, Level-ProgressBar in Workshop-Farbe, Upgrade-Button über volle Breite mit abgerundeten unteren Ecken (CornerRadius=16)
 - **v2.0.3 (11.02.2026)**: Bugfixes: Workshop-LevelProgress dividierte durch 10 statt MaxLevel (50), XP-Progress in OnXpGained nutzte falsche Formel (jetzt GameState.LevelProgress), DailyChallenge EarnMoney int-Cast→Math.Round, WorkshopView zeigte "/10" statt "/50", WorkshopDisplayModel hardcodierte 50.0→Workshop.MaxLevel
 - **v2.0.3 (11.02.2026)**: 6 neue Rewarded-Ad-Placements implementiert (workshop_speedup, workshop_unlock, worker_hire_bonus, research_speedup, daily_challenge_retry, achievement_boost). Models erweitert (HasRetriedWithAd, HasUsedAdBoost, AdBonusWorkerSlots). Service-Methoden: RetryChallenge, ForceUnlockWorkshop, BoostAchievement. Lokalisierung in 6 Sprachen.
 - **v2.0.2 (09.02.2026)**: Daily-Challenge-Bug: MiniGame-Ergebnisse werden jetzt via Event an DailyChallengeService gemeldet; 18 fehlende Lokalisierungs-Keys in 6 Sprachen ergaenzt; Farbkonsistenz-Fix: Alle Views auf warme Craft-Palette, Button-Style-Overrides, Workshop/Tier/Branch-Farben waermer

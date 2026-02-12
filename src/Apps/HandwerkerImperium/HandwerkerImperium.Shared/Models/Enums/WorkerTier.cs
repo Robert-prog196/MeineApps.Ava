@@ -12,7 +12,10 @@ public enum WorkerTier
     C = 3,
     B = 4,
     A = 5,
-    S = 6
+    S = 6,
+    SS = 7,
+    SSS = 8,
+    Legendary = 9
 }
 
 public static class WorkerTierExtensions
@@ -29,6 +32,9 @@ public static class WorkerTierExtensions
         WorkerTier.B => 0.95m,
         WorkerTier.A => 1.10m,
         WorkerTier.S => 1.30m,
+        WorkerTier.SS => 1.50m,
+        WorkerTier.SSS => 1.80m,
+        WorkerTier.Legendary => 2.20m,
         _ => 0.50m
     };
 
@@ -44,6 +50,9 @@ public static class WorkerTierExtensions
         WorkerTier.B => 1.20m,
         WorkerTier.A => 1.40m,
         WorkerTier.S => 1.50m,
+        WorkerTier.SS => 1.80m,
+        WorkerTier.SSS => 2.20m,
+        WorkerTier.Legendary => 3.00m,
         _ => 0.70m
     };
 
@@ -59,6 +68,9 @@ public static class WorkerTierExtensions
         WorkerTier.B => 80m,
         WorkerTier.A => 160m,
         WorkerTier.S => 320m,
+        WorkerTier.SS => 640m,
+        WorkerTier.SSS => 1_280m,
+        WorkerTier.Legendary => 2_560m,
         _ => 10m
     };
 
@@ -74,6 +86,9 @@ public static class WorkerTierExtensions
         WorkerTier.B => 25_000m,
         WorkerTier.A => 100_000m,
         WorkerTier.S => 500_000m,
+        WorkerTier.SS => 2_000_000m,
+        WorkerTier.SSS => 10_000_000m,
+        WorkerTier.Legendary => 50_000_000m,
         _ => 200m
     };
 
@@ -88,7 +103,10 @@ public static class WorkerTierExtensions
         WorkerTier.C => 15,
         WorkerTier.B => 25,
         WorkerTier.A => 35,
-        WorkerTier.S => 45,  // Also requires research unlock
+        WorkerTier.S => 45,       // Braucht zusaetzlich Research-Unlock
+        WorkerTier.SS => 100,     // Braucht zusaetzlich Research-Unlock
+        WorkerTier.SSS => 250,    // Braucht zusaetzlich Research-Unlock
+        WorkerTier.Legendary => 500, // Braucht zusaetzlich Research-Unlock
         _ => 1
     };
 
@@ -97,13 +115,16 @@ public static class WorkerTierExtensions
     /// </summary>
     public static string GetColorKey(this WorkerTier tier) => tier switch
     {
-        WorkerTier.F => "#9E9E9E",  // Grey
-        WorkerTier.E => "#4CAF50",  // Green
-        WorkerTier.D => "#2196F3",  // Blue
-        WorkerTier.C => "#9C27B0",  // Purple
-        WorkerTier.B => "#FFC107",  // Gold
-        WorkerTier.A => "#F44336",  // Red
-        WorkerTier.S => "#FF9800",  // Rainbow/Orange (animated in UI)
+        WorkerTier.F => "#9E9E9E",      // Grey
+        WorkerTier.E => "#4CAF50",      // Green
+        WorkerTier.D => "#2196F3",      // Blue
+        WorkerTier.C => "#9C27B0",      // Purple
+        WorkerTier.B => "#FFC107",      // Gold
+        WorkerTier.A => "#F44336",      // Red
+        WorkerTier.S => "#FF9800",      // Orange (animiert in UI)
+        WorkerTier.SS => "#E040FB",     // Pink
+        WorkerTier.SSS => "#7C4DFF",   // DeepPurple
+        WorkerTier.Legendary => "#FFD700", // Gold
         _ => "#9E9E9E"
     };
 
@@ -119,6 +140,9 @@ public static class WorkerTierExtensions
     {
         WorkerTier.A => 15,
         WorkerTier.S => 40,
+        WorkerTier.SS => 80,
+        WorkerTier.SSS => 200,
+        WorkerTier.Legendary => 500,
         _ => 0
     };
 }

@@ -89,7 +89,10 @@ public class WorkerMarketPool
             [WorkerTier.C] = 12.0,
             [WorkerTier.B] = 8.0,
             [WorkerTier.A] = 5.0,
-            [WorkerTier.S] = 2.0
+            [WorkerTier.S] = 2.0,
+            [WorkerTier.SS] = 1.0,
+            [WorkerTier.SSS] = 0.3,
+            [WorkerTier.Legendary] = 0.05
         };
 
         double totalWeight = 0;

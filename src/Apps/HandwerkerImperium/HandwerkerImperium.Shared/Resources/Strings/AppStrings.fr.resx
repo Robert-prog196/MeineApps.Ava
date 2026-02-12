@@ -2061,5 +2061,104 @@
   <data name="AdVideoNotAvailableMessage" xml:space="preserve">
     <value>Aucune vidéo publicitaire n'est actuellement disponible. Veuillez réessayer plus tard.</value>
   </data>
+  <data name="TierSS" xml:space="preserve">
+    <value>Rang SS</value>
+  </data>
+  <data name="TierSSS" xml:space="preserve">
+    <value>Rang SSS</value>
+  </data>
+  <data name="TierLegendary" xml:space="preserve">
+    <value>Légendaire</value>
+  </data>
+  <data name="AchWorkshop100" xml:space="preserve">
+    <value>Atelier Centenaire</value>
+  </data>
+  <data name="AchWorkshop100Desc" xml:space="preserve">
+    <value>Améliorez un atelier au niveau 100</value>
+  </data>
+  <data name="AchWorkshop250" xml:space="preserve">
+    <value>Atelier Élite</value>
+  </data>
+  <data name="AchWorkshop250Desc" xml:space="preserve">
+    <value>Améliorez un atelier au niveau 250</value>
+  </data>
+  <data name="AchWorkshop500" xml:space="preserve">
+    <value>Atelier Légendaire</value>
+  </data>
+  <data name="AchWorkshop500Desc" xml:space="preserve">
+    <value>Améliorez un atelier au niveau 500</value>
+  </data>
+  <data name="AchWorkshop1000" xml:space="preserve">
+    <value>Transcendant</value>
+  </data>
+  <data name="AchWorkshop1000Desc" xml:space="preserve">
+    <value>Améliorez un atelier au niveau 1000</value>
+  </data>
+  <data name="AchLevel100" xml:space="preserve">
+    <value>Centurion</value>
+  </data>
+  <data name="AchLevel100Desc" xml:space="preserve">
+    <value>Atteignez le niveau 100</value>
+  </data>
+  <data name="AchLevel250" xml:space="preserve">
+    <value>Joueur Élite</value>
+  </data>
+  <data name="AchLevel250Desc" xml:space="preserve">
+    <value>Atteignez le niveau 250</value>
+  </data>
+  <data name="AchLevel500" xml:space="preserve">
+    <value>Grand Maître</value>
+  </data>
+  <data name="AchLevel500Desc" xml:space="preserve">
+    <value>Atteignez le niveau 500</value>
+  </data>
+  <data name="AchLevel1000" xml:space="preserve">
+    <value>Immortel</value>
+  </data>
+  <data name="AchLevel1000Desc" xml:space="preserve">
+    <value>Atteignez le niveau 1000</value>
+  </data>
+  <data name="AchWorkerSSTier" xml:space="preserve">
+    <value>Recrue Rang SS</value>
+  </data>
+  <data name="AchWorkerSSTierDesc" xml:space="preserve">
+    <value>Engagez un travailleur rang SS</value>
+  </data>
+  <data name="AchWorkerSSSTier" xml:space="preserve">
+    <value>Recrue Rang SSS</value>
+  </data>
+  <data name="AchWorkerSSSTierDesc" xml:space="preserve">
+    <value>Engagez un travailleur rang SSS</value>
+  </data>
+  <data name="AchWorkerLegendary" xml:space="preserve">
+    <value>Recrue Légendaire</value>
+  </data>
+  <data name="AchWorkerLegendaryDesc" xml:space="preserve">
+    <value>Engagez un travailleur légendaire</value>
+  </data>
+  <data name="AchMoney10b" xml:space="preserve">
+    <value>Déca-Milliardaire</value>
+  </data>
+  <data name="AchMoney10bDesc" xml:space="preserve">
+    <value>Gagnez 10 000 000 000 EUR au total</value>
+  </data>
+  <data name="ShopCashSmallDescScaled" xml:space="preserve">
+    <value>Recevez {0} instantanément</value>
+  </data>
+  <data name="ShopCashLargeDescScaled" xml:space="preserve">
+    <value>Recevez {0} instantanément</value>
+  </data>
+  <data name="ShopCashHugeName" xml:space="preserve">
+    <value>Argent Instantané (Énorme)</value>
+  </data>
+  <data name="ShopCashHugeDesc" xml:space="preserve">
+    <value>Recevez {0} instantanément</value>
+  </data>
+  <data name="ShopCashMegaName" xml:space="preserve">
+    <value>Argent Instantané (Méga)</value>
+  </data>
+  <data name="ShopCashMegaDesc" xml:space="preserve">
+    <value>Recevez {0} instantanément</value>
+  </data>
 
 </root>

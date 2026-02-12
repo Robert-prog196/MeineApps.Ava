@@ -9,13 +9,13 @@ public enum PrestigeTier
     /// <summary>No prestige yet</summary>
     None = 0,
 
-    /// <summary>First prestige tier, requires Level 30</summary>
+    /// <summary>First prestige tier, requires Level 100</summary>
     Bronze = 1,
 
-    /// <summary>Second tier, requires Level 50 + 3x Bronze</summary>
+    /// <summary>Second tier, requires Level 300 + 3x Bronze</summary>
     Silver = 2,
 
-    /// <summary>Highest tier, requires Level 50 + 3x Silver</summary>
+    /// <summary>Highest tier, requires Level 500 + 3x Silver</summary>
     Gold = 3
 }
 
@@ -26,9 +26,9 @@ public static class PrestigeTierExtensions
     /// </summary>
     public static int GetRequiredLevel(this PrestigeTier tier) => tier switch
     {
-        PrestigeTier.Bronze => 30,
-        PrestigeTier.Silver => 50,
-        PrestigeTier.Gold => 50,
+        PrestigeTier.Bronze => 100,
+        PrestigeTier.Silver => 300,
+        PrestigeTier.Gold => 500,
         _ => int.MaxValue
     };
 

@@ -139,7 +139,7 @@
     <!-- ================================================================= -->
     <!-- MAIN CONTENT                                                      -->
     <!-- ================================================================= -->
-    <ScrollViewer Grid.Row="1" Padding="16">
+    <ScrollViewer Grid.Row="1" Padding="16" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Spacing="20">
 
         <!-- ============================================================= -->
@@ -271,70 +271,112 @@
                    Foreground="{DynamicResource TextPrimaryBrush}" />
 
         <ItemsControl ItemsSource="{Binding Workshops}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:WorkshopDisplayModel">
-              <Button Classes="Text" Margin="0,3" Padding="0" Height="NaN"
+              <Button Classes="Text" Margin="4" Padding="0" Height="NaN"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                       Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).SelectWorkshopCommand}"
                       CommandParameter="{Binding .}">
-                <Border Classes="Card" Padding="0" ClipToBounds="True"
-                        BoxShadow="{Binding MaxLevelGlow}">
-                  <Grid ColumnDefinitions="4,44,*,Auto">
+                <Border CornerRadius="16" ClipToBounds="True"
+                        Background="{DynamicResource CardBrush}"
+                        BoxShadow="{Binding MaxLevelGlow}"
+                        HorizontalAlignment="Stretch">
+                  <Grid RowDefinitions="Auto,*,Auto">
 
-                    <!-- 4px Farbstreifen links in Workshop-Farbe (Intensitaet je nach Level) -->
-                    <Border Grid.Column="0" CornerRadius="12,0,0,12"
-                            Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
-                            Opacity="{Binding ColorIntensity}" />
-
-                    <!-- Icon mit farbigem Hintergrund -->
-                    <Grid Grid.Column="1" Width="40" Height="40" Margin="4,6">
-                      <Border CornerRadius="20"
-                              Background="{Binding Type, Converter={StaticResource WorkshopColor}, ConverterParameter=bg}" />
-                      <mi:MaterialIcon Kind="{Binding IconKind}" Width="20" Height="20"
-                                       Foreground="{Binding Type, Converter={StaticResource WorkshopColor}}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       IsVisible="{Binding IsUnlocked}" />
-                      <mi:MaterialIcon Kind="Lock" Width="18" Height="18"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       IsVisible="{Binding IsUnlocked, Converter={x:Static BoolConverters.Not}}" />
-                    </Grid>
-
-                    <!-- Name + Worker/Income -->
-                    <StackPanel Grid.Column="2" Spacing="2" Margin="8,6,0,6" VerticalAlignment="Center">
-                      <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                   TextTrimming="CharacterEllipsis" MaxLines="1" />
-                        <TextBlock Grid.Column="1" Text="{Binding Level, StringFormat='Lv.{0}'}"
-                                   FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
-                                   VerticalAlignment="Center" Margin="6,0,0,0"
-                                   IsVisible="{Binding IsUnlocked}" />
-                      </Grid>
-                      <!-- Unlocked: Worker-Zaehler + Income -->
-                      <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsUnlocked}">
-                        <TextBlock FontSize="11"
-                                   Foreground="{DynamicResource TextSecondaryBrush}">
-                          <Run Text="{Binding WorkerCount}" />/<Run Text="{Binding MaxWorkers}" />
-                          <Run Text="&#x1F477;" />
-                        </TextBlock>
-                        <TextBlock Text="{Binding IncomeDisplay}" FontSize="11"
-                                   Foreground="{DynamicResource SuccessBrush}" />
+                    <!-- Row 0: Farbiger Header mit Icon + Name -->
+                    <Panel Grid.Row="0">
+                      <Border Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
+                              Opacity="0.12" />
+                      <StackPanel Margin="12,10,12,8" Spacing="6">
+                        <!-- Icon + Name Zeile -->
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <Grid Width="36" Height="36">
+                            <Border CornerRadius="10"
+                                    Background="{Binding Type, Converter={StaticResource WorkshopColor}, ConverterParameter=bg}" />
+                            <mi:MaterialIcon Kind="{Binding IconKind}" Width="18" Height="18"
+                                             Foreground="{Binding Type, Converter={StaticResource WorkshopColor}}"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             IsVisible="{Binding IsUnlocked}" />
+                            <mi:MaterialIcon Kind="Lock" Width="16" Height="16"
+                                             Foreground="{DynamicResource TextSecondaryBrush}"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             IsVisible="{Binding !IsUnlocked}" />
+                          </Grid>
+                          <TextBlock Text="{Binding Name}"
+                                     FontSize="14" FontWeight="Bold"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     TextTrimming="CharacterEllipsis"
+                                     VerticalAlignment="Center" />
+                        </StackPanel>
+                        <!-- Level Badge -->
+                        <Border CornerRadius="8" Background="Gold" Padding="8,3"
+                                HorizontalAlignment="Left"
+                                IsVisible="{Binding IsUnlocked}">
+                          <TextBlock Text="{Binding Level, StringFormat='Level {0}'}"
+                                     FontSize="11" FontWeight="Bold"
+                                     Foreground="#3D2B00" />
+                        </Border>
                       </StackPanel>
-                      <!-- Locked -->
-                      <TextBlock Text="{Binding UnlockDisplay}" FontSize="11"
-                                 Foreground="{DynamicResource TextSecondaryBrush}"
-                                 IsVisible="{Binding !IsUnlocked}" />
+                    </Panel>
+
+                    <!-- Row 1: Body (flexibel, füllt den Raum) -->
+                    <StackPanel Grid.Row="1" Margin="12,8,12,8" Spacing="6">
+
+                      <!-- Freigeschaltet: Workers + Income + Progress -->
+                      <Grid ColumnDefinitions="*,Auto"
+                            IsVisible="{Binding IsUnlocked}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <mi:MaterialIcon Kind="AccountHardHat" Width="14" Height="14"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                          <TextBlock FontSize="12"
+                                     Foreground="{DynamicResource TextSecondaryBrush}">
+                            <Run Text="{Binding WorkerCount}" />/<Run Text="{Binding MaxWorkers}" />
+                          </TextBlock>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="{Binding IncomeDisplay}" FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SuccessBrush}" />
+                      </Grid>
+
+                      <ProgressBar Value="{Binding LevelProgress}" Maximum="1"
+                                   Foreground="{Binding Type, Converter={StaticResource WorkshopColor}}"
+                                   Height="5"
+                                   IsVisible="{Binding IsUnlocked}" />
+
+                      <!-- Gesperrt: Unlock-Info -->
+                      <StackPanel IsVisible="{Binding !IsUnlocked}" Spacing="4">
+                        <TextBlock Text="{Binding UnlockDisplay}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <mi:MaterialIcon Kind="LockOutline" Width="24" Height="24"
+                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         Opacity="0.3"
+                                         HorizontalAlignment="Center" />
+                      </StackPanel>
+
                     </StackPanel>
 
-                    <!-- Upgrade-Button in Workshop-Farbe -->
-                    <Button Grid.Column="3" Classes="Primary" Padding="8,4" MinHeight="32"
-                            Margin="4,0,8,0"
+                    <!-- Row 2: Upgrade-Button (volle Breite, abgerundete untere Ecken) -->
+                    <Button Grid.Row="2" Classes="Primary"
+                            Padding="0,7" MinHeight="30"
+                            CornerRadius="0,0,16,16"
                             Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
                             IsVisible="{Binding IsUnlocked}"
                             IsEnabled="{Binding CanAffordUpgrade}"
                             Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).UpgradeWorkshopCommand}"
                             CommandParameter="{Binding .}">
-                      <mi:MaterialIcon Kind="ChevronUp" Width="16" Height="16" />
+                      <StackPanel Orientation="Horizontal" Spacing="4">
+                        <mi:MaterialIcon Kind="ChevronUp" Width="14" Height="14" />
+                        <TextBlock Text="{Binding UpgradeCostDisplay}" FontSize="12" />
+                      </StackPanel>
                     </Button>
 
                   </Grid>

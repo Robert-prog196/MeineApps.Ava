@@ -24,6 +24,7 @@ public static class MoneyFormatter
 
         return amount switch
         {
+            >= 1_000_000_000_000 => $"{(amount / 1_000_000_000_000).ToString(format)}T \u20AC",
             >= 1_000_000_000 => $"{(amount / 1_000_000_000).ToString(format)}B \u20AC",
             >= 1_000_000 => $"{(amount / 1_000_000).ToString(format)}M \u20AC",
             >= 1_000 => $"{(amount / 1_000).ToString(format)}K \u20AC",
@@ -46,6 +47,8 @@ public static class MoneyFormatter
 
         return amount switch
         {
+            >= 1_000_000_000_000 => $"{(amount / 1_000_000_000_000).ToString(format)}T \u20AC/s",
+            >= 1_000_000_000 => $"{(amount / 1_000_000_000).ToString(format)}B \u20AC/s",
             >= 1_000_000 => $"{(amount / 1_000_000).ToString(format)}M \u20AC/s",
             >= 1_000 => $"{(amount / 1_000).ToString(format)}K \u20AC/s",
             _ => $"{amount.ToString(format)} \u20AC/s"
@@ -59,6 +62,7 @@ public static class MoneyFormatter
     {
         return amount switch
         {
+            >= 1_000_000_000_000 => $"{amount / 1_000_000_000_000:F1}T \u20AC",
             >= 1_000_000_000 => $"{amount / 1_000_000_000:F1}B \u20AC",
             >= 1_000_000 => $"{amount / 1_000_000:F1}M \u20AC",
             >= 1_000 => $"{amount / 1_000:F1}K \u20AC",

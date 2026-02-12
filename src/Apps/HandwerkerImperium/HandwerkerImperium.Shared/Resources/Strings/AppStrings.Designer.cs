@@ -1011,5 +1011,44 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string AdVideoNotAvailableTitle => ResourceManager.GetString("AdVideoNotAvailableTitle", resourceCulture) ?? "";
 
         public static string AdVideoNotAvailableMessage => ResourceManager.GetString("AdVideoNotAvailableMessage", resourceCulture) ?? "";
+
+        // New Worker Tiers
+        public static string TierSS => ResourceManager.GetString("TierSS", resourceCulture) ?? "";
+        public static string TierSSS => ResourceManager.GetString("TierSSS", resourceCulture) ?? "";
+        public static string TierLegendary => ResourceManager.GetString("TierLegendary", resourceCulture) ?? "";
+
+        // New Achievements
+        public static string AchWorkshop100 => ResourceManager.GetString("AchWorkshop100", resourceCulture) ?? "";
+        public static string AchWorkshop100Desc => ResourceManager.GetString("AchWorkshop100Desc", resourceCulture) ?? "";
+        public static string AchWorkshop250 => ResourceManager.GetString("AchWorkshop250", resourceCulture) ?? "";
+        public static string AchWorkshop250Desc => ResourceManager.GetString("AchWorkshop250Desc", resourceCulture) ?? "";
+        public static string AchWorkshop500 => ResourceManager.GetString("AchWorkshop500", resourceCulture) ?? "";
+        public static string AchWorkshop500Desc => ResourceManager.GetString("AchWorkshop500Desc", resourceCulture) ?? "";
+        public static string AchWorkshop1000 => ResourceManager.GetString("AchWorkshop1000", resourceCulture) ?? "";
+        public static string AchWorkshop1000Desc => ResourceManager.GetString("AchWorkshop1000Desc", resourceCulture) ?? "";
+        public static string AchLevel100 => ResourceManager.GetString("AchLevel100", resourceCulture) ?? "";
+        public static string AchLevel100Desc => ResourceManager.GetString("AchLevel100Desc", resourceCulture) ?? "";
+        public static string AchLevel250 => ResourceManager.GetString("AchLevel250", resourceCulture) ?? "";
+        public static string AchLevel250Desc => ResourceManager.GetString("AchLevel250Desc", resourceCulture) ?? "";
+        public static string AchLevel500 => ResourceManager.GetString("AchLevel500", resourceCulture) ?? "";
+        public static string AchLevel500Desc => ResourceManager.GetString("AchLevel500Desc", resourceCulture) ?? "";
+        public static string AchLevel1000 => ResourceManager.GetString("AchLevel1000", resourceCulture) ?? "";
+        public static string AchLevel1000Desc => ResourceManager.GetString("AchLevel1000Desc", resourceCulture) ?? "";
+        public static string AchWorkerSSTier => ResourceManager.GetString("AchWorkerSSTier", resourceCulture) ?? "";
+        public static string AchWorkerSSTierDesc => ResourceManager.GetString("AchWorkerSSTierDesc", resourceCulture) ?? "";
+        public static string AchWorkerSSSTier => ResourceManager.GetString("AchWorkerSSSTier", resourceCulture) ?? "";
+        public static string AchWorkerSSSTierDesc => ResourceManager.GetString("AchWorkerSSSTierDesc", resourceCulture) ?? "";
+        public static string AchWorkerLegendary => ResourceManager.GetString("AchWorkerLegendary", resourceCulture) ?? "";
+        public static string AchWorkerLegendaryDesc => ResourceManager.GetString("AchWorkerLegendaryDesc", resourceCulture) ?? "";
+        public static string AchMoney10b => ResourceManager.GetString("AchMoney10b", resourceCulture) ?? "";
+        public static string AchMoney10bDesc => ResourceManager.GetString("AchMoney10bDesc", resourceCulture) ?? "";
+
+        // Updated Shop Items
+        public static string ShopCashSmallDescScaled => ResourceManager.GetString("ShopCashSmallDescScaled", resourceCulture) ?? "";
+        public static string ShopCashLargeDescScaled => ResourceManager.GetString("ShopCashLargeDescScaled", resourceCulture) ?? "";
+        public static string ShopCashHugeName => ResourceManager.GetString("ShopCashHugeName", resourceCulture) ?? "";
+        public static string ShopCashHugeDesc => ResourceManager.GetString("ShopCashHugeDesc", resourceCulture) ?? "";
+        public static string ShopCashMegaName => ResourceManager.GetString("ShopCashMegaName", resourceCulture) ?? "";
+        public static string ShopCashMegaDesc => ResourceManager.GetString("ShopCashMegaDesc", resourceCulture) ?? "";
     }
 }

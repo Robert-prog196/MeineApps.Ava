@@ -54,13 +54,13 @@ public class Achievement
     /// Target value to unlock the achievement.
     /// </summary>
     [JsonPropertyName("targetValue")]
-    public int TargetValue { get; set; } = 1;
+    public long TargetValue { get; set; } = 1;
 
     /// <summary>
     /// Current progress value.
     /// </summary>
     [JsonPropertyName("currentValue")]
-    public int CurrentValue { get; set; }
+    public long CurrentValue { get; set; }
 
     /// <summary>
     /// Money reward for unlocking.
@@ -149,6 +149,10 @@ public static class Achievements
             new() { Id = "workers_10", TitleKey = "AchWorkers10", TitleFallback = "Growing Team", DescriptionKey = "AchWorkers10Desc", DescriptionFallback = "Hire 10 workers total", Category = AchievementCategory.Workshops, Icon = "\ud83d\udc77", TargetValue = 10, MoneyReward = 1000, XpReward = 200 },
             new() { Id = "workers_25", TitleKey = "AchWorkers25", TitleFallback = "Big Business", DescriptionKey = "AchWorkers25Desc", DescriptionFallback = "Hire 25 workers total", Category = AchievementCategory.Workshops, Icon = "\ud83d\udc77", TargetValue = 25, MoneyReward = 5000, XpReward = 500, GoldenScrewReward = 15 },
             new() { Id = "workshop_level50", TitleKey = "AchWorkshop50", TitleFallback = "Maximum Power", DescriptionKey = "AchWorkshop50Desc", DescriptionFallback = "Upgrade any workshop to level 50", Category = AchievementCategory.Workshops, Icon = "\ud83d\udd27", TargetValue = 50, MoneyReward = 50000, XpReward = 1000 },
+            new() { Id = "workshop_level100", TitleKey = "AchWorkshop100", TitleFallback = "Century Workshop", DescriptionKey = "AchWorkshop100Desc", DescriptionFallback = "Upgrade any workshop to level 100", Category = AchievementCategory.Workshops, Icon = "\ud83d\udd27", TargetValue = 100, MoneyReward = 200_000, XpReward = 2000, GoldenScrewReward = 30 },
+            new() { Id = "workshop_level250", TitleKey = "AchWorkshop250", TitleFallback = "Elite Facility", DescriptionKey = "AchWorkshop250Desc", DescriptionFallback = "Upgrade any workshop to level 250", Category = AchievementCategory.Workshops, Icon = "\ud83d\udd27", TargetValue = 250, MoneyReward = 1_000_000, XpReward = 5000, GoldenScrewReward = 50 },
+            new() { Id = "workshop_level500", TitleKey = "AchWorkshop500", TitleFallback = "Legendary Workshop", DescriptionKey = "AchWorkshop500Desc", DescriptionFallback = "Upgrade any workshop to level 500", Category = AchievementCategory.Workshops, Icon = "\ud83d\udd27", TargetValue = 500, MoneyReward = 5_000_000, XpReward = 10000, GoldenScrewReward = 100 },
+            new() { Id = "workshop_level1000", TitleKey = "AchWorkshop1000", TitleFallback = "Transcendent", DescriptionKey = "AchWorkshop1000Desc", DescriptionFallback = "Upgrade any workshop to level 1000", Category = AchievementCategory.Workshops, Icon = "\ud83d\udc51", TargetValue = 1000, MoneyReward = 50_000_000, XpReward = 25000, GoldenScrewReward = 250 },
             new() { Id = "all_workshops_8", TitleKey = "AchAllWorkshops8", TitleFallback = "Complete Empire", DescriptionKey = "AchAllWorkshops8Desc", DescriptionFallback = "Unlock all 8 workshops (including prestige)", Category = AchievementCategory.Workshops, Icon = "\ud83c\udfed", TargetValue = 8, MoneyReward = 100000, XpReward = 2000, GoldenScrewReward = 20 },
             new() { Id = "events_survived_10", TitleKey = "AchEventsSurvived10", TitleFallback = "Weathered", DescriptionKey = "AchEventsSurvived10Desc", DescriptionFallback = "Survive 10 random events", Category = AchievementCategory.Workshops, Icon = "\u26c8", TargetValue = 10, MoneyReward = 5000, XpReward = 300 },
 
@@ -159,7 +163,8 @@ public static class Achievements
             new() { Id = "money_1m", TitleKey = "AchMoney1m", TitleFallback = "Millionaire", DescriptionKey = "AchMoney1mDesc", DescriptionFallback = "Earn 1,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83e\udd11", TargetValue = 1000000, MoneyReward = 10000, XpReward = 500, GoldenScrewReward = 15 },
             new() { Id = "money_10m", TitleKey = "AchMoney10m", TitleFallback = "Multi-Millionaire", DescriptionKey = "AchMoney10mDesc", DescriptionFallback = "Earn 10,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83d\udcb0", TargetValue = 10000000, MoneyReward = 25000, XpReward = 500 },
             new() { Id = "money_100m", TitleKey = "AchMoney100m", TitleFallback = "Mega Rich", DescriptionKey = "AchMoney100mDesc", DescriptionFallback = "Earn 100,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83d\udcb0", TargetValue = 100000000, MoneyReward = 50000, XpReward = 800, GoldenScrewReward = 30 },
-            new() { Id = "money_1b", TitleKey = "AchMoney1b", TitleFallback = "Billionaire", DescriptionKey = "AchMoney1bDesc", DescriptionFallback = "Earn 1,000,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83e\udd11", TargetValue = 1000000000, MoneyReward = 100000, XpReward = 1500 },
+            new() { Id = "money_1b", TitleKey = "AchMoney1b", TitleFallback = "Billionaire", DescriptionKey = "AchMoney1bDesc", DescriptionFallback = "Earn 1,000,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83e\udd11", TargetValue = 1_000_000_000, MoneyReward = 100000, XpReward = 1500 },
+            new() { Id = "money_10b", TitleKey = "AchMoney10b", TitleFallback = "Deca-Billionaire", DescriptionKey = "AchMoney10bDesc", DescriptionFallback = "Earn 10,000,000,000\u20ac total", Category = AchievementCategory.Money, Icon = "\ud83e\udd11", TargetValue = 10_000_000_000, MoneyReward = 1_000_000, XpReward = 5000, GoldenScrewReward = 100 },
 
             // Time Category
             new() { Id = "play_1h", TitleKey = "AchPlay1h", TitleFallback = "Dedicated", DescriptionKey = "AchPlay1hDesc", DescriptionFallback = "Play for 1 hour total", Category = AchievementCategory.Time, Icon = "\u23f0", TargetValue = 3600, MoneyReward = 250, XpReward = 50 },
@@ -170,6 +175,10 @@ public static class Achievements
             new() { Id = "level_10", TitleKey = "AchLevel10", TitleFallback = "Rising Star", DescriptionKey = "AchLevel10Desc", DescriptionFallback = "Reach level 10", Category = AchievementCategory.Special, Icon = "\ud83c\udf1f", TargetValue = 10, MoneyReward = 1000, XpReward = 200 },
             new() { Id = "level_25", TitleKey = "AchLevel25", TitleFallback = "Experienced", DescriptionKey = "AchLevel25Desc", DescriptionFallback = "Reach level 25", Category = AchievementCategory.Special, Icon = "\ud83c\udf1f", TargetValue = 25, MoneyReward = 5000, XpReward = 500 },
             new() { Id = "level_50", TitleKey = "AchLevel50", TitleFallback = "Veteran", DescriptionKey = "AchLevel50Desc", DescriptionFallback = "Reach level 50", Category = AchievementCategory.Special, Icon = "\ud83d\udc51", TargetValue = 50, MoneyReward = 10000, XpReward = 1000 },
+            new() { Id = "level_100", TitleKey = "AchLevel100", TitleFallback = "Centurion", DescriptionKey = "AchLevel100Desc", DescriptionFallback = "Reach level 100", Category = AchievementCategory.Special, Icon = "\ud83d\udc51", TargetValue = 100, MoneyReward = 50_000, XpReward = 2000, GoldenScrewReward = 30 },
+            new() { Id = "level_250", TitleKey = "AchLevel250", TitleFallback = "Elite Player", DescriptionKey = "AchLevel250Desc", DescriptionFallback = "Reach level 250", Category = AchievementCategory.Special, Icon = "\ud83d\udc51", TargetValue = 250, MoneyReward = 500_000, XpReward = 5000, GoldenScrewReward = 50 },
+            new() { Id = "level_500", TitleKey = "AchLevel500", TitleFallback = "Grandmaster", DescriptionKey = "AchLevel500Desc", DescriptionFallback = "Reach level 500", Category = AchievementCategory.Special, Icon = "\ud83d\udc51", TargetValue = 500, MoneyReward = 5_000_000, XpReward = 10000, GoldenScrewReward = 100 },
+            new() { Id = "level_1000", TitleKey = "AchLevel1000", TitleFallback = "Immortal", DescriptionKey = "AchLevel1000Desc", DescriptionFallback = "Reach level 1000", Category = AchievementCategory.Special, Icon = "\ud83d\udc51", TargetValue = 1000, MoneyReward = 50_000_000, XpReward = 25000, GoldenScrewReward = 250 },
             new() { Id = "prestige_1", TitleKey = "AchPrestige1", TitleFallback = "New Beginning", DescriptionKey = "AchPrestige1Desc", DescriptionFallback = "Prestige for the first time", Category = AchievementCategory.Prestige, Icon = "\u2728", TargetValue = 1, MoneyReward = 5000, XpReward = 500 },
 
             // Workers Category
@@ -179,6 +188,9 @@ public static class Achievements
             new() { Id = "worker_specialist", TitleKey = "AchWorkerSpecialist", TitleFallback = "Perfect Match", DescriptionKey = "AchWorkerSpecialistDesc", DescriptionFallback = "Assign a worker to their specialization workshop", Category = AchievementCategory.Workers, Icon = "\ud83c\udfaf", TargetValue = 1, MoneyReward = 500, XpReward = 50 },
             new() { Id = "workers_total_50", TitleKey = "AchWorkersTotal50", TitleFallback = "HR Manager", DescriptionKey = "AchWorkersTotal50Desc", DescriptionFallback = "Hire 50 workers total (lifetime)", Category = AchievementCategory.Workers, Icon = "\ud83d\udc65", TargetValue = 50, MoneyReward = 20000, XpReward = 700 },
             new() { Id = "worker_s_tier", TitleKey = "AchWorkerSTier", TitleFallback = "Legend Found", DescriptionKey = "AchWorkerSTierDesc", DescriptionFallback = "Hire an S-Tier worker", Category = AchievementCategory.Workers, Icon = "\ud83d\udc8e", TargetValue = 1, MoneyReward = 50000, XpReward = 1000 },
+            new() { Id = "worker_ss_tier", TitleKey = "AchWorkerSSTier", TitleFallback = "SS-Tier Recruit", DescriptionKey = "AchWorkerSSTierDesc", DescriptionFallback = "Hire an SS-Tier worker", Category = AchievementCategory.Workers, Icon = "\ud83d\udc8e", TargetValue = 1, MoneyReward = 200_000, XpReward = 2000, GoldenScrewReward = 30 },
+            new() { Id = "worker_sss_tier", TitleKey = "AchWorkerSSSTier", TitleFallback = "SSS-Tier Recruit", DescriptionKey = "AchWorkerSSSTierDesc", DescriptionFallback = "Hire an SSS-Tier worker", Category = AchievementCategory.Workers, Icon = "\ud83d\udc8e", TargetValue = 1, MoneyReward = 1_000_000, XpReward = 5000, GoldenScrewReward = 50 },
+            new() { Id = "worker_legendary", TitleKey = "AchWorkerLegendary", TitleFallback = "Legendary Recruit", DescriptionKey = "AchWorkerLegendaryDesc", DescriptionFallback = "Hire a Legendary worker", Category = AchievementCategory.Workers, Icon = "\ud83d\udc8e", TargetValue = 1, MoneyReward = 10_000_000, XpReward = 10000, GoldenScrewReward = 100 },
 
             // Buildings Category
             new() { Id = "building_first", TitleKey = "AchBuildingFirst", TitleFallback = "Developer", DescriptionKey = "AchBuildingFirstDesc", DescriptionFallback = "Build your first building", Category = AchievementCategory.Buildings, Icon = "\ud83c\udfd7", TargetValue = 1, MoneyReward = 2000, XpReward = 100 },

@@ -148,7 +148,7 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_small",
                 Name = _localizationService.GetString("ShopCashSmallName"),
-                Description = _localizationService.GetString("ShopCashSmallDesc"),
+                Description = string.Format(_localizationService.GetString("ShopCashSmallDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 500m)),
                 Icon = "💰",
                 Price = _localizationService.GetString("WatchVideo"),
                 IsAdReward = true
@@ -157,9 +157,27 @@ public partial class ShopViewModel : ObservableObject
             {
                 Id = "instant_cash_large",
                 Name = _localizationService.GetString("ShopCashLargeName"),
-                Description = _localizationService.GetString("ShopCashLargeDesc"),
+                Description = string.Format(_localizationService.GetString("ShopCashLargeDescScaled") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 2_000m)),
                 Icon = "💵",
                 Price = "0,99 €",
+                IsPremiumItem = true
+            },
+            new ShopItem
+            {
+                Id = "instant_cash_huge",
+                Name = _localizationService.GetString("ShopCashHugeName"),
+                Description = string.Format(_localizationService.GetString("ShopCashHugeDesc") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 10_000m)),
+                Icon = "💎",
+                Price = "2,49 €",
+                IsPremiumItem = true
+            },
+            new ShopItem
+            {
+                Id = "instant_cash_mega",
+                Name = _localizationService.GetString("ShopCashMegaName"),
+                Description = string.Format(_localizationService.GetString("ShopCashMegaDesc") ?? "{0}", MoneyFormatter.FormatCompact(state.PlayerLevel * 50_000m)),
+                Icon = "👑",
+                Price = "4,99 €",
                 IsPremiumItem = true
             },
             new ShopItem
@@ -370,13 +388,35 @@ public partial class ShopViewModel : ObservableObject
                 {
                     success = await _purchaseService.PurchaseRemoveAdsAsync();
                 }
-                else if (item.Id == "booster_2x_2h" || item.Id == "instant_cash_large")
+                else if (item.Id == "booster_2x_2h")
                 {
-                    // These are consumable items - for now show placeholder
+                    // Booster - Placeholder
                     ShowAlert(
                         _localizationService.GetString("ComingSoon"),
                         _localizationService.GetString("ComingSoonDesc"),
                         "OK");
+                    return;
+                }
+                else if (item.Id is "instant_cash_large" or "instant_cash_huge" or "instant_cash_mega")
+                {
+                    var cashAmount = item.Id switch
+                    {
+                        "instant_cash_large" => _gameStateService.State.PlayerLevel * 2_000m,
+                        "instant_cash_huge" => _gameStateService.State.PlayerLevel * 10_000m,
+                        "instant_cash_mega" => _gameStateService.State.PlayerLevel * 50_000m,
+                        _ => 0m
+                    };
+                    if (cashAmount > 0)
+                    {
+                        // TODO: Echten IAP-Kauf via PurchaseService implementieren
+                        _gameStateService.AddMoney(cashAmount);
+                        CurrentBalance = FormatMoney(_gameStateService.State.Money);
+                        await _audioService.PlaySoundAsync(GameSound.MoneyEarned);
+                        ShowAlert(
+                            _localizationService.GetString("MoneyReceived"),
+                            string.Format(_localizationService.GetString("MoneyReceivedFormat"), MoneyFormatter.FormatCompact(cashAmount)),
+                            _localizationService.GetString("Great"));
+                    }
                     return;
                 }
                 else if (item.Id.StartsWith("golden_screws_"))
@@ -468,12 +508,13 @@ public partial class ShopViewModel : ObservableObject
                 break;
 
             case "instant_cash_small":
-                _gameStateService.AddMoney(1000);
+                var cashSmall = _gameStateService.State.PlayerLevel * 500m;
+                _gameStateService.AddMoney(cashSmall);
                 CurrentBalance = FormatMoney(_gameStateService.State.Money);
                 await _audioService.PlaySoundAsync(GameSound.MoneyEarned);
                 ShowAlert(
                     _localizationService.GetString("MoneyReceived"),
-                    string.Format(_localizationService.GetString("MoneyReceivedFormat"), "1.000 €"),
+                    string.Format(_localizationService.GetString("MoneyReceivedFormat"), MoneyFormatter.FormatCompact(cashSmall)),
                     _localizationService.GetString("Great"));
                 break;
 

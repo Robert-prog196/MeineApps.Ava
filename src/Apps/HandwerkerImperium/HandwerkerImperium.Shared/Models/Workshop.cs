@@ -5,7 +5,7 @@ namespace HandwerkerImperium.Models;
 
 /// <summary>
 /// Represents a workshop/trade in the game.
-/// Each workshop can be upgraded (1-50), staffed with workers, and has running costs.
+/// Each workshop can be upgraded (1-1000), staffed with workers, and has running costs.
 /// </summary>
 public class Workshop
 {
@@ -13,7 +13,7 @@ public class Workshop
     public WorkshopType Type { get; set; }
 
     /// <summary>
-    /// Current level (1-50). Higher = more income, more worker slots, higher costs.
+    /// Current level (1-1000). Higher = more income, more worker slots, higher costs.
     /// </summary>
     [JsonPropertyName("level")]
     public int Level { get; set; } = 1;
@@ -34,17 +34,17 @@ public class Workshop
     public bool IsUnlocked { get; set; }
 
     /// <summary>
-    /// Max Level
+    /// Maximales Workshop-Level.
     /// </summary>
-    public const int MaxLevel = 50;
+    public const int MaxLevel = 1000;
 
     /// <summary>
     /// Maximum workers allowed at current level.
-    /// +1 every 5 levels (max 10 at level 50).
+    /// +1 every 50 levels (max 20 at level 1000).
     /// Note: BuildingType.WorkshopExtension adds extra slots.
     /// </summary>
     [JsonIgnore]
-    public int BaseMaxWorkers => Math.Min(10, 1 + (Level - 1) / 5);
+    public int BaseMaxWorkers => Math.Min(20, 1 + (Level - 1) / 50);
 
     /// <summary>
     /// Total max workers including building bonus + Ad-Bonus.
@@ -67,15 +67,15 @@ public class Workshop
 
     /// <summary>
     /// Base income per worker per second at current level.
-    /// Formula: 1 * 2^((Level-1)/3) * TypeMultiplier
-    /// Slower scaling than before (was /2, now /3).
+    /// Formel: 1 * 1.025^(Level-1) * TypeMultiplier
+    /// Moderat-exponentiell, skaliert sicher bis Level 1000.
     /// </summary>
     [JsonIgnore]
     public decimal BaseIncomePerWorker
     {
         get
         {
-            decimal baseIncome = 1m * (decimal)Math.Pow(2, (Level - 1) / 3.0);
+            decimal baseIncome = (decimal)Math.Pow(1.025, Level - 1);
             return baseIncome * Type.GetBaseIncomeMultiplier();
         }
     }
@@ -131,8 +131,9 @@ public class Workshop
     public decimal IncomePerSecond => GrossIncomePerSecond;
 
     /// <summary>
-    /// Cost to upgrade to next level.
-    /// Formula: 200 * 2.2^(Level-1)
+    /// Kosten fuer Upgrade auf naechstes Level.
+    /// Formel: 200 * 1.035^(Level-1)
+    /// Moderat-exponentiell, skaliert sicher bis Level 1000.
     /// </summary>
     [JsonIgnore]
     public decimal UpgradeCost
@@ -141,7 +142,7 @@ public class Workshop
         {
             if (Level >= MaxLevel) return 0;
             if (Level == 1) return 100m; // Erstes Upgrade guenstig
-            return 200m * (decimal)Math.Pow(2.2, Level - 1);
+            return 200m * (decimal)Math.Pow(1.035, Level - 1);
         }
     }
 
@@ -160,9 +161,9 @@ public class Workshop
     [JsonIgnore]
     public string Icon => Type.GetIcon();
 
-    // Legacy property for backward compatibility
+    // Kosten fuer naechsten Worker (sanfter als 2^n)
     [JsonIgnore]
-    public decimal HireWorkerCost => 50m * (decimal)Math.Pow(2, Workers.Count);
+    public decimal HireWorkerCost => 50m * (decimal)Math.Pow(1.5, Workers.Count);
 
     public static Workshop Create(WorkshopType type)
     {

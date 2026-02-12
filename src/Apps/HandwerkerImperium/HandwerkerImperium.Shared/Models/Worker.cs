@@ -273,13 +273,16 @@ public class Worker
         var personality = (WorkerPersonality)random.Next(0, 6);
         var talent = tier switch
         {
-            WorkerTier.F => random.Next(1, 3),   // 1-2
-            WorkerTier.E => random.Next(1, 4),   // 1-3
-            WorkerTier.D => random.Next(2, 4),   // 2-3
-            WorkerTier.C => random.Next(2, 5),   // 2-4
-            WorkerTier.B => random.Next(3, 5),   // 3-4
-            WorkerTier.A => random.Next(3, 6),   // 3-5
-            WorkerTier.S => random.Next(4, 6),   // 4-5
+            WorkerTier.F => random.Next(1, 3),        // 1-2
+            WorkerTier.E => random.Next(1, 4),        // 1-3
+            WorkerTier.D => random.Next(2, 4),        // 2-3
+            WorkerTier.C => random.Next(2, 5),        // 2-4
+            WorkerTier.B => random.Next(3, 5),        // 3-4
+            WorkerTier.A => random.Next(3, 6),        // 3-5
+            WorkerTier.S => random.Next(4, 6),        // 4-5
+            WorkerTier.SS => random.Next(4, 6),       // 4-5
+            WorkerTier.SSS => 5,                      // immer 5
+            WorkerTier.Legendary => 5,                // immer 5
             _ => 3
         };
 
@@ -333,7 +336,8 @@ public class Worker
         var tiers = new List<WorkerTier>();
         foreach (var tier in Enum.GetValues<WorkerTier>())
         {
-            if (tier == WorkerTier.S && !hasSTierResearch) continue;
+            // S, SS, SSS, Legendary brauchen alle S-Tier Research-Unlock
+            if (tier >= WorkerTier.S && !hasSTierResearch) continue;
             if (playerLevel >= tier.GetUnlockLevel())
                 tiers.Add(tier);
         }

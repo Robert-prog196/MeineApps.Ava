@@ -73,9 +73,8 @@ public class OrderGeneratorService : IOrderGeneratorService
         int playerLevel = _gameStateService.State.PlayerLevel;
         var difficulty = GetDifficultyForPlayerLevel(playerLevel);
 
-        // Calculate base reward (scales with difficulty and level)
-        decimal baseReward = 100m * workshopLevel * workshopType.GetBaseIncomeMultiplier();
-        baseReward *= difficulty.GetRewardMultiplier();
+        // Basis-Belohnung (Difficulty wird nur in Order.FinalReward angewendet)
+        decimal baseReward = 300m * workshopLevel * workshopType.GetBaseIncomeMultiplier();
 
         // Calculate base XP
         int baseXp = 25 * workshopLevel;

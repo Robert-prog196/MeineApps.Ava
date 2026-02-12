@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HandwerkerImperium.Helpers;
 using HandwerkerImperium.Models;
 using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.Models.Events;
@@ -77,6 +78,9 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _upgradeCostDisplay = "";
+
+    [ObservableProperty]
+    private string _levelDisplay = "1/1000";
 
     [ObservableProperty]
     private decimal _hireWorkerCost;
@@ -162,9 +166,10 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         WorkshopIcon = WorkshopType.GetIcon();
         WorkshopName = _localizationService.GetString(WorkshopType.GetLocalizationKey());
         Level = workshop.Level;
+        LevelDisplay = $"{Level}/{Workshop.MaxLevel}";
         LevelProgress = Level / (double)Workshop.MaxLevel;
         IncomePerSecond = workshop.IncomePerSecond;
-        IncomeDisplay = $"{IncomePerSecond:N0} €/s";
+        IncomeDisplay = MoneyFormatter.FormatPerSecond(IncomePerSecond, 1);
         TotalEarned = workshop.TotalEarned;
         OrdersCompleted = workshop.OrdersCompleted;
 
@@ -177,9 +182,9 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         MaxWorkers = workshop.MaxWorkers;
 
         UpgradeCost = workshop.UpgradeCost;
-        UpgradeCostDisplay = $"{UpgradeCost:N0} €";
+        UpgradeCostDisplay = MoneyFormatter.FormatCompact(UpgradeCost);
         HireWorkerCost = workshop.HireWorkerCost;
-        HireCostDisplay = $"{HireWorkerCost:N0} €";
+        HireCostDisplay = MoneyFormatter.FormatCompact(HireWorkerCost);
 
         CanUpgrade = workshop.CanUpgrade;
         CanHireWorker = workshop.CanHireWorker;
@@ -214,6 +219,13 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
             _gameStateService.AddMoney(earnings);
             LoadWorkshop();
         }
+    }
+
+    [RelayCommand]
+    private void SelectWorker(string? workerId)
+    {
+        if (string.IsNullOrEmpty(workerId)) return;
+        NavigationRequested?.Invoke($"worker?id={workerId}");
     }
 
     [RelayCommand]

@@ -74,7 +74,7 @@ public class AchievementService : IAchievementService, IDisposable
             return false;
 
         // Fortschritt um boostPercent des Zielwerts erhoehen
-        var boost = (int)(achievement.TargetValue * boostPercent);
+        var boost = (long)(achievement.TargetValue * boostPercent);
         if (boost < 1) boost = 1;
         achievement.CurrentValue += boost;
         achievement.HasUsedAdBoost = true;
@@ -138,7 +138,8 @@ public class AchievementService : IAchievementService, IDisposable
                     => state.TotalMiniGamesPlayed,
 
                 // Workshops
-                "workshop_level10" or "workshop_level25"
+                "workshop_level10" or "workshop_level25" or "workshop_level50"
+                or "workshop_level100" or "workshop_level250" or "workshop_level500" or "workshop_level1000"
                     => state.Workshops.Count > 0 ? state.Workshops.Max(w => w.Level) : 0,
                 "all_workshops"
                     => state.Workshops.Count,
@@ -147,23 +148,29 @@ public class AchievementService : IAchievementService, IDisposable
                 "workers_10" or "workers_25"
                     => state.Workshops.Sum(w => w.Workers.Count),
 
-                // Money
+                // Money (long statt int-Cast fuer grosse Betraege)
                 "money_1k" or "money_10k" or "money_100k" or "money_1m"
-                    => (int)state.TotalMoneyEarned,
+                or "money_10m" or "money_100m" or "money_1b" or "money_10b"
+                    => (long)Math.Min(state.TotalMoneyEarned, long.MaxValue),
 
                 // Time
                 "play_1h" or "play_10h"
-                    => (int)state.TotalPlayTimeSeconds,
+                    => (long)state.TotalPlayTimeSeconds,
                 "daily_7"
                     => state.DailyRewardStreak,
 
-                // Special
+                // Special (Level + Prestige)
                 "level_10" or "level_25" or "level_50"
+                or "level_100" or "level_250" or "level_500" or "level_1000"
                     => state.PlayerLevel,
                 "prestige_1"
                     => state.PrestigeLevel,
 
-                _ => 0
+                // Worker-Tier Achievements (werden beim Hiring gesetzt, hier nur Fallback)
+                "worker_ss_tier" or "worker_sss_tier" or "worker_legendary"
+                    => achievement.CurrentValue,
+
+                _ => achievement.CurrentValue
             };
         }
     }

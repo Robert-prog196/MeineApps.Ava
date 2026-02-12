@@ -1554,23 +1554,25 @@ public partial class WorkshopDisplayModel : ObservableObject
     public int RequiredPrestige { get; set; }
     public string UnlockDisplay { get; set; } = "";
     public string WorkerDisplay => $"👷×{WorkerCount}";
-    public string IncomeDisplay => IncomePerSecond > 0 ? $"{IncomePerSecond:N0}€/s" : "-";
-    public string UpgradeCostDisplay => $"{UpgradeCost:N0}€";
-    public string HireCostDisplay => $"{HireWorkerCost:N0}€";
+    public string IncomeDisplay => IncomePerSecond > 0 ? MoneyFormatter.FormatPerSecond(IncomePerSecond, 1) : "-";
+    public string UpgradeCostDisplay => MoneyFormatter.FormatCompact(UpgradeCost);
+    public string HireCostDisplay => MoneyFormatter.FormatCompact(HireWorkerCost);
     public double LevelProgress => Level / (double)Workshop.MaxLevel;
 
-    // Phase 10.2: Level-basierte Farb-Intensitaet fuer Workshop-Streifen
-    // Wird als ConverterParameter im AXAML verwendet
+    // Level-basierte Farb-Intensitaet fuer Workshop-Streifen
     public double ColorIntensity => Level switch
     {
-        >= 50 => 0.80, // Max Level → stark leuchtend
-        >= 26 => 0.60, // Premium-Icons
-        >= 11 => 0.40, // Erweiterte Icons
-        _ => 0.20      // Basis
+        >= 1000 => 1.00, // Max Level → voll leuchtend
+        >= 500 => 0.85,
+        >= 250 => 0.70,
+        >= 100 => 0.55,
+        >= 50 => 0.45,
+        >= 25 => 0.35,
+        _ => 0.20       // Basis
     };
 
-    // Phase 10.3: Max Level Gold-Glow
-    public bool IsMaxLevel => Level >= 50;
+    // Max Level Gold-Glow
+    public bool IsMaxLevel => Level >= Workshop.MaxLevel;
     public string MaxLevelGlow => IsMaxLevel ? "0 0 12 0 #60FFD700" : "none";
 
     // Phase 12.2: "Fast geschafft" Puls wenn >= 80% des Upgrade-Preises vorhanden

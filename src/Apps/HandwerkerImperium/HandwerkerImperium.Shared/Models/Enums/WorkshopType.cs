@@ -45,10 +45,10 @@ public static class WorkshopTypeExtensions
         WorkshopType.Plumber => 8,
         WorkshopType.Electrician => 15,
         WorkshopType.Painter => 22,
-        WorkshopType.Roofer => 30,
-        WorkshopType.Contractor => 40,
-        WorkshopType.Architect => 1,            // Available at level 1 but requires Prestige 1
-        WorkshopType.GeneralContractor => 1,    // Available at level 1 but requires Prestige 3
+        WorkshopType.Roofer => 60,
+        WorkshopType.Contractor => 100,
+        WorkshopType.Architect => 1,            // Ab Level 1 verfuegbar, braucht aber Prestige 1
+        WorkshopType.GeneralContractor => 1,    // Ab Level 1 verfuegbar, braucht aber Prestige 3
         _ => 1
     };
 
