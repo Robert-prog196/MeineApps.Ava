@@ -464,28 +464,30 @@ public partial class StatisticsViewModel : ObservableObject
             ? new SKColor(0xFF, 0xFF, 0xFF)
             : new SKColor(0x21, 0x21, 0x21);
 
-        // Create LineChart series
+        // LineSeries mit semi-transparentem Fill für Fläche unter den Linien
         TrendChartSeries =
         [
             new LineSeries<double>
             {
                 Values = monthlyIncomes,
                 Name = _localizationService.GetString("Income") ?? "Income",
-                Stroke = new SolidColorPaint(new SKColor(0x4C, 0xAF, 0x50)) { StrokeThickness = 3 },
-                GeometryStroke = new SolidColorPaint(new SKColor(0x4C, 0xAF, 0x50)) { StrokeThickness = 3 },
-                GeometryFill = new SolidColorPaint(new SKColor(0x4C, 0xAF, 0x50)),
-                GeometrySize = 8,
-                Fill = null
+                Stroke = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)) { StrokeThickness = 3 },
+                GeometryStroke = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)) { StrokeThickness = 2 },
+                GeometryFill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)),
+                GeometrySize = 6,
+                Fill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E, 0x33)),
+                LineSmoothness = 0.3
             },
             new LineSeries<double>
             {
                 Values = monthlyExpenses,
                 Name = _localizationService.GetString("Expenses") ?? "Expenses",
-                Stroke = new SolidColorPaint(new SKColor(0xF4, 0x43, 0x36)) { StrokeThickness = 3 },
-                GeometryStroke = new SolidColorPaint(new SKColor(0xF4, 0x43, 0x36)) { StrokeThickness = 3 },
-                GeometryFill = new SolidColorPaint(new SKColor(0xF4, 0x43, 0x36)),
-                GeometrySize = 8,
-                Fill = null
+                Stroke = new SolidColorPaint(new SKColor(0xEF, 0x44, 0x44)) { StrokeThickness = 3 },
+                GeometryStroke = new SolidColorPaint(new SKColor(0xEF, 0x44, 0x44)) { StrokeThickness = 2 },
+                GeometryFill = new SolidColorPaint(new SKColor(0xEF, 0x44, 0x44)),
+                GeometrySize = 6,
+                Fill = new SolidColorPaint(new SKColor(0xEF, 0x44, 0x44, 0x33)),
+                LineSmoothness = 0.3
             }
         ];
 
@@ -517,28 +519,32 @@ public partial class StatisticsViewModel : ObservableObject
             ? new SKColor(0xFF, 0xFF, 0xFF)
             : new SKColor(0x21, 0x21, 0x21);
 
-        // Expenses PieChart
+        // Expenses Donut-Chart (InnerRadius für Ring-Effekt)
         ExpenseChartSeries = expenses.Select(c => new PieSeries<double>
         {
             Values = [c.Amount],
             Name = GetCategoryName(c.Category),
             Fill = new SolidColorPaint(GetCategoryColor(c.Category)),
+            InnerRadius = 50,
             DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
             DataLabelsPaint = new SolidColorPaint(labelColor),
             DataLabelsFormatter = point => $"{c.Percentage * 100:F0}%",
-            DataLabelsSize = 12
+            DataLabelsSize = 12,
+            HoverPushout = 5
         }).ToArray();
 
-        // Income PieChart
+        // Income Donut-Chart
         IncomeChartSeries = incomes.Select(c => new PieSeries<double>
         {
             Values = [c.Amount],
             Name = GetCategoryName(c.Category),
             Fill = new SolidColorPaint(GetCategoryColor(c.Category)),
+            InnerRadius = 50,
             DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
             DataLabelsPaint = new SolidColorPaint(labelColor),
             DataLabelsFormatter = point => $"{c.Percentage * 100:F0}%",
-            DataLabelsSize = 12
+            DataLabelsSize = 12,
+            HoverPushout = 5
         }).ToArray();
     }
 

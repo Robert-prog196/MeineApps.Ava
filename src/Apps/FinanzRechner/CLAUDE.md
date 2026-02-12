@@ -15,7 +15,7 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 - **Budget Management**: Budget-Limits pro Kategorie, Fortschrittsanzeige, Alert-Levels
 - **Recurring Transactions**: Dauerauftraege mit Auto-Processing bei App-Start (verpasste Zeitraeume werden nachgeholt)
 - **6 Finanz-Rechner**: CompoundInterest, SavingsPlan, Loan, Amortization, Yield, Inflation
-- **Charts**: LiveCharts (ProgressBar, PieChart, LineSeries)
+- **Charts**: LiveCharts (Donut/Ring-Charts mit InnerRadius, LineSeries mit Fill, ProgressBar)
 - **Export**: CSV + PDF (PdfSharpCore), plattformspezifisches File-Sharing
 
 ## App-spezifische Services
@@ -76,6 +76,7 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 
 ## Changelog (Highlights)
 
+- **12.02.2026**: Visual Redesign komplett. Chart-Typen erneuert: SavingsPlan+CompoundInterest→StackedAreaSeries (Einzahlungen/Kapital+Zinsen gestapelt), Amortization→StackedColumnSeries (Tilgung vs Zinsen pro Jahr), Inflation→StackedAreaSeries (Kaufkraft vs Verlust), Yield→Donut-PieChart (Startkapital vs Gewinn), Loan→Donut-PieChart. Alle Charts Background=CardBrush (kein Transparent). StatisticsView: Donut-Charts (InnerRadius=50), Summary-Cards mit Gradient, Kategorie-Breakdown mit farbigen Fortschrittsbalken+Prozent-Badge, Trend-Chart mit Fill+LineSmoothness. HomeView: Mini-Donut (Top-6), farbige Kategorie-Icons. ExpenseTrackerView: farbige Icons. Neuer Converter: CategoryToColorBrushConverter.cs
 - **11.02.2026 (4)**: Optimierungs-Durchlauf Batch 4-6: Atomares Schreiben (temp+rename), Auto-Backup (5 Versionen), DateTime.Today/UtcNow konsistent, Budget-Notification-Persistenz, Trend-Abfragen optimiert (6→1), Recurring nur 1x/Tag, stille Fehler loggen, Fire-and-forget try-catch. CurrencyHelper zentral (alle EUR-Formatierungen), CategoryLocalizationHelper erweitert (Icons+Farben), CSV InvariantCulture, Biweekly-Intervall, englische Kommentare→deutsch. Budget-Kategorie im Edit deaktiviert, Gesamt-Monatsbudget-ProgressBar, Amortization-Tabelle ausklappbar, Live-Berechnung Debouncing (300ms) in allen 6 Rechnern, Inflationsrechner (6. Rechner), Restore Merge/Replace Dialog
 - **11.02.2026 (3)**: Inflationsrechner als 6. Finanzrechner: FinanceEngine.CalculateInflation + InflationResult, InflationViewModel mit Chart (Kaufkraft-Verlauf als rote LineSeries), InflationView (orange Gradient #F97316/#EA580C, CurrencyUsd Icon), MainViewModel-Integration (ActiveCalculatorIndex=5), HomeView 2x3 Grid-Karte, DI-Registrierung, 8 neue RESX-Keys in allen 6 Sprachen (CalcInflation, CurrentAmount, AnnualInflationRate, FutureValue, PurchasingPower, PurchasingPowerLoss, ChartPurchasingPower, LossPercent)
 - **11.02.2026 (2)**: Restore Merge vs Replace Dialog: Nach File-Picker zeigt SettingsView einen Overlay-Dialog mit Merge/Replace/Cancel Buttons. 6 neue RESX-Keys in allen 6 Sprachen. ProcessRestoreFileAsync von public auf private geaendert.

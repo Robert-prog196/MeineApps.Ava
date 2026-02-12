@@ -1,6 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
 using FinanzRechner.Helpers;
@@ -8,6 +11,7 @@ using FinanzRechner.Models;
 using FinanzRechner.Services;
 using FinanzRechner.Resources.Strings;
 using FinanzRechner.ViewModels.Calculators;
+using SkiaSharp;
 
 // CategoryDisplayItem aus ExpenseTrackerViewModel wiederverwenden
 
@@ -339,6 +343,7 @@ public partial class MainViewModel : ObservableObject
     public string RemoveAdsDescText => _localizationService.GetString("RemoveAdsDesc") ?? "Enjoy ad-free experience with Premium";
     public string GetPremiumText => _localizationService.GetString("GetPremium") ?? "Get Premium";
     public string SectionBudgetText => _localizationService.GetString("SectionBudget") ?? "Budget Status";
+    public string SectionExpensesText => _localizationService.GetString("ExpensesByCategory") ?? "Expenses by Category";
     public string SectionRecentText => _localizationService.GetString("SectionRecent") ?? "Recent Transactions";
     public string ViewAllText => _localizationService.GetString("ViewAll") ?? "View all";
     public string PremiumPriceText => _localizationService.GetString("PremiumPrice") ?? "From \u20ac3.99";
@@ -363,6 +368,7 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(RemoveAdsDescText));
         OnPropertyChanged(nameof(GetPremiumText));
         OnPropertyChanged(nameof(SectionBudgetText));
+        OnPropertyChanged(nameof(SectionExpensesText));
         OnPropertyChanged(nameof(SectionRecentText));
         OnPropertyChanged(nameof(ViewAllText));
         OnPropertyChanged(nameof(PremiumPriceText));
@@ -428,6 +434,50 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<Expense> _recentTransactions = [];
+
+    #endregion
+
+    #region Home Expense Chart (Mini-Donut)
+
+    [ObservableProperty]
+    private IEnumerable<ISeries> _homeExpenseChartSeries = [];
+
+    [ObservableProperty]
+    private bool _hasHomeChartData;
+
+    /// <summary>
+    /// Baut Mini-Donut-Chart für HomeView aus den Monats-Ausgaben auf.
+    /// </summary>
+    private void BuildHomeExpenseChart(List<Expense> monthExpenses)
+    {
+        var expensesByCategory = monthExpenses
+            .Where(e => e.Type == TransactionType.Expense)
+            .GroupBy(e => e.Category)
+            .Select(g => new { Category = g.Key, Amount = g.Sum(e => e.Amount) })
+            .OrderByDescending(x => x.Amount)
+            .Take(6) // Top 6 Kategorien für übersichtliches Donut
+            .ToList();
+
+        if (expensesByCategory.Count == 0)
+        {
+            HasHomeChartData = false;
+            HomeExpenseChartSeries = [];
+            return;
+        }
+
+        HasHomeChartData = true;
+        HomeExpenseChartSeries = expensesByCategory.Select(c => new PieSeries<double>
+        {
+            Values = [c.Amount],
+            Name = CategoryLocalizationHelper.GetLocalizedName(c.Category, _localizationService),
+            Fill = new SolidColorPaint(CategoryLocalizationHelper.GetCategoryColor(c.Category)),
+            InnerRadius = 40,
+            DataLabelsSize = 0,
+            HoverPushout = 3,
+            RelativeOuterRadius = 8,
+            RelativeInnerRadius = 8
+        }).ToArray();
+    }
 
     #endregion
 
@@ -620,7 +670,9 @@ public partial class MainViewModel : ObservableObject
         try
         {
             var expenses = await _expenseService.GetExpensesByMonthAsync(today.Year, today.Month);
-            var recent = expenses
+            var expenseList = expenses.ToList();
+
+            var recent = expenseList
                 .OrderByDescending(e => e.Date)
                 .ThenByDescending(e => e.Id)
                 .Take(3)
@@ -628,10 +680,14 @@ public partial class MainViewModel : ObservableObject
 
             HasRecentTransactions = recent.Count > 0;
             RecentTransactions = new ObservableCollection<Expense>(recent);
+
+            // Mini-Donut-Chart für HomeView aufbauen
+            BuildHomeExpenseChart(expenseList);
         }
         catch (Exception)
         {
             HasRecentTransactions = false;
+            HasHomeChartData = false;
         }
     }
 

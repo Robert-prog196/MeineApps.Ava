@@ -408,10 +408,12 @@ public partial class ExpenseTrackerViewModel : ObservableObject, IDisposable
             Values = [c.Amount],
             Name = CategoryLocalizationHelper.GetLocalizedName(c.Category, _localizationService),
             Fill = new SolidColorPaint(CategoryLocalizationHelper.GetCategoryColor(c.Category)),
+            InnerRadius = 35,
             DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
             DataLabelsPaint = new SolidColorPaint(labelColor),
             DataLabelsFormatter = _ => total > 0 ? $"{c.Amount / total * 100:F0}%" : "",
-            DataLabelsSize = 11
+            DataLabelsSize = 11,
+            HoverPushout = 3
         }).ToArray();
 
         HasCategoryChartData = true;

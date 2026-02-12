@@ -152,23 +152,21 @@
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
 
-                        <lvc:CartesianChart Series="{Binding ChartSeries}"
-                                            XAxes="{Binding XAxes}"
-                                            YAxes="{Binding YAxes}"
-                                            Height="200"
-                                            ZoomMode="None"
-                                            TooltipPosition="Top"/>
+                        <lvc:PieChart Series="{Binding ChartSeries}"
+                                      Height="200"
+                                      Background="{DynamicResource CardBrush}"
+                                      TooltipPosition="Top"/>
 
-                        <!-- Legend -->
+                        <!-- Legende -->
                         <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#2196F3" Width="12" Height="12" CornerRadius="6"/>
+                                <Border Background="#3B82F6" Width="12" Height="12" CornerRadius="6"/>
                                 <TextBlock Text="{Binding InitialLegendText}" FontSize="12"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#4CAF50" Width="12" Height="12" CornerRadius="6"/>
-                                <TextBlock Text="{Binding FinalLegendText}" FontSize="12"
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding TotalReturnText}" FontSize="12"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                         </StackPanel>

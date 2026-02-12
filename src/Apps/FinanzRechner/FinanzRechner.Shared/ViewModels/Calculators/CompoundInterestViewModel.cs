@@ -119,27 +119,37 @@ public partial class CompoundInterestViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var capitalValues = new List<double>();
+        var principalValues = new List<double>();
+        var interestValues = new List<double>();
         var rate = AnnualRate / 100;
         var n = CompoundingsPerYear;
 
         for (int year = 0; year <= Years; year++)
         {
-            var value = Principal * Math.Pow(1 + rate / n, n * year);
-            capitalValues.Add(value);
+            principalValues.Add(Principal);
+            var total = Principal * Math.Pow(1 + rate / n, n * year);
+            interestValues.Add(Math.Max(0, total - Principal));
         }
 
         ChartSeries = new ISeries[]
         {
-            new LineSeries<double>
+            new StackedAreaSeries<double>
             {
-                Values = capitalValues,
-                Name = _localizationService.GetString("ChartCapital") ?? "Capital",
-                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50").WithAlpha(50)),
-                Stroke = new SolidColorPaint(SKColor.Parse("#4CAF50")) { StrokeThickness = 3 },
-                GeometryFill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
-                GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                GeometrySize = 8
+                Values = principalValues,
+                Name = _localizationService.GetString("PrincipalPortion") ?? "Principal",
+                Fill = new SolidColorPaint(new SKColor(0x3B, 0x82, 0xF6, 0x88)),
+                Stroke = new SolidColorPaint(new SKColor(0x3B, 0x82, 0xF6)) { StrokeThickness = 2 },
+                GeometrySize = 0,
+                LineSmoothness = 0
+            },
+            new StackedAreaSeries<double>
+            {
+                Values = interestValues,
+                Name = _localizationService.GetString("InterestEarned") ?? "Interest",
+                Fill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E, 0x88)),
+                Stroke = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)) { StrokeThickness = 2 },
+                GeometrySize = 0,
+                LineSmoothness = 0.3
             }
         };
 

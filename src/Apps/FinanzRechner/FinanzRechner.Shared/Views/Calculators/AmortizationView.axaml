@@ -144,14 +144,22 @@
                                             XAxes="{Binding XAxes}"
                                             YAxes="{Binding YAxes}"
                                             Height="200"
+                                            Background="{DynamicResource CardBrush}"
                                             ZoomMode="None"
                                             TooltipPosition="Top"/>
 
-                        <!-- Legend -->
-                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                            <Border Background="#E53935" Width="12" Height="12" CornerRadius="6"/>
-                            <TextBlock Text="{Binding RemainingDebtText}" FontSize="12"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <!-- Legende -->
+                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding PrincipalPortionText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#F59E0B" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding InterestPortionText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>

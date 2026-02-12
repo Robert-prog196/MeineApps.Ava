@@ -119,28 +119,21 @@ public partial class YieldViewModel : ObservableObject, IDisposable
 
         ChartSeries = new ISeries[]
         {
-            new ColumnSeries<double>
+            new PieSeries<double>
             {
                 Values = new[] { Result.InitialInvestment },
                 Name = _localizationService.GetString("ChartInitialValue") ?? "Initial Value",
-                Fill = new SolidColorPaint(SKColor.Parse("#2196F3")),
-                MaxBarWidth = 60
+                Fill = new SolidColorPaint(new SKColor(0x3B, 0x82, 0xF6)),
+                InnerRadius = 50,
+                HoverPushout = 8
             },
-            new ColumnSeries<double>
+            new PieSeries<double>
             {
-                Values = new[] { Result.FinalValue },
-                Name = _localizationService.GetString("ChartFinalValue") ?? "Final Value",
-                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
-                MaxBarWidth = 60
-            }
-        };
-
-        XAxes = new Axis[]
-        {
-            new Axis
-            {
-                Labels = new[] { "" },
-                ShowSeparatorLines = false
+                Values = new[] { Result.TotalReturn },
+                Name = _localizationService.GetString("TotalReturn") ?? "Return",
+                Fill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)),
+                InnerRadius = 50,
+                HoverPushout = 8
             }
         };
     }

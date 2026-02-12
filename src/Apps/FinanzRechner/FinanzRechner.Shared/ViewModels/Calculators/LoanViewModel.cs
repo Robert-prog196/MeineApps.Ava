@@ -117,14 +117,17 @@ public partial class LoanViewModel : ObservableObject, IDisposable
             {
                 Values = new[] { Result.LoanAmount },
                 Name = _localizationService.GetString("ChartRepayment") ?? "Repayment",
-                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
-                Pushout = 5
+                Fill = new SolidColorPaint(SKColor.Parse("#22C55E")),
+                InnerRadius = 50,
+                HoverPushout = 8
             },
             new PieSeries<double>
             {
                 Values = new[] { Result.TotalInterest },
                 Name = _localizationService.GetString("ChartInterest") ?? "Interest",
-                Fill = new SolidColorPaint(SKColor.Parse("#FF9800"))
+                Fill = new SolidColorPaint(SKColor.Parse("#F59E0B")),
+                InnerRadius = 50,
+                HoverPushout = 8
             }
         };
     }

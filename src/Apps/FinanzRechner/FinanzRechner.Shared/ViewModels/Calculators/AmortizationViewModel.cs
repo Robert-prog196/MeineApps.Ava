@@ -119,58 +119,50 @@ public partial class AmortizationViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // Show remaining balance for each month (or each year for long durations)
-        var balanceValues = new List<double> { LoanAmount };
-        var totalMonths = Result.Schedule.Count;
-        var stepSize = totalMonths > 60 ? 12 : (totalMonths > 24 ? 6 : 1);
+        // Tilgung und Zinsen pro Jahr aggregieren
+        var principalPerYear = new List<double>();
+        var interestPerYear = new List<double>();
+        var labels = new List<string>();
 
-        foreach (var entry in Result.Schedule)
+        for (int year = 1; year <= Years; year++)
         {
-            if (entry.Month % stepSize == 0 || entry.Month == totalMonths)
-            {
-                balanceValues.Add(entry.RemainingBalance);
-            }
+            var yearEntries = Result.Schedule
+                .Where(e => e.Month > (year - 1) * 12 && e.Month <= year * 12)
+                .ToList();
+            principalPerYear.Add(yearEntries.Sum(e => e.Principal));
+            interestPerYear.Add(yearEntries.Sum(e => e.Interest));
+            labels.Add(year.ToString());
         }
 
         ChartSeries = new ISeries[]
         {
-            new LineSeries<double>
+            new StackedColumnSeries<double>
             {
-                Values = balanceValues,
-                Name = _localizationService.GetString("ChartRemainingDebt") ?? "Remaining Debt",
-                Fill = new SolidColorPaint(SKColor.Parse("#E53935").WithAlpha(50)),
-                Stroke = new SolidColorPaint(SKColor.Parse("#E53935")) { StrokeThickness = 3 },
-                GeometryFill = new SolidColorPaint(SKColor.Parse("#E53935")),
-                GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                GeometrySize = 6
+                Values = principalPerYear,
+                Name = _localizationService.GetString("PrincipalPortion") ?? "Principal",
+                Fill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)),
+                Stroke = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)) { StrokeThickness = 0 },
+                Rx = 3,
+                Ry = 3,
+                MaxBarWidth = 35
+            },
+            new StackedColumnSeries<double>
+            {
+                Values = interestPerYear,
+                Name = _localizationService.GetString("InterestPortion") ?? "Interest",
+                Fill = new SolidColorPaint(new SKColor(0xF5, 0x9E, 0x0B)),
+                Stroke = new SolidColorPaint(new SKColor(0xF5, 0x9E, 0x0B)) { StrokeThickness = 0 },
+                Rx = 3,
+                Ry = 3,
+                MaxBarWidth = 35
             }
         };
-
-        // Calculate label intervals
-        var labels = new List<string> { "0" };
-        foreach (var entry in Result.Schedule)
-        {
-            if (entry.Month % stepSize == 0 || entry.Month == totalMonths)
-            {
-                if (stepSize >= 12)
-                {
-                    labels.Add($"{entry.Month / 12}J");
-                }
-                else
-                {
-                    labels.Add(entry.Month.ToString());
-                }
-            }
-        }
 
         XAxes = new Axis[]
         {
             new Axis
             {
-                Name = stepSize >= 12
-                    ? (_localizationService.GetString("ChartYears") ?? "Years")
-                    : (_localizationService.GetString("ChartMonths") ?? "Months"),
-                MinLimit = 0,
+                Name = _localizationService.GetString("ChartYears") ?? "Years",
                 Labels = labels.ToArray()
             }
         };

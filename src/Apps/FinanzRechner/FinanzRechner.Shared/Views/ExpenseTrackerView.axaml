@@ -101,6 +101,7 @@
                      Foreground="{DynamicResource TextPrimaryBrush}" />
           <lvc:PieChart Series="{Binding CategoryChartSeries}"
                         Height="160"
+                        Background="{DynamicResource CardBrush}"
                         LegendPosition="Right"
                         InitialRotation="-90" />
         </StackPanel>
@@ -482,24 +483,25 @@
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Border Background="{DynamicResource CardBrush}"
-                      CornerRadius="8"
+                      CornerRadius="12"
                       Padding="12"
                       Margin="0,0,0,8">
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-                  <!-- Category Icon -->
+                  <!-- Farbiges Kategorie-Icon -->
                   <Border Grid.Column="0"
-                          Background="{DynamicResource AccentBrush}"
-                          CornerRadius="20"
-                          Width="40" Height="40">
-                    <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
-                                     Foreground="White"
+                          Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
+                          CornerRadius="12"
+                          Width="44" Height="44">
+                    <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
+                                     Width="22" Height="22"
+                                     Foreground="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                   </Border>
 
                   <!-- Details -->
                   <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <TextBlock Text="{Binding Description}"
-                               FontSize="16" FontWeight="Bold"
+                               FontSize="15" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}"
@@ -507,12 +509,18 @@
                                Foreground="{DynamicResource TextMutedBrush}" />
                   </StackPanel>
 
-                  <!-- Amount -->
+                  <!-- Betrag mit Farbe nach Typ -->
                   <TextBlock Grid.Column="2"
-                             Text="{Binding Amount, StringFormat='{}{0:N2} \u20ac'}"
-                             FontSize="16" FontWeight="Bold"
-                             Foreground="{DynamicResource TextPrimaryBrush}"
-                             VerticalAlignment="Center" />
+                             FontSize="15" FontWeight="Bold"
+                             Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}"
+                             VerticalAlignment="Center">
+                    <TextBlock.Text>
+                      <MultiBinding StringFormat="{}{0}{1:N2} \u20ac">
+                        <Binding Path="Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
+                        <Binding Path="Amount" />
+                      </MultiBinding>
+                    </TextBlock.Text>
+                  </TextBlock>
 
                   <!-- Edit Button -->
                   <Button Grid.Column="3" Classes="Text"

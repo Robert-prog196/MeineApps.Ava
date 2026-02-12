@@ -172,8 +172,23 @@
                                             XAxes="{Binding XAxes}"
                                             YAxes="{Binding YAxes}"
                                             Height="220"
+                                            Background="{DynamicResource CardBrush}"
                                             ZoomMode="None"
                                             TooltipPosition="Top"/>
+
+                        <!-- Legende -->
+                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding PurchasingPowerText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Background="#EF4444" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding PurchasingPowerLossText}" FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 

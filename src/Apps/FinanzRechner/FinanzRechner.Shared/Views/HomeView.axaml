@@ -4,11 +4,12 @@
              xmlns:models="using:FinanzRechner.Models"
              xmlns:conv="using:FinanzRechner.Converters"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:Class="FinanzRechner.Views.HomeView"
              x:DataType="vm:MainViewModel">
 
   <Panel>
-  <ScrollViewer Padding="0,0,0,60">
+  <ScrollViewer Padding="0,0,0,120">
     <StackPanel Spacing="0">
 
       <!-- ========== A) Hero-Header ========== -->
@@ -142,17 +143,20 @@
             <ItemsControl ItemsSource="{Binding TopBudgets}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:BudgetDisplayItem">
-                  <Grid ColumnDefinitions="*,Auto" Margin="0,2">
-                    <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
-                      <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
-                                       Width="14" Height="14"
-                                       Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="{Binding CategoryName}" FontSize="12"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
-                    <TextBlock Grid.Column="1" Text="{Binding PercentageDisplay}"
-                               FontSize="12" FontWeight="SemiBold"
-                               Foreground="{Binding AlertLevel, Converter={x:Static conv:AlertLevelToColorConverter.Instance}}" />
+                  <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,3">
+                    <!-- Farbiger Kategorie-Punkt -->
+                    <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4"
+                            Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
+                            VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1" Text="{Binding CategoryName}" FontSize="13"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                    <Border Grid.Column="2" CornerRadius="8" Padding="6,2"
+                            Background="{DynamicResource SurfaceBrush}">
+                      <TextBlock Text="{Binding PercentageDisplay}"
+                                 FontSize="12" FontWeight="Bold"
+                                 Foreground="{Binding AlertLevel, Converter={x:Static conv:AlertLevelToColorConverter.Instance}}" />
+                    </Border>
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -160,7 +164,27 @@
           </StackPanel>
         </Border>
 
-        <!-- ========== C) Letzte Transaktionen ========== -->
+        <!-- ========== C) Ausgabenverteilung (Mini-Donut) ========== -->
+        <Border Classes="Card" Padding="16"
+                BoxShadow="{DynamicResource CardShadow}"
+                IsVisible="{Binding HasHomeChartData}">
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="ChartDonut" Width="20" Height="20"
+                               Foreground="{DynamicResource AccentBrush}" />
+              <TextBlock Text="{Binding SectionExpensesText}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+            <lvc:PieChart Series="{Binding HomeExpenseChartSeries}"
+                          Height="180"
+                          Background="{DynamicResource CardBrush}"
+                          LegendPosition="Right"
+                          InitialRotation="-90" />
+          </StackPanel>
+        </Border>
+
+        <!-- ========== D) Letzte Transaktionen ========== -->
         <Border Classes="Card" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasRecentTransactions}">
@@ -181,22 +205,30 @@
             <ItemsControl ItemsSource="{Binding RecentTransactions}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Expense">
-                  <Border Padding="4,8" BorderThickness="0,0,0,1"
-                          BorderBrush="{DynamicResource SurfaceBrush}">
+                  <Border Padding="6,10" Margin="0,2"
+                          CornerRadius="10"
+                          Background="{DynamicResource SurfaceBrush}">
                     <Grid ColumnDefinitions="Auto,*,Auto">
-                      <Border Grid.Column="0" Width="32" Height="32"
-                              CornerRadius="8"
-                              Background="{DynamicResource SurfaceBrush}"
+                      <!-- Farbiges Kategorie-Icon -->
+                      <Border Grid.Column="0" Width="36" Height="36"
+                              CornerRadius="10"
+                              Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
                               Margin="0,0,10,0">
                         <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
-                                         Width="16" Height="16"
-                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         Width="18" Height="18"
+                                         Foreground="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Grid.Column="1" Text="{Binding Description}"
-                                 FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"
-                                 VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                      <TextBlock Grid.Column="2" FontSize="13" FontWeight="SemiBold"
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="2" FontSize="14" FontWeight="Bold"
                                  VerticalAlignment="Center"
                                  Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
                         <TextBlock.Text>
@@ -214,7 +246,7 @@
           </StackPanel>
         </Border>
 
-        <!-- ========== D) Finanz-Rechner (2x3 Grid) ========== -->
+        <!-- ========== E) Finanz-Rechner (2x3 Grid) ========== -->
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Border Background="{DynamicResource PrimaryBrush}"
@@ -407,7 +439,7 @@
           </Grid>
         </StackPanel>
 
-        <!-- ========== E) Premium-Card ========== -->
+        <!-- ========== F) Premium-Card ========== -->
         <Button Background="Transparent" Padding="0"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                 IsVisible="{Binding !IsPremium}"

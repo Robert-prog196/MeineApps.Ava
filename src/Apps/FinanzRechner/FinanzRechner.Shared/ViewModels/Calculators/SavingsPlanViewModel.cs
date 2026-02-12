@@ -149,27 +149,28 @@ public partial class SavingsPlanViewModel : ObservableObject, IDisposable
             totalValues.Add(total);
         }
 
+        // Zinsen pro Jahr (Gesamtkapital - Einzahlungen)
+        var interestValues = totalValues.Zip(depositValues, (total, dep) => Math.Max(0, total - dep)).ToList();
+
         ChartSeries = new ISeries[]
         {
-            new LineSeries<double>
+            new StackedAreaSeries<double>
             {
                 Values = depositValues,
                 Name = _localizationService.GetString("ChartDeposits") ?? "Deposits",
-                Fill = null,
-                Stroke = new SolidColorPaint(SKColor.Parse("#2196F3")) { StrokeThickness = 2 },
-                GeometryFill = new SolidColorPaint(SKColor.Parse("#2196F3")),
-                GeometryStroke = null,
-                GeometrySize = 6
+                Fill = new SolidColorPaint(new SKColor(0x3B, 0x82, 0xF6, 0x88)),
+                Stroke = new SolidColorPaint(new SKColor(0x3B, 0x82, 0xF6)) { StrokeThickness = 2 },
+                GeometrySize = 0,
+                LineSmoothness = 0
             },
-            new LineSeries<double>
+            new StackedAreaSeries<double>
             {
-                Values = totalValues,
-                Name = _localizationService.GetString("ChartCapital") ?? "Capital",
-                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50").WithAlpha(50)),
-                Stroke = new SolidColorPaint(SKColor.Parse("#4CAF50")) { StrokeThickness = 3 },
-                GeometryFill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
-                GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                GeometrySize = 8
+                Values = interestValues,
+                Name = _localizationService.GetString("InterestEarned") ?? "Interest",
+                Fill = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E, 0x88)),
+                Stroke = new SolidColorPaint(new SKColor(0x22, 0xC5, 0x5E)) { StrokeThickness = 2 },
+                GeometrySize = 0,
+                LineSmoothness = 0.3
             }
         };
 

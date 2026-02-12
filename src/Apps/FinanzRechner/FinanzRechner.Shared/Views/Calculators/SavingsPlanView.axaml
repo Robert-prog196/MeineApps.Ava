@@ -171,19 +171,20 @@
                                             XAxes="{Binding XAxes}"
                                             YAxes="{Binding YAxes}"
                                             Height="220"
+                                            Background="{DynamicResource CardBrush}"
                                             ZoomMode="None"
                                             TooltipPosition="Top"/>
 
                         <!-- Legend -->
                         <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#2196F3" Width="12" Height="12" CornerRadius="6"/>
+                                <Border Background="#3B82F6" Width="12" Height="12" CornerRadius="6"/>
                                 <TextBlock Text="{Binding DepositsLegendText}" FontSize="12"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#4CAF50" Width="12" Height="12" CornerRadius="6"/>
-                                <TextBlock Text="{Binding CapitalLegendText}" FontSize="12"
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                                <TextBlock Text="{Binding InterestEarnedText}" FontSize="12"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                         </StackPanel>
