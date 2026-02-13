@@ -13,7 +13,7 @@ namespace MeineApps.Core.Premium.Ava.Droid;
 public sealed class RewardedAdHelper : IDisposable
 {
     private const string Tag = "RewardedAdHelper";
-    private const int LoadTimeoutMs = 30000; // 30 Sekunden Timeout fuer Ad-Laden
+    private const int LoadTimeoutMs = 8000; // 8 Sekunden Timeout fuer On-Demand Ad-Laden
 
     private RewardedAd? _rewardedAd;
     private Activity? _activity;

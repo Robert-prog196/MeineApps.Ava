@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
 using Avalonia.Threading;
@@ -39,7 +41,7 @@ public class ThemeService : IThemeService
         if (_currentTheme == theme) return;
 
         _currentTheme = theme;
-        ApplyTheme(theme);
+        ApplyTheme(theme, animate: true);
         SaveTheme(theme);
         ThemeChanged?.Invoke(this, theme);
     }
@@ -59,13 +61,26 @@ public class ThemeService : IThemeService
         return style;
     }
 
-    private void ApplyTheme(AppTheme theme)
+    private void ApplyTheme(AppTheme theme, bool animate = false)
     {
         var app = Application.Current;
         if (app == null) return;
 
-        void DoApply()
+        async void DoApply()
         {
+            // Crossfade: Kurz ausblenden → Theme wechseln → wieder einblenden
+            var mainWindow = app.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow as Visual : null;
+
+            if (animate && mainWindow != null)
+            {
+                // Schnelles Fade-Out (100ms)
+                var fadeOut = new Animation { Duration = TimeSpan.FromMilliseconds(100) };
+                fadeOut.Children.Add(new KeyFrame { Cue = new Cue(0), Setters = { new Setter(Visual.OpacityProperty, 1.0) } });
+                fadeOut.Children.Add(new KeyFrame { Cue = new Cue(1), Setters = { new Setter(Visual.OpacityProperty, 0.0) } });
+                await fadeOut.RunAsync((Animatable)mainWindow);
+            }
+
             // Altes Theme entfernen
             if (_currentThemeStyle != null)
             {
@@ -81,6 +96,15 @@ public class ThemeService : IThemeService
             app.RequestedThemeVariant = IsDarkTheme
                 ? ThemeVariant.Dark
                 : ThemeVariant.Light;
+
+            if (animate && mainWindow != null)
+            {
+                // Schnelles Fade-In (100ms)
+                var fadeIn = new Animation { Duration = TimeSpan.FromMilliseconds(100) };
+                fadeIn.Children.Add(new KeyFrame { Cue = new Cue(0), Setters = { new Setter(Visual.OpacityProperty, 0.0) } });
+                fadeIn.Children.Add(new KeyFrame { Cue = new Cue(1), Setters = { new Setter(Visual.OpacityProperty, 1.0) } });
+                await fadeIn.RunAsync((Animatable)mainWindow);
+            }
         }
 
         // Synchron auf UI-Thread, sonst posten

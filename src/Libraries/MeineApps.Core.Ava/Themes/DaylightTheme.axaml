@@ -117,6 +117,19 @@
       <BoxShadows x:Key="ElevatedShadow">0 10 15 -3 #0D000000, 0 4 6 -2 #0F000000</BoxShadows>
       <BoxShadows x:Key="ModalShadow">0 20 25 -5 #14000000, 0 10 10 -5 #0F000000</BoxShadows>
 
+      <!-- Calculator-spezifische Ressourcen -->
+      <LinearGradientBrush x:Key="EqualsGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#2563EB" Offset="0" />
+        <GradientStop Color="#60A5FA" Offset="1" />
+      </LinearGradientBrush>
+      <LinearGradientBrush x:Key="DisplayGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="#FFFFFF" Offset="0" />
+        <GradientStop Color="#F1F5F9" Offset="1" />
+      </LinearGradientBrush>
+      <BoxShadows x:Key="OperatorGlowShadow">0 0 8 2 #302563EB</BoxShadows>
+      <SolidColorBrush x:Key="DigitButtonBrush" Color="#08000000" />
+      <SolidColorBrush x:Key="DigitButtonHoverBrush" Color="#12000000" />
+
       <!-- Theme Identifier -->
       <x:String x:Key="ThemeName">Daylight</x:String>
       <x:Boolean x:Key="IsDarkTheme">False</x:Boolean>
