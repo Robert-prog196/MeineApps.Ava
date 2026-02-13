@@ -34,9 +34,53 @@
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
+    <!-- Aktiver Operator: verstärkter Background + Border -->
+    <Style Selector="Button.ActiveOp">
+      <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
     <!-- Scientific function button styling -->
     <Style Selector="Button.Function">
       <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <!-- INV-Button aktiv -->
+    <Style Selector="Button.InvActive">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+    <!-- Equals-Button hervorheben (größerer, auffälligerer Button) -->
+    <Style Selector="Button.Equals">
+      <Setter Property="FontSize" Value="28"/>
+      <Setter Property="FontWeight" Value="ExtraBold"/>
+    </Style>
+
+    <!-- Button-Press-Animation: Scale-Down bei Druck -->
+    <Style Selector="Button.CalcButton">
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.CalcButton:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.92)"/>
+    </Style>
+    <Style Selector="Button.Function">
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.Function:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.92)"/>
     </Style>
   </UserControl.Styles>
 
@@ -48,54 +92,100 @@
     <Border Grid.Row="0"
             Classes="Card"
             Padding="16"
-            Margin="0,0,0,8">
+            Margin="0,0,0,8"
+            x:Name="DisplayBorder">
       <Grid RowDefinitions="Auto,Auto,Auto,Auto">
-        <!-- Expression line -->
-        <TextBlock Grid.Row="0"
-                   Text="{Binding Expression}"
-                   FontSize="14"
-                   Foreground="{DynamicResource TextMutedBrush}"
-                   HorizontalAlignment="Right"
-                   MinHeight="20"
-                   TextTrimming="CharacterEllipsis"/>
+        <!-- Expression line mit Copy + Backspace-Button -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+          <TextBlock Grid.Column="0"
+                     Text="M"
+                     FontSize="13"
+                     FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}"
+                     IsVisible="{Binding HasMemory}"
+                     VerticalAlignment="Center"
+                     Margin="0,0,6,0"
+                     ToolTip.Tip="{Binding MemoryDisplay}"/>
+          <TextBlock Grid.Column="1"
+                     Text="{Binding Expression}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Right"
+                     VerticalAlignment="Center"
+                     MinHeight="20"
+                     TextTrimming="CharacterEllipsis"/>
+          <Button Grid.Column="2"
+                  Classes="Text"
+                  Padding="8,4"
+                  MinWidth="0"
+                  MinHeight="0"
+                  Command="{Binding ShareDisplayCommand}"
+                  ToolTip.Tip="Share">
+            <mi:MaterialIcon Kind="ShareVariantOutline" Width="16" Height="16"
+                             Foreground="{DynamicResource TextMutedBrush}"
+                             Opacity="0.6"/>
+          </Button>
+          <Button Grid.Column="3"
+                  Classes="Text"
+                  Padding="8,4"
+                  MinWidth="0"
+                  MinHeight="0"
+                  Command="{Binding CopyDisplayCommand}"
+                  ToolTip.Tip="Copy">
+            <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
+                             Foreground="{DynamicResource TextMutedBrush}"
+                             Opacity="0.6"/>
+          </Button>
+          <Button Grid.Column="4"
+                  Classes="Text"
+                  Padding="8,4"
+                  MinWidth="0"
+                  MinHeight="0"
+                  Command="{Binding BackspaceCommand}">
+            <mi:MaterialIcon Kind="BackspaceOutline" Width="20" Height="20"
+                             Foreground="{DynamicResource TextMutedBrush}"/>
+          </Button>
+        </Grid>
 
         <!-- Main display -->
         <TextBlock Grid.Row="1"
                    Text="{Binding Display}"
-                   FontSize="42"
+                   FontSize="{Binding DisplayFontSize}"
                    FontFamily="JetBrains Mono, Consolas, monospace"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    HorizontalAlignment="Right"
-                   Margin="0,4,0,4"
+                   Margin="0,4,0,0"
                    TextTrimming="CharacterEllipsis"/>
 
-        <!-- Error message -->
+        <!-- Live Preview -->
         <TextBlock Grid.Row="2"
+                   Text="{Binding PreviewResult}"
+                   FontSize="16"
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   Opacity="0.6"
+                   HorizontalAlignment="Right"
+                   MinHeight="20"
+                   Margin="0,0,0,2"
+                   IsVisible="{Binding PreviewResult, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+        <!-- Error message -->
+        <TextBlock Grid.Row="3"
                    Text="{Binding ErrorMessage}"
                    FontSize="12"
                    Foreground="{DynamicResource ErrorBrush}"
                    IsVisible="{Binding HasError}"
                    HorizontalAlignment="Right"/>
-
-        <!-- Memory indicator -->
-        <TextBlock Grid.Row="3"
-                   Text="M"
-                   FontSize="13"
-                   FontWeight="Bold"
-                   Foreground="{DynamicResource PrimaryBrush}"
-                   IsVisible="{Binding HasMemory}"
-                   HorizontalAlignment="Left"/>
       </Grid>
     </Border>
 
     <!-- ============================================ -->
-    <!-- 2. Mode Selector + Angle Mode                -->
+    <!-- 2. Mode Selector + INV + Angle Mode          -->
     <!-- ============================================ -->
     <Grid Grid.Row="1"
-          ColumnDefinitions="Auto,Auto,*,Auto"
+          ColumnDefinitions="Auto,Auto,*,Auto,Auto"
           Margin="0,0,0,8">
 
-      <!-- Basic mode button: Primary when active, Outlined when inactive -->
+      <!-- Basic mode button -->
       <Button Grid.Column="0"
               Classes="Primary Small"
               Content="{Binding ModeBasicText}"
@@ -111,7 +201,7 @@
               CommandParameter="{x:Static vm:CalculatorMode.Basic}"
               Margin="0,0,6,0"/>
 
-      <!-- Scientific mode button: Primary when active, Outlined when inactive -->
+      <!-- Scientific mode button -->
       <Button Grid.Column="1"
               Classes="Primary Small"
               Content="{Binding ModeScientificText}"
@@ -125,8 +215,17 @@
               Command="{Binding SetModeCommand}"
               CommandParameter="{x:Static vm:CalculatorMode.Scientific}"/>
 
-      <!-- Angle mode toggle (right-aligned) -->
+      <!-- INV toggle (nur im Scientific Mode sichtbar) -->
       <Button Grid.Column="3"
+              Classes="Outlined Small"
+              Classes.InvActive="{Binding IsInverseMode}"
+              Content="INV"
+              Command="{Binding ToggleInverseCommand}"
+              IsVisible="{Binding IsScientificMode}"
+              Margin="0,0,6,0"/>
+
+      <!-- Angle mode toggle (right-aligned) -->
+      <Button Grid.Column="4"
               Classes="Text Small"
               Content="{Binding AngleModeText}"
               Command="{Binding ToggleAngleModeCommand}"/>
@@ -136,44 +235,63 @@
     <!-- 3. Scientific Functions Panel                -->
     <!-- ============================================ -->
     <Grid Grid.Row="2"
-          RowDefinitions="Auto,Auto"
+          RowDefinitions="Auto,Auto,Auto"
           ColumnDefinitions="*,*,*,*,*"
           RowSpacing="6"
           ColumnSpacing="6"
           Margin="0,0,0,8"
           IsVisible="{Binding IsScientificMode}">
 
-      <!-- Row 0: sin, cos, tan, log, ln -->
-      <Button Grid.Row="0" Grid.Column="0" Content="sin"
+      <!-- Row 0: sin/asin, cos/acos, tan/atan, log/10^x, ln/e^x -->
+      <Button Grid.Row="0" Grid.Column="0" Content="{Binding SinButtonText}"
               Classes="Outlined Small Function"
-              Command="{Binding SinCommand}"/>
-      <Button Grid.Row="0" Grid.Column="1" Content="cos"
+              Command="{Binding SinOrInverseCommand}"/>
+      <Button Grid.Row="0" Grid.Column="1" Content="{Binding CosButtonText}"
               Classes="Outlined Small Function"
-              Command="{Binding CosCommand}"/>
-      <Button Grid.Row="0" Grid.Column="2" Content="tan"
+              Command="{Binding CosOrInverseCommand}"/>
+      <Button Grid.Row="0" Grid.Column="2" Content="{Binding TanButtonText}"
               Classes="Outlined Small Function"
-              Command="{Binding TanCommand}"/>
-      <Button Grid.Row="0" Grid.Column="3" Content="log"
+              Command="{Binding TanOrInverseCommand}"/>
+      <Button Grid.Row="0" Grid.Column="3" Content="{Binding LogButtonText}"
               Classes="Outlined Small Function"
-              Command="{Binding LogCommand}"/>
-      <Button Grid.Row="0" Grid.Column="4" Content="ln"
+              Command="{Binding LogOrInverseCommand}"/>
+      <Button Grid.Row="0" Grid.Column="4" Content="{Binding LnButtonText}"
               Classes="Outlined Small Function"
-              Command="{Binding LnCommand}"/>
+              Command="{Binding LnOrInverseCommand}"/>
 
-      <!-- Row 1: pi, e, x^2, sqrt(x), x! -->
-      <Button Grid.Row="1" Grid.Column="0" Content="&#x03C0;"
+      <!-- Row 1: (, ), x^y, 1/x, |x| -->
+      <Button Grid.Row="1" Grid.Column="0" Content="("
+              Classes="Outlined Small Function"
+              Command="{Binding InputParenthesisCommand}"
+              CommandParameter="("/>
+      <Button Grid.Row="1" Grid.Column="1" Content=")"
+              Classes="Outlined Small Function"
+              Command="{Binding InputParenthesisCommand}"
+              CommandParameter=")"/>
+      <Button Grid.Row="1" Grid.Column="2" Content="x&#x02B8;"
+              Classes="Outlined Small Function"
+              Command="{Binding PowerCommand}"/>
+      <Button Grid.Row="1" Grid.Column="3" Content="1/x"
+              Classes="Outlined Small Function"
+              Command="{Binding ReciprocalCommand}"/>
+      <Button Grid.Row="1" Grid.Column="4" Content="Ans"
+              Classes="Outlined Small Function"
+              Command="{Binding AnsCommand}"/>
+
+      <!-- Row 2: pi, e, x^2, sqrt(x), x! -->
+      <Button Grid.Row="2" Grid.Column="0" Content="&#x03C0;"
               Classes="Outlined Small Function"
               Command="{Binding PiCommand}"/>
-      <Button Grid.Row="1" Grid.Column="1" Content="e"
+      <Button Grid.Row="2" Grid.Column="1" Content="e"
               Classes="Outlined Small Function"
               Command="{Binding EulerCommand}"/>
-      <Button Grid.Row="1" Grid.Column="2" Content="x&#x00B2;"
+      <Button Grid.Row="2" Grid.Column="2" Content="x&#x00B2;"
               Classes="Outlined Small Function"
               Command="{Binding SquareCommand}"/>
-      <Button Grid.Row="1" Grid.Column="3" Content="&#x221A;x"
+      <Button Grid.Row="2" Grid.Column="3" Content="&#x221A;x"
               Classes="Outlined Small Function"
               Command="{Binding SquareRootCommand}"/>
-      <Button Grid.Row="1" Grid.Column="4" Content="x!"
+      <Button Grid.Row="2" Grid.Column="4" Content="x!"
               Classes="Outlined Small Function"
               Command="{Binding FactorialCommand}"/>
     </Grid>
@@ -212,7 +330,7 @@
           RowSpacing="6"
           ColumnSpacing="6">
 
-      <!-- Row 0: C, CE, Backspace, Divide -->
+      <!-- Row 0: C, ( ), %, ÷ -->
       <Button Grid.Row="0" Grid.Column="0"
               Content="C"
               Classes="Secondary CalcButton"
@@ -220,18 +338,19 @@
               FontWeight="SemiBold"
               Command="{Binding ClearCommand}"/>
       <Button Grid.Row="0" Grid.Column="1"
-              Content="CE"
+              Content="( )"
               Classes="Outlined CalcButton"
-              FontSize="16"
-              Command="{Binding ClearEntryCommand}"/>
+              FontSize="18"
+              Command="{Binding InputSmartParenthesisCommand}"/>
       <Button Grid.Row="0" Grid.Column="2"
+              Content="%"
               Classes="Outlined CalcButton"
-              Command="{Binding BackspaceCommand}">
-        <mi:MaterialIcon Kind="BackspaceOutline" Width="22" Height="22"/>
-      </Button>
+              FontSize="18"
+              Command="{Binding PercentCommand}"/>
       <Button Grid.Row="0" Grid.Column="3"
               Content="&#x00F7;"
               Classes="Primary Operator CalcButton"
+              Classes.ActiveOp="{Binding IsDivideActive}"
               Command="{Binding InputOperatorCommand}"
               CommandParameter="&#x00F7;"/>
 
@@ -254,6 +373,7 @@
       <Button Grid.Row="1" Grid.Column="3"
               Content="&#x00D7;"
               Classes="Primary Operator CalcButton"
+              Classes.ActiveOp="{Binding IsMultiplyActive}"
               Command="{Binding InputOperatorCommand}"
               CommandParameter="&#x00D7;"/>
 
@@ -276,6 +396,7 @@
       <Button Grid.Row="2" Grid.Column="3"
               Content="&#x2212;"
               Classes="Primary Operator CalcButton"
+              Classes.ActiveOp="{Binding IsSubtractActive}"
               Command="{Binding InputOperatorCommand}"
               CommandParameter="&#x2212;"/>
 
@@ -298,6 +419,7 @@
       <Button Grid.Row="3" Grid.Column="3"
               Content="+"
               Classes="Primary Operator CalcButton"
+              Classes.ActiveOp="{Binding IsAddActive}"
               Command="{Binding InputOperatorCommand}"
               CommandParameter="+"/>
 
@@ -312,12 +434,12 @@
               Command="{Binding InputDigitCommand}"
               CommandParameter="0"/>
       <Button Grid.Row="4" Grid.Column="2"
-              Content="."
+              Content="{Binding DecimalButtonText}"
               Classes="Digit CalcButton"
               Command="{Binding InputDecimalCommand}"/>
       <Button Grid.Row="4" Grid.Column="3"
               Content="="
-              Classes="Primary Operator CalcButton"
+              Classes="Primary Operator CalcButton Equals"
               Command="{Binding CalculateCommand}"/>
     </Grid>
 

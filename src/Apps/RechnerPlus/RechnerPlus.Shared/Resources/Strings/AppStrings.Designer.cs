@@ -86,7 +86,25 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("BrowserError", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press again to exit ähnelt.
+        /// </summary>
+        public static string BackPressToExit {
+            get {
+                return ResourceManager.GetString("BackPressToExit", resourceCulture) ?? "Press again to exit";
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Angle ähnelt.
+        /// </summary>
+        public static string CategoryAngle {
+            get {
+                return ResourceManager.GetString("CategoryAngle", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Area ähnelt.
         /// </summary>
@@ -104,7 +122,25 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("CategoryData", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Energy ähnelt.
+        /// </summary>
+        public static string CategoryEnergy {
+            get {
+                return ResourceManager.GetString("CategoryEnergy", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Pressure ähnelt.
+        /// </summary>
+        public static string CategoryPressure {
+            get {
+                return ResourceManager.GetString("CategoryPressure", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Length ähnelt.
         /// </summary>
@@ -410,7 +446,34 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("SettingsChooseDesign", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Auto ähnelt.
+        /// </summary>
+        public static string SettingsDecimalAuto {
+            get {
+                return ResourceManager.GetString("SettingsDecimalAuto", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Decimal Places ähnelt.
+        /// </summary>
+        public static string SettingsDecimalPlaces {
+            get {
+                return ResourceManager.GetString("SettingsDecimalPlaces", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Haptic Feedback ähnelt.
+        /// </summary>
+        public static string SettingsHaptic {
+            get {
+                return ResourceManager.GetString("SettingsHaptic", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Language ähnelt.
         /// </summary>
@@ -420,6 +483,15 @@ namespace RechnerPlus.Resources.Strings {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Number Format ähnelt.
+        /// </summary>
+        public static string SettingsNumberFormat {
+            get {
+                return ResourceManager.GetString("SettingsNumberFormat", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
         /// </summary>
@@ -482,7 +554,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("ThemeForestDesc", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Tangent undefined ähnelt.
+        /// </summary>
+        public static string TangentUndefined {
+            get {
+                return ResourceManager.GetString("TangentUndefined", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Midnight ähnelt.
         /// </summary>
@@ -509,7 +590,43 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitAcre", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Arcminute ähnelt.
+        /// </summary>
+        public static string UnitArcminute {
+            get {
+                return ResourceManager.GetString("UnitArcminute", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Arcsecond ähnelt.
+        /// </summary>
+        public static string UnitArcsecond {
+            get {
+                return ResourceManager.GetString("UnitArcsecond", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Atmosphere ähnelt.
+        /// </summary>
+        public static string UnitAtmosphere {
+            get {
+                return ResourceManager.GetString("UnitAtmosphere", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Bar ähnelt.
+        /// </summary>
+        public static string UnitBar {
+            get {
+                return ResourceManager.GetString("UnitBar", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Bit ähnelt.
         /// </summary>
@@ -518,7 +635,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitBit", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die BTU ähnelt.
+        /// </summary>
+        public static string UnitBTU {
+            get {
+                return ResourceManager.GetString("UnitBTU", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Byte ähnelt.
         /// </summary>
@@ -527,7 +653,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitByte", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Calorie ähnelt.
+        /// </summary>
+        public static string UnitCalorie {
+            get {
+                return ResourceManager.GetString("UnitCalorie", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Celsius ähnelt.
         /// </summary>
@@ -574,6 +709,15 @@ namespace RechnerPlus.Resources.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Degree ähnelt.
+        /// </summary>
+        public static string UnitDegree {
+            get {
+                return ResourceManager.GetString("UnitDegree", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Fahrenheit ähnelt.
         /// </summary>
         public static string UnitFahrenheit {
@@ -590,7 +734,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitFoot", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fluid Ounce (US) ähnelt.
+        /// </summary>
+        public static string UnitFluidOunceUS {
+            get {
+                return ResourceManager.GetString("UnitFluidOunceUS", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Gallon (US) ähnelt.
         /// </summary>
@@ -609,6 +762,15 @@ namespace RechnerPlus.Resources.Strings {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Gradian ähnelt.
+        /// </summary>
+        public static string UnitGradian {
+            get {
+                return ResourceManager.GetString("UnitGradian", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Gram ähnelt.
         /// </summary>
@@ -644,7 +806,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitInch", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Joule ähnelt.
+        /// </summary>
+        public static string UnitJoule {
+            get {
+                return ResourceManager.GetString("UnitJoule", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Kelvin ähnelt.
         /// </summary>
@@ -662,7 +833,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitKilobyte", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kilocalorie ähnelt.
+        /// </summary>
+        public static string UnitKilocalorie {
+            get {
+                return ResourceManager.GetString("UnitKilocalorie", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Kilogram ähnelt.
         /// </summary>
@@ -671,7 +851,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitKilogram", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kilojoule ähnelt.
+        /// </summary>
+        public static string UnitKilojoule {
+            get {
+                return ResourceManager.GetString("UnitKilojoule", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Kilometer ähnelt.
         /// </summary>
@@ -689,7 +878,25 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitKilometersPerHour", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kilopascal ähnelt.
+        /// </summary>
+        public static string UnitKilopascal {
+            get {
+                return ResourceManager.GetString("UnitKilopascal", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Kilowatt Hour ähnelt.
+        /// </summary>
+        public static string UnitKilowattHour {
+            get {
+                return ResourceManager.GetString("UnitKilowattHour", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Knots ähnelt.
         /// </summary>
@@ -736,6 +943,15 @@ namespace RechnerPlus.Resources.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Micrometer ähnelt.
+        /// </summary>
+        public static string UnitMicrometer {
+            get {
+                return ResourceManager.GetString("UnitMicrometer", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Mile ähnelt.
         /// </summary>
         public static string UnitMile {
@@ -779,7 +995,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitMillimeter", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Millimeter Mercury ähnelt.
+        /// </summary>
+        public static string UnitMillimeterMercury {
+            get {
+                return ResourceManager.GetString("UnitMillimeterMercury", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Milliseconds ähnelt.
         /// </summary>
@@ -799,6 +1024,15 @@ namespace RechnerPlus.Resources.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Nautical Mile ähnelt.
+        /// </summary>
+        public static string UnitNauticalMile {
+            get {
+                return ResourceManager.GetString("UnitNauticalMile", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ounce ähnelt.
         /// </summary>
         public static string UnitOunce {
@@ -806,7 +1040,16 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitOunce", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Pascal ähnelt.
+        /// </summary>
+        public static string UnitPascal {
+            get {
+                return ResourceManager.GetString("UnitPascal", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pint (US) ähnelt.
         /// </summary>
@@ -824,7 +1067,25 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitPound", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die PSI ähnelt.
+        /// </summary>
+        public static string UnitPSI {
+            get {
+                return ResourceManager.GetString("UnitPSI", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Quart (US) ähnelt.
+        /// </summary>
+        public static string UnitQuartUS {
+            get {
+                return ResourceManager.GetString("UnitQuartUS", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Seconds ähnelt.
         /// </summary>
@@ -862,6 +1123,33 @@ namespace RechnerPlus.Resources.Strings {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Stone ähnelt.
+        /// </summary>
+        public static string UnitStone {
+            get {
+                return ResourceManager.GetString("UnitStone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Tablespoon ähnelt.
+        /// </summary>
+        public static string UnitTablespoon {
+            get {
+                return ResourceManager.GetString("UnitTablespoon", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Teaspoon ähnelt.
+        /// </summary>
+        public static string UnitTeaspoon {
+            get {
+                return ResourceManager.GetString("UnitTeaspoon", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Terabyte ähnelt.
         /// </summary>
         public static string UnitTerabyte {
@@ -878,7 +1166,25 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("UnitTonne", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Turn ähnelt.
+        /// </summary>
+        public static string UnitTurn {
+            get {
+                return ResourceManager.GetString("UnitTurn", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Watt Hour ähnelt.
+        /// </summary>
+        public static string UnitWattHour {
+            get {
+                return ResourceManager.GetString("UnitWattHour", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Weeks ähnelt.
         /// </summary>

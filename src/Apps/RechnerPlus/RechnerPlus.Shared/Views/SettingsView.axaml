@@ -340,6 +340,99 @@
         </StackPanel>
       </Border>
 
+      <!-- ==================== Decimal Places Card ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="DecimalIncrease" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding DecimalPlacesText}" Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Stepper: - [Wert] + -->
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+            <Button Grid.Column="0"
+                    Classes="Outlined Small"
+                    Content="−"
+                    FontSize="18" FontWeight="Bold"
+                    MinWidth="44" MinHeight="40"
+                    Command="{Binding DecrementDecimalPlacesCommand}"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding DecimalPlacesDisplayText}"
+                       FontSize="20" FontWeight="SemiBold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+            <Button Grid.Column="2"
+                    Classes="Outlined Small"
+                    Content="+"
+                    FontSize="18" FontWeight="Bold"
+                    MinWidth="44" MinHeight="40"
+                    Command="{Binding IncrementDecimalPlacesCommand}"/>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Number Format Card ==================== -->
+      <Border Classes="Card">
+        <StackPanel Spacing="16">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Numeric" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{Binding NumberFormatText}" Classes="TitleMedium"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- US / EU Toggle -->
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+            <!-- US Format -->
+            <Panel Grid.Column="0">
+              <Button Classes="Primary Small" Content="1,234.56"
+                      IsVisible="{Binding IsUSFormat}"
+                      Command="{Binding SetNumberFormatCommand}" CommandParameter="0"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      FontSize="16" FontWeight="SemiBold" />
+              <Button Classes="Outlined Small" Content="1,234.56"
+                      IsVisible="{Binding !IsUSFormat}"
+                      Command="{Binding SetNumberFormatCommand}" CommandParameter="0"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      FontSize="16" FontWeight="SemiBold" />
+            </Panel>
+            <!-- EU Format -->
+            <Panel Grid.Column="1">
+              <Button Classes="Primary Small" Content="1.234,56"
+                      IsVisible="{Binding IsEUFormat}"
+                      Command="{Binding SetNumberFormatCommand}" CommandParameter="1"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      FontSize="16" FontWeight="SemiBold" />
+              <Button Classes="Outlined Small" Content="1.234,56"
+                      IsVisible="{Binding !IsEUFormat}"
+                      Command="{Binding SetNumberFormatCommand}" CommandParameter="1"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      FontSize="16" FontWeight="SemiBold" />
+            </Panel>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Haptic Feedback Card ==================== -->
+      <Border Classes="Card">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <mi:MaterialIcon Grid.Column="0" Kind="Vibrate" Width="24" Height="24"
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           VerticalAlignment="Center"
+                           Margin="0,0,12,0" />
+          <TextBlock Grid.Column="1"
+                     Text="{Binding HapticText}" Classes="TitleMedium"
+                     VerticalAlignment="Center" />
+          <!-- Toggle-Button -->
+          <ToggleSwitch Grid.Column="2"
+                        IsChecked="{Binding HapticEnabled}"
+                        OnContent="" OffContent=""
+                        VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+
       <!-- ==================== About Card ==================== -->
       <Border Classes="Card">
         <StackPanel Spacing="16">

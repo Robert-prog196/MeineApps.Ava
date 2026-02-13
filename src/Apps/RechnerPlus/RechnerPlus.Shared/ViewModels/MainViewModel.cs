@@ -5,8 +5,9 @@ using MeineApps.Core.Ava.Services;
 
 namespace RechnerPlus.ViewModels;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : ObservableObject, IDisposable
 {
+    private bool _disposed;
     private readonly IThemeService _themeService;
     private readonly ILocalizationService _localization;
 
@@ -54,7 +55,12 @@ public partial class MainViewModel : ObservableObject
         _localization.LanguageChanged += OnLanguageChanged;
 
         // Floating-Text-Events vom Calculator weiterleiten
-        _calculatorViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+        CalculatorViewModel.FloatingTextRequested += OnCalculatorFloatingText;
+    }
+
+    private void OnCalculatorFloatingText(string text, string category)
+    {
+        FloatingTextRequested?.Invoke(text, category);
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -62,6 +68,45 @@ public partial class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(NavCalculatorText));
         OnPropertyChanged(nameof(NavConverterText));
         OnPropertyChanged(nameof(NavSettingsText));
+    }
+
+    partial void OnSelectedTabIndexChanged(int value)
+    {
+        // Beim Wechsel zum Rechner: Zahlenformat aktualisieren (falls in Settings geändert)
+        if (value == 0)
+            CalculatorViewModel.RefreshNumberFormat();
+    }
+
+    /// <summary>
+    /// Behandelt die Zurück-Taste. Gibt true zurück wenn intern navigiert wurde,
+    /// false wenn die App geschlossen werden soll.
+    /// Reihenfolge: History schließen → Bestätigungsdialog schließen → Tab zum Rechner zurück.
+    /// </summary>
+    public bool HandleBack()
+    {
+        // 1. History-Panel offen → schließen
+        if (CalculatorViewModel.IsHistoryVisible)
+        {
+            CalculatorViewModel.HideHistoryCommand.Execute(null);
+            return true;
+        }
+
+        // 2. Bestätigungsdialog offen → schließen
+        if (CalculatorViewModel.ShowClearHistoryConfirm)
+        {
+            CalculatorViewModel.CancelClearHistoryCommand.Execute(null);
+            return true;
+        }
+
+        // 3. Nicht auf dem Rechner-Tab → zurück zum Rechner
+        if (SelectedTabIndex != 0)
+        {
+            SelectedTabIndex = 0;
+            return true;
+        }
+
+        // 4. Bereits auf dem Rechner-Tab, nichts offen → App soll schließen
+        return false;
     }
 
     [RelayCommand]
@@ -72,4 +117,13 @@ public partial class MainViewModel : ObservableObject
 
     [RelayCommand]
     private void NavigateToSettings() => SelectedTabIndex = 2;
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _localization.LanguageChanged -= OnLanguageChanged;
+        CalculatorViewModel.FloatingTextRequested -= OnCalculatorFloatingText;
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
 }

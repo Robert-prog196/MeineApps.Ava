@@ -61,14 +61,28 @@
                     SelectedItem="{Binding ToUnit}"
                     HorizontalAlignment="Stretch" />
 
-          <!-- Result Display -->
-          <TextBlock Text="{Binding OutputValue}"
-                     FontSize="28"
-                     FontWeight="Bold"
-                     Foreground="{DynamicResource PrimaryBrush}"
-                     HorizontalAlignment="Center"
-                     Margin="0,8,0,4"
-                     TextTrimming="CharacterEllipsis" />
+          <!-- Result Display mit Copy-Button -->
+          <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,4">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding OutputValue}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       HorizontalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="1"
+                    Classes="Text"
+                    Padding="8,4"
+                    MinWidth="0"
+                    MinHeight="0"
+                    VerticalAlignment="Center"
+                    Command="{Binding CopyResultCommand}"
+                    ToolTip.Tip="Copy">
+              <mi:MaterialIcon Kind="ContentCopy" Width="18" Height="18"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               Opacity="0.6"/>
+            </Button>
+          </Grid>
         </StackPanel>
       </Border>
 

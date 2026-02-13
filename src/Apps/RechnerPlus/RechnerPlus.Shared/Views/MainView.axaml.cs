@@ -9,8 +9,10 @@ namespace RechnerPlus.Views;
 public partial class MainView : UserControl
 {
     private Point _swipeStart;
+    private DateTime _swipeStartTime;
     private bool _isSwiping;
     private const double SwipeThreshold = 50;
+    private const int MinSwipeMs = 80;
     private MainViewModel? _vm;
 
     public MainView()
@@ -48,7 +50,12 @@ public partial class MainView : UserControl
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        // Swipe-Tracking nur auf Calculator-Tab (nicht auf Converter/Settings)
+        var vm = DataContext as MainViewModel;
+        if (vm == null || !vm.IsCalculatorActive) return;
+
         _swipeStart = e.GetPosition(this);
+        _swipeStartTime = DateTime.UtcNow;
         _isSwiping = true;
     }
 
@@ -56,6 +63,9 @@ public partial class MainView : UserControl
     {
         if (!_isSwiping) return;
         _isSwiping = false;
+
+        // Zu schnelle Gesten ignorieren (versehentliche Swipes bei Button-Klicks)
+        if ((DateTime.UtcNow - _swipeStartTime).TotalMilliseconds < MinSwipeMs) return;
 
         var vm = DataContext as MainViewModel;
         if (vm == null || !vm.IsCalculatorActive) return;

@@ -1,8 +1,8 @@
 # RechnerPlus Avalonia
 
-> Fuer Build-Befehle, Conventions und Troubleshooting siehe [Haupt-CLAUDE.md](../../../CLAUDE.md)
+> Für Build-Befehle, Conventions und Troubleshooting siehe [Haupt-CLAUDE.md](../../../CLAUDE.md)
 
-## App-Uebersicht
+## App-Übersicht
 
 Scientific Calculator mit Unit Converter - werbefrei, kostenlos.
 
@@ -15,21 +15,51 @@ Scientific Calculator mit Unit Converter - werbefrei, kostenlos.
 
 ### Calculator
 - Basic + Scientific Mode (Trigonometrie, Logarithmen, Potenzen)
-- Memory-Funktionen (M+, M-, MR, MC)
-- Berechnungsverlauf (Bottom-Sheet, Swipe-Up/Down, max 100 Eintraege)
-- Keyboard-Support (Desktop): Ziffern, Operatoren, Enter, Backspace, Escape, Shift+8 fuer Multiplikation
+- **INV-Button (2nd Function)**: Toggle im Mode-Selector, sin→sin⁻¹, cos→cos⁻¹, tan→tan⁻¹, log→10ˣ, ln→eˣ
+- Memory-Funktionen (M+, M-, MR, MC, MS) mit ToolTip-Anzeige des Werts, **persistent** (überlebt App-Neustart)
+- Berechnungsverlauf (Bottom-Sheet, Swipe-Up/Down, max 100 Einträge)
+- **Einzelne History-Einträge löschen** (X-Button pro Eintrag)
+- **Bestätigungsdialog** beim Löschen des gesamten Verlaufs
+- **ANS-Taste**: Letztes Ergebnis einfügen, implizite Multiplikation nach ")"
+- **Share-Button**: Teilen von Expression+Ergebnis (Ctrl+S, Share Intent auf Android)
+- **Undo/Redo**: Ctrl+Z/Ctrl+Y, Stack-basiert (max 50 Zustände), SaveState vor jeder zustandsändernden Operation
+- **Zahlenformat konfigurierbar**: US (1,234.56) oder EU (1.234,56) in Settings wählbar
+- Keyboard-Support (Desktop): Ziffern, Operatoren, Enter, Backspace, Escape, Shift+8/9/0, Ctrl+Z/Y
 - Floating Text Overlay (Game Juice): Ergebnis schwebt nach oben bei Berechnung
+- **Live-Preview**: Zeigt Zwischenergebnis grau unter dem Display bei jeder Eingabe
+- **Operator-Highlight**: Aktiver Operator (÷×−+) wird visuell hervorgehoben
+- **Swipe-to-Backspace**: Horizontaler Swipe nach links auf Display = Backspace
+- **Landscape = Scientific**: Automatisch Scientific Mode im Querformat
+- **Copy-Button im Display**: ContentCopy-Icon neben Backspace
+- Wiederholtes "=" wiederholt letzte Operation (z.B. 5+3=== → 8, 11, 14)
+- Implizite Multiplikation nach Klammern: (5+3)2 → (5+3) × 2 (sowohl im ViewModel als auch im ExpressionParser)
+- Kontextuelles Prozent: 100+10% = 110 (bei ×/÷: nur /100)
+- Auto-Close offener Klammern bei "="
+- Smart-Parenthesis-Button "( )" wählt automatisch ( oder ) je nach Kontext
+- **Klammer-Validierung**: ")" wird ignoriert wenn keine offene Klammer existiert
+- **Haptic Feedback (Android)**: Tick/Click/HeavyClick bei Button-Aktionen, **abschaltbar** in Settings (IHapticService.IsEnabled)
+- **Double-Back-to-Exit (Android)**: Zurücktaste navigiert intern (History→Tab→Rechner), erst 2x schnell drücken schließt App
+- **Tausender-Trennzeichen**: Display zeigt `1,000,000` statt `1000000` (RawDisplay ohne Kommas für Berechnungen)
+- **Responsive Schriftgröße**: DisplayFontSize passt sich an Zahlenlänge an (42→34→28→22→18)
+- **Startup-Modus persistent**: Basic/Scientific-Wahl wird gespeichert (nicht bei Auto-Landscape)
+- **Button-Press-Animation**: scale(0.92) mit TransformOperationsTransition (80ms)
+- **Dezimalstellen-Einstellung**: Auto oder 0-10 feste Stellen (in Settings konfigurierbar)
+- **Floating-Point-Rounding**: Math.Round(value, 10) verhindert `0.30000000000000004`
 
 ### Converter
-8 Kategorien mit offset-basierter Temperature-Konvertierung:
-1. Length (m, km, mi, ft, in, cm, mm, yd)
-2. Mass (kg, g, lb, oz, mg, t)
+11 Kategorien mit offset-basierter Temperature-Konvertierung:
+1. Length (m, km, mi, ft, in, cm, mm, yd, nmi, µm)
+2. Mass (kg, g, lb, oz, mg, t, st)
 3. Temperature (C, F, K) - offset-basiert
 4. Time (s, min, h, d, wk)
-5. Volume (L, mL, gal, qt, pt, fl oz, cup)
-6. Area (m2, km2, ha, ft2, in2, ac, yd2)
+5. Volume (L, mL, gal, qt, pt, fl oz, cup, tbsp, tsp)
+6. Area (m², km², ha, ft², ac)
 7. Speed (m/s, km/h, mph, kn)
-8. Data (B, KB, MB, GB, TB)
+8. Data (B, KB, MB, GB, TB, bit)
+9. Energy (J, kJ, cal, kcal, Wh, kWh, BTU)
+10. Pressure (Pa, kPa, bar, atm, psi, mmHg)
+11. Angle (°, rad, gon, tr, ′, ″)
+- **Copy-Button** neben Result-Anzeige
 
 ## Besondere Implementierungen
 
@@ -45,35 +75,82 @@ baseValue = value * ToBase + Offset
 ### History-Integration (persistent)
 - `IHistoryService` (aus MeineApps.CalcLib) als Singleton
 - **Persistenz**: Verlauf wird per IPreferencesService als JSON gespeichert und beim Start geladen
-- CalculatorViewModel: `IsHistoryVisible`, `HistoryEntries`, Show/Hide/Clear/SelectHistoryEntry Commands
+- CalculatorViewModel: `IsHistoryVisible`, `HistoryEntries`, Show/Hide/Clear/Delete/SelectHistoryEntry Commands
 - MainView: Bottom-Sheet Overlay mit Backdrop, Slide-Animation (TransformOperationsTransition)
 - Swipe-Gesten in MainView.axaml.cs: Up=ShowHistory, Down=HideHistory (nur im Calculator-Tab)
-- "Verlauf löschen"-Button im History-Panel (Grid.Row="3")
+- "Verlauf löschen"-Button mit Bestätigungsdialog (ShowClearHistoryConfirm)
 
 ### Floating Text (Game Juice)
 - CalculatorViewModel feuert `FloatingTextRequested` Event nach Calculate()
 - MainView.axaml.cs: `OnFloatingText` ruft `FloatingTextOverlay.ShowFloatingText` auf
 - Farbe: Indigo (#6366F1), FontSize 14, Position 30%/30% des Canvas
 
-### Clipboard (CalculatorView.axaml.cs)
-- Event-basiert: `ClipboardCopyRequested` / `ClipboardPasteRequested` vom VM
+### Clipboard (Event-basiert)
+- `ClipboardCopyRequested` / `ClipboardPasteRequested` vom VM
 - View nutzt `TopLevel.GetTopLevel(this)?.Clipboard` (Avalonia-API)
 - Ctrl+C / Ctrl+V via KeyDown-Handler
+- Sauberes Abmelden bei DataContext-Wechsel (kein Memory Leak)
 
 ### Keyboard (CalculatorView.axaml.cs)
 - KeyDown-Handler auf UserControl (Focusable=true)
 - Mappings: Shift+8 = Multiplikation, Shift+9 = (, Shift+0 = ), OemPlus ohne Shift = Equals, OemComma/OemPeriod = Dezimalpunkt
-- Ctrl+C = Kopieren, Ctrl+V = Einfuegen
+- Ctrl+C = Kopieren, Ctrl+V = Einfügen, Ctrl+S = Teilen, Ctrl+Z = Undo, Ctrl+Y = Redo
+
+### Haptic Feedback
+- `IHapticService` Interface in `Services/IHapticService.cs`
+- `NoOpHapticService` für Desktop (kein Feedback)
+- `AndroidHapticService` in MainActivity.cs (VibrationEffect.EffectTick/Click/HeavyClick)
+- Factory-Pattern: `App.HapticServiceFactory` wird von Android gesetzt
+
+### Live-Preview
+- `PreviewResult` Property, `UpdatePreview()` bei jeder Eingabe
+- Versucht Expression+Display auszuwerten, zeigt Zwischenergebnis grau an
+- Offene Klammern automatisch schließen, trailing Operatoren entfernen für Preview
+- Nur angezeigt wenn sich der Wert vom Display unterscheidet
+
+### Landscape = Scientific (CalculatorView.axaml.cs)
+- `OnSizeChanged` prüft Width > Height
+- Automatischer Wechsel zu Scientific Mode mit `_autoSwitchedToScientific` Flag
+- Zurück zu Basic nur wenn automatisch gewechselt wurde (nicht manuell)
+
+### Code-Qualität
+- `TryParseDisplay()`: Zentrale Hilfsmethode, nutzt `RawDisplay` (ohne Tausender-Trennzeichen)
+- `SetDisplayFromResult(double/CalculationResult)`: Zentrale Methode für Display+Error-Handling
+- `RawDisplay`: Computed Property - entfernt Tausender-Trennzeichen und normalisiert Dezimaltrenner auf InvariantCulture
+- `FormatResult()`: Math.Round(10) → Dezimalstellen-Setting → locale-abhängige Tausender-/Dezimaltrenner
+- `RefreshNumberFormat()`: Aktualisiert Zahlenformat aus Preferences (aufgerufen beim Tab-Wechsel)
+- Undo/Redo: `_undoStack`/`_redoStack` (Stack<CalculatorState>), SaveState() vor zustandsändernden Operationen
+- `DisplayFontSize`: Automatisch angepasst bei Display-Änderungen (42/34/28/22/18)
+- Wissenschaftliche Funktionen delegieren an `_engine` (besseres Error-Handling via CalculationResult)
+- `CalculatorEngine.Factorial()` gibt `CalculationResult` zurück (statt double)
+- `ExpressionParser.ProcessUnaryMinus()`: Konsekutive Minus-Zeichen (--5=5, ---5=-5)
+- Alle ViewModels: IDisposable mit sauberem Event-Unsubscribe
+
+### UI-Layout (12.02.2026)
+- **Display-Card**: Expression + Copy-Icon + Backspace-Icon (oben rechts) + Memory-Indikator mit ToolTip (oben links) + Live-Preview
+- **Mode-Selector**: Basic | Scientific | INV | RAD/DEG
+- **Basic Mode Grid (4×5)**: `C | () | % | ÷` / `789×` / `456−` / `123+` / `± 0 . =`
+- **Scientific Panel (3×5)**: Row 0: sin/cos/tan/log/ln (INV-abhängig), Row 1: ( ) x^y 1/x Ans, Row 2: π e x² √x x!
+- **Memory Row (5)**: MC MR M+ M- MS
+- CE entfernt (redundant mit C, nur noch per Delete-Taste)
 
 ### Expression-Schutz
 - MaxExpressionLength = 200 Zeichen (verhindert Memory-Probleme)
-- ClearHistory mit Bestaetigungsdialog (ShowClearHistoryConfirm)
+- Klammer-Validierung: ")" nur wenn offene Klammern existieren
+
+### DI-Registrierung (alle Singleton)
+- CalculatorVM, ConverterVM, SettingsVM, MainViewModel → Singleton
+- CalculatorEngine, ExpressionParser, IHistoryService → Singleton
+- IHapticService → Singleton (Factory-Pattern für Android)
 
 ### ConverterVM Dispose
 - IDisposable: Unsubscribe von LanguageChanged im Dispose()
-- Erweiterte Volumen-Einheiten: QuartUS, FluidOunceUS
+- Erweiterte Einheiten: NauticalMile, Micrometer (Length), Stone (Mass), Tablespoon, Teaspoon (Volume), 6 Angle-Einheiten
 
-## App-spezifische Abhaengigkeiten
+### Display-Card Header (5 Spalten)
+- Memory-Indikator (M) | Expression | Share-Icon | Copy-Icon | Backspace-Icon
+
+## App-spezifische Abhängigkeiten
 
 - **MeineApps.CalcLib** - Calculator Engine + ExpressionParser + IHistoryService
 
@@ -85,11 +162,25 @@ baseValue = value * ToBase + Offset
 - **= nach Operator (11.02.2026)**: "5 + =" entfernt trailing Operator statt "0" als Operand zu nutzen
 - **Verlauf-Persistenz (11.02.2026)**: History wird per JSON in IPreferencesService gespeichert
 - **FormatResult lokalisiert**: "Error" durch `_localization.GetString("Error")` ersetzt
-- **SelectHistoryEntry**: ClearError() hinzugefuegt - HasError-Flag wird beim History-Eintrag zurueckgesetzt
-- **Tan() Validation**: Math.Tan()-Ergebnis > 1e15 wird als undefiniert erkannt
+- **SelectHistoryEntry**: ClearError() hinzugefügt - HasError-Flag wird beim History-Eintrag zurückgesetzt
+- **Tan() Validation**: Math.Tan()-Ergebnis > 1e15 wird als undefiniert erkannt (implementiert in CalculatorViewModel)
 - **km/h Precision**: Speed-Faktor von 0.277778 auf `1.0 / 3.6` (exakter)
 - **Lokalisierung (11.02.2026)**: 84 fehlende Akzente/Umlaute in ES/FR/IT/PT/DE resx korrigiert
 - **Process.Start Android-Fix (11.02.2026)**: UriLauncher statt Process.Start (PlatformNotSupportedException auf Android)
 - **Clipboard (11.02.2026)**: Copy/Paste via Event-Pattern + TopLevel.Clipboard API
-- **ConverterVM Dispose (11.02.2026)**: IDisposable fuer LanguageChanged Unsubscribe
-- **Expression-Altlast nach Fehler (12.02.2026)**: ShowError() leert jetzt Expression und setzt _isNewCalculation=true. Vorher blieben Altlasten (z.B. offene Klammern, Division-Reste) in Expression und kontaminierten alle folgenden Berechnungen
+- **ConverterVM Dispose (11.02.2026)**: IDisposable für LanguageChanged Unsubscribe
+- **Expression-Altlast nach Fehler (12.02.2026)**: ShowError() leert jetzt Expression und setzt _isNewCalculation=true
+- **Klammer-Bugs (12.02.2026)**: "))" fügte "0" ein → Fix: bei _isNewCalculation nur ")" ohne Display-Wert
+- **Implizite Multiplikation (12.02.2026)**: Zahl/Dezimalpunkt/"(" nach ")" fügt automatisch "×" ein
+- **Kontextuelles Prozent (12.02.2026)**: Bei +/−: Prozent vom Basiswert (100+10%=110)
+- **Wiederholtes = (12.02.2026)**: _lastOperator/_lastOperand speichern letzte Operation
+- **Auto-Close Klammern (12.02.2026)**: Offene Klammern werden bei "=" automatisch geschlossen
+- **Power konsistent (12.02.2026)**: Power() delegiert an InputOperator("^")
+- **UI-Redesign (12.02.2026)**: Layout wie Google/Samsung Calculator
+- **Umfassendes Refactoring (12.02.2026)**: 8 Bugs, 3 Code-Qualitätsprobleme, 9 UX-Features, 2 mittlere Features
+- **Runde 2 (12.02.2026)**: Floating-Point-Rounding, Memory-Persistenz, Parser Doppel-Minus, Factorial→CalculationResult, Tausender-Trennzeichen, Responsive FontSize, Startup-Modus persistent, Button-Animation, Energy+Pressure Converter, Dezimalstellen-Setting
+- **Runde 3 (12.02.2026)**: 6 Bugs (Negate-Formatierung, Backspace-SciNotation, Factorial-Negativ, Leere-Klammern, SwapUnits-Doppelconvert, Swipe-Timing), ANS-Taste, Share-Button, Undo/Redo (Ctrl+Z/Y), Zahlenformat US/EU, Winkel-Konverter (11. Kategorie), History-Expression-Copy, erweiterte Einheiten (Seemeile, Mikrometer, Stone, Esslöffel, Teelöffel), Lokalisierung 13 Keys (6 Sprachen)
+- **Runde 4 (12.02.2026)**: 20 Fixes nach Tiefenanalyse mit Google/Samsung/Apple/CalcKit/Microsoft Calculator Vergleich:
+  - **6 kritische Bugs**: SelectHistoryEntry nutzt ResultValue (Locale-sicher), RefreshNumberFormat mit Parse-Validierung, Undo/Redo speichert _lastResult, Tan()-Validierung > 1e15, Converter akzeptiert EU-Komma, Parser implizite Multiplikation `(5+3)(2+1)`
+  - **9 mittlere Bugs**: Backspace auf "0" setzt _isNewCalculation=true, EPSILON 1e-15 (statt 1e-10), Percent/InputDecimal UpdatePreview, InputDigit strip Tausender beim Append, Swipe nur auf Calculator-Tab, Parser Infinity-Check, Factorial Overflow-Check, Unbekannte Tokens als Fehler, ShareDisplay kontextabhängig
+  - **5 UX**: Haptic-Toggle in Settings (IHapticService.IsEnabled), Equals-Button farbig hervorgehoben, Lokalisierung 2 Keys (6 Sprachen)

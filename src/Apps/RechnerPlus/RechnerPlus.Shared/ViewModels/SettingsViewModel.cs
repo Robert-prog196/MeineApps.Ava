@@ -2,13 +2,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Ava.Services;
+using RechnerPlus.Services;
 
 namespace RechnerPlus.ViewModels;
 
-public partial class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel : ObservableObject, IDisposable
 {
+    private bool _disposed;
     private readonly IThemeService _themeService;
     private readonly ILocalizationService _localization;
+    private readonly IPreferencesService _preferences;
+    private readonly IHapticService _haptic;
+
+    private const string DecimalPlacesKey = "calculator_decimal_places";
+    private const string NumberFormatKey = "calculator_number_format";
+    private const string HapticEnabledKey = "calculator_haptic_enabled";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsMidnightSelected))]
@@ -35,6 +43,32 @@ public partial class SettingsViewModel : ObservableObject
     public bool IsAuroraSelected => SelectedTheme == AppTheme.Aurora;
     public bool IsDaylightSelected => SelectedTheme == AppTheme.Daylight;
     public bool IsForestSelected => SelectedTheme == AppTheme.Forest;
+
+    /// <summary>Dezimalstellen: -1 = Auto, 0-10 = feste Anzahl.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DecimalPlacesDisplayText))]
+    private int _decimalPlaces;
+
+    public string DecimalPlacesDisplayText => DecimalPlaces < 0
+        ? _localization.GetString("SettingsDecimalAuto")
+        : DecimalPlaces.ToString();
+    public string DecimalPlacesText => _localization.GetString("SettingsDecimalPlaces");
+
+    /// <summary>Zahlenformat: 0 = US (1,234.56), 1 = EU (1.234,56).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsUSFormat))]
+    [NotifyPropertyChangedFor(nameof(IsEUFormat))]
+    private int _numberFormat;
+
+    public bool IsUSFormat => NumberFormat == 0;
+    public bool IsEUFormat => NumberFormat == 1;
+    public string NumberFormatText => _localization.GetString("SettingsNumberFormat");
+
+    /// <summary>Haptic Feedback Ein/Aus (nur Android relevant).</summary>
+    [ObservableProperty]
+    private bool _hapticEnabled;
+
+    public string HapticText => _localization.GetString("SettingsHaptic");
 
     // Language selection indicators
     public bool IsEnglishSelected => SelectedLanguage == "en";
@@ -64,13 +98,62 @@ public partial class SettingsViewModel : ObservableObject
     public string ThemeForestName => _localization.GetString("ThemeForest");
     public string ThemeForestDescText => _localization.GetString("ThemeForestDesc");
 
-    public SettingsViewModel(IThemeService themeService, ILocalizationService localization)
+    public SettingsViewModel(IThemeService themeService, ILocalizationService localization,
+                              IPreferencesService preferences, IHapticService haptic)
     {
         _themeService = themeService;
         _localization = localization;
+        _preferences = preferences;
+        _haptic = haptic;
         _selectedTheme = _themeService.CurrentTheme;
         _selectedLanguage = _localization.CurrentLanguage;
+        _decimalPlaces = _preferences.Get(DecimalPlacesKey, -1);
+        _numberFormat = _preferences.Get(NumberFormatKey, 0);
+        _hapticEnabled = _preferences.Get(HapticEnabledKey, true);
+        _haptic.IsEnabled = _hapticEnabled;
         _localization.LanguageChanged += OnLanguageChanged;
+    }
+
+    partial void OnDecimalPlacesChanged(int value)
+    {
+        _preferences.Set(DecimalPlacesKey, value);
+    }
+
+    partial void OnNumberFormatChanged(int value)
+    {
+        _preferences.Set(NumberFormatKey, value);
+    }
+
+    partial void OnHapticEnabledChanged(bool value)
+    {
+        _preferences.Set(HapticEnabledKey, value);
+        _haptic.IsEnabled = value;
+    }
+
+    [RelayCommand]
+    private void ToggleHaptic()
+    {
+        HapticEnabled = !HapticEnabled;
+    }
+
+    [RelayCommand]
+    private void SetNumberFormat(string format)
+    {
+        NumberFormat = int.Parse(format);
+    }
+
+    [RelayCommand]
+    private void IncrementDecimalPlaces()
+    {
+        if (DecimalPlaces < 10)
+            DecimalPlaces++;
+    }
+
+    [RelayCommand]
+    private void DecrementDecimalPlaces()
+    {
+        if (DecimalPlaces > -1)
+            DecimalPlaces--;
     }
 
     partial void OnSelectedThemeChanged(AppTheme value)
@@ -106,5 +189,13 @@ public partial class SettingsViewModel : ObservableObject
     {
         // Refresh all localized string properties
         OnPropertyChanged(string.Empty);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _localization.LanguageChanged -= OnLanguageChanged;
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 }

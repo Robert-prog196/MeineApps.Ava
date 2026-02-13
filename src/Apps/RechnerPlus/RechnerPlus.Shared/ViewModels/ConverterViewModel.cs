@@ -39,6 +39,9 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
     public string SwapUnitsText => _localization.GetString("ConverterSwapUnits");
     public string InvalidInputText => _localization.GetString("ConverterInvalidInput");
 
+    /// <summary>Event zum Kopieren des Converter-Ergebnisses. View handhabt die Clipboard-API.</summary>
+    public event Func<string, Task>? ClipboardCopyRequested;
+
     public ConverterViewModel(ILocalizationService localization)
     {
         _localization = localization;
@@ -58,20 +61,37 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
     }
 
     partial void OnInputValueChanged(string value) => Convert();
-    partial void OnFromUnitChanged(UnitItem? value) => Convert();
-    partial void OnToUnitChanged(UnitItem? value) => Convert();
+    partial void OnFromUnitChanged(UnitItem? value) { if (!_suppressConvert) Convert(); }
+    partial void OnToUnitChanged(UnitItem? value) { if (!_suppressConvert) Convert(); }
+
+    private bool _suppressConvert;
 
     [RelayCommand]
     private void SwapUnits()
     {
+        _suppressConvert = true;
         (FromUnit, ToUnit) = (ToUnit, FromUnit);
+        _suppressConvert = false;
+        Convert();
+    }
+
+    [RelayCommand]
+    private async Task CopyResult()
+    {
+        if (!string.IsNullOrEmpty(OutputValue) && OutputValue != InvalidInputText)
+        {
+            if (ClipboardCopyRequested != null)
+                await ClipboardCopyRequested.Invoke(OutputValue);
+        }
     }
 
     private void Convert()
     {
         if (FromUnit == null || ToUnit == null) return;
 
-        if (!double.TryParse(InputValue, System.Globalization.NumberStyles.Any,
+        // EU-Format unterstützen: Komma als Dezimaltrenner akzeptieren
+        var input = InputValue?.Replace(',', '.') ?? "";
+        if (!double.TryParse(input, System.Globalization.NumberStyles.Any,
                 System.Globalization.CultureInfo.InvariantCulture, out var value))
         {
             OutputValue = InvalidInputText;
@@ -135,7 +155,10 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
             new(UnitCategory.Volume, _localization.GetString("CategoryVolume")),
             new(UnitCategory.Area, _localization.GetString("CategoryArea")),
             new(UnitCategory.Speed, _localization.GetString("CategorySpeed")),
-            new(UnitCategory.Data, _localization.GetString("CategoryData"))
+            new(UnitCategory.Data, _localization.GetString("CategoryData")),
+            new(UnitCategory.Energy, _localization.GetString("CategoryEnergy")),
+            new(UnitCategory.Pressure, _localization.GetString("CategoryPressure")),
+            new(UnitCategory.Angle, _localization.GetString("CategoryAngle"))
         ];
     }
 
@@ -152,7 +175,9 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
                 new("UnitMile", "mi", 1609.344, _localization),
                 new("UnitYard", "yd", 0.9144, _localization),
                 new("UnitFoot", "ft", 0.3048, _localization),
-                new("UnitInch", "in", 0.0254, _localization)
+                new("UnitInch", "in", 0.0254, _localization),
+                new("UnitNauticalMile", "nmi", 1852, _localization),
+                new("UnitMicrometer", "\u00b5m", 0.000001, _localization)
             ],
             UnitCategory.Mass =>
             [
@@ -161,7 +186,8 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
                 new("UnitMilligram", "mg", 0.000001, _localization),
                 new("UnitPound", "lb", 0.453592, _localization),
                 new("UnitOunce", "oz", 0.0283495, _localization),
-                new("UnitTonne", "t", 1000, _localization)
+                new("UnitTonne", "t", 1000, _localization),
+                new("UnitStone", "st", 6.35029, _localization)
             ],
             UnitCategory.Temperature =>
             [
@@ -191,7 +217,9 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
                 new("UnitQuartUS", "qt", 0.946353, _localization),
                 new("UnitPintUS", "pt", 0.473176, _localization),
                 new("UnitFluidOunceUS", "fl oz", 0.0295735, _localization),
-                new("UnitCup", "cup", 0.236588, _localization)
+                new("UnitCup", "cup", 0.236588, _localization),
+                new("UnitTablespoon", "tbsp", 0.0147868, _localization),
+                new("UnitTeaspoon", "tsp", 0.00492892, _localization)
             ],
             UnitCategory.Area =>
             [
@@ -217,6 +245,34 @@ public partial class ConverterViewModel : ObservableObject, IDisposable
                 new("UnitTerabyte", "TB", 1099511627776, _localization),
                 new("UnitBit", "bit", 0.125, _localization)
             ],
+            UnitCategory.Energy =>
+            [
+                new("UnitJoule", "J", 1, _localization),
+                new("UnitKilojoule", "kJ", 1000, _localization),
+                new("UnitCalorie", "cal", 4.184, _localization),
+                new("UnitKilocalorie", "kcal", 4184, _localization),
+                new("UnitWattHour", "Wh", 3600, _localization),
+                new("UnitKilowattHour", "kWh", 3_600_000, _localization),
+                new("UnitBTU", "BTU", 1055.06, _localization)
+            ],
+            UnitCategory.Pressure =>
+            [
+                new("UnitPascal", "Pa", 1, _localization),
+                new("UnitKilopascal", "kPa", 1000, _localization),
+                new("UnitBar", "bar", 100_000, _localization),
+                new("UnitAtmosphere", "atm", 101_325, _localization),
+                new("UnitPSI", "psi", 6894.76, _localization),
+                new("UnitMillimeterMercury", "mmHg", 133.322, _localization)
+            ],
+            UnitCategory.Angle =>
+            [
+                new("UnitDegree", "\u00b0", 1, _localization),
+                new("UnitRadian", "rad", 180.0 / Math.PI, _localization),
+                new("UnitGradian", "gon", 0.9, _localization),
+                new("UnitTurn", "tr", 360, _localization),
+                new("UnitArcminute", "\u2032", 1.0 / 60.0, _localization),
+                new("UnitArcsecond", "\u2033", 1.0 / 3600.0, _localization)
+            ],
             _ => []
         };
     }
@@ -239,7 +295,10 @@ public enum UnitCategory
     Volume,
     Area,
     Speed,
-    Data
+    Data,
+    Energy,
+    Pressure,
+    Angle
 }
 
 /// <summary>

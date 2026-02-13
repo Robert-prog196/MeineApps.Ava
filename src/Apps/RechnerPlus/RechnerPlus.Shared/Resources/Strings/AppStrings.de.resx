@@ -176,6 +176,9 @@
   </data>
 
   <!-- Settings -->
+  <data name="BackPressToExit" xml:space="preserve">
+    <value>Erneut drücken zum Beenden</value>
+  </data>
   <data name="SettingsTitle" xml:space="preserve">
     <value>Einstellungen</value>
   </data>
@@ -441,6 +444,109 @@
   </data>
   <data name="UnitBit" xml:space="preserve">
     <value>Bit</value>
+  </data>
+
+  <!-- Settings - Decimal Places -->
+  <data name="SettingsDecimalPlaces" xml:space="preserve">
+    <value>Dezimalstellen</value>
+  </data>
+  <data name="SettingsDecimalAuto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+
+  <!-- Unit Names - Energy -->
+  <data name="CategoryEnergy" xml:space="preserve">
+    <value>Energie</value>
+  </data>
+  <data name="UnitJoule" xml:space="preserve">
+    <value>Joule</value>
+  </data>
+  <data name="UnitKilojoule" xml:space="preserve">
+    <value>Kilojoule</value>
+  </data>
+  <data name="UnitCalorie" xml:space="preserve">
+    <value>Kalorie</value>
+  </data>
+  <data name="UnitKilocalorie" xml:space="preserve">
+    <value>Kilokalorie</value>
+  </data>
+  <data name="UnitWattHour" xml:space="preserve">
+    <value>Wattstunde</value>
+  </data>
+  <data name="UnitKilowattHour" xml:space="preserve">
+    <value>Kilowattstunde</value>
+  </data>
+  <data name="UnitBTU" xml:space="preserve">
+    <value>BTU</value>
+  </data>
+
+  <!-- Unit Names - Pressure -->
+  <data name="CategoryPressure" xml:space="preserve">
+    <value>Druck</value>
+  </data>
+  <data name="UnitPascal" xml:space="preserve">
+    <value>Pascal</value>
+  </data>
+  <data name="UnitKilopascal" xml:space="preserve">
+    <value>Kilopascal</value>
+  </data>
+  <data name="UnitBar" xml:space="preserve">
+    <value>Bar</value>
+  </data>
+  <data name="UnitAtmosphere" xml:space="preserve">
+    <value>Atmosphäre</value>
+  </data>
+  <data name="UnitPSI" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="UnitMillimeterMercury" xml:space="preserve">
+    <value>Millimeter Quecksilbersäule</value>
+  </data>
+
+  <data name="SettingsNumberFormat" xml:space="preserve">
+    <value>Zahlenformat</value>
+  </data>
+  <data name="CategoryAngle" xml:space="preserve">
+    <value>Winkel</value>
+  </data>
+  <data name="UnitDegree" xml:space="preserve">
+    <value>Grad</value>
+  </data>
+  <data name="UnitRadian" xml:space="preserve">
+    <value>Radiant</value>
+  </data>
+  <data name="UnitGradian" xml:space="preserve">
+    <value>Gon</value>
+  </data>
+  <data name="UnitTurn" xml:space="preserve">
+    <value>Umdrehung</value>
+  </data>
+  <data name="UnitArcminute" xml:space="preserve">
+    <value>Bogenminute</value>
+  </data>
+  <data name="UnitArcsecond" xml:space="preserve">
+    <value>Bogensekunde</value>
+  </data>
+  <data name="UnitNauticalMile" xml:space="preserve">
+    <value>Seemeile</value>
+  </data>
+  <data name="UnitMicrometer" xml:space="preserve">
+    <value>Mikrometer</value>
+  </data>
+  <data name="UnitStone" xml:space="preserve">
+    <value>Stone</value>
+  </data>
+  <data name="UnitTablespoon" xml:space="preserve">
+    <value>Esslöffel</value>
+  </data>
+  <data name="UnitTeaspoon" xml:space="preserve">
+    <value>Teelöffel</value>
+  </data>
+  <data name="SettingsHaptic" xml:space="preserve">
+    <value>Haptisches Feedback</value>
+  </data>
+  <data name="TangentUndefined" xml:space="preserve">
+    <value>Tangens undefiniert</value>
   </data>
 
 </root>

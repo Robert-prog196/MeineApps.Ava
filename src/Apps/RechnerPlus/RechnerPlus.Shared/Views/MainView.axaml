@@ -281,15 +281,16 @@
                           IsVisible="{Binding CalculatorViewModel.HasHistory}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="calc:CalculationHistoryEntry">
-                  <Button Classes="Text HistoryEntry"
-                          HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Stretch"
-                          Padding="20,14"
-                          CornerRadius="0"
-                          Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
-                          CommandParameter="{Binding}">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <StackPanel Grid.Column="0" Spacing="4">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <Button Grid.Column="0"
+                            Classes="Text HistoryEntry"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            Padding="20,14,4,14"
+                            CornerRadius="0"
+                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
+                            CommandParameter="{Binding}">
+                      <StackPanel Spacing="4">
                         <TextBlock Text="{Binding Expression}"
                                    FontSize="14"
                                    Foreground="{DynamicResource TextMutedBrush}"
@@ -300,26 +301,53 @@
                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                    TextTrimming="CharacterEllipsis" />
                       </StackPanel>
-                      <mi:MaterialIcon Grid.Column="1" Kind="ChevronRight"
-                                       Width="16" Height="16"
+                    </Button>
+                    <!-- Einzelnen Eintrag löschen -->
+                    <Button Grid.Column="1"
+                            Classes="Text"
+                            Padding="8"
+                            MinWidth="0"
+                            MinHeight="0"
+                            VerticalAlignment="Center"
+                            Margin="0,0,12,0"
+                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.DeleteHistoryEntryCommand}"
+                            CommandParameter="{Binding}">
+                      <mi:MaterialIcon Kind="Close" Width="16" Height="16"
                                        Foreground="{DynamicResource TextMutedBrush}"
-                                       VerticalAlignment="Center"
                                        Opacity="0.5" />
-                    </Grid>
-                  </Button>
+                    </Button>
+                  </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </Panel>
         </ScrollViewer>
 
-        <!-- Verlauf löschen Button -->
+        <!-- Verlauf löschen Button + Bestätigungsdialog -->
         <Border Grid.Row="3" Padding="16,8,16,16"
                 IsVisible="{Binding CalculatorViewModel.HasHistory}">
-          <Button Classes="Outlined Small"
-                  Content="{Binding CalculatorViewModel.ClearHistoryText}"
-                  Command="{Binding CalculatorViewModel.ClearHistoryCommand}"
-                  HorizontalAlignment="Center" />
+          <Panel>
+            <!-- Normaler Löschen-Button -->
+            <Button Classes="Outlined Small"
+                    Content="{Binding CalculatorViewModel.ClearHistoryText}"
+                    Command="{Binding CalculatorViewModel.ClearHistoryCommand}"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding !CalculatorViewModel.ShowClearHistoryConfirm}" />
+            <!-- Bestätigungspanel -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8"
+                        HorizontalAlignment="Center"
+                        IsVisible="{Binding CalculatorViewModel.ShowClearHistoryConfirm}">
+              <Button Classes="Primary Small"
+                      Content="&#x2714;"
+                      Command="{Binding CalculatorViewModel.ConfirmClearHistoryCommand}"
+                      Padding="16,6"/>
+              <Button Classes="Outlined Small"
+                      Content="&#x2716;"
+                      Command="{Binding CalculatorViewModel.CancelClearHistoryCommand}"
+                      Padding="16,6"/>
+            </StackPanel>
+          </Panel>
         </Border>
 
       </Grid>
