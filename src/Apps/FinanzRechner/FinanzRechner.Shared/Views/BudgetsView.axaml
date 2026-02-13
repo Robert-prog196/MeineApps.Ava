@@ -151,7 +151,7 @@
                         <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).SpentText}"
                                    FontSize="11"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
-                        <TextBlock Text="{Binding Spent, StringFormat='{}{0:F2} \u20ac'}"
+                        <TextBlock Text="{Binding Spent, StringFormat='{}{0:F2} €'}"
                                    FontSize="14" FontWeight="Bold"
                                    Foreground="{DynamicResource ExpenseBrush}" />
                       </StackPanel>
@@ -160,7 +160,7 @@
                         <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).RemainingText}"
                                    FontSize="11"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
-                        <TextBlock Text="{Binding Remaining, StringFormat='{}{0:F2} \u20ac'}"
+                        <TextBlock Text="{Binding Remaining, StringFormat='{}{0:F2} €'}"
                                    FontSize="14" FontWeight="Bold"
                                    Foreground="{DynamicResource IncomeBrush}" />
                       </StackPanel>
@@ -169,7 +169,7 @@
                         <TextBlock Text="{Binding $parent[UserControl].((vm:BudgetsViewModel)DataContext).MonthlyLimitText}"
                                    FontSize="11"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
-                        <TextBlock Text="{Binding Limit, StringFormat='{}{0:F2} \u20ac'}"
+                        <TextBlock Text="{Binding Limit, StringFormat='{}{0:F2} €'}"
                                    FontSize="14" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>

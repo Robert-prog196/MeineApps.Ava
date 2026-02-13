@@ -112,6 +112,9 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
     [ObservableProperty]
     private TransactionType _transactionType = TransactionType.Expense;
 
+    public bool IsExpenseSelected => TransactionType == TransactionType.Expense;
+    public bool IsIncomeSelected => TransactionType == TransactionType.Income;
+
     [ObservableProperty]
     private string _note = string.Empty;
 
@@ -169,10 +172,13 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
 
     partial void OnTransactionTypeChanged(TransactionType value)
     {
+        // Erst Default-Kategorie setzen, dann Liste aktualisieren
         SelectedCategory = value == TransactionType.Expense
             ? ExpenseCategory.Other
             : ExpenseCategory.Salary;
         OnPropertyChanged(nameof(Categories));
+        OnPropertyChanged(nameof(IsExpenseSelected));
+        OnPropertyChanged(nameof(IsIncomeSelected));
     }
 
     [RelayCommand]

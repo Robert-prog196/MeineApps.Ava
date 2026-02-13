@@ -435,7 +435,8 @@
                            Foreground="{DynamicResource TextPrimaryBrush}"
                            FontSize="15" VerticalAlignment="Center" />
                 <ToggleSwitch Grid.Column="1"
-                              IsChecked="{Binding IsRecurring}" />
+                              IsChecked="{Binding IsRecurring}"
+                              OnContent="" OffContent="" />
               </Grid>
             </StackPanel>
 
@@ -515,7 +516,7 @@
                              Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}"
                              VerticalAlignment="Center">
                     <TextBlock.Text>
-                      <MultiBinding StringFormat="{}{0}{1:N2} \u20ac">
+                      <MultiBinding StringFormat="{}{0}{1:N2} €">
                         <Binding Path="Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
                         <Binding Path="Amount" />
                       </MultiBinding>

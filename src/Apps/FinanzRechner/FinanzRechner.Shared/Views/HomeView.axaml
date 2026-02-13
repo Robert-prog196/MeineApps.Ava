@@ -232,7 +232,7 @@
                                  VerticalAlignment="Center"
                                  Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
                         <TextBlock.Text>
-                          <MultiBinding StringFormat="{}{0}{1:N2} \u20ac">
+                          <MultiBinding StringFormat="{}{0}{1:N2} €">
                             <Binding Path="Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
                             <Binding Path="Amount" />
                           </MultiBinding>

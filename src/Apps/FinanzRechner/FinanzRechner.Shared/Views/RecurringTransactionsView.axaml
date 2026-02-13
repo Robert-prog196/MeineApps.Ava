@@ -99,7 +99,7 @@
                     <!-- Amount -->
                     <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
                                 VerticalAlignment="Top" Spacing="4">
-                      <TextBlock Text="{Binding Amount, StringFormat='{}{0:N2} \u20ac'}"
+                      <TextBlock Text="{Binding Amount, StringFormat='{}{0:N2} €'}"
                                  FontSize="16" FontWeight="Bold"
                                  Foreground="{DynamicResource TextPrimaryBrush}"
                                  TextAlignment="Right" />
@@ -177,16 +177,65 @@
                          Classes="SectionHeader" />
 
               <!-- Transaction Type Toggle -->
-              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                <Button Command="{Binding SetTransactionTypeExpenseCommand}"
-                        Padding="16,8">
-                  <TextBlock Text="{Binding ExpenseText}" FontSize="14" FontWeight="Bold" />
-                </Button>
-                <Button Command="{Binding SetTransactionTypeIncomeCommand}"
-                        Padding="16,8">
-                  <TextBlock Text="{Binding IncomeText}" FontSize="14" FontWeight="Bold" />
-                </Button>
-              </StackPanel>
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <!-- Ausgabe -->
+                <Panel Grid.Column="0">
+                  <Button Command="{Binding SetTransactionTypeExpenseCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                          Padding="12,14"
+                          Background="#33EF4444" BorderBrush="#EF4444" BorderThickness="2"
+                          CornerRadius="12"
+                          IsVisible="{Binding IsExpenseSelected}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <mi:MaterialIcon Kind="ArrowDownBold" Width="18" Height="18" Foreground="#EF4444" />
+                      <TextBlock Text="{Binding ExpenseText}" FontSize="14" FontWeight="Bold" Foreground="#EF4444" />
+                    </StackPanel>
+                  </Button>
+                  <Button Command="{Binding SetTransactionTypeExpenseCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                          Padding="12,14"
+                          Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
+                          BorderBrush="{DynamicResource BorderSubtleBrush}"
+                          CornerRadius="12"
+                          IsVisible="{Binding !IsExpenseSelected}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <mi:MaterialIcon Kind="ArrowDownBold" Width="18" Height="18"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <TextBlock Text="{Binding ExpenseText}" FontSize="14"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                  </Button>
+                </Panel>
+
+                <!-- Einnahme -->
+                <Panel Grid.Column="1">
+                  <Button Command="{Binding SetTransactionTypeIncomeCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                          Padding="12,14"
+                          Background="#3322C55E" BorderBrush="#22C55E" BorderThickness="2"
+                          CornerRadius="12"
+                          IsVisible="{Binding IsIncomeSelected}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <mi:MaterialIcon Kind="ArrowUpBold" Width="18" Height="18" Foreground="#22C55E" />
+                      <TextBlock Text="{Binding IncomeText}" FontSize="14" FontWeight="Bold" Foreground="#22C55E" />
+                    </StackPanel>
+                  </Button>
+                  <Button Command="{Binding SetTransactionTypeIncomeCommand}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                          Padding="12,14"
+                          Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
+                          BorderBrush="{DynamicResource BorderSubtleBrush}"
+                          CornerRadius="12"
+                          IsVisible="{Binding !IsIncomeSelected}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <mi:MaterialIcon Kind="ArrowUpBold" Width="18" Height="18"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                      <TextBlock Text="{Binding IncomeText}" FontSize="14"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                  </Button>
+                </Panel>
+              </Grid>
 
               <TextBox Watermark="{Binding DescriptionWatermarkText}"
                        Text="{Binding Description}"
