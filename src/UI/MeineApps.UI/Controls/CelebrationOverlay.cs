@@ -39,7 +39,7 @@ public class CelebrationOverlay : Canvas
     private readonly Random _rng = new();
 
     // Animationsdauer in Sekunden
-    private const double AnimationDuration = 2.5;
+    private const double AnimationDuration = 1.5;
 
     static CelebrationOverlay()
     {

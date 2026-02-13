@@ -10,6 +10,8 @@ Wiederverwendbare UI-Komponenten für alle Avalonia Apps:
 - SplashOverlay (App-Start Animation)
 - FloatingTextOverlay (Game Juice: Floating Text Animation)
 - CelebrationOverlay (Game Juice: Confetti Partikel-Effekt)
+- TapScaleBehavior (Micro-Animation: Scale-Down bei Tap)
+- FadeInBehavior (Fade-In + optionales Slide-from-Bottom)
 - Button Styles
 - Text Styles
 - Input Styles
@@ -29,7 +31,14 @@ MeineApps.UI/
 │   ├── SplashOverlay.axaml.cs
 │   ├── CircularProgress.cs          # Kreisförmiger Fortschrittsring
 │   ├── FloatingTextOverlay.cs      # Floating text animation (Game Juice)
-│   └── CelebrationOverlay.cs       # Confetti particle effect (Game Juice)
+│   ├── CelebrationOverlay.cs       # Confetti particle effect (Game Juice)
+│   └── TooltipBubble.cs            # Onboarding tooltip with tap-to-dismiss
+├── Behaviors/
+│   ├── TapScaleBehavior.cs         # Scale-Down Micro-Animation bei Tap
+│   ├── FadeInBehavior.cs           # Fade-In + Slide-from-Bottom Animation
+│   ├── StaggerFadeInBehavior.cs    # Gestaffelter Fade-In fuer Listen
+│   ├── CountUpBehavior.cs          # Animiertes Hochzaehlen fuer TextBlocks
+│   └── SwipeToRevealBehavior.cs    # Swipe-to-Reveal (Delete-Aktion)
 └── Styles/
     ├── ButtonStyles.axaml
     ├── TextStyles.axaml
@@ -226,7 +235,7 @@ xmlns:controls="using:MeineApps.UI.Controls"
 FloatingTextCanvas.ShowFloatingText("Gespeichert!", x, y, Color.Parse("#22C55E"), fontSize: 16);
 ```
 
-- 1.5s Animation, 80px Aufwaertsbewegung, CubicEaseOut
+- 1.2s Animation, 80px Aufwaertsbewegung, CubicEaseOut
 - Fade-Out: 100% bis 30%, dann linear auf 0%
 - IsHitTestVisible=false, ClipToBounds=true
 - Kann mehrfach gleichzeitig aufgerufen werden (jeder Aufruf erstellt neuen TextBlock)
@@ -248,6 +257,139 @@ CelebrationCanvas.ShowConfetti();
 
 - 50 Border-Partikel-Pool (keine GC-Allokationen pro Animation)
 - 5 Farben: Gold, Amber, Rot, Gruen, Blau
-- 2.5s Animation mit Schwerkraft, sin-Schwankung und Rotation
+- 1.5s Animation mit Schwerkraft, sin-Schwankung und Rotation
 - Fade-Out in letzten 30% der Animation
 - ~60fps via DispatcherTimer
+
+## TapScaleBehavior
+
+Micro-Animation: Skaliert Control beim Tippen herunter und beim Loslassen wieder hoch.
+
+```axaml
+xmlns:behaviors="using:MeineApps.UI.Behaviors"
+xmlns:i="using:Avalonia.Xaml.Interactivity"
+
+<Button>
+  <i:Interaction.Behaviors>
+    <behaviors:TapScaleBehavior PressedScale="0.92" />
+  </i:Interaction.Behaviors>
+</Button>
+```
+
+- PressedScale: Skalierungsfaktor bei gedrücktem Zustand (Default: 0.92)
+- Nutzt ScaleTransform auf PointerPressed/Released
+
+## FadeInBehavior
+
+Fade-In Animation mit optionalem Slide-from-Bottom Effekt.
+
+```axaml
+<Border>
+  <i:Interaction.Behaviors>
+    <behaviors:FadeInBehavior Duration="250" SlideFromBottom="True" SlideDistance="16" />
+  </i:Interaction.Behaviors>
+</Border>
+```
+
+- Duration: Animationsdauer in ms (Default: 300)
+- SlideFromBottom: Ob von unten reinsliden (Default: false)
+- SlideDistance: Slide-Distanz in px (Default: 20)
+- CubicEaseOut Easing
+
+## StaggerFadeInBehavior
+
+Automatischer gestaffelter Fade-In fuer Listen-Items. Erkennt den Index im uebergeordneten Panel.
+
+```axaml
+<Border>
+  <i:Interaction.Behaviors>
+    <behaviors:StaggerFadeInBehavior StaggerDelay="50" BaseDuration="300" />
+  </i:Interaction.Behaviors>
+</Border>
+```
+
+- StaggerDelay: Verzoegerung pro Element in ms (Default: 50)
+- BaseDuration: Animationsdauer in ms (Default: 300)
+- FixedIndex: Fester Index statt Auto-Erkennung (-1 = automatisch)
+- Fade-In + Slide-Up (15px), CubicEaseOut
+
+## CountUpBehavior
+
+Zaehlt einen TextBlock-Wert von 0 zum Zielwert hoch (animierte Zahl).
+
+```axaml
+<TextBlock>
+  <i:Interaction.Behaviors>
+    <behaviors:CountUpBehavior TargetValue="{Binding MyValue}" Format="F1" Suffix=" kg" Duration="500" />
+  </i:Interaction.Behaviors>
+</TextBlock>
+```
+
+- TargetValue: Zielwert (double, Binding-faehig)
+- Format: Zahlenformat (Default: "F1")
+- Suffix: Text nach der Zahl (Default: "")
+- Duration: Animationsdauer in ms (Default: 500)
+- 30 Frames, CubicEaseOut Interpolation
+
+## SwipeToRevealBehavior
+
+Swipe-to-Reveal Behavior: Verschiebt ein Control nach links um eine Aktion dahinter freizulegen.
+
+```axaml
+<Panel>
+  <!-- Delete-Layer (dahinter) -->
+  <Border Background="#EF4444" HorizontalAlignment="Right" Width="80">
+    <Button Command="{Binding DeleteCommand}">
+      <mi:MaterialIcon Kind="Delete" Foreground="White" />
+    </Button>
+  </Border>
+  <!-- Content-Layer (verschiebbar) -->
+  <Border Background="{DynamicResource CardBrush}">
+    <i:Interaction.Behaviors>
+      <behaviors:SwipeToRevealBehavior SwipeThreshold="80" RevealWidth="80" />
+    </i:Interaction.Behaviors>
+    <!-- Inhalt -->
+  </Border>
+</Panel>
+```
+
+- SwipeThreshold: Ab welcher Distanz eingerastet wird (Default: 80)
+- RevealWidth: Breite des freigelegten Bereichs (Default: 80)
+- Nur horizontale Swipes (vertikale werden ignoriert, ScrollViewer-kompatibel)
+- Spring-Back-Animation (CubicEaseOut, 10 Frames)
+- Snap-to-Open/Close bei Loslassen
+- Parent-Border braucht `ClipToBounds="True"`
+
+## TooltipBubble (Onboarding)
+
+Abgerundete Tooltip-Blase mit Tap-to-Dismiss fuer Onboarding-Flows.
+
+```axaml
+xmlns:controls="using:MeineApps.UI.Controls"
+
+<controls:TooltipBubble x:Name="OnboardingTooltip"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         Margin="32,120,32,0">
+  <controls:TooltipBubble.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+      <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+    </Transitions>
+  </controls:TooltipBubble.Transitions>
+</controls:TooltipBubble>
+```
+
+```csharp
+// Im Code-Behind:
+OnboardingTooltip.Text = "Wische nach links zum Loeschen";
+OnboardingTooltip.Show();
+OnboardingTooltip.Dismissed += (_, _) => { /* naechster Tooltip */ };
+```
+
+- Properties: Text (string), Arrow (Top/Bottom)
+- Show(): FadeIn + Scale 0.9→1.0 (300ms via Transitions)
+- Hide(): FadeOut + Scale 1.0→0.9, dann Dismissed Event
+- Tap-to-Dismiss: PointerPressed ruft Hide() auf
+- Background: PrimaryBrush aus Theme (Fallback #6366F1)
+- CornerRadius 12, Padding 16/12, MaxWidth 260, weisser Text

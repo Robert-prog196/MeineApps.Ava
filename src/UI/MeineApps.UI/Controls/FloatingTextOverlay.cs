@@ -41,7 +41,7 @@ public class FloatingTextOverlay : Canvas
         var startY = y;
         var targetY = y - 80;
         var startTime = DateTime.UtcNow;
-        var duration = 1.5;
+        var duration = 1.2;
 
         var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
         timer.Tick += (_, _) =>
