@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BomberBlast.Core;
@@ -484,19 +483,8 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void OpenPrivacyPolicy()
     {
-        try
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "https://sites.google.com/rs-digital.org/bomberblast/startseite",
-                UseShellExecute = true
-            };
-            Process.Start(psi);
-        }
-        catch
-        {
-            // Silently ignore - URL open can fail on some platforms
-        }
+        MeineApps.Core.Ava.Services.UriLauncher.OpenUri(
+            "https://sites.google.com/rs-digital.org/bomberblast/startseite");
     }
 
     [RelayCommand]

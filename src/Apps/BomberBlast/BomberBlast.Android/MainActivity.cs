@@ -1,9 +1,11 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Widget;
 using Avalonia;
 using Avalonia.Android;
 using BomberBlast.Droid;
+using BomberBlast.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using MeineApps.Core.Premium.Ava.Droid;
 using MeineApps.Core.Premium.Ava.Services;
@@ -22,6 +24,7 @@ public class MainActivity : AvaloniaMainActivity<App>
 {
     private AdMobHelper? _adMobHelper;
     private RewardedAdHelper? _rewardedAdHelper;
+    private MainViewModel? _mainVm;
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
@@ -41,6 +44,15 @@ public class MainActivity : AvaloniaMainActivity<App>
         App.SoundServiceFactory = _ => new AndroidSoundService(this);
 
         base.OnCreate(savedInstanceState);
+
+        // Back-Navigation: ViewModel holen + Toast-Event verdrahten
+        _mainVm = App.Services.GetService<MainViewModel>();
+        if (_mainVm != null)
+        {
+            _mainVm.ExitHintRequested += msg =>
+                RunOnUiThread(() =>
+                    Toast.MakeText(this, msg, ToastLength.Short)?.Show());
+        }
 
         // Google Mobile Ads initialisieren - Ads erst nach SDK-Callback laden
         AdMobHelper.Initialize(this, () =>
@@ -69,6 +81,15 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         _adMobHelper?.Pause();
         base.OnPause();
+    }
+
+    [System.Obsolete("Avalonia nutzt OnBackPressed")]
+    public override void OnBackPressed()
+    {
+        if (_mainVm != null && _mainVm.HandleBackPressed())
+            return;
+
+        base.OnBackPressed();
     }
 
     protected override void OnDestroy()

@@ -20,6 +20,11 @@ public partial class MainViewModel : ObservableObject
     public event Action<string, string>? FloatingTextRequested;
     public event Action? CelebrationRequested;
 
+    /// <summary>
+    /// Event für Android-Toast bei Double-Back-to-Exit Hinweis
+    /// </summary>
+    public event Action<string>? ExitHintRequested;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CHILD VIEWMODELS
     // ═══════════════════════════════════════════════════════════════════════
@@ -106,6 +111,11 @@ public partial class MainViewModel : ObservableObject
 
     private readonly ILocalizationService _localizationService;
     private readonly IRewardedAdService _rewardedAdService;
+
+    /// <summary>
+    /// Zeitpunkt des letzten Back-Presses (für Double-Back-to-Exit)
+    /// </summary>
+    private DateTime _lastBackPressTime = DateTime.MinValue;
 
     /// <summary>
     /// Zaehlt Fehlversuche pro Level (fuer Level-Skip nach 3x Game Over)
@@ -395,6 +405,92 @@ public partial class MainViewModel : ObservableObject
         IsHelpActive = false;
         IsShopActive = false;
         IsAchievementsActive = false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BACK-NAVIGATION (Android Hardware-Zurücktaste)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Hierarchische Back-Navigation. Gibt true zurück wenn das Event behandelt wurde,
+    /// false wenn die App geschlossen werden soll.
+    /// </summary>
+    public bool HandleBackPressed()
+    {
+        // 1. Offene Dialoge schließen (höchste Priorität)
+        if (IsConfirmDialogVisible)
+        {
+            CancelConfirm();
+            return true;
+        }
+        if (IsAlertDialogVisible)
+        {
+            DismissAlert();
+            return true;
+        }
+
+        // 2. Score-Double Overlay → überspringen
+        if (GameVm.ShowScoreDoubleOverlay)
+        {
+            GameVm.SkipDoubleScoreCommand.Execute(null);
+            return true;
+        }
+
+        // 3. Im Spiel: Pause/Resume
+        if (IsGameActive)
+        {
+            if (GameVm.IsPaused)
+            {
+                // Pause → Resume
+                GameVm.ResumeCommand.Execute(null);
+            }
+            else if (GameVm.State == Core.GameState.Playing)
+            {
+                // Spielend → Pause
+                GameVm.PauseCommand.Execute(null);
+            }
+            else
+            {
+                // Andere Game-States (Starting, PlayerDied etc.) → zum Menü
+                GameVm.OnDisappearing();
+                HideAll();
+                IsMainMenuActive = true;
+                MenuVm.OnAppearing();
+            }
+            return true;
+        }
+
+        // 4. Settings → zurück (zum Spiel oder Menü)
+        if (IsSettingsActive)
+        {
+            NavigateTo("..");
+            return true;
+        }
+
+        // 5. Alle anderen Sub-Views → zurück zum Hauptmenü
+        if (IsGameOverActive || IsLevelSelectActive || IsHighScoresActive ||
+            IsHelpActive || IsShopActive || IsAchievementsActive)
+        {
+            HideAll();
+            IsMainMenuActive = true;
+            MenuVm.OnAppearing();
+            return true;
+        }
+
+        // 6. Hauptmenü → Double-Back-to-Exit
+        if (IsMainMenuActive)
+        {
+            var now = DateTime.UtcNow;
+            if ((now - _lastBackPressTime).TotalSeconds < 2)
+                return false; // App schließen
+
+            _lastBackPressTime = now;
+            var msg = _localizationService.GetString("PressBackAgainToExit") ?? "Press back again to exit";
+            ExitHintRequested?.Invoke(msg);
+            return true;
+        }
+
+        return false;
     }
 
     // ═══════════════════════════════════════════════════════════════════════

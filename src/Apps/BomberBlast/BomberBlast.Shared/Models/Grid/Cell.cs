@@ -19,6 +19,9 @@ public class Cell
     /// <summary>Power-up hidden in this block (null if none)</summary>
     public PowerUpType? HiddenPowerUp { get; set; }
 
+    /// <summary>Exit-Tür unter diesem Block versteckt (klassisches Bomberman)</summary>
+    public bool HasHiddenExit { get; set; }
+
     /// <summary>Whether this cell is currently being destroyed (animation)</summary>
     public bool IsDestroying { get; set; }
 
@@ -36,6 +39,9 @@ public class Cell
 
     /// <summary>Explosion animation progress (0.0 to 1.0)</summary>
     public float ExplosionProgress { get; set; }
+
+    /// <summary>Nachglüh-Timer nach Explosion (0 = kein Glow)</summary>
+    public float AfterglowTimer { get; set; }
 
     /// <summary>Direction of explosion passing through (for sprite selection)</summary>
     public ExplosionDirection ExplosionDirection { get; set; }
@@ -90,12 +96,14 @@ public class Cell
     {
         Type = CellType.Empty;
         HiddenPowerUp = null;
+        HasHiddenExit = false;
         IsDestroying = false;
         DestructionProgress = 0;
         Bomb = null;
         PowerUp = null;
         IsExploding = false;
         ExplosionProgress = 0;
+        AfterglowTimer = 0;
     }
 }
 

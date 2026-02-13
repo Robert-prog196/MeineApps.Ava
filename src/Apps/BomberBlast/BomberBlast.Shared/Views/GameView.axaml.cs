@@ -28,6 +28,21 @@ public partial class GameView : UserControl
 
         // InvalidateCanvasRequested bei DataContext-Wechsel abonnieren
         DataContextChanged += OnDataContextChanged;
+
+        // Cleanup bei Entfernung aus Visual Tree (verhindert DispatcherTimer-Speicherleck)
+        DetachedFromVisualTree += OnDetachedFromVisualTree;
+    }
+
+    private void OnDetachedFromVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        StopRenderTimer();
+
+        // ViewModel-Event abmelden
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.InvalidateCanvasRequested -= OnInvalidateRequested;
+            _subscribedVm = null;
+        }
     }
 
     private GameViewModel? ViewModel => DataContext as GameViewModel;

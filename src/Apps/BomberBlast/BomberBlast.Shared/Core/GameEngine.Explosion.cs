@@ -20,7 +20,21 @@ public partial class GameEngine
         if (cell.Bomb != null)
             return;
 
-        // Bombe erstellen
+        // Power-Bomb: Einzelne Mega-Bombe mit maximaler Reichweite, verbraucht alle Slots
+        if (_player.HasPowerBomb && _player.ActiveBombs == 0)
+        {
+            PlacePowerBomb(gridX, gridY, cell);
+            return;
+        }
+
+        // Line-Bomb: Alle verfügbaren Bomben in einer Linie platzieren
+        if (_player.HasLineBomb && _player.ActiveBombs == 0)
+        {
+            PlaceLineBombs(gridX, gridY);
+            return;
+        }
+
+        // Normale Bombe erstellen
         var bomb = Bomb.CreateAtGrid(gridX, gridY, _player);
         _bombs.Add(bomb);
         cell.Bomb = bomb;
@@ -28,6 +42,63 @@ public partial class GameEngine
         _bombsUsed++;
 
         _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB);
+        _soundManager.PlaySound(SoundManager.SFX_FUSE);
+    }
+
+    /// <summary>
+    /// Power-Bomb: Eine einzelne Bombe die alle Slots verbraucht und maximale Reichweite hat
+    /// </summary>
+    private void PlacePowerBomb(int gridX, int gridY, Cell cell)
+    {
+        // Reichweite = FireRange + (MaxBombs - 1), mindestens FireRange
+        int megaRange = _player.FireRange + _player.MaxBombs - 1;
+        var bomb = new Bomb(
+            gridX * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f,
+            gridY * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f,
+            _player, megaRange, _player.HasDetonator);
+        _bombs.Add(bomb);
+        cell.Bomb = bomb;
+        _player.ActiveBombs = _player.MaxBombs; // Alle Slots belegt
+        _bombsUsed++;
+
+        _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB);
+        _soundManager.PlaySound(SoundManager.SFX_FUSE);
+    }
+
+    /// <summary>
+    /// Line-Bomb: Bomben in Blickrichtung auf leeren Zellen platzieren
+    /// </summary>
+    private void PlaceLineBombs(int startX, int startY)
+    {
+        int dx = _player.FacingDirection.GetDeltaX();
+        int dy = _player.FacingDirection.GetDeltaY();
+        if (dx == 0 && dy == 0) { dx = 0; dy = 1; } // Fallback: nach unten
+
+        int placed = 0;
+        int maxBombs = _player.MaxBombs;
+
+        for (int i = 0; i < maxBombs; i++)
+        {
+            int gx = startX + dx * i;
+            int gy = startY + dy * i;
+
+            var cell = _grid.TryGetCell(gx, gy);
+            if (cell == null || cell.Type != CellType.Empty || cell.Bomb != null)
+                break;
+
+            var bomb = Bomb.CreateAtGrid(gx, gy, _player);
+            _bombs.Add(bomb);
+            cell.Bomb = bomb;
+            _player.ActiveBombs++;
+            _bombsUsed++;
+            placed++;
+        }
+
+        if (placed > 0)
+        {
+            _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB);
+            _soundManager.PlaySound(SoundManager.SFX_FUSE);
+        }
     }
 
     private void DetonateAllBombs()
@@ -47,6 +118,12 @@ public partial class GameEngine
         {
             bomb.Update(deltaTime);
 
+            // Kick-Sliding: Bombe gleitet in Richtung bis Hindernis
+            if (bomb.IsSliding && !bomb.HasExploded)
+            {
+                UpdateBombSlide(bomb, deltaTime);
+            }
+
             // Prüfen ob Spieler komplett von Bombe runtergelaufen ist
             if (bomb.PlayerOnTop)
             {
@@ -60,8 +137,8 @@ public partial class GameEngine
                 {
                     foreach (float cy in cornersY)
                     {
-                        int cellX = (int)(cx / GameGrid.CELL_SIZE);
-                        int cellY = (int)(cy / GameGrid.CELL_SIZE);
+                        int cellX = (int)MathF.Floor(cx / GameGrid.CELL_SIZE);
+                        int cellY = (int)MathF.Floor(cy / GameGrid.CELL_SIZE);
                         if (cellX == bomb.GridX && cellY == bomb.GridY)
                         {
                             stillOnBomb = true;
@@ -83,6 +160,60 @@ public partial class GameEngine
                 TriggerExplosion(bomb);
             }
         }
+    }
+
+    /// <summary>
+    /// Gleitende Bombe aktualisieren (Kick-Mechanik)
+    /// </summary>
+    private void UpdateBombSlide(Bomb bomb, float deltaTime)
+    {
+        float dx = bomb.SlideDirection.GetDeltaX() * Bomb.SLIDE_SPEED * deltaTime;
+        float dy = bomb.SlideDirection.GetDeltaY() * Bomb.SLIDE_SPEED * deltaTime;
+
+        float newX = bomb.X + dx;
+        float newY = bomb.Y + dy;
+
+        // Ziel-Grid-Position berechnen
+        int targetGridX = (int)MathF.Floor(newX / GameGrid.CELL_SIZE);
+        int targetGridY = (int)MathF.Floor(newY / GameGrid.CELL_SIZE);
+
+        // Prüfen ob Zielzelle blockiert ist
+        var targetCell = _grid.TryGetCell(targetGridX, targetGridY);
+        if (targetCell == null || targetCell.Type != CellType.Empty ||
+            (targetCell.Bomb != null && targetCell.Bomb != bomb))
+        {
+            // Hindernis: Bombe stoppen und an aktuelle Zellenmitte einrasten
+            bomb.StopSlide();
+            // Bombe in aktuelle Grid-Zelle registrieren
+            var snapCell = _grid.TryGetCell(bomb.GridX, bomb.GridY);
+            if (snapCell != null) snapCell.Bomb = bomb;
+            return;
+        }
+
+        // Prüfen ob ein Gegner auf der Zielzelle steht
+        foreach (var enemy in _enemies)
+        {
+            if (enemy.IsActive && !enemy.IsDying &&
+                enemy.GridX == targetGridX && enemy.GridY == targetGridY)
+            {
+                bomb.StopSlide();
+                var snapCell = _grid.TryGetCell(bomb.GridX, bomb.GridY);
+                if (snapCell != null) snapCell.Bomb = bomb;
+                return;
+            }
+        }
+
+        // Alte Grid-Zelle freiräumen
+        var oldCell = _grid.TryGetCell(bomb.GridX, bomb.GridY);
+        if (oldCell != null && oldCell.Bomb == bomb) oldCell.Bomb = null;
+
+        // Bombe bewegen
+        bomb.X = newX;
+        bomb.Y = newY;
+
+        // Neue Grid-Zelle setzen
+        var newCell = _grid.TryGetCell(bomb.GridX, bomb.GridY);
+        if (newCell != null) newCell.Bomb = bomb;
     }
 
     private void TriggerExplosion(Bomb bomb)
@@ -178,8 +309,21 @@ public partial class GameEngine
                     _particleSystem.Emit(bpx, bpy, 5, ParticleColors.BlockDestroy, 50f, 0.4f);
                     _particleSystem.Emit(bpx, bpy, 3, ParticleColors.BlockDestroyLight, 30f, 0.3f);
 
+                    // Exit aufdecken wenn unter diesem Block versteckt (klassisches Bomberman)
+                    if (cell.HasHiddenExit)
+                    {
+                        cell.HasHiddenExit = false;
+                        cell.Type = CellType.Exit;
+                        _exitRevealed = true;
+                        _exitCell = cell;
+                        _soundManager.PlaySound(SoundManager.SFX_EXIT_APPEAR);
+
+                        // Exit-Reveal Partikel (grün)
+                        _particleSystem.Emit(bpx, bpy, 12, ParticleColors.ExitReveal, 60f, 0.8f);
+                        _particleSystem.Emit(bpx, bpy, 6, ParticleColors.ExitRevealLight, 40f, 0.5f);
+                    }
                     // PowerUp anzeigen wenn versteckt
-                    if (cell.HiddenPowerUp.HasValue)
+                    else if (cell.HiddenPowerUp.HasValue)
                     {
                         var powerUp = PowerUp.CreateAtGrid(cell.X, cell.Y, cell.HiddenPowerUp.Value);
                         _powerUps.Add(powerUp);
@@ -204,6 +348,26 @@ public partial class GameEngine
             if (explosion.IsMarkedForRemoval)
             {
                 explosion.ClearFromGrid(_grid);
+            }
+        }
+
+        // Nachglüh-Timer der Zellen aktualisieren
+        UpdateAfterglow(deltaTime);
+    }
+
+    private void UpdateAfterglow(float deltaTime)
+    {
+        for (int y = 0; y < _grid.Height; y++)
+        {
+            for (int x = 0; x < _grid.Width; x++)
+            {
+                var cell = _grid[x, y];
+                if (cell.AfterglowTimer > 0)
+                {
+                    cell.AfterglowTimer -= deltaTime;
+                    if (cell.AfterglowTimer < 0)
+                        cell.AfterglowTimer = 0;
+                }
             }
         }
     }

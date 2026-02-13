@@ -19,9 +19,6 @@ public class Explosion : Entity
     /// <summary>List of cells affected by this explosion</summary>
     public List<ExplosionCell> AffectedCells { get; } = new();
 
-    /// <summary>Whether explosion has dealt damage (only once)</summary>
-    public bool HasDealtDamage { get; set; }
-
     public override float AnimationSpeed => 8f;
 
     public Explosion(Bomb sourceBomb) : base(sourceBomb.X, sourceBomb.Y)
@@ -36,11 +33,13 @@ public class Explosion : Entity
 
         Timer -= deltaTime;
 
-        // Update all affected cells
+        // Struct-basierte Iteration: Index-Zugriff + Zurückschreiben nötig
         float progress = 1f - (Timer / DURATION);
-        foreach (var cell in AffectedCells)
+        for (int i = 0; i < AffectedCells.Count; i++)
         {
+            var cell = AffectedCells[i];
             cell.Progress = progress;
+            AffectedCells[i] = cell;
         }
 
         if (Timer <= 0)
@@ -126,8 +125,11 @@ public class Explosion : Entity
         };
     }
 
+    /// <summary>Nachglüh-Dauer nach Explosionsende</summary>
+    public const float AFTERGLOW_DURATION = 0.4f;
+
     /// <summary>
-    /// Clear explosion markers from grid
+    /// Explosionsmarker vom Grid entfernen und Nachglühen starten
     /// </summary>
     public void ClearFromGrid(GameGrid grid)
     {
@@ -138,6 +140,7 @@ public class Explosion : Entity
             {
                 gridCell.IsExploding = false;
                 gridCell.ExplosionProgress = 0;
+                gridCell.AfterglowTimer = AFTERGLOW_DURATION;
             }
         }
     }
@@ -146,14 +149,14 @@ public class Explosion : Entity
 }
 
 /// <summary>
-/// Single cell affected by explosion
+/// Einzelne Explosions-Zelle (struct für weniger Heap-Allokationen)
 /// </summary>
-public class ExplosionCell
+public struct ExplosionCell
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public ExplosionCellType Type { get; set; }
-    public float Progress { get; set; }
+    public int X;
+    public int Y;
+    public ExplosionCellType Type;
+    public float Progress;
 }
 
 /// <summary>

@@ -46,7 +46,6 @@ public class ParticleSystem : IDisposable
             p.Lifetime = lifetime;
             p.MaxLifetime = lifetime;
             p.Size = size * (0.5f + (float)_random.NextDouble());
-            p.IsActive = true;
 
             _activeCount++;
         }
@@ -119,7 +118,6 @@ public class ParticleSystem : IDisposable
         public float Lifetime;
         public float MaxLifetime;
         public float Size;
-        public bool IsActive;
     }
 }
 

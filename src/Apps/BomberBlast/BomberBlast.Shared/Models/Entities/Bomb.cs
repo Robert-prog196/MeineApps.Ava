@@ -32,6 +32,14 @@ public class Bomb : Entity
     /// <summary>Whether bomb has already exploded</summary>
     public bool HasExploded { get; private set; }
 
+    // Kick/Slide-Mechanik
+    /// <summary>Ob die Bombe gerade gleitet (durch Kick)</summary>
+    public bool IsSliding { get; set; }
+    /// <summary>Gleitrichtung</summary>
+    public Direction SlideDirection { get; set; } = Direction.None;
+    /// <summary>Gleitgeschwindigkeit (Pixel/Sekunde)</summary>
+    public const float SLIDE_SPEED = 160f;
+
     public override float AnimationSpeed => 4f;
 
     public Bomb(float x, float y, Player owner, int range, bool isManual = false) : base(x, y)
@@ -85,6 +93,29 @@ public class Bomb : Entity
     public void TriggerChainReaction()
     {
         ShouldExplode = true;
+    }
+
+    /// <summary>
+    /// Bombe in angegebene Richtung kicken
+    /// </summary>
+    public void Kick(Direction direction)
+    {
+        if (IsSliding || HasExploded) return;
+        IsSliding = true;
+        SlideDirection = direction;
+        PlayerOnTop = false; // Kick hebt PlayerOnTop sofort auf
+    }
+
+    /// <summary>
+    /// Gleiten stoppen (Bombe hat Hindernis getroffen)
+    /// </summary>
+    public void StopSlide()
+    {
+        IsSliding = false;
+        SlideDirection = Direction.None;
+        // An nächste Zellenmitte einrasten
+        X = GridX * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
+        Y = GridY * Grid.GameGrid.CELL_SIZE + Grid.GameGrid.CELL_SIZE / 2f;
     }
 
     protected override int GetAnimationFrameCount() => 4;

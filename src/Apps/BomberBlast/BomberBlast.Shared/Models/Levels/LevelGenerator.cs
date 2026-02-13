@@ -51,7 +51,7 @@ public static class LevelGenerator
             Number = wave,
             Name = $"Wave {wave}",
             TimeLimit = Math.Max(120, 200 - wave * 5), // Decreasing time
-            Seed = wave * 54321 + DateTime.Now.Millisecond,
+            Seed = wave * 54321 + Environment.TickCount,
             BlockDensity = Math.Min(0.7f, 0.4f + wave * 0.02f)
         };
 
@@ -148,24 +148,29 @@ public static class LevelGenerator
         }
         else if (levelNumber <= 25)
         {
-            // Mid: Introduce special abilities
+            // Mid: Kick + Spezialfähigkeiten
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Fire });
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Speed });
-            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Detonator });
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Kick });
+            // Ab Level 20: Skull als Risiko-Element
+            if (levelNumber >= 20)
+                level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Skull });
         }
         else if (levelNumber <= 35)
         {
-            // Mid-late: Wall pass for wall-passing enemies
+            // Mid-late: Wall pass + Line-Bomb + Skull
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Fire });
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Wallpass });
-            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Bombpass });
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.LineBomb });
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Skull });
         }
         else
         {
-            // Late game: Survival power-ups
+            // Late game: Power-Bomb + Survival
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Fire });
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.PowerBomb });
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Flamepass });
-            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Mystery });
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Skull });
         }
     }
 
@@ -232,15 +237,30 @@ public static class LevelGenerator
     {
         level.PowerUps.Clear();
 
-        // Fewer power-ups in arcade, but random
-        var allPowerUps = Enum.GetValues<PowerUpType>();
-        var random = new Random(wave * 11111);
+        // PowerUp-Pool nach Wave-Fortschritt (Skull erst ab Wave 5, maximal 1)
+        var pool = new List<PowerUpType>
+        {
+            PowerUpType.BombUp, PowerUpType.Fire, PowerUpType.Speed,
+            PowerUpType.Wallpass, PowerUpType.Detonator, PowerUpType.Bombpass,
+            PowerUpType.Flamepass, PowerUpType.Mystery, PowerUpType.Kick
+        };
+        if (wave >= 5) pool.Add(PowerUpType.LineBomb);
+        if (wave >= 8) pool.Add(PowerUpType.PowerBomb);
 
+        var random = new Random(wave * 11111);
         int powerUpCount = Math.Max(1, 4 - wave / 5);
+        bool skullAdded = false;
+
         for (int i = 0; i < powerUpCount; i++)
         {
-            var type = allPowerUps[random.Next(allPowerUps.Length)];
+            var type = pool[random.Next(pool.Count)];
             level.PowerUps.Add(new PowerUpPlacement { Type = type });
+        }
+
+        // Ab Wave 5: 40% Chance auf einen Skull (maximal 1)
+        if (wave >= 5 && !skullAdded && random.NextDouble() < 0.4)
+        {
+            level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Skull });
         }
     }
 }

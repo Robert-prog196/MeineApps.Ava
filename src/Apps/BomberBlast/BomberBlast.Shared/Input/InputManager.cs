@@ -9,7 +9,7 @@ namespace BomberBlast.Input;
 /// <summary>
 /// Verwaltet Input-Handler und wechselt zwischen Input-Methoden.
 /// </summary>
-public class InputManager
+public class InputManager : IDisposable
 {
     private readonly Dictionary<InputType, IInputHandler> _handlers;
     private readonly IPreferencesService _preferences;
@@ -227,6 +227,18 @@ public class InputManager
         if (_handlers.TryGetValue(InputType.Keyboard, out var handler))
         {
             ((KeyboardHandler)handler).OnKeyUp(key);
+        }
+    }
+
+    /// <summary>
+    /// Handler-Ressourcen freigeben (SKPaint/SKFont/SKPath in FloatingJoystick, DPadHandler, SwipeGestureHandler)
+    /// </summary>
+    public void Dispose()
+    {
+        foreach (var handler in _handlers.Values)
+        {
+            if (handler is IDisposable disposable)
+                disposable.Dispose();
         }
     }
 

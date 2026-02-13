@@ -836,5 +836,8 @@
   <data name="TutorialSkip" xml:space="preserve">
     <value>Pular</value>
   </data>
+  <data name="PressBackAgainToExit" xml:space="preserve">
+    <value>Pressione voltar novamente para sair</value>
+  </data>
 
 </root>

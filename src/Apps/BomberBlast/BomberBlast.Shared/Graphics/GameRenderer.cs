@@ -295,7 +295,7 @@ public class GameRenderer : IDisposable
     public void Render(SKCanvas canvas, GameGrid grid, Player player,
         IEnumerable<Enemy> enemies, IEnumerable<Bomb> bombs,
         IEnumerable<Explosion> explosions, IEnumerable<PowerUp> powerUps,
-        float remainingTime, int score, int lives)
+        float remainingTime, int score, int lives, Cell? exitCell = null)
     {
         canvas.Clear(_palette.Background);
 
@@ -305,7 +305,9 @@ public class GameRenderer : IDisposable
         canvas.Scale(_scale);
 
         RenderGrid(canvas, grid);
-        RenderExit(canvas, grid);
+        RenderAfterglow(canvas, grid);
+        RenderDangerWarning(canvas, grid, bombs);
+        RenderExit(canvas, grid, exitCell);
 
         foreach (var powerUp in powerUps)
         {
@@ -371,6 +373,87 @@ public class GameRenderer : IDisposable
                         break;
                 }
             }
+        }
+    }
+
+    /// <summary>Nachglühen auf Zellen nach Explosionsende (warmer Schimmer)</summary>
+    private void RenderAfterglow(SKCanvas canvas, GameGrid grid)
+    {
+        int cs = GameGrid.CELL_SIZE;
+        for (int y = 0; y < grid.Height; y++)
+        {
+            for (int x = 0; x < grid.Width; x++)
+            {
+                var cell = grid[x, y];
+                if (cell.AfterglowTimer <= 0)
+                    continue;
+
+                float intensity = cell.AfterglowTimer / Models.Entities.Explosion.AFTERGLOW_DURATION;
+                byte alpha = (byte)(60 * intensity);
+                _fillPaint.Color = _palette.ExplosionOuter.WithAlpha(alpha);
+                _fillPaint.MaskFilter = null;
+                canvas.DrawRect(x * cs, y * cs, cs, cs, _fillPaint);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gefahrenzone: Subtiler roter Boden-Schimmer bei Bomben kurz vor Explosion
+    /// </summary>
+    private void RenderDangerWarning(SKCanvas canvas, GameGrid grid, IEnumerable<Bomb> bombs)
+    {
+        int cs = GameGrid.CELL_SIZE;
+        bool isNeon = _styleService.CurrentStyle == GameVisualStyle.Neon;
+
+        foreach (var bomb in bombs)
+        {
+            if (!bomb.IsActive || bomb.HasExploded) continue;
+            // Nur warnen wenn Zünder < 0.8s (und nicht bei manueller Detonation ohne ablaufenden Timer)
+            if (bomb.IsManualDetonation || bomb.FuseTimer > 0.8f) continue;
+
+            // Intensität steigt je näher an Explosion (0 bei 0.8s → 1 bei 0s)
+            float intensity = 1f - (bomb.FuseTimer / 0.8f);
+            // Pulsieren (schneller bei weniger Zeit)
+            float pulse = MathF.Sin(_globalTimer * (10f + intensity * 15f)) * 0.3f + 0.7f;
+            byte alpha = (byte)(50 * intensity * pulse);
+            if (alpha < 5) continue;
+
+            var warningColor = isNeon ? new SKColor(255, 40, 80, alpha) : new SKColor(255, 60, 30, alpha);
+
+            int centerX = bomb.GridX;
+            int centerY = bomb.GridY;
+            int range = bomb.Range;
+
+            // Zentrum markieren
+            _fillPaint.Color = warningColor;
+            _fillPaint.MaskFilter = null;
+            canvas.DrawRect(centerX * cs, centerY * cs, cs, cs, _fillPaint);
+
+            // 4 Richtungen (wie Explosion.CalculateSpread, aber read-only)
+            RenderDangerLine(canvas, grid, centerX, centerY, range, -1, 0, cs, warningColor);
+            RenderDangerLine(canvas, grid, centerX, centerY, range, 1, 0, cs, warningColor);
+            RenderDangerLine(canvas, grid, centerX, centerY, range, 0, -1, cs, warningColor);
+            RenderDangerLine(canvas, grid, centerX, centerY, range, 0, 1, cs, warningColor);
+        }
+    }
+
+    private void RenderDangerLine(SKCanvas canvas, GameGrid grid, int startX, int startY,
+        int range, int dx, int dy, int cs, SKColor color)
+    {
+        for (int i = 1; i <= range; i++)
+        {
+            int x = startX + dx * i;
+            int y = startY + dy * i;
+
+            var cell = grid.TryGetCell(x, y);
+            if (cell == null || cell.Type == CellType.Wall) break;
+
+            _fillPaint.Color = color;
+            _fillPaint.MaskFilter = null;
+            canvas.DrawRect(x * cs, y * cs, cs, cs, _fillPaint);
+
+            // Blöcke stoppen die Warnung (wie echte Explosionen)
+            if (cell.Type == CellType.Block) break;
         }
     }
 
@@ -509,45 +592,46 @@ public class GameRenderer : IDisposable
     // EXIT
     // ═══════════════════════════════════════════════════════════════════════
 
-    private void RenderExit(SKCanvas canvas, GameGrid grid)
+    private void RenderExit(SKCanvas canvas, GameGrid grid, Cell? exitCell)
     {
+        // Gecachte Exit-Zelle nutzen statt Grid-Iteration (150 Zellen pro Frame gespart)
+        if (exitCell == null || exitCell.Type != CellType.Exit)
+            return;
+
         bool isNeon = _styleService.CurrentStyle == GameVisualStyle.Neon;
         float pulse = MathF.Sin(_globalTimer * 3) * 0.2f + 0.8f;
 
-        foreach (var cell in grid.GetCellsOfType(CellType.Exit))
+        float px = exitCell.X * GameGrid.CELL_SIZE;
+        float py = exitCell.Y * GameGrid.CELL_SIZE;
+        int cs = GameGrid.CELL_SIZE;
+        float cx = px + cs / 2f;
+        float cy = py + cs / 2f;
+
+        if (isNeon)
         {
-            float px = cell.X * GameGrid.CELL_SIZE;
-            float py = cell.Y * GameGrid.CELL_SIZE;
-            int cs = GameGrid.CELL_SIZE;
-            float cx = px + cs / 2f;
-            float cy = py + cs / 2f;
+            // Neon green glow circle
+            _glowPaint.Color = _palette.ExitGlow.WithAlpha((byte)(120 * pulse));
+            _glowPaint.MaskFilter = _mediumGlow;
+            canvas.DrawCircle(cx, cy, cs * 0.45f, _glowPaint);
 
-            if (isNeon)
-            {
-                // Neon green glow circle
-                _glowPaint.Color = _palette.ExitGlow.WithAlpha((byte)(120 * pulse));
-                _glowPaint.MaskFilter = _mediumGlow;
-                canvas.DrawCircle(cx, cy, cs * 0.45f, _glowPaint);
+            _fillPaint.Color = _palette.ExitInner.WithAlpha((byte)(255 * pulse));
+            _fillPaint.MaskFilter = null;
+            canvas.DrawCircle(cx, cy, cs * 0.3f, _fillPaint);
+            _glowPaint.MaskFilter = null;
+        }
+        else
+        {
+            // Classic green door with pulsing glow
+            _fillPaint.Color = _palette.ExitGlow.WithAlpha((byte)(80 * pulse));
+            _fillPaint.MaskFilter = null;
+            canvas.DrawRect(px + 2, py + 2, cs - 4, cs - 4, _fillPaint);
 
-                _fillPaint.Color = _palette.ExitInner.WithAlpha((byte)(255 * pulse));
-                _fillPaint.MaskFilter = null;
-                canvas.DrawCircle(cx, cy, cs * 0.3f, _fillPaint);
-                _glowPaint.MaskFilter = null;
-            }
-            else
-            {
-                // Classic green door with pulsing glow
-                _fillPaint.Color = _palette.ExitGlow.WithAlpha((byte)(80 * pulse));
-                _fillPaint.MaskFilter = null;
-                canvas.DrawRect(px + 2, py + 2, cs - 4, cs - 4, _fillPaint);
+            _fillPaint.Color = _palette.ExitInner;
+            canvas.DrawRect(px + 8, py + 6, 16, 20, _fillPaint);
 
-                _fillPaint.Color = _palette.ExitInner;
-                canvas.DrawRect(px + 8, py + 6, 16, 20, _fillPaint);
-
-                // Door handle
-                _fillPaint.Color = _palette.ExitGlow;
-                canvas.DrawCircle(px + 20, py + 16, 2, _fillPaint);
-            }
+            // Door handle
+            _fillPaint.Color = _palette.ExitGlow;
+            canvas.DrawCircle(px + 20, py + 16, 2, _fillPaint);
         }
     }
 
@@ -560,21 +644,56 @@ public class GameRenderer : IDisposable
         float cs = GameGrid.CELL_SIZE;
         bool isNeon = _styleService.CurrentStyle == GameVisualStyle.Neon;
 
-        float pulse = MathF.Sin(_globalTimer * 8) * 0.1f + 0.9f;
-        float drawSize = cs * pulse;
+        // Squash/Stretch: Platzierungs-Bounce in den ersten 0.3s
+        float age = Bomb.DEFAULT_FUSE_TIME - bomb.FuseTimer;
+        float birthScale = 1f;
+        if (age < 0.3f)
+        {
+            float t = age / 0.3f; // 0→1
+            // Bounce: schnell groß, dann einpendeln (overshoot + settle)
+            birthScale = 1f + MathF.Sin(t * MathF.PI) * 0.25f * (1f - t);
+        }
 
-        // Glow behind bomb
-        float glowPulse = MathF.Sin(_globalTimer * 6) * 0.3f + 0.5f;
-        _glowPaint.Color = _palette.BombGlowColor.WithAlpha((byte)(100 * glowPulse));
+        // Slide-Indikator: Leichtes Strecken in Gleitrichtung
+        float stretchX = 1f, stretchY = 1f;
+        if (bomb.IsSliding)
+        {
+            float stretch = 0.15f;
+            if (bomb.SlideDirection is Direction.Left or Direction.Right)
+            { stretchX = 1f + stretch; stretchY = 1f - stretch * 0.5f; }
+            else
+            { stretchY = 1f + stretch; stretchX = 1f - stretch * 0.5f; }
+        }
+
+        // Pulsation beschleunigt sich je naeher die Explosion (8→24 Hz)
+        float fuseProgress = 1f - (bomb.FuseTimer / Bomb.DEFAULT_FUSE_TIME);
+        float pulseSpeed = 8f + fuseProgress * 16f;
+        float pulseAmount = 0.1f + fuseProgress * 0.05f; // Staerkere Pulsation kurz vor Explosion
+        float pulse = MathF.Sin(_globalTimer * pulseSpeed) * pulseAmount + (1f - pulseAmount);
+        float drawSize = cs * pulse * birthScale;
+
+        // Glow beschleunigt und intensiviert sich
+        float glowSpeed = 6f + fuseProgress * 10f;
+        float glowPulse = MathF.Sin(_globalTimer * glowSpeed) * 0.3f + 0.5f;
+        byte glowAlpha = (byte)(100 + fuseProgress * 100); // Heller kurz vor Explosion
+        _glowPaint.Color = _palette.BombGlowColor.WithAlpha((byte)(glowAlpha * glowPulse));
         _glowPaint.MaskFilter = _mediumGlow;
         canvas.DrawCircle(bomb.X, bomb.Y, drawSize * 0.5f, _glowPaint);
         _glowPaint.MaskFilter = null;
 
-        // Bomb body (glossy sphere)
+        // Bomb body (glossy sphere mit Squash/Stretch)
         float radius = drawSize * 0.38f;
         _fillPaint.Color = _palette.BombBody;
         _fillPaint.MaskFilter = null;
-        canvas.DrawCircle(bomb.X, bomb.Y, radius, _fillPaint);
+        if (bomb.IsSliding)
+        {
+            // Oval bei Slide
+            canvas.DrawOval(bomb.X, bomb.Y, radius * stretchX, radius * stretchY, _fillPaint);
+        }
+        else
+        {
+            canvas.DrawCircle(bomb.X, bomb.Y, radius, _fillPaint);
+        }
 
         // Gloss highlight (top-left)
         _fillPaint.Color = _palette.BombHighlight.WithAlpha(120);
@@ -607,8 +726,42 @@ public class GameRenderer : IDisposable
     private void RenderExplosion(SKCanvas canvas, Explosion explosion)
     {
         bool isNeon = _styleService.CurrentStyle == GameVisualStyle.Neon;
-        float alpha = 1f - explosion.Timer / Explosion.DURATION * 0.3f;
+        float progress = 1f - (explosion.Timer / Explosion.DURATION); // 0→1
+        float alpha = 1f - progress * 0.3f;
         float cs = GameGrid.CELL_SIZE;
+
+        // Initialer Explosions-Blitz (erste 20% der Dauer)
+        if (progress < 0.2f)
+        {
+            float flashAlpha = (1f - progress / 0.2f) * 0.6f;
+            _fillPaint.Color = SKColors.White.WithAlpha((byte)(255 * flashAlpha));
+            _fillPaint.MaskFilter = _outerGlow;
+            foreach (var cell in explosion.AffectedCells)
+            {
+                float fx = cell.X * cs - 2;
+                float fy = cell.Y * cs - 2;
+                canvas.DrawRect(fx, fy, cs + 4, cs + 4, _fillPaint);
+            }
+            _fillPaint.MaskFilter = null;
+        }
+
+        // Shockwave-Ring (expandierender Kreis in den ersten 40%)
+        if (progress < 0.4f && explosion.SourceBomb != null)
+        {
+            float shockProgress = progress / 0.4f; // 0→1 innerhalb des Shockwave-Fensters
+            float maxRadius = explosion.SourceBomb.Range * cs;
+            float radius = shockProgress * maxRadius;
+            float shockAlpha = (1f - shockProgress) * 0.5f;
+
+            float centerX = explosion.X + cs / 2f;
+            float centerY = explosion.Y + cs / 2f;
+
+            _strokePaint.Color = _palette.ExplosionCore.WithAlpha((byte)(255 * shockAlpha));
+            _strokePaint.StrokeWidth = 2f + (1f - shockProgress) * 2f; // Dünner werdend
+            _strokePaint.MaskFilter = isNeon ? _smallGlow : null;
+            canvas.DrawCircle(centerX, centerY, radius, _strokePaint);
+            _strokePaint.MaskFilter = null;
+        }
 
         // Outer glow ring
         _glowPaint.Color = _palette.ExplosionOuter.WithAlpha((byte)(80 * alpha));
@@ -722,6 +875,16 @@ public class GameRenderer : IDisposable
             _glowPaint.MaskFilter = null;
         }
 
+        // Curse-Indikator: Lila Schimmer wenn verflucht
+        if (player.IsCursed)
+        {
+            float cursePulse = MathF.Sin(_globalTimer * 8f) * 0.3f + 0.7f;
+            _glowPaint.Color = new SKColor(180, 0, 180, (byte)(80 * cursePulse));
+            _glowPaint.MaskFilter = _mediumGlow;
+            canvas.DrawRoundRect(bx - 4, by - 4, bodyW + 8, bodyH + 8, 10, 10, _glowPaint);
+            _glowPaint.MaskFilter = null;
+        }
+
         // Body (rounded rect)
         _fillPaint.Color = skinBody;
         _fillPaint.MaskFilter = null;
@@ -758,12 +921,19 @@ public class GameRenderer : IDisposable
     {
         float progress = player.DeathTimer / 1.5f;
         byte alpha = (byte)(255 * (1 - progress));
-        float scale = 1 + progress * 0.5f;
 
         _fillPaint.Color = SKColors.Red.WithAlpha(alpha);
         _fillPaint.MaskFilter = null;
-        float drawSize = cs * scale;
-        canvas.DrawCircle(player.X, player.Y, drawSize / 3, _fillPaint);
+
+        // Squash/Stretch: Erst nach oben strecken, dann breit zusammenfallen
+        float phase1 = Math.Min(progress / 0.3f, 1f); // Erste 30%: Strecken
+        float phase2 = progress > 0.3f ? (progress - 0.3f) / 0.7f : 0f; // Rest: Squash
+        float scaleX = 1f - phase1 * 0.3f + phase2 * 0.8f;
+        float scaleY = 1f + phase1 * 0.4f - phase2 * 0.6f;
+        float drawSize = cs * (1f + progress * 0.2f);
+        float rx = drawSize / 3 * scaleX;
+        float ry = drawSize / 3 * scaleY;
+        canvas.DrawOval(player.X, player.Y + phase2 * 6f, rx, ry, _fillPaint);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -874,8 +1044,14 @@ public class GameRenderer : IDisposable
         var (r, g, b) = enemy.Type.GetColor();
         _fillPaint.Color = new SKColor(r, g, b, alpha);
         _fillPaint.MaskFilter = null;
-        float drawSize = cs * (1 - progress * 0.5f);
-        canvas.DrawCircle(enemy.X, enemy.Y, drawSize / 3, _fillPaint);
+
+        // Squash/Stretch: Breiterer Squash der nach oben schießt, dann zusammenfällt
+        float squashX = 1f + progress * 0.6f; // Breiter werden
+        float squashY = 1f - progress * 0.4f; // Flacher werden
+        float drawSize = cs * (1 - progress * 0.3f);
+        float rx = drawSize / 3 * squashX;
+        float ry = drawSize / 3 * squashY;
+        canvas.DrawOval(enemy.X, enemy.Y + progress * 4f, rx, ry, _fillPaint);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -989,8 +1165,51 @@ public class GameRenderer : IDisposable
                 break;
 
             case PowerUpType.Mystery:
-            default:
                 // Question mark
+                _textPaint.Color = SKColors.White;
+                canvas.DrawText("?", cx, cy + size * 0.25f, SKTextAlign.Center, _powerUpFont, _textPaint);
+                break;
+
+            case PowerUpType.Kick:
+                // Schuh/Boot-Form (Pfeil nach rechts)
+                _fusePath.Reset();
+                _fusePath.MoveTo(cx - size * 0.5f, cy - size * 0.3f);
+                _fusePath.LineTo(cx + size * 0.5f, cy);
+                _fusePath.LineTo(cx - size * 0.5f, cy + size * 0.3f);
+                _fusePath.Close();
+                canvas.DrawPath(_fusePath, _fillPaint);
+                // Kleiner Kreis (= Bombe)
+                canvas.DrawCircle(cx + size * 0.3f, cy - size * 0.4f, size * 0.2f, _fillPaint);
+                break;
+
+            case PowerUpType.LineBomb:
+                // Drei kleine Kreise in einer Reihe
+                canvas.DrawCircle(cx - size * 0.4f, cy, size * 0.2f, _fillPaint);
+                canvas.DrawCircle(cx, cy, size * 0.2f, _fillPaint);
+                canvas.DrawCircle(cx + size * 0.4f, cy, size * 0.2f, _fillPaint);
+                break;
+
+            case PowerUpType.PowerBomb:
+                // Großer Kreis mit Stern
+                canvas.DrawCircle(cx, cy, size * 0.4f, _fillPaint);
+                _strokePaint.Color = new SKColor(255, 255, 100);
+                _strokePaint.StrokeWidth = 2f;
+                _strokePaint.MaskFilter = null;
+                canvas.DrawLine(cx, cy - size * 0.3f, cx, cy + size * 0.3f, _strokePaint);
+                canvas.DrawLine(cx - size * 0.3f, cy, cx + size * 0.3f, cy, _strokePaint);
+                break;
+
+            case PowerUpType.Skull:
+                // Totenkopf (Kreis + Augenhöhlen + Kiefer)
+                canvas.DrawCircle(cx, cy - size * 0.1f, size * 0.4f, _fillPaint);
+                _fillPaint.Color = SKColors.Black;
+                canvas.DrawCircle(cx - size * 0.15f, cy - size * 0.15f, size * 0.12f, _fillPaint);
+                canvas.DrawCircle(cx + size * 0.15f, cy - size * 0.15f, size * 0.12f, _fillPaint);
+                canvas.DrawRect(cx - size * 0.2f, cy + size * 0.15f, size * 0.4f, size * 0.08f, _fillPaint);
+                _fillPaint.Color = SKColors.White;
+                break;
+
+            default:
                 _textPaint.Color = SKColors.White;
                 canvas.DrawText("?", cx, cy + size * 0.25f, SKTextAlign.Center, _powerUpFont, _textPaint);
                 break;
@@ -1007,6 +1226,10 @@ public class GameRenderer : IDisposable
         PowerUpType.Bombpass => new SKColor(50, 50, 150),
         PowerUpType.Flamepass => new SKColor(240, 190, 40),
         PowerUpType.Mystery => new SKColor(180, 80, 240),
+        PowerUpType.Kick => new SKColor(255, 165, 0),
+        PowerUpType.LineBomb => new SKColor(0, 180, 255),
+        PowerUpType.PowerBomb => new SKColor(255, 50, 50),
+        PowerUpType.Skull => new SKColor(100, 0, 100),
         _ => SKColors.White
     };
 
@@ -1148,11 +1371,30 @@ public class GameRenderer : IDisposable
 
             // ── Active power-ups (stacked vertically, gepoolte Liste) ──
             _activePowers.Clear();
-            if (player.HasSpeed) _activePowers.Add(("SPD", new SKColor(60, 220, 80)));
+            if (player.SpeedLevel > 0)
+            {
+                string spdLabel = player.SpeedLevel > 1 ? $"SPD x{player.SpeedLevel}" : "SPD";
+                _activePowers.Add((spdLabel, new SKColor(60, 220, 80)));
+            }
             if (player.HasWallpass) _activePowers.Add(("WLP", new SKColor(150, 100, 50)));
             if (player.HasDetonator) _activePowers.Add(("DET", new SKColor(240, 40, 40)));
             if (player.HasBombpass) _activePowers.Add(("BMP", new SKColor(50, 50, 150)));
             if (player.HasFlamepass) _activePowers.Add(("FLP", new SKColor(240, 190, 40)));
+            if (player.HasKick) _activePowers.Add(("KICK", new SKColor(255, 165, 0)));
+            if (player.HasLineBomb) _activePowers.Add(("LINE", new SKColor(0, 180, 255)));
+            if (player.HasPowerBomb) _activePowers.Add(("PWR", new SKColor(255, 50, 50)));
+            if (player.IsCursed)
+            {
+                string curseLabel = player.ActiveCurse switch
+                {
+                    CurseType.Diarrhea => "DIA",
+                    CurseType.Slow => "SLOW",
+                    CurseType.Constipation => "BLOCK",
+                    CurseType.ReverseControls => "REV",
+                    _ => "???"
+                };
+                _activePowers.Add(($"☠{curseLabel}:{(int)player.CurseTimer}", new SKColor(180, 0, 180)));
+            }
             if (player.IsInvincible)
             {
                 // INV-String nur bei Aenderung des Timer-Werts neu erstellen
@@ -1265,8 +1507,8 @@ public class GameRenderer : IDisposable
         float gameX = (screenX - _offsetX) / _scale;
         float gameY = (screenY - _offsetY) / _scale;
 
-        int gridX = (int)(gameX / GameGrid.CELL_SIZE);
-        int gridY = (int)(gameY / GameGrid.CELL_SIZE);
+        int gridX = (int)MathF.Floor(gameX / GameGrid.CELL_SIZE);
+        int gridY = (int)MathF.Floor(gameY / GameGrid.CELL_SIZE);
 
         return (
             Math.Clamp(gridX, 0, GameGrid.WIDTH - 1),

@@ -21,7 +21,10 @@ public class HighScoreService : IHighScoreService
 
     public IReadOnlyList<HighScoreEntry> GetTopScores(int count = 10)
     {
-        return _scores.Take(count).ToList().AsReadOnly();
+        // _scores ist bereits sortiert + auf MAX_SCORES begrenzt → kein LINQ nötig
+        if (count >= _scores.Count)
+            return _scores.AsReadOnly();
+        return _scores.GetRange(0, count).AsReadOnly();
     }
 
     public void AddScore(string playerName, int score, int level)

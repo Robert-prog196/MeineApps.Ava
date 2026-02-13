@@ -16,8 +16,11 @@ public interface IAchievementService
     /// <summary>Gesamtzahl Achievements</summary>
     int TotalCount { get; }
 
+    /// <summary>Kumulative Gegner-Kills (für Achievement-Tracking)</summary>
+    int TotalEnemyKills { get; }
+
     /// <summary>Level abgeschlossen - prüft Fortschritts-Achievements</summary>
-    Achievement? OnLevelCompleted(int level, int score, int stars, int bombsUsed, float timeRemaining, bool noDamage);
+    Achievement? OnLevelCompleted(int level, int score, int stars, int bombsUsed, float timeRemaining, float timeUsed, bool noDamage);
 
     /// <summary>Gegner getötet - prüft Kampf-Achievements</summary>
     Achievement? OnEnemyKilled(int totalKills);

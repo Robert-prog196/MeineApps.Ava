@@ -37,6 +37,7 @@ public partial class GameEngine : IDisposable
     private readonly GameRenderer _renderer;
     private readonly ITutorialService _tutorialService;
     private readonly TutorialOverlay _tutorialOverlay;
+    private readonly IAchievementService _achievementService;
 
     // Game state
     private GameState _state = GameState.Menu;
@@ -63,10 +64,13 @@ public partial class GameEngine : IDisposable
     private int _bombsUsed;
     private int _enemiesKilled;
     private bool _exitRevealed;
+    private Cell? _exitCell; // Gecachte Exit-Position (vermeidet Grid-Iteration pro Frame)
+    private int _scoreAtLevelStart; // Score zu Beginn des Levels (für Coin-Berechnung)
+    private bool _playerDamagedThisLevel; // Für NoDamage-Achievement
 
     // Timing
     private float _stateTimer;
-    private const float START_DELAY = 2f;
+    private const float START_DELAY = 3f;
     private const float DEATH_DELAY = 2f;
     private const float LEVEL_COMPLETE_DELAY = 3f;
 
@@ -85,10 +89,40 @@ public partial class GameEngine : IDisposable
     // Game-Feel-Effekte
     private readonly ScreenShake _screenShake = new();
     private readonly ParticleSystem _particleSystem = new();
+    private readonly GameFloatingTextSystem _floatingText = new();
     private float _hitPauseTimer;
+
+    // Combo-System (Kettenexplosionen)
+    private int _comboCount;
+    private float _comboTimer;
+    private const float COMBO_WINDOW = 2f; // Sekunden
+
+    // "DEFEAT ALL!" Cooldown (verhindert Spam bei jedem Frame)
+    private float _defeatAllCooldown;
+
+    // Slow-Motion bei letztem Kill / hohem Combo
+    private float _slowMotionTimer;
+    private float _slowMotionFactor = 1f;
+    private const float SLOW_MOTION_DURATION = 0.8f; // Sekunden (in Echtzeit)
+    private const float SLOW_MOTION_FACTOR = 0.3f; // 30% Geschwindigkeit
+
+    // Pontan-Strafe (gestaffeltes Spawning)
+    private bool _pontanPunishmentActive;
+    private int _pontanSpawned;
+    private float _pontanSpawnTimer;
+    private const int PONTAN_MAX_COUNT = 4;
+    private const float PONTAN_SPAWN_INTERVAL = 3f; // Sekunden zwischen Spawns
+    private const int PONTAN_MIN_DISTANCE = 5; // Mindestabstand zum Spieler
+    private readonly Random _pontanRandom = new(); // Wiederverwendbar statt new Random() pro Aufruf
 
     // Tutorial
     private float _tutorialWarningTimer;
+
+    // Pause-Button (Touch-Geräte, oben-links)
+    private const float PAUSE_BUTTON_SIZE = 40f;
+    private const float PAUSE_BUTTON_MARGIN = 10f;
+    /// <summary>Callback für Pause-Anfrage vom Touch-Button</summary>
+    public event Action? OnPauseRequested;
 
     // Score-Aufschlüsselung (für Level-Complete Summary Screen)
     public int LastTimeBonus { get; private set; }
@@ -138,6 +172,19 @@ public partial class GameEngine : IDisposable
 
     public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
     {
+        // Pause-Button prüfen (oben-links, nur wenn Android / Touch)
+        if (_state == GameState.Playing && OperatingSystem.IsAndroid())
+        {
+            float pauseRight = PAUSE_BUTTON_MARGIN + PAUSE_BUTTON_SIZE;
+            float pauseTop = PAUSE_BUTTON_MARGIN + BannerTopOffset;
+            float pauseBottom = pauseTop + PAUSE_BUTTON_SIZE;
+            if (x <= pauseRight + 10 && y >= pauseTop - 10 && y <= pauseBottom + 10)
+            {
+                OnPauseRequested?.Invoke();
+                return;
+            }
+        }
+
         // Tutorial: Skip-Button oder Tap-to-Continue prüfen
         if (_tutorialService.IsActive && _state == GameState.Playing)
         {
@@ -186,7 +233,8 @@ public partial class GameEngine : IDisposable
         IShopService shopService,
         IPurchaseService purchaseService,
         GameRenderer renderer,
-        ITutorialService tutorialService)
+        ITutorialService tutorialService,
+        IAchievementService achievementService)
     {
         _soundManager = soundManager;
         _spriteSheet = spriteSheet;
@@ -200,6 +248,7 @@ public partial class GameEngine : IDisposable
 
         _renderer = renderer;
         _tutorialService = tutorialService;
+        _achievementService = achievementService;
         _tutorialOverlay = new TutorialOverlay(localizationService);
         _grid = new GameGrid();
         _timer = new GameTimer();
@@ -221,7 +270,8 @@ public partial class GameEngine : IDisposable
         switch (boostType)
         {
             case "speed":
-                _player.HasSpeed = true;
+                // SpeedLevel um 1 erhöhen (nicht nur auf 1 setzen, falls schon vorhanden)
+                _player.SpeedLevel = Math.Min(_player.SpeedLevel + 1, 3);
                 break;
             case "fire":
                 _player.FireRange += 1;
@@ -284,6 +334,7 @@ public partial class GameEngine : IDisposable
         _renderer.Update(deltaTime);
         _screenShake.Update(deltaTime);
         _particleSystem.Update(deltaTime);
+        _floatingText.Update(deltaTime);
 
         // Hit-Pause: Update wird übersprungen, Rendering läuft weiter (Freeze-Effekt)
         if (_hitPauseTimer > 0)
@@ -332,7 +383,27 @@ public partial class GameEngine : IDisposable
 
     private void UpdatePlaying(float deltaTime)
     {
-        _timer.Update(deltaTime);
+        // Echtzeit-deltaTime speichern BEVOR Slow-Motion angewendet wird
+        // Timer und Combo-Timer laufen in Echtzeit (kein Exploit durch Slow-Motion)
+        float realDeltaTime = deltaTime;
+
+        // Slow-Motion: deltaTime verlangsamen für dramatischen Effekt
+        if (_slowMotionTimer > 0)
+        {
+            _slowMotionTimer -= realDeltaTime; // Echtzeit runterzählen
+            float progress = _slowMotionTimer / SLOW_MOTION_DURATION;
+            // Sanftes Easing: langsam → normal (Ease-Out)
+            _slowMotionFactor = SLOW_MOTION_FACTOR + (1f - SLOW_MOTION_FACTOR) * (1f - progress);
+            deltaTime *= _slowMotionFactor;
+        }
+        else
+        {
+            _slowMotionFactor = 1f;
+        }
+
+        // Timer + Combo laufen in Echtzeit (nicht durch Slow-Motion beeinflusst)
+        _timer.Update(realDeltaTime);
+
         UpdatePlayer(deltaTime);
         _inputManager.Update(deltaTime);
         UpdateBombs(deltaTime);
@@ -341,13 +412,28 @@ public partial class GameEngine : IDisposable
         UpdateEnemies(deltaTime);
         UpdatePowerUps(deltaTime);
         CheckCollisions();
-        CheckWinCondition();
         CleanupEntities();
 
-        // Tutorial: Warning-Schritt auto-advance nach 3 Sekunden
+        // Pontan-Strafe (gestaffeltes Spawning nach Timer-Ablauf)
+        if (_pontanPunishmentActive)
+            UpdatePontanPunishment(realDeltaTime);
+
+        // Combo-Timer in Echtzeit aktualisieren (Slow-Motion verlängert keine Combos)
+        if (_comboTimer > 0)
+        {
+            _comboTimer -= realDeltaTime;
+            if (_comboTimer <= 0)
+                _comboCount = 0;
+        }
+
+        // "DEFEAT ALL!" Cooldown aktualisieren
+        if (_defeatAllCooldown > 0)
+            _defeatAllCooldown -= realDeltaTime;
+
+        // Tutorial: Warning-Schritt auto-advance nach 3 Sekunden (Echtzeit)
         if (_tutorialService.IsActive && _tutorialService.CurrentStep?.Type == TutorialStepType.Warning)
         {
-            _tutorialWarningTimer += deltaTime;
+            _tutorialWarningTimer += realDeltaTime;
             if (_tutorialWarningTimer >= 3f)
             {
                 _tutorialService.NextStep();
@@ -367,15 +453,47 @@ public partial class GameEngine : IDisposable
         // Detonator-Button Sichtbarkeit aktualisieren
         _inputManager.HasDetonator = _player.HasDetonator;
 
-        // Input anwenden
-        _player.MovementDirection = _inputManager.MovementDirection;
+        // Input anwenden (ReverseControls-Curse invertiert die Richtung)
+        var inputDir = _inputManager.MovementDirection;
+        if (_player.ActiveCurse == CurseType.ReverseControls && inputDir != Direction.None)
+        {
+            inputDir = inputDir switch
+            {
+                Direction.Up => Direction.Down,
+                Direction.Down => Direction.Up,
+                Direction.Left => Direction.Right,
+                Direction.Right => Direction.Left,
+                _ => inputDir
+            };
+        }
+        _player.MovementDirection = inputDir;
+
+        // Vor der Bewegung Position merken (für Kick-Detection)
+        int prevGridX = _player.GridX;
+        int prevGridY = _player.GridY;
         _player.Move(deltaTime, _grid);
         _player.Update(deltaTime);
+
+        // Kick-Mechanik: Wenn Spieler auf eine Bombe läuft und Kick hat
+        if (_player.HasKick && _player.IsMoving)
+        {
+            TryKickBomb(prevGridX, prevGridY);
+        }
 
         // Tutorial: Bewegungs-Schritt als abgeschlossen markieren
         if (_tutorialService.IsActive && _player.IsMoving)
         {
             _tutorialService.CheckStepCompletion(TutorialStepType.Move);
+        }
+
+        // Diarrhea-Curse: Automatisch Bomben legen
+        if (_player.ActiveCurse == CurseType.Diarrhea && _player.DiarrheaTimer <= 0)
+        {
+            if (_player.CanPlaceBomb())
+            {
+                PlaceBomb();
+            }
+            _player.DiarrheaTimer = 0.5f;
         }
 
         // Bombe platzieren
@@ -393,10 +511,37 @@ public partial class GameEngine : IDisposable
         }
     }
 
+    /// <summary>
+    /// Kick-Mechanik: Prüft ob der Spieler auf eine Bombe gelaufen ist und kickt sie
+    /// </summary>
+    private void TryKickBomb(int prevGridX, int prevGridY)
+    {
+        int curGridX = _player.GridX;
+        int curGridY = _player.GridY;
+
+        // Nur wenn Spieler die Zelle gewechselt hat
+        if (curGridX == prevGridX && curGridY == prevGridY) return;
+
+        var cell = _grid.TryGetCell(curGridX, curGridY);
+        if (cell?.Bomb == null || cell.Bomb.IsSliding || cell.Bomb.HasExploded) return;
+
+        // Bombe in Bewegungsrichtung des Spielers kicken
+        cell.Bomb.Kick(_player.FacingDirection);
+        cell.Bomb = null; // Aus Grid entfernen, UpdateBombSlide registriert sie am Ziel
+        _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB); // Kick-Sound (kann später eigenen bekommen)
+    }
+
     private void UpdatePlayerDied(float deltaTime)
     {
         _stateTimer += deltaTime;
         _player.Update(deltaTime);
+
+        // Bomben, Explosionen und Gegner laufen weiter (klassisches Bomberman-Verhalten)
+        UpdateBombs(deltaTime);
+        UpdateExplosions(deltaTime);
+        UpdateDestroyingBlocks(deltaTime);
+        UpdateEnemies(deltaTime);
+        CleanupEntities();
 
         if (_stateTimer >= DEATH_DELAY)
         {
@@ -417,8 +562,8 @@ public partial class GameEngine : IDisposable
                     }
                 }
 
-                // Trost-Coins (halber Score, abgerundet)
-                int coins = _player.Score / 2;
+                // Trost-Coins (halber Level-Score, abgerundet)
+                int coins = (_player.Score - _scoreAtLevelStart) / 2;
                 if (coins > 0)
                 {
                     OnCoinsEarned?.Invoke(coins, _player.Score, false);
@@ -482,6 +627,8 @@ public partial class GameEngine : IDisposable
         _overlayGlowFilter.Dispose();
         _overlayGlowFilterLarge.Dispose();
         _particleSystem.Dispose();
+        _floatingText.Dispose();
         _tutorialOverlay.Dispose();
+        _inputManager.Dispose();
     }
 }

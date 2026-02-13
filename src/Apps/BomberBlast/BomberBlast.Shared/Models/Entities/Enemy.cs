@@ -163,12 +163,8 @@ public class Enemy : Entity
 
     private bool CanMoveTo(float newX, float newY, GameGrid grid)
     {
-        float halfSize = GameGrid.CELL_SIZE * 0.3f;
-        bool canPass = CanPassWalls;
-        return CollisionHelper.CanMoveTo(newX, newY, halfSize, grid, cell =>
-            cell.Type == CellType.Wall ||
-            (cell.Type == CellType.Block && !canPass) ||
-            cell.Bomb != null);
+        float halfSize = GameGrid.CELL_SIZE * 0.35f;
+        return CollisionHelper.CanMoveToEnemy(newX, newY, halfSize, grid, CanPassWalls);
     }
 
     /// <summary>

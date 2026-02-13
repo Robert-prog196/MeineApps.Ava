@@ -142,9 +142,11 @@ public partial class GameViewModel : ObservableObject, IDisposable
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
         _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
+        _gameEngine.OnPauseRequested -= HandlePauseRequested;
         _gameEngine.OnGameOver += HandleGameOver;
         _gameEngine.OnLevelComplete += HandleLevelComplete;
         _gameEngine.OnCoinsEarned += HandleCoinsEarned;
+        _gameEngine.OnPauseRequested += HandlePauseRequested;
 
         if (!_isInitialized)
         {
@@ -188,6 +190,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
         _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
+        _gameEngine.OnPauseRequested -= HandlePauseRequested;
     }
 
     private async Task InitializeGameAsync()
@@ -313,10 +316,10 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// </summary>
     public void OnPointerPressed(float x, float y, float screenWidth, float screenHeight)
     {
-        // Handle game over state - return to menu on tap
+        // GameOver: Nicht auf Taps reagieren → HandleGameOver navigiert automatisch nach Delay
+        // Verhindert Race Condition (Tap während 2s-Delay → doppelte Navigation)
         if (_gameEngine.State == GameState.GameOver)
         {
-            Dispatcher.UIThread.Post(() => NavigationRequested?.Invoke(".."));
             return;
         }
 
@@ -510,6 +513,11 @@ public partial class GameViewModel : ObservableObject, IDisposable
         _lastIsLevelComplete = isLevelComplete;
     }
 
+    private void HandlePauseRequested()
+    {
+        Dispatcher.UIThread.Post(() => Pause());
+    }
+
     private async void HandleGameOver()
     {
         try
@@ -586,6 +594,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
         _gameEngine.OnCoinsEarned -= HandleCoinsEarned;
+        _gameEngine.OnPauseRequested -= HandlePauseRequested;
 
         _disposed = true;
         GC.SuppressFinalize(this);

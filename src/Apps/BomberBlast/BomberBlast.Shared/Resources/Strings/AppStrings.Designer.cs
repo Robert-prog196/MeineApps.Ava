@@ -1247,5 +1247,12 @@ namespace BomberBlast.Resources.Strings {
                 return ResourceManager.GetString("TutorialSkip", resourceCulture);
             }
         }
+
+        // Back-Navigation
+        internal static string PressBackAgainToExit {
+            get {
+                return ResourceManager.GetString("PressBackAgainToExit", resourceCulture);
+            }
+        }
     }
 }

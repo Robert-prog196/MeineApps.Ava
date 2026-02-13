@@ -25,6 +25,9 @@ public class AStar
     // Gepoolte Neighbor-Liste fuer GetNeighbors()
     private readonly List<(int X, int Y)> _neighbors = new(4);
 
+    // Gepoolte Liste fuer ReconstructPath() (vermeidet Allokation pro Pfadsuche)
+    private readonly List<(int x, int y)> _pathBuffer = new();
+
     public AStar(GameGrid grid)
     {
         _grid = grid;
@@ -166,20 +169,21 @@ public class AStar
 
     private Queue<(int x, int y)> ReconstructPath(Dictionary<(int, int), (int, int)> cameFrom, (int x, int y) current)
     {
-        var path = new List<(int x, int y)> { current };
+        _pathBuffer.Clear();
+        _pathBuffer.Add(current);
 
         while (cameFrom.ContainsKey(current))
         {
             current = cameFrom[current];
-            path.Add(current);
+            _pathBuffer.Add(current);
         }
 
-        path.Reverse();
+        _pathBuffer.Reverse();
 
-        // Skip start position
-        if (path.Count > 1)
-            path.RemoveAt(0);
+        // Start-Position überspringen
+        if (_pathBuffer.Count > 1)
+            _pathBuffer.RemoveAt(0);
 
-        return new Queue<(int x, int y)>(path);
+        return new Queue<(int x, int y)>(_pathBuffer);
     }
 }

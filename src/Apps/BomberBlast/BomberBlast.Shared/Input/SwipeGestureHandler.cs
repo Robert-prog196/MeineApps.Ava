@@ -26,6 +26,12 @@ public class SwipeGestureHandler : IInputHandler, IDisposable
     private Direction _currentDirection = Direction.None;
     private bool _bombPressed;
     private bool _bombConsumed;
+    private bool _detonatePressed;
+    private bool _detonateConsumed;
+
+    // Double-Tap Erkennung für Detonator
+    private float _lastTapTime;
+    private const float DOUBLE_TAP_WINDOW = 0.4f;
 
     // Gecachte SKFont/SKPaint/SKPath (einmalig erstellt, vermeidet per-Frame Allokationen)
     private readonly SKFont _hintFont = new() { Size = 16 };
@@ -45,7 +51,7 @@ public class SwipeGestureHandler : IInputHandler, IDisposable
 
     public Direction MovementDirection => _currentDirection;
     public bool BombPressed => _bombPressed && !_bombConsumed;
-    public bool DetonatePressed => false;
+    public bool DetonatePressed => _detonatePressed && !_detonateConsumed;
     public bool IsActive => _isTouching;
 
     public SwipeGestureHandler(ILocalizationService? localizationService = null)
@@ -115,14 +121,27 @@ public class SwipeGestureHandler : IInputHandler, IDisposable
         float dy = _currentY - _startY;
         float distance = MathF.Sqrt(dx * dx + dy * dy);
 
-        // Tap erkennen (kurz + wenig Bewegung = Bombe)
+        // Tap erkennen (kurz + wenig Bewegung)
         if (_touchTime <= TAP_MAX_TIME && distance <= TAP_MAX_DISTANCE)
         {
-            _bombPressed = true;
-            _bombConsumed = false;
+            // Double-Tap → Detonator, Single-Tap → Bombe
+            if (_lastTapTime > 0 && _lastTapTime <= DOUBLE_TAP_WINDOW)
+            {
+                _detonatePressed = true;
+                _detonateConsumed = false;
+                _lastTapTime = 0; // Reset nach Double-Tap
+            }
+            else
+            {
+                _bombPressed = true;
+                _bombConsumed = false;
+                _lastTapTime = 0.001f; // Timer starten für Double-Tap-Erkennung
+            }
         }
 
         _isTouching = false;
+        // Bewegung stoppen wenn Finger losgelassen (verhindert endlose Bewegung)
+        _currentDirection = Direction.None;
     }
 
     public void Update(float deltaTime)
@@ -130,10 +149,23 @@ public class SwipeGestureHandler : IInputHandler, IDisposable
         if (_isTouching)
             _touchTime += deltaTime;
 
+        // Double-Tap Timer hochzählen
+        if (_lastTapTime > 0)
+        {
+            _lastTapTime += deltaTime;
+            if (_lastTapTime > DOUBLE_TAP_WINDOW)
+                _lastTapTime = 0; // Fenster abgelaufen
+        }
+
         if (_bombConsumed)
             _bombPressed = false;
         if (_bombPressed)
             _bombConsumed = true;
+
+        if (_detonateConsumed)
+            _detonatePressed = false;
+        if (_detonatePressed)
+            _detonateConsumed = true;
     }
 
     public void Reset()
@@ -142,6 +174,9 @@ public class SwipeGestureHandler : IInputHandler, IDisposable
         _currentDirection = Direction.None;
         _bombPressed = false;
         _bombConsumed = false;
+        _detonatePressed = false;
+        _detonateConsumed = false;
+        _lastTapTime = 0;
     }
 
     public void Render(SKCanvas canvas, float screenWidth, float screenHeight)

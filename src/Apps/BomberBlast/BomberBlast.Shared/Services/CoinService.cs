@@ -21,7 +21,7 @@ public class CoinService : ICoinService
 
     public bool IsDailyBonusAvailable =>
         _data.LastDailyBonusDate == null ||
-        _data.LastDailyBonusDate.Value.Date < DateTime.Today;
+        _data.LastDailyBonusDate.Value.Date < DateTime.UtcNow.Date;
 
     public event EventHandler? BalanceChanged;
 
@@ -36,7 +36,7 @@ public class CoinService : ICoinService
         if (!IsDailyBonusAvailable)
             return false;
 
-        _data.LastDailyBonusDate = DateTime.Today;
+        _data.LastDailyBonusDate = DateTime.UtcNow.Date;
         AddCoins(DAILY_BONUS);
         return true;
     }

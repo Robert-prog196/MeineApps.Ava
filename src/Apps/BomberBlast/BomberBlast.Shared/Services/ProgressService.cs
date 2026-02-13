@@ -11,6 +11,7 @@ public class ProgressService : IProgressService
     private const string PROGRESS_KEY = "GameProgress";
     private readonly IPreferencesService _preferences;
     private ProgressData _data = new();
+    private int? _totalStarsCache; // Invalidiert bei Score-Änderung
 
     public int TotalLevels => 50;
     public int HighestCompletedLevel => _data.HighestCompleted;
@@ -86,17 +87,22 @@ public class ProgressService : IProgressService
         if (!_data.LevelScores.ContainsKey(level) || score > _data.LevelScores[level])
         {
             _data.LevelScores[level] = score;
+            _totalStarsCache = null; // Cache invalidieren bei Score-Änderung
             SaveProgress();
         }
     }
 
     public int GetTotalStars()
     {
+        if (_totalStarsCache.HasValue)
+            return _totalStarsCache.Value;
+
         int total = 0;
         for (int i = 1; i <= TotalLevels; i++)
         {
             total += GetLevelStars(i);
         }
+        _totalStarsCache = total;
         return total;
     }
 
@@ -135,6 +141,7 @@ public class ProgressService : IProgressService
     public void ResetProgress()
     {
         _data = new ProgressData();
+        _totalStarsCache = null;
         SaveProgress();
     }
 

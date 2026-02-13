@@ -28,7 +28,8 @@ public class ScreenShake
     public void Trigger(float intensity, float duration)
     {
         // Nur überschreiben wenn stärker als aktueller Shake
-        if (intensity > _intensity * (_timer / _duration))
+        // _duration == 0 beim ersten Aufruf → Division by Zero vermeiden
+        if (_duration <= 0 || intensity > _intensity * (_timer / _duration))
         {
             _intensity = intensity;
             _duration = duration;
@@ -49,6 +50,13 @@ public class ScreenShake
         }
 
         _timer -= deltaTime;
+        if (_timer <= 0)
+        {
+            _timer = 0;
+            OffsetX = 0;
+            OffsetY = 0;
+            return;
+        }
 
         // Exponentielles Abklingen
         float progress = _timer / _duration;

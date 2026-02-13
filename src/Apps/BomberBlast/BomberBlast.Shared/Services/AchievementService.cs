@@ -20,6 +20,7 @@ public class AchievementService : IAchievementService
     public IReadOnlyList<Achievement> Achievements => _achievements;
     public int UnlockedCount => _achievements.Count(a => a.IsUnlocked);
     public int TotalCount => _achievements.Count;
+    public int TotalEnemyKills => _data.TotalEnemyKills;
 
     public AchievementService(IPreferencesService preferences)
     {
@@ -33,7 +34,7 @@ public class AchievementService : IAchievementService
     // EVENT HANDLER
     // ═══════════════════════════════════════════════════════════════════════
 
-    public Achievement? OnLevelCompleted(int level, int score, int stars, int bombsUsed, float timeRemaining, bool noDamage)
+    public Achievement? OnLevelCompleted(int level, int score, int stars, int bombsUsed, float timeRemaining, float timeUsed, bool noDamage)
     {
         Achievement? newUnlock = null;
 
@@ -50,8 +51,8 @@ public class AchievementService : IAchievementService
         // Geschick: ≤3 Bomben
         if (bombsUsed <= 3) newUnlock ??= TryUnlock("efficient");
 
-        // Geschick: <60s
-        if (timeRemaining > 0 && timeRemaining >= 60f) newUnlock ??= TryUnlock("speedrun");
+        // Geschick: Level in unter 60 Sekunden abgeschlossen
+        if (timeUsed > 0 && timeUsed <= 60f) newUnlock ??= TryUnlock("speedrun");
 
         return newUnlock;
     }

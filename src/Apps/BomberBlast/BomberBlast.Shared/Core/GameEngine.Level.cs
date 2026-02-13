@@ -41,8 +41,7 @@ public partial class GameEngine
         _continueUsed = false;
 
         _player.ResetForNewGame();
-        ApplyUpgrades();
-        _player.Lives = 1; // Arcade: immer 1 Leben
+        ApplyUpgrades(); // GetStartLives(isArcade=true) gibt bereits 1 zurück
         await LoadLevelAsync();
 
         _soundManager.PlayMusic(SoundManager.MUSIC_GAMEPLAY);
@@ -62,6 +61,9 @@ public partial class GameEngine
         _bombsUsed = 0;
         _enemiesKilled = 0;
         _exitRevealed = false;
+        _exitCell = null;
+        _scoreAtLevelStart = _player.Score;
+        _playerDamagedThisLevel = false;
 
         // Entities leeren
         _enemies.Clear();
@@ -69,14 +71,20 @@ public partial class GameEngine
         _explosions.Clear();
         _powerUps.Clear();
         _particleSystem.Clear();
+        _floatingText.Clear();
         _screenShake.Reset();
         _hitPauseTimer = 0;
+        _comboCount = 0;
+        _comboTimer = 0;
+        _pontanPunishmentActive = false;
+        _pontanSpawned = 0;
+        _defeatAllCooldown = 0;
 
         // Grid aufbauen
         _grid.Reset();
         _grid.SetupClassicPattern();
 
-        var random = new Random(_currentLevel.Seed ?? DateTime.Now.Millisecond);
+        var random = new Random(_currentLevel.Seed ?? Environment.TickCount);
 
         // Blöcke platzieren
         _grid.PlaceBlocks(_currentLevel.BlockDensity, random);
@@ -178,21 +186,32 @@ public partial class GameEngine
         }
         else
         {
-            // Exit weit weg vom Spieler-Spawn platzieren (manuelles Maximum statt LINQ)
-            exitCell = blocks[0];
-            int maxDist = Math.Abs(exitCell.X - 1) + Math.Abs(exitCell.Y - 1);
-            for (int i = 1; i < blocks.Count; i++)
+            // Exit aus den entferntesten Blöcken zufällig wählen (nicht immer der gleiche Spot)
+            // Sammle alle Blöcke die mindestens 60% der maximalen Distanz haben
+            int maxDist = 0;
+            for (int i = 0; i < blocks.Count; i++)
             {
                 int dist = Math.Abs(blocks[i].X - 1) + Math.Abs(blocks[i].Y - 1);
-                if (dist > maxDist)
-                {
-                    maxDist = dist;
-                    exitCell = blocks[i];
-                }
+                if (dist > maxDist) maxDist = dist;
             }
+
+            int threshold = (int)(maxDist * 0.6f);
+            var farBlocks = new List<Cell>();
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                int dist = Math.Abs(blocks[i].X - 1) + Math.Abs(blocks[i].Y - 1);
+                if (dist >= threshold)
+                    farBlocks.Add(blocks[i]);
+            }
+
+            exitCell = farBlocks.Count > 0
+                ? farBlocks[random.Next(farBlocks.Count)]
+                : blocks[random.Next(blocks.Count)];
         }
 
+        // Exit unter dem Block verstecken (klassisches Bomberman)
         exitCell.HiddenPowerUp = null;
+        exitCell.HasHiddenExit = true;
     }
 
     private void SpawnEnemies(Random random)
@@ -234,7 +253,11 @@ public partial class GameEngine
                 }
                 else
                 {
+                    // Fallback: Zufällige Position mit Validierung (keine Wand/Block)
                     pos = (random.Next(5, GameGrid.WIDTH - 2), random.Next(5, GameGrid.HEIGHT - 2));
+                    var fallbackCell = _grid.TryGetCell(pos.x, pos.y);
+                    if (fallbackCell == null || fallbackCell.Type != CellType.Empty)
+                        continue; // Ungültige Position überspringen
                 }
 
                 var enemy = Enemy.CreateAtGrid(pos.x, pos.y, spawn.Type);
@@ -245,17 +268,49 @@ public partial class GameEngine
 
     private void CheckExitReveal()
     {
-        if (!_exitRevealed && _enemies.All(e => !e.IsActive || e.IsDying))
+        if (_exitRevealed)
+            return;
+
+        // Manuelle Schleife statt LINQ (wird pro Enemy-Kill aufgerufen)
+        foreach (var enemy in _enemies)
         {
-            RevealExit();
+            if (enemy.IsActive && !enemy.IsDying)
+                return;
         }
+
+        RevealExit();
     }
 
     private void RevealExit()
     {
         _exitRevealed = true;
 
-        // Manuelles Maximum suchen (statt OrderByDescending + LINQ-Allokation)
+        // Zuerst: Versteckten Exit-Block suchen und dort aufdecken
+        for (int x = 1; x < GameGrid.WIDTH - 1; x++)
+        {
+            for (int y = 1; y < GameGrid.HEIGHT - 1; y++)
+            {
+                var cell = _grid[x, y];
+                if (cell.HasHiddenExit)
+                {
+                    cell.HasHiddenExit = false;
+                    // Block wird zum Exit (auch wenn er noch nicht zerstört wurde)
+                    cell.Type = CellType.Exit;
+                    cell.IsDestroying = false;
+                    cell.DestructionProgress = 0;
+                    _exitCell = cell;
+                    _soundManager.PlaySound(SoundManager.SFX_EXIT_APPEAR);
+
+                    float epx = cell.X * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+                    float epy = cell.Y * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+                    _particleSystem.Emit(epx, epy, 12, ParticleColors.ExitReveal, 60f, 0.8f);
+                    _particleSystem.Emit(epx, epy, 6, ParticleColors.ExitRevealLight, 40f, 0.5f);
+                    return;
+                }
+            }
+        }
+
+        // Fallback: Kein versteckter Exit-Block gefunden → auf leerer Zelle platzieren
         Cell? bestCell = null;
         int bestDist = -1;
 
@@ -279,9 +334,9 @@ public partial class GameEngine
         if (bestCell != null)
         {
             bestCell.Type = CellType.Exit;
+            _exitCell = bestCell;
             _soundManager.PlaySound(SoundManager.SFX_EXIT_APPEAR);
 
-            // Exit-Reveal Partikel (grün)
             float epx = bestCell.X * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
             float epy = bestCell.Y * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
             _particleSystem.Emit(epx, epy, 12, ParticleColors.ExitReveal, 60f, 0.8f);
@@ -291,6 +346,9 @@ public partial class GameEngine
 
     private void UpdateEnemies(float deltaTime)
     {
+        // Gefahrenzone EINMAL pro Frame vorberechnen (nicht pro Gegner → P-R6-1)
+        _enemyAI.PreCalculateDangerZone(_bombs);
+
         foreach (var enemy in _enemies)
         {
             if (!enemy.IsActive && !enemy.IsDying)
@@ -298,7 +356,7 @@ public partial class GameEngine
 
             if (enemy.IsActive && !enemy.IsDying)
             {
-                _enemyAI.Update(enemy, _player, _bombs, deltaTime);
+                _enemyAI.Update(enemy, _player, deltaTime);
             }
 
             enemy.Update(deltaTime);
@@ -320,8 +378,8 @@ public partial class GameEngine
         _levelCompleteHandled = false;
         _timer.Pause();
 
-        // Enemy-Kill-Punkte merken (Score vor Bonus)
-        LastEnemyKillPoints = _player.Score;
+        // Enemy-Kill-Punkte merken (nur Level-Score, nicht kumulierter Gesamtscore)
+        LastEnemyKillPoints = _player.Score - _scoreAtLevelStart;
 
         // Bonusberechnung mit Shop-Upgrades
         int timeBonusMultiplier = _shopService.GetTimeBonusMultiplier();
@@ -330,14 +388,17 @@ public partial class GameEngine
         // Gestufter Effizienzbonus
         int efficiencyBonus = _bombsUsed <= 5 ? 15000 : _bombsUsed <= 8 ? 10000 : _bombsUsed <= 12 ? 5000 : 0;
 
-        _player.Score += timeBonus + efficiencyBonus;
+        // Score-Multiplikator NUR auf Level-Score anwenden (nicht den gesamten kumulierten Score)
+        int levelScoreBeforeBonus = _player.Score - _scoreAtLevelStart;
+        int levelTotal = levelScoreBeforeBonus + timeBonus + efficiencyBonus;
 
-        // Score-Multiplikator anwenden
         float scoreMultiplier = _shopService.GetScoreMultiplier();
         if (scoreMultiplier > 1.0f)
         {
-            _player.Score = (int)(_player.Score * scoreMultiplier);
+            levelTotal = (int)(levelTotal * scoreMultiplier);
         }
+
+        _player.Score = _scoreAtLevelStart + levelTotal;
 
         // Score-Aufschlüsselung speichern
         LastTimeBonus = timeBonus;
@@ -347,11 +408,28 @@ public partial class GameEngine
         _soundManager.PlaySound(SoundManager.SFX_LEVEL_COMPLETE);
         OnScoreChanged?.Invoke(_player.Score);
 
-        // Coins (Premium: doppelt)
-        int coins = _player.Score;
+        // Coins basierend auf Level-Score (nicht kumuliert, verhindert Inflation)
+        int levelScore = _player.Score - _scoreAtLevelStart;
+        int coins = levelScore;
         if (_purchaseService.IsPremium)
             coins *= 2;
         OnCoinsEarned?.Invoke(coins, _player.Score, true);
+
+        // Achievements prüfen (G-R6-1)
+        // Score + BestScore ZUERST speichern, damit GetLevelStars/GetTotalStars korrekt sind
+        if (!_isArcadeMode)
+        {
+            _progressService.SetLevelBestScore(_currentLevelNumber, _player.Score);
+
+            int stars = _progressService.GetLevelStars(_currentLevelNumber);
+            float timeUsed = _currentLevel!.TimeLimit - _timer.RemainingTime;
+            _achievementService.OnLevelCompleted(
+                _currentLevelNumber, _player.Score, stars, _bombsUsed,
+                _timer.RemainingTime, timeUsed, !_playerDamagedThisLevel);
+
+            // Stern-Fortschritt aktualisieren (jetzt mit aktuellem Score)
+            _achievementService.OnStarsUpdated(_progressService.GetTotalStars());
+        }
     }
 
     private void UpdateLevelComplete(float deltaTime)
@@ -362,11 +440,10 @@ public partial class GameEngine
         {
             _levelCompleteHandled = true;
 
-            // Fortschritt speichern
+            // Fortschritt speichern (BestScore bereits in CompleteLevel() gesetzt)
             if (!_isArcadeMode)
             {
                 _progressService.CompleteLevel(_currentLevelNumber);
-                _progressService.SetLevelBestScore(_currentLevelNumber, _player.Score);
             }
 
             OnLevelComplete?.Invoke();
@@ -387,11 +464,7 @@ public partial class GameEngine
                 _highScoreService.AddScore("PLAYER", _player.Score, 50);
             }
 
-            // Coins
-            int coins = _player.Score;
-            if (_purchaseService.IsPremium) coins *= 2;
-            OnCoinsEarned?.Invoke(coins, _player.Score, true);
-
+            // Coins wurden bereits in CompleteLevel (Level 50) gutgeschrieben → kein Doppel-Credit
             OnVictory?.Invoke();
         }
     }
@@ -403,37 +476,50 @@ public partial class GameEngine
 
     private void OnTimeExpired()
     {
-        SpawnPontanPunishment();
+        // Gestaffeltes Pontan-Spawning starten (1 alle 3s statt alle 4 auf einmal)
+        _pontanPunishmentActive = true;
+        _pontanSpawned = 0;
+        _pontanSpawnTimer = 0; // Ersten sofort spawnen
     }
 
-    private void SpawnPontanPunishment()
+    /// <summary>
+    /// Gestaffeltes Pontan-Spawning (weniger unfair als 4 auf einmal)
+    /// </summary>
+    private void UpdatePontanPunishment(float deltaTime)
     {
-        var random = new Random();
-        int spawned = 0;
-        int maxAttempts = 80;
-        int attempts = 0;
+        if (!_pontanPunishmentActive || _pontanSpawned >= PONTAN_MAX_COUNT)
+        {
+            _pontanPunishmentActive = false;
+            return;
+        }
+
+        _pontanSpawnTimer -= deltaTime;
+        if (_pontanSpawnTimer > 0)
+            return;
+
+        _pontanSpawnTimer = PONTAN_SPAWN_INTERVAL;
+
+        // Einzelnen Pontan spawnen
         int playerCellX = _player.GridX;
         int playerCellY = _player.GridY;
 
-        while (spawned < 4 && attempts < maxAttempts)
+        for (int attempts = 0; attempts < 40; attempts++)
         {
-            attempts++;
-            int x = random.Next(3, GameGrid.WIDTH - 1);
-            int y = random.Next(3, GameGrid.HEIGHT - 1);
+            int x = _pontanRandom.Next(3, GameGrid.WIDTH - 1);
+            int y = _pontanRandom.Next(3, GameGrid.HEIGHT - 1);
 
-            // Mindestabstand 4 Zellen zum Spieler (erhöht für Fairness)
-            if (Math.Abs(x - playerCellX) + Math.Abs(y - playerCellY) < 4)
+            // Mindestabstand zum Spieler
+            if (Math.Abs(x - playerCellX) + Math.Abs(y - playerCellY) < PONTAN_MIN_DISTANCE)
                 continue;
 
             var cell = _grid.TryGetCell(x, y);
             if (cell == null || cell.Type != CellType.Empty)
                 continue;
 
-            // Keine Bomben oder PowerUps auf der Zelle
             if (cell.Bomb != null || cell.PowerUp != null)
                 continue;
 
-            // Kein anderer Enemy bereits auf der Zelle
+            // Kein anderer Enemy auf der Zelle
             bool enemyOnCell = false;
             foreach (var existing in _enemies)
             {
@@ -447,7 +533,13 @@ public partial class GameEngine
 
             var enemy = Enemy.CreateAtGrid(x, y, EnemyType.Pontan);
             _enemies.Add(enemy);
-            spawned++;
+            _pontanSpawned++;
+
+            // Warn-Partikel am Spawn-Punkt
+            float epx = x * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            float epy = y * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            _particleSystem.Emit(epx, epy, 8, new SkiaSharp.SKColor(255, 0, 80), 60f, 0.5f);
+            break;
         }
     }
 
@@ -466,6 +558,9 @@ public partial class GameEngine
                 int bonusCoins = _arcadeWave * 100;
                 OnWaveMilestone?.Invoke(_arcadeWave, bonusCoins);
             }
+
+            // Arcade-Achievement prüfen
+            _achievementService.OnArcadeWaveReached(_arcadeWave);
 
             _currentLevel = LevelGenerator.GenerateArcadeLevel(_arcadeWave);
         }

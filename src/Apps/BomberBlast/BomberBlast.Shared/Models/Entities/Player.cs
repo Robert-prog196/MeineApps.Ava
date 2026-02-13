@@ -8,10 +8,11 @@ namespace BomberBlast.Models.Entities;
 public class Player : Entity
 {
     // Base stats
-    private const float BASE_SPEED = 80f; // Pixels per second
-    private const float SPEED_BOOST = 20f; // Per speed power-up
+    private const float BASE_SPEED = 80f; // Pixel pro Sekunde
+    private const float SPEED_BOOST = 20f; // Pro Speed-Level
     private const int MAX_BOMB_COUNT = 10;
     private const int MAX_FIRE_RANGE = 10;
+    private const int MAX_SPEED_LEVEL = 3;
 
     // Movement
     public Direction FacingDirection { get; set; } = Direction.Down;
@@ -23,11 +24,28 @@ public class Player : Entity
     public int FireRange { get; set; } = 1;
 
     // Power-up abilities (lost on death)
-    public bool HasSpeed { get; set; }
+    public int SpeedLevel { get; set; }
+    /// <summary>Kompatibilitäts-Property: true wenn SpeedLevel > 0</summary>
+    public bool HasSpeed
+    {
+        get => SpeedLevel > 0;
+        set => SpeedLevel = value ? Math.Max(SpeedLevel, 1) : 0;
+    }
     public bool HasWallpass { get; set; }
     public bool HasDetonator { get; set; }
     public bool HasBombpass { get; set; }
     public bool HasFlamepass { get; set; }
+    public bool HasKick { get; set; }
+    public bool HasLineBomb { get; set; }
+    public bool HasPowerBomb { get; set; }
+
+    // Skull/Curse-System
+    public CurseType ActiveCurse { get; set; } = CurseType.None;
+    public float CurseTimer { get; set; }
+    public bool IsCursed => ActiveCurse != CurseType.None;
+    private const float CURSE_DURATION = 10f;
+    // Diarrhea: Auto-Bomben-Timer
+    public float DiarrheaTimer { get; set; }
 
     // Temporary invincibility (Mystery power-up)
     public bool IsInvincible { get; private set; }
@@ -64,9 +82,17 @@ public class Player : Entity
     }
 
     /// <summary>
-    /// Current movement speed (affected by power-ups)
+    /// Aktuelle Bewegungsgeschwindigkeit (staffelbar mit SpeedLevel 0-3, halbiert bei Slow-Curse)
     /// </summary>
-    public float Speed => BASE_SPEED + (HasSpeed ? SPEED_BOOST * 2 : 0);
+    public float Speed
+    {
+        get
+        {
+            float speed = BASE_SPEED + SpeedLevel * SPEED_BOOST;
+            if (ActiveCurse == CurseType.Slow) speed *= 0.5f;
+            return speed;
+        }
+    }
 
     public Player(float x, float y) : base(x, y)
     {
@@ -98,14 +124,29 @@ public class Player : Entity
             }
         }
 
+        // Curse-Timer aktualisieren
+        if (IsCursed)
+        {
+            CurseTimer -= deltaTime;
+            if (CurseTimer <= 0)
+            {
+                ActiveCurse = CurseType.None;
+                CurseTimer = 0;
+            }
+
+            // Diarrhea: Auto-Bomben alle 0.5s
+            if (ActiveCurse == CurseType.Diarrhea)
+            {
+                DiarrheaTimer -= deltaTime;
+            }
+        }
+
         // Update death animation
         if (IsDying)
         {
             DeathTimer += deltaTime;
-            if (DeathTimer >= DEATH_ANIMATION_DURATION)
-            {
-                IsMarkedForRemoval = true;
-            }
+            // Spieler wird nie aus der Engine entfernt (Respawn oder GameOver)
+            // → kein IsMarkedForRemoval setzen
         }
     }
 
@@ -197,9 +238,7 @@ public class Player : Entity
     private bool CanMoveTo(float newX, float newY, GameGrid grid)
     {
         float halfSize = GameGrid.CELL_SIZE * 0.35f;
-        bool wallpass = HasWallpass;
-        bool bombpass = HasBombpass;
-        return CollisionHelper.CanMoveTo(newX, newY, halfSize, grid, cell => !cell.IsWalkable(wallpass, bombpass));
+        return CollisionHelper.CanMoveToPlayer(newX, newY, halfSize, grid, HasWallpass, HasBombpass);
     }
 
     /// <summary>
@@ -220,7 +259,7 @@ public class Player : Entity
                 break;
 
             case PowerUpType.Speed:
-                HasSpeed = true;
+                SpeedLevel = Math.Min(SpeedLevel + 1, MAX_SPEED_LEVEL);
                 break;
 
             case PowerUpType.Wallpass:
@@ -242,7 +281,36 @@ public class Player : Entity
             case PowerUpType.Mystery:
                 ActivateInvincibility(PowerUpType.Mystery.GetDuration());
                 break;
+
+            case PowerUpType.Kick:
+                HasKick = true;
+                break;
+
+            case PowerUpType.LineBomb:
+                HasLineBomb = true;
+                break;
+
+            case PowerUpType.PowerBomb:
+                HasPowerBomb = true;
+                break;
+
+            case PowerUpType.Skull:
+                ActivateCurse();
+                break;
         }
+    }
+
+    /// <summary>
+    /// Zufälligen Fluch aktivieren (Skull-PowerUp)
+    /// </summary>
+    public void ActivateCurse()
+    {
+        var curses = new[] { CurseType.Diarrhea, CurseType.Slow, CurseType.Constipation, CurseType.ReverseControls };
+        ActiveCurse = curses[Random.Shared.Next(curses.Length)];
+        CurseTimer = CURSE_DURATION;
+
+        if (ActiveCurse == CurseType.Diarrhea)
+            DiarrheaTimer = 0.5f;
     }
 
     /// <summary>
@@ -259,7 +327,9 @@ public class Player : Entity
     /// </summary>
     public void Kill()
     {
-        if (IsDying || IsInvincible || HasSpawnProtection || HasFlamepass)
+        // Flamepass wird NICHT hier geprüft - nur in der Explosions-Kollision (GameEngine.Collision.cs)
+        // Kill() wird auch bei Gegner-Kontakt aufgerufen, wo Flamepass nicht schützen soll
+        if (IsDying || IsInvincible || HasSpawnProtection)
             return;
 
         IsDying = true;
@@ -287,13 +357,18 @@ public class Player : Entity
         ActiveBombs = 0;
 
         // Lose non-permanent power-ups
-        HasSpeed = false;
+        SpeedLevel = 0;
         HasWallpass = false;
         HasDetonator = false;
         HasBombpass = false;
         HasFlamepass = false;
+        HasKick = false;
+        HasLineBomb = false;
+        HasPowerBomb = false;
         IsInvincible = false;
         InvincibilityTimer = 0;
+        ActiveCurse = CurseType.None;
+        CurseTimer = 0;
 
         // Grant spawn protection
         HasSpawnProtection = true;
@@ -309,15 +384,21 @@ public class Player : Entity
     {
         MaxBombs = 1;
         FireRange = 1;
-        HasSpeed = false;
+        SpeedLevel = 0;
         HasWallpass = false;
         HasDetonator = false;
         HasBombpass = false;
         HasFlamepass = false;
+        HasKick = false;
+        HasLineBomb = false;
+        HasPowerBomb = false;
         IsInvincible = false;
         InvincibilityTimer = 0;
         HasSpawnProtection = false;
         SpawnProtectionTimer = 0;
+        ActiveCurse = CurseType.None;
+        CurseTimer = 0;
+        DiarrheaTimer = 0;
         Lives = 3;
         Score = 0;
         ActiveBombs = 0;
@@ -336,6 +417,7 @@ public class Player : Entity
     /// </summary>
     public bool CanPlaceBomb()
     {
+        if (ActiveCurse == CurseType.Constipation) return false;
         return !IsDying && ActiveBombs < MaxBombs;
     }
 }

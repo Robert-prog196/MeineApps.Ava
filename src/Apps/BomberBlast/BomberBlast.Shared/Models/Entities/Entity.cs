@@ -7,9 +7,6 @@ namespace BomberBlast.Models.Entities;
 /// </summary>
 public abstract class Entity
 {
-    /// <summary>Unique identifier</summary>
-    public Guid Id { get; } = Guid.NewGuid();
-
     /// <summary>Pixel position X (center of entity)</summary>
     public float X { get; set; }
 
@@ -37,11 +34,11 @@ public abstract class Entity
     /// <summary>Animation speed (frames per second)</summary>
     public virtual float AnimationSpeed => 8f;
 
-    /// <summary>Grid X position (column)</summary>
-    public int GridX => (int)(X / GameGrid.CELL_SIZE);
+    /// <summary>Grid X position (column) - Floor für korrekte Behandlung negativer Werte</summary>
+    public int GridX => (int)MathF.Floor(X / GameGrid.CELL_SIZE);
 
-    /// <summary>Grid Y position (row)</summary>
-    public int GridY => (int)(Y / GameGrid.CELL_SIZE);
+    /// <summary>Grid Y position (row) - Floor für korrekte Behandlung negativer Werte</summary>
+    public int GridY => (int)MathF.Floor(Y / GameGrid.CELL_SIZE);
 
     /// <summary>Bounding box for collision detection</summary>
     public virtual (float left, float top, float right, float bottom) BoundingBox

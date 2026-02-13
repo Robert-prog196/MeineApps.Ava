@@ -127,12 +127,16 @@ public class GameGrid
         // Place blocks based on density
         int blockCount = (int)(placeableCells.Count * density);
 
-        // Shuffle and take first N
-        var shuffled = placeableCells.OrderBy(_ => random.Next()).Take(blockCount);
-
-        foreach (var cell in shuffled)
+        // Fisher-Yates Shuffle (in-place, keine LINQ-Allokation)
+        for (int i = placeableCells.Count - 1; i > 0; i--)
         {
-            cell.Type = CellType.Block;
+            int j = random.Next(i + 1);
+            (placeableCells[i], placeableCells[j]) = (placeableCells[j], placeableCells[i]);
+        }
+
+        for (int i = 0; i < blockCount && i < placeableCells.Count; i++)
+        {
+            placeableCells[i].Type = CellType.Block;
         }
     }
 
@@ -211,8 +215,8 @@ public class GameGrid
     /// </summary>
     public (int x, int y) PixelToGrid(float pixelX, float pixelY)
     {
-        int gridX = (int)(pixelX / CELL_SIZE);
-        int gridY = (int)(pixelY / CELL_SIZE);
+        int gridX = (int)MathF.Floor(pixelX / CELL_SIZE);
+        int gridY = (int)MathF.Floor(pixelY / CELL_SIZE);
         return (Math.Clamp(gridX, 0, WIDTH - 1), Math.Clamp(gridY, 0, HEIGHT - 1));
     }
 

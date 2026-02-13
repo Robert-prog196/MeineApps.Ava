@@ -29,9 +29,18 @@ public class EnemyAI
     }
 
     /// <summary>
-    /// Update enemy AI and set movement direction
+    /// Gefahrenzone einmal pro Frame vorberechnen (statt pro Gegner → Performance)
     /// </summary>
-    public void Update(Enemy enemy, Player player, IEnumerable<Bomb> bombs, float deltaTime)
+    public void PreCalculateDangerZone(IEnumerable<Bomb> bombs)
+    {
+        CalculateDangerZone(bombs);
+    }
+
+    /// <summary>
+    /// Update enemy AI and set movement direction.
+    /// PreCalculateDangerZone() muss vorher aufgerufen werden!
+    /// </summary>
+    public void Update(Enemy enemy, Player player, float deltaTime)
     {
         if (enemy.IsDying || !enemy.IsActive)
             return;
@@ -47,8 +56,8 @@ public class EnemyAI
         // Reset decision timer
         enemy.AIDecisionTimer = enemy.AIDecisionInterval * (0.8f + _random.NextSingle() * 0.4f);
 
-        // Calculate danger zone from bombs
-        var dangerZone = CalculateDangerZone(bombs);
+        // Vorberechnete Gefahrenzone verwenden
+        var dangerZone = _dangerZone;
 
         // Check if we're in danger
         bool inDanger = dangerZone.Contains((enemy.GridX, enemy.GridY));
@@ -80,7 +89,7 @@ public class EnemyAI
         }
 
         // Check for stuck state and force direction change
-        if (enemy.StuckTimer > 1.0f)
+        if (enemy.StuckTimer > 0.5f)
         {
             enemy.MovementDirection = GetRandomValidDirection(enemy);
             enemy.StuckTimer = 0;
@@ -91,15 +100,21 @@ public class EnemyAI
 
     private void UpdateLowIntelligence(Enemy enemy, Player player)
     {
-        // Low intelligence: Simple back-and-forth movement
-        // Only change direction when blocked or randomly
+        // Low intelligence: Einfache Hin-und-Her-Bewegung
+        // Richtungswechsel bei Blockade oder zufällig
+
+        // Sofortiger Richtungswechsel wenn aktuelle Richtung blockiert ist
+        if (enemy.MovementDirection != Direction.None && !CanMoveInDirection(enemy, enemy.MovementDirection))
+        {
+            enemy.MovementDirection = GetRandomValidDirection(enemy);
+            return;
+        }
 
         if (enemy.MovementDirection == Direction.None || _random.NextDouble() < 0.1)
         {
-            // Pick random direction, with preference for current direction
+            // Zufällige Richtung, Präferenz für aktuelle Richtung
             if (enemy.MovementDirection != Direction.None && _random.NextDouble() < 0.7)
             {
-                // Keep current direction if valid
                 if (CanMoveInDirection(enemy, enemy.MovementDirection))
                     return;
             }
@@ -308,38 +323,67 @@ public class EnemyAI
         // Gepooltes HashSet wiederverwenden statt neu allokieren
         _dangerZone.Clear();
 
+        // Phase 1: Alle Bomben und ihre Explosionsbereiche berechnen
         foreach (var bomb in bombs)
         {
             if (!bomb.IsActive)
                 continue;
 
-            int bx = bomb.GridX;
-            int by = bomb.GridY;
+            AddBombDangerZone(bomb.GridX, bomb.GridY, bomb.Range);
+        }
 
-            // Bomb cell is dangerous
-            _dangerZone.Add((bx, by));
-
-            // Calculate explosion range in all directions
-            foreach (var dir in DirectionExtensions.GetCardinalDirections())
+        // Phase 2: Kettenreaktionen berücksichtigen
+        // Bomben in der Gefahrenzone anderer Bomben lösen Kettenreaktionen aus
+        bool changed = true;
+        int iterations = 0;
+        while (changed && iterations < 5) // Max 5 Iterationen (verhindert Endlosschleife)
+        {
+            changed = false;
+            iterations++;
+            foreach (var bomb in bombs)
             {
-                for (int i = 1; i <= bomb.Range; i++)
+                if (!bomb.IsActive)
+                    continue;
+
+                // Prüfe ob diese Bombe in der Gefahrenzone einer anderen liegt
+                if (_dangerZone.Contains((bomb.GridX, bomb.GridY)))
                 {
-                    int nx = bx + dir.GetDeltaX() * i;
-                    int ny = by + dir.GetDeltaY() * i;
-
-                    var cell = _grid.TryGetCell(nx, ny);
-                    if (cell == null || cell.Type == CellType.Wall)
-                        break;
-
-                    _dangerZone.Add((nx, ny));
-
-                    if (cell.Type == CellType.Block)
-                        break;
+                    // Berechne auch den Bereich dieser Bombe (falls noch nicht geschehen)
+                    int countBefore = _dangerZone.Count;
+                    AddBombDangerZone(bomb.GridX, bomb.GridY, bomb.Range);
+                    if (_dangerZone.Count > countBefore)
+                        changed = true;
                 }
             }
         }
 
         return _dangerZone;
+    }
+
+    /// <summary>
+    /// Gefahrenzone einer einzelnen Bombe zum Set hinzufügen
+    /// </summary>
+    private void AddBombDangerZone(int bx, int by, int range)
+    {
+        _dangerZone.Add((bx, by));
+
+        foreach (var dir in DirectionExtensions.GetCardinalDirections())
+        {
+            for (int i = 1; i <= range; i++)
+            {
+                int nx = bx + dir.GetDeltaX() * i;
+                int ny = by + dir.GetDeltaY() * i;
+
+                var cell = _grid.TryGetCell(nx, ny);
+                if (cell == null || cell.Type == CellType.Wall)
+                    break;
+
+                _dangerZone.Add((nx, ny));
+
+                if (cell.Type == CellType.Block)
+                    break;
+            }
+        }
     }
 
     private Direction GetRandomValidDirection(Enemy enemy)

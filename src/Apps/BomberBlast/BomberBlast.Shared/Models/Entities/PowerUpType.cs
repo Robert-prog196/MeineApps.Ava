@@ -1,7 +1,7 @@
 namespace BomberBlast.Models.Entities;
 
 /// <summary>
-/// Types of power-ups (original NES Bomberman)
+/// Types of power-ups (klassisches Bomberman + Erweiterungen)
 /// </summary>
 public enum PowerUpType
 {
@@ -27,7 +27,35 @@ public enum PowerUpType
     Flamepass,
 
     /// <summary>35 seconds invincibility - TEMPORARY</summary>
-    Mystery
+    Mystery,
+
+    /// <summary>Kann Bomben in Bewegungsrichtung kicken - LOST ON DEATH</summary>
+    Kick,
+
+    /// <summary>Platziert alle Bomben in einer Linie - LOST ON DEATH</summary>
+    LineBomb,
+
+    /// <summary>Einzelne Mega-Bombe mit maximaler Reichweite - LOST ON DEATH</summary>
+    PowerBomb,
+
+    /// <summary>Zufälliger Debuff (Diarrhea/Slow/Constipation) - 10s TEMPORARY</summary>
+    Skull
+}
+
+/// <summary>
+/// Fluch-Typen für Skull-PowerUp
+/// </summary>
+public enum CurseType
+{
+    None,
+    /// <summary>Legt automatisch Bomben ab</summary>
+    Diarrhea,
+    /// <summary>Geschwindigkeit halbiert</summary>
+    Slow,
+    /// <summary>Kann keine Bomben legen</summary>
+    Constipation,
+    /// <summary>Steuerung invertiert</summary>
+    ReverseControls
 }
 
 public static class PowerUpExtensions
@@ -50,7 +78,15 @@ public static class PowerUpExtensions
     /// </summary>
     public static bool IsTemporary(this PowerUpType type)
     {
-        return type == PowerUpType.Mystery;
+        return type is PowerUpType.Mystery or PowerUpType.Skull;
+    }
+
+    /// <summary>
+    /// Ob das PowerUp ein negativer Effekt ist
+    /// </summary>
+    public static bool IsNegative(this PowerUpType type)
+    {
+        return type == PowerUpType.Skull;
     }
 
     /// <summary>
@@ -61,6 +97,7 @@ public static class PowerUpExtensions
         return type switch
         {
             PowerUpType.Mystery => 35f,
+            PowerUpType.Skull => 10f,
             _ => 0f
         };
     }
@@ -80,6 +117,10 @@ public static class PowerUpExtensions
             PowerUpType.Bombpass => 500,
             PowerUpType.Flamepass => 500,
             PowerUpType.Mystery => 1000,
+            PowerUpType.Kick => 300,
+            PowerUpType.LineBomb => 400,
+            PowerUpType.PowerBomb => 400,
+            PowerUpType.Skull => 0, // Kein Score für negative Effekte
             _ => 0
         };
     }

@@ -836,5 +836,8 @@
   <data name="TutorialSkip" xml:space="preserve">
     <value>Passer</value>
   </data>
+  <data name="PressBackAgainToExit" xml:space="preserve">
+    <value>Appuyez encore pour quitter</value>
+  </data>
 
 </root>
