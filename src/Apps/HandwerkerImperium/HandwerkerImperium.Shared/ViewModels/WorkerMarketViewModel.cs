@@ -156,6 +156,12 @@ public partial class WorkerMarketViewModel : ObservableObject
         {
             // Geschaetzter Ertrag basierend auf Durchschnitt aller Workshops
             worker.IncomeContribution = avgBaseIncome * worker.Efficiency;
+
+            // Lokalisierte Anzeige-Texte setzen
+            worker.PersonalityDisplay = _localizationService.GetString(worker.Personality.GetLocalizationKey());
+            worker.SpecializationDisplay = worker.Specialization != null
+                ? _localizationService.GetString(worker.Specialization.Value.GetLocalizationKey())
+                : "";
         }
         AvailableWorkers = workers;
 

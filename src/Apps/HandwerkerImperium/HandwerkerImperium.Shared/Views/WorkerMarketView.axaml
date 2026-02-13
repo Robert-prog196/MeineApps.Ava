@@ -101,16 +101,15 @@
         <Border Classes="CardElevated" Padding="16,12"
                 IsVisible="{Binding !HasAvailableSlots}">
           <StackPanel Spacing="10">
-            <StackPanel Orientation="Horizontal" Spacing="12"
-                        HorizontalAlignment="Center">
-              <mi:MaterialIcon Kind="AlertCircleOutline" Width="24" Height="24"
-                               Foreground="{DynamicResource WarningBrush}" />
-              <TextBlock Text="{Binding NoSlotsMessage}"
-                         FontSize="13"
-                         Foreground="{DynamicResource WarningBrush}"
-                         TextWrapping="Wrap"
-                         VerticalAlignment="Center" />
-            </StackPanel>
+            <!-- Icon zentriert ueber dem Text -->
+            <mi:MaterialIcon Kind="AlertCircleOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource WarningBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding NoSlotsMessage}"
+                       FontSize="13"
+                       Foreground="{DynamicResource WarningBrush}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center" />
 
             <!-- Extra-Slot per Video-Ad Button -->
             <Button Classes="Secondary"
@@ -166,7 +165,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <TextBlock Text="{Binding PersonalityIcon}"
                                  FontSize="14" VerticalAlignment="Center" />
-                      <TextBlock Text="{Binding Personality}"
+                      <TextBlock Text="{Binding PersonalityDisplay}"
                                  FontSize="12"
                                  Foreground="{DynamicResource TextSecondaryBrush}"
                                  VerticalAlignment="Center" />
@@ -186,9 +185,10 @@
                   <!-- Row 2: Specialization + Efficiency + Mehrwert -->
                   <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
                               Orientation="Horizontal" Spacing="12">
-                    <TextBlock Text="{Binding Specialization}"
+                    <TextBlock Text="{Binding SpecializationDisplay}"
                                FontSize="12"
-                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               IsVisible="{Binding SpecializationDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     <TextBlock FontSize="12"
                                Foreground="{DynamicResource TextSecondaryBrush}">
                       <Run Text="Eff:" />

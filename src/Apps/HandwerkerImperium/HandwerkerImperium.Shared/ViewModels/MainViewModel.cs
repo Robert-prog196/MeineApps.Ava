@@ -1261,6 +1261,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (IsWorkerProfileActive)
         {
             IsWorkerProfileActive = false;
+            if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+                _adService.ShowBanner();
             NotifyTabBarVisibility();
             return true;
         }
@@ -1549,6 +1551,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (IsWorkerProfileActive)
             {
                 IsWorkerProfileActive = false;
+                if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+                    _adService.ShowBanner();
                 NotifyTabBarVisibility();
                 return;
             }
@@ -1624,6 +1628,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var workerId = route.Replace("worker?id=", "");
             WorkerProfileViewModel.SetWorker(workerId);
             IsWorkerProfileActive = true;
+            _adService.HideBanner();
             NotifyTabBarVisibility();
             return;
         }

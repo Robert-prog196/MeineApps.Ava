@@ -156,8 +156,8 @@
     </Panel>
 
     <!-- ============================================ -->
-    <!-- Ad Banner Spacer (50dp for native AdMob overlay) -->
-    <Border Grid.Row="1" Height="50"
+    <!-- Ad Banner Spacer (64dp fuer adaptive Banner) -->
+    <Border Grid.Row="1" Height="64"
             IsVisible="{Binding IsAdBannerVisible}" />
 
     <!-- Ersatz-Spacer wenn Tab-Bar versteckt (Overlay/MiniGame offen) -->

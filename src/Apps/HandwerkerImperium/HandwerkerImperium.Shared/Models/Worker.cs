@@ -255,6 +255,18 @@ public class Worker
     };
 
     /// <summary>
+    /// Lokalisierter Persönlichkeitsname (wird vom ViewModel gesetzt).
+    /// </summary>
+    [JsonIgnore]
+    public string PersonalityDisplay { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Lokalisierter Spezialisierungsname (wird vom ViewModel gesetzt).
+    /// </summary>
+    [JsonIgnore]
+    public string SpecializationDisplay { get; set; } = string.Empty;
+
+    /// <summary>
     /// Einkommensbeitrag pro Sekunde (wird vom ViewModel gesetzt, nicht persistiert).
     /// Zeigt dem Spieler den konkreten Mehrwert dieses Arbeiters.
     /// </summary>

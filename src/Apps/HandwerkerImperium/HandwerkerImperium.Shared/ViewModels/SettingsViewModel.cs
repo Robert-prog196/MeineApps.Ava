@@ -111,7 +111,9 @@ public partial class SettingsViewModel : ObservableObject
 
             SoundEnabled = state.SoundEnabled;
             VibrationEnabled = state.HapticsEnabled;
-            SelectedLanguage = Languages.FirstOrDefault(l => l.Code == state.Language) ?? Languages[0];
+            // Fallback auf aktuelle Sprache (Gerätesprache) statt Languages[0] (English)
+            var langCode = !string.IsNullOrEmpty(state.Language) ? state.Language : _localizationService.CurrentLanguage;
+            SelectedLanguage = Languages.FirstOrDefault(l => l.Code == langCode) ?? Languages[0];
             IsPremium = state.IsPremium;
 
             // Get app version from assembly

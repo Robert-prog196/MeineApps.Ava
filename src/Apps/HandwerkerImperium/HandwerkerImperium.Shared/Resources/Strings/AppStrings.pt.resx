@@ -46,7 +46,7 @@
     <value>Loja</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>Configurações</value>
+    <value>Mais</value>
   </data>
 
   <!-- Workshops -->
@@ -77,7 +77,7 @@
     <value>Melhorar</value>
   </data>
   <data name="Workers" xml:space="preserve">
-    <value>Trabalhadores</value>
+    <value>Equipe</value>
   </data>
   <data name="HireWorker" xml:space="preserve">
     <value>Contratar trabalhador</value>

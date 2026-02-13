@@ -112,6 +112,12 @@ public class MainActivity : AvaloniaMainActivity<App>
         }
     }
 
+    public override void OnWindowFocusChanged(bool hasFocus)
+    {
+        base.OnWindowFocusChanged(hasFocus);
+        if (hasFocus) EnableImmersiveMode();
+    }
+
     [System.Obsolete("Avalonia nutzt OnBackPressed")]
     public override void OnBackPressed()
     {
