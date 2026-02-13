@@ -74,6 +74,7 @@ Handwerker-App mit 11 Rechnern (5 Free Floor + 6 Premium), Projektverwaltung und
 
 ## Changelog (Highlights)
 
+- **13.02.2026**: Crash-Fix: Spinning-Animation (Export-Icon) nutzte `RenderTransform` in KeyFrame → "No animator registered" Crash beim App-Start. Fix: `RotateTransform.Angle` statt `RenderTransform` in KeyFrames + `RenderTransformOrigin="50%,50%"`. Avalonia KeyFrames unterstützen NUR double-Properties (Opacity, Angle, Width etc.), NICHT RenderTransform/TransformOperations.
 - **13.02.2026**: UI/UX Überarbeitung (Game Juice):
   - MainView: Hero-Header Gradient, Premium-Card mit Shimmer direkt unter Hero, PRO-Badges (GoldGlow) auf 6 Premium-Cards
   - TapScaleBehavior + FadeInBehavior (Stagger 0-660ms) auf allen 11 Calculator-Cards + Premium/History-Cards
