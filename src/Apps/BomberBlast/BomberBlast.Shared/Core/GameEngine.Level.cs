@@ -1,4 +1,5 @@
 using BomberBlast.Graphics;
+using BomberBlast.Models;
 using BomberBlast.Models.Entities;
 using BomberBlast.Models.Grid;
 using BomberBlast.Models.Levels;
@@ -131,6 +132,7 @@ public partial class GameEngine
         _player.FireRange = _shopService.GetStartFire();
         _player.HasSpeed = _shopService.HasStartSpeed();
         _player.Lives = _shopService.GetStartLives(_isArcadeMode);
+        _player.HasShield = _shopService.Upgrades.GetLevel(UpgradeType.ShieldStart) >= 1;
     }
 
     private void PlacePowerUps(Random random)
@@ -165,6 +167,21 @@ public partial class GameEngine
             if (targetCell.Type == CellType.Block)
             {
                 targetCell.HiddenPowerUp = powerUp.Type;
+            }
+        }
+
+        // PowerUpLuck-Upgrade: Zusätzliche zufällige PowerUps
+        int extraPowerUps = _shopService.Upgrades.GetLevel(UpgradeType.PowerUpLuck);
+        if (extraPowerUps > 0)
+        {
+            var basicPowerUps = new[] { PowerUpType.BombUp, PowerUpType.Fire, PowerUpType.Speed };
+            for (int i = 0; i < extraPowerUps && blockIndex < blocks.Count; i++)
+            {
+                var cell = blocks[blockIndex++];
+                if (cell.Type == CellType.Block && cell.HiddenPowerUp == null)
+                {
+                    cell.HiddenPowerUp = basicPowerUps[random.Next(basicPowerUps.Length)];
+                }
             }
         }
     }
@@ -385,8 +402,15 @@ public partial class GameEngine
         int timeBonusMultiplier = _shopService.GetTimeBonusMultiplier();
         int timeBonus = (int)_timer.RemainingTime * timeBonusMultiplier;
 
-        // Gestufter Effizienzbonus
-        int efficiencyBonus = _bombsUsed <= 5 ? 15000 : _bombsUsed <= 8 ? 10000 : _bombsUsed <= 12 ? 5000 : 0;
+        // Gestufter Effizienzbonus (skaliert nach Welt)
+        int world = (_currentLevelNumber - 1) / 10; // 0-4
+        int efficiencyBonus = 0;
+        if (_bombsUsed <= 5)
+            efficiencyBonus = world switch { 0 => 3000, 1 => 5000, 2 => 8000, 3 => 12000, _ => 15000 };
+        else if (_bombsUsed <= 8)
+            efficiencyBonus = world switch { 0 => 2000, 1 => 3000, 2 => 5000, 3 => 8000, _ => 10000 };
+        else if (_bombsUsed <= 12)
+            efficiencyBonus = world switch { 0 => 1000, 1 => 1500, 2 => 2500, 3 => 4000, _ => 5000 };
 
         // Score-Multiplikator NUR auf Level-Score anwenden (nicht den gesamten kumulierten Score)
         int levelScoreBeforeBonus = _player.Score - _scoreAtLevelStart;
@@ -410,7 +434,16 @@ public partial class GameEngine
 
         // Coins basierend auf Level-Score (nicht kumuliert, verhindert Inflation)
         int levelScore = _player.Score - _scoreAtLevelStart;
-        int coins = levelScore;
+        int coins = levelScore / 3;
+
+        // CoinBonus-Upgrade: +25% / +50% extra Coins
+        int coinBonusLevel = _shopService.Upgrades.GetLevel(UpgradeType.CoinBonus);
+        if (coinBonusLevel > 0)
+        {
+            float coinMultiplier = 1f + coinBonusLevel * 0.25f;
+            coins = (int)(coins * coinMultiplier);
+        }
+
         if (_purchaseService.IsPremium)
             coins *= 2;
         OnCoinsEarned?.Invoke(coins, _player.Score, true);

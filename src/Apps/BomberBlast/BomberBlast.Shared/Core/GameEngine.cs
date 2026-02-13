@@ -562,8 +562,8 @@ public partial class GameEngine : IDisposable
                     }
                 }
 
-                // Trost-Coins (halber Level-Score, abgerundet)
-                int coins = (_player.Score - _scoreAtLevelStart) / 2;
+                // Trost-Coins (Level-Score ÷ 6, abgerundet)
+                int coins = (_player.Score - _scoreAtLevelStart) / 6;
                 if (coins > 0)
                 {
                     OnCoinsEarned?.Invoke(coins, _player.Score, false);
