@@ -381,6 +381,7 @@
   <data name="StreakBest" xml:space="preserve"><value>Recorde: {0}</value></data>
   <data name="StreakMilestone" xml:space="preserve"><value>Sequência de {0} dias!</value></data>
   <data name="StreakStart" xml:space="preserve"><value>Comece sua sequência!</value></data>
+  <data name="StreakIncreased" xml:space="preserve"><value>+1! Sequência de {0} dias</value></data>
 
   <!-- Calculator Input Labels -->
   <data name="Input" xml:space="preserve"><value>Entrada</value></data>
@@ -424,6 +425,9 @@
 
   <!-- Portions -->
   <data name="PortionDefault" xml:space="preserve"><value>Porção</value></data>
+
+  <!-- Quick-Add Dashboard -->
+  <data name="QuickAddWeight" xml:space="preserve"><value>Registrar peso</value></data>
 
   <!-- Weekly Overview -->
   <data name="WeeklyCalories" xml:space="preserve"><value>Visão semanal</value></data>

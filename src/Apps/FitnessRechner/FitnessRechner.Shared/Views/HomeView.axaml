@@ -129,10 +129,11 @@
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                   </StackPanel>
-                  <!-- Wasser-Fortschrittsbalken -->
+                  <!-- Wasser-Fortschrittsbalken (nur bei Wert > 0 sichtbar) -->
                   <ProgressBar Value="{Binding WaterProgress}" Maximum="100"
                                Height="4" CornerRadius="2" Margin="4,2,4,0"
-                               Foreground="#22C55E" />
+                               Foreground="#22C55E"
+                               IsVisible="{Binding HasWaterProgress}" />
                 </StackPanel>
               </Border>
 
@@ -160,13 +161,106 @@
                                Foreground="{DynamicResource TextMutedBrush}"
                                VerticalAlignment="Bottom" Margin="0,0,0,2" />
                   </StackPanel>
-                  <!-- Kalorien-Fortschrittsbalken -->
+                  <!-- Kalorien-Fortschrittsbalken (nur bei Wert > 0 sichtbar) -->
                   <ProgressBar Value="{Binding CalorieProgress}" Maximum="100"
                                Height="4" CornerRadius="2" Margin="4,2,4,0"
-                               Foreground="#F59E0B" />
+                               Foreground="#F59E0B"
+                               IsVisible="{Binding HasCalorieProgress}" />
                 </StackPanel>
               </Border>
 
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- ========== Quick Actions Row ========== -->
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+          <!-- +kg Button (lila) -->
+          <Button Grid.Column="0" CornerRadius="12" Height="48" Padding="6"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Command="{Binding OpenWeightQuickAddCommand}">
+            <Button.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#8B5CF6" Offset="0" />
+                <GradientStop Color="#7C3AED" Offset="1" />
+              </LinearGradientBrush>
+            </Button.Background>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="ScaleBathroom" Width="18" Height="18" Foreground="White" />
+              <TextBlock Text="+kg" FontSize="14" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+
+          <!-- +250 ml Button (grün) -->
+          <Button Grid.Column="1" CornerRadius="12" Height="48" Padding="6"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Command="{Binding QuickAddWaterCommand}" CommandParameter="250">
+            <Button.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#22C55E" Offset="0" />
+                <GradientStop Color="#16A34A" Offset="1" />
+              </LinearGradientBrush>
+            </Button.Background>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Water" Width="18" Height="18" Foreground="White" />
+              <TextBlock Text="+250 ml" FontSize="14" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+
+          <!-- +kcal Button (orange) -->
+          <Button Grid.Column="2" CornerRadius="12" Height="48" Padding="6"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Command="{Binding OpenFoodQuickAddCommand}">
+            <Button.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#F59E0B" Offset="0" />
+                <GradientStop Color="#D97706" Offset="1" />
+              </LinearGradientBrush>
+            </Button.Background>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Fire" Width="18" Height="18" Foreground="White" />
+              <TextBlock Text="+kcal" FontSize="14" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <!-- ========== Weight Quick-Add Panel ========== -->
+        <Border Classes="Card" Padding="16" BoxShadow="{DynamicResource CardShadow}"
+                IsVisible="{Binding ShowWeightQuickAdd}">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#8B5CF6" Offset="0" />
+              <GradientStop Color="#6D28D9" Offset="1" />
+            </LinearGradientBrush>
+          </Border.Background>
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="ScaleBathroom" Width="20" Height="20" Foreground="White" />
+              <TextBlock Text="{Binding QuickAddWeightLabel}"
+                         FontSize="16" FontWeight="Bold" Foreground="White"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+            <NumericUpDown Value="{Binding QuickAddWeight}"
+                          Minimum="20" Maximum="500" Increment="0.1"
+                          FormatString="F1"
+                          HorizontalAlignment="Stretch"
+                          FontSize="18" />
+            <Grid ColumnDefinitions="*,12,*">
+              <Button Grid.Column="0" CornerRadius="10" Height="40"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      Background="#33FFFFFF"
+                      Command="{Binding CancelWeightQuickAddCommand}">
+                <TextBlock Text="{loc:Translate Cancel}" FontSize="14" Foreground="White" />
+              </Button>
+              <Button Grid.Column="2" CornerRadius="10" Height="40"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      Background="White"
+                      Command="{Binding SaveWeightQuickAddCommand}">
+                <TextBlock Text="{loc:Translate Save}" FontSize="14" FontWeight="Bold" Foreground="#7C3AED" />
+              </Button>
             </Grid>
           </StackPanel>
         </Border>

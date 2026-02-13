@@ -83,9 +83,17 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 ### Dashboard Fortschrittsbalken
 - Kalorien + Wasser Cards haben ProgressBar (4px, farbig passend zur Card)
 - `CalorieProgress` / `WaterProgress` (0-100) in MainViewModel berechnet
+- ProgressBars bei Value=0 ausgeblendet (`HasWaterProgress`/`HasCalorieProgress`)
+
+### Dashboard Quick-Add
+- 3 Gradient-Buttons zwischen Dashboard-Card und Streak-Card: +kg (lila), +250ml (grün), +kcal (orange)
+- **Gewicht**: Öffnet Quick-Add Panel (NumericUpDown, Min=20/Max=500, Increment=0.1), speichert via TrackingService
+- **Wasser**: Sofort +250ml addieren, Wasser-Ziel Celebration prüfen
+- **Kalorien**: Wechselt zu FoodSearch-Tab und öffnet Quick-Add Panel
 
 ## Changelog (Highlights)
 
+- **13.02.2026 (4)**: Dashboard-Fixes: ProgressBar bei Value=0 ausgeblendet (HasWaterProgress/HasCalorieProgress), Streak FloatingText bei jedem täglichen Update (nicht nur Meilensteinen), Dashboard Quick-Add (3 Buttons: +kg Gewicht-Panel, +250ml Wasser direkt, +kcal wechselt zu FoodSearch). 2 neue RESX-Keys (StreakIncreased, QuickAddWeight) in 6 Sprachen.
 - **13.02.2026 (3)**: Double-Back-to-Exit (Android): Zurück-Taste navigiert stufenweise zurück (Calculator schließen → Overlay schließen → Home-Tab), erst bei doppeltem Drücken innerhalb 2s wird App beendet (Toast-Hinweis). TryGoBack() in MainViewModel, OnBackPressed() in MainActivity, PressBackAgainToExit RESX-Key in 6 Sprachen.
 - **13.02.2026 (2)**: UX-Verbesserungen (7 Features): Gewichtsziel-Tracking (Ziel setzen, ProgressBar, Confetti bei Erreichen, Fortschritts-Status), Chart-Zeitraum wählbar (7T/30T/90T Toggle in Weight+Body Tabs, Preferences-persistent), Mahlzeiten nach Typ gruppiert (Frühstück/Mittag/Abend/Snack mit Icons + Zwischensummen, wiederverwendbares DataTemplate), Wochen-Kalorien Balkendiagramm (ColumnSeries, 7-Tage Übersicht), Mahlzeiten von Gestern kopieren (CopyYesterdayMeals Command), Tageszeit-Begrüßung auf Dashboard (Morgen/Tag/Abend lokalisiert), Motivierende leere Zustände (Icon + Hinweistext für Weight/BMI/BodyFat/Kalorien). 22 neue RESX-Keys in 6 Sprachen.
 - **13.02.2026**: Deep Code Review Runde 4 (12 Issues): FoodSearchService Read-Locks (GetFoodLogAsync, GetArchivableEntriesCountAsync, IsFavoriteAsync, GetFavoritesAsync, GetRecipesAsync alle mit Lock geschützt), Archive-Filter .Date-Konsistenz, SaveFoodLogToFileAsync transaktional (temp+move Pattern), FoodSearchService+TrackingService IDisposable (SemaphoreSlim-Cleanup), AndroidBarcodeService TCS-Guard (alter Scan wird bei doppeltem Aufruf cancelled), CaloriesVM UpdateLocalizedTexts (ActivityLevels bei Sprachwechsel), SettingsView DetachedFromVisualTree Event-Cleanup, ProgressView "Body Fat"+Watermark lokalisiert, FoodItem.Id unnötige GUID-Generierung entfernt (leerer String als Default)

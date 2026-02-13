@@ -111,6 +111,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(SectionCalculatorsText));
         OnPropertyChanged(nameof(StreakTitleText));
         OnPropertyChanged(nameof(GreetingText));
+        OnPropertyChanged(nameof(QuickAddWeightLabel));
         UpdateStreakDisplay();
 
         // Aktiven Calculator aktualisieren falls nötig
@@ -201,6 +202,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _waterProgress;
 
+    // ProgressBar nur anzeigen wenn Wert > 0 (vermeidet sichtbare Track-Striche bei 0)
+    public bool HasWaterProgress => WaterProgress > 0;
+    public bool HasCalorieProgress => CalorieProgress > 0;
+
+    partial void OnWaterProgressChanged(double value) => OnPropertyChanged(nameof(HasWaterProgress));
+    partial void OnCalorieProgressChanged(double value) => OnPropertyChanged(nameof(HasCalorieProgress));
+
+    // Quick-Add Properties
+    [ObservableProperty]
+    private bool _showWeightQuickAdd;
+
+    [ObservableProperty]
+    private double _quickAddWeight = 70.0;
+
+    private bool _wasWaterGoalReachedOnDashboard;
+
     // Streak
     [ObservableProperty]
     private int _currentStreak;
@@ -232,6 +249,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public string PremiumPriceText => _localization.GetString("PremiumPrice") ?? "From 3.99 €";
     public string SectionCalculatorsText => _localization.GetString("SectionCalculators") ?? "Calculators";
     public string StreakTitleText => _localization.GetString("StreakTitle") ?? "Logging Streak";
+    public string QuickAddWeightLabel => _localization.GetString("QuickAddWeight") ?? "Enter weight";
 
     // Tageszeit-Begrüßung
     public string GreetingText
@@ -263,15 +281,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public void RecordStreakActivity()
     {
+        var wasLoggedToday = _streakService.IsLoggedToday;
         var isMilestone = _streakService.RecordActivity();
         UpdateStreakDisplay();
 
         if (isMilestone)
         {
+            // Meilenstein → Confetti + spezielle Nachricht
             var milestone = _streakService.CurrentStreak;
             var text = string.Format(_localization.GetString("StreakMilestone") ?? "{0} day streak!", milestone);
             FloatingTextRequested?.Invoke(text, "streak");
             CelebrationRequested?.Invoke();
+        }
+        else if (!wasLoggedToday && _streakService.IsLoggedToday)
+        {
+            // Erster Log des Tages (kein Meilenstein) → einfaches Feedback
+            var streak = _streakService.CurrentStreak;
+            var text = string.Format(_localization.GetString("StreakIncreased") ?? "+1! {0} day streak", streak);
+            FloatingTextRequested?.Invoke(text, "streak");
         }
     }
 
@@ -552,7 +579,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool TryGoBack()
     {
-        // 1. Calculator-Page offen → schließen
+        // 1. Weight Quick-Add Panel offen → schließen
+        if (ShowWeightQuickAdd)
+        {
+            ShowWeightQuickAdd = false;
+            return true;
+        }
+
+        // 2. Calculator-Page offen → schließen
         if (CurrentPage != null)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() => CurrentPage = null);
@@ -602,6 +636,112 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void OpenProgress() { CurrentPage = null; SelectedTab = 1; }
+
+    #region Dashboard Quick-Add
+
+    [RelayCommand]
+    private void OpenWeightQuickAdd()
+    {
+        // Letztes Gewicht laden als Startwert
+        _ = LoadLastWeightAsync();
+        ShowWeightQuickAdd = true;
+    }
+
+    private async Task LoadLastWeightAsync()
+    {
+        try
+        {
+            var lastWeight = await _trackingService.GetLatestEntryAsync(FitnessRechner.Models.TrackingType.Weight);
+            if (lastWeight != null)
+                QuickAddWeight = lastWeight.Value;
+        }
+        catch { /* Standardwert beibehalten */ }
+    }
+
+    [RelayCommand]
+    private async Task SaveWeightQuickAdd()
+    {
+        try
+        {
+            if (QuickAddWeight < 20 || QuickAddWeight > 500) return;
+
+            var entry = new FitnessRechner.Models.TrackingEntry
+            {
+                Type = FitnessRechner.Models.TrackingType.Weight,
+                Value = QuickAddWeight,
+                Date = DateTime.Today
+            };
+            await _trackingService.AddEntryAsync(entry);
+
+            ShowWeightQuickAdd = false;
+            FloatingTextRequested?.Invoke($"+{QuickAddWeight:F1} kg", "info");
+            await LoadDashboardDataAsync();
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("Error") ?? "Error",
+                _localization.GetString("ErrorSavingData") ?? "Error saving data");
+        }
+    }
+
+    [RelayCommand]
+    private void CancelWeightQuickAdd() => ShowWeightQuickAdd = false;
+
+    [RelayCommand]
+    private async Task QuickAddWater(string amountStr)
+    {
+        if (!int.TryParse(amountStr, out var amount)) return;
+        try
+        {
+            var today = await _trackingService.GetLatestEntryAsync(FitnessRechner.Models.TrackingType.Water);
+
+            if (today != null && today.Date.Date == DateTime.Today)
+            {
+                today.Value += amount;
+                await _trackingService.UpdateEntryAsync(today);
+            }
+            else
+            {
+                var entry = new FitnessRechner.Models.TrackingEntry
+                {
+                    Type = FitnessRechner.Models.TrackingType.Water,
+                    Value = amount,
+                    Date = DateTime.Today
+                };
+                await _trackingService.AddEntryAsync(entry);
+            }
+
+            FloatingTextRequested?.Invoke($"+{amount} ml", "info");
+            await LoadDashboardDataAsync();
+
+            // Wasser-Ziel Celebration (einmal pro Session)
+            if (!_wasWaterGoalReachedOnDashboard && WaterProgress >= 100)
+            {
+                _wasWaterGoalReachedOnDashboard = true;
+                FloatingTextRequested?.Invoke(
+                    _localization.GetString("GoalReached") ?? "Goal reached!", "success");
+                CelebrationRequested?.Invoke();
+            }
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(
+                _localization.GetString("Error") ?? "Error",
+                _localization.GetString("ErrorSavingData") ?? "Error saving data");
+        }
+    }
+
+    [RelayCommand]
+    private void OpenFoodQuickAdd()
+    {
+        CurrentPage = null;
+        SelectedTab = 2;
+        // Quick-Add Panel im FoodSearch öffnen
+        FoodSearchViewModel.ShowQuickAddPanel = true;
+    }
+
+    #endregion
 
     private void OnAdUnavailable() =>
         MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);

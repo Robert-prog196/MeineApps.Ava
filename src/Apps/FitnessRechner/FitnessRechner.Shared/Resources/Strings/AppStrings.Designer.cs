@@ -1850,5 +1850,17 @@ namespace FitnessRechner.Resources.Strings {
                 return ResourceManager.GetString("WeeklyCalories", resourceCulture);
             }
         }
+
+        public static string StreakIncreased {
+            get {
+                return ResourceManager.GetString("StreakIncreased", resourceCulture);
+            }
+        }
+
+        public static string QuickAddWeight {
+            get {
+                return ResourceManager.GetString("QuickAddWeight", resourceCulture);
+            }
+        }
     }
 }

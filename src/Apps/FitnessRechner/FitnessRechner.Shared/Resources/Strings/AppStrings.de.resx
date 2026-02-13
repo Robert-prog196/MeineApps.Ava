@@ -382,6 +382,7 @@
   <data name="StreakBest" xml:space="preserve"><value>Rekord: {0}</value></data>
   <data name="StreakMilestone" xml:space="preserve"><value>{0}-Tage-Streak!</value></data>
   <data name="StreakStart" xml:space="preserve"><value>Starte deine Streak!</value></data>
+  <data name="StreakIncreased" xml:space="preserve"><value>+1! {0}-Tage-Streak</value></data>
 
   <data name="Input" xml:space="preserve"><value>Eingabe</value></data>
   <data name="BrocaWeight" xml:space="preserve"><value>Broca-Gewicht</value></data>
@@ -424,6 +425,9 @@
 
   <!-- Portions -->
   <data name="PortionDefault" xml:space="preserve"><value>Portion</value></data>
+
+  <!-- Quick-Add Dashboard -->
+  <data name="QuickAddWeight" xml:space="preserve"><value>Gewicht erfassen</value></data>
 
   <!-- Weekly Overview -->
   <data name="WeeklyCalories" xml:space="preserve"><value>Wochenübersicht</value></data>
