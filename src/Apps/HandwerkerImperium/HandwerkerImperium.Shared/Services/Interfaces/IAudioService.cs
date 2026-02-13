@@ -75,7 +75,16 @@ public enum GameSound
     Hammering,
 
     /// <summary>Drilling sound</summary>
-    Drilling
+    Drilling,
+
+    /// <summary>Countdown-Tick (3-2-1)</summary>
+    Countdown,
+
+    /// <summary>Muenze einsammeln</summary>
+    CoinCollect,
+
+    /// <summary>Combo-Treffer im MiniGame</summary>
+    ComboHit
 }
 
 /// <summary>
@@ -96,5 +105,11 @@ public enum VibrationType
     Success,
 
     /// <summary>Error pattern</summary>
-    Error
+    Error,
+
+    /// <summary>Level-Up Pattern (laenger)</summary>
+    LevelUp,
+
+    /// <summary>MiniGame Treffer (sehr kurz)</summary>
+    MiniGameHit
 }

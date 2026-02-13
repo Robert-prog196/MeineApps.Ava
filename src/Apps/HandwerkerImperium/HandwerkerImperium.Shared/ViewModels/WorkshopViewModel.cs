@@ -30,6 +30,11 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
 
     public event Action<string>? NavigationRequested;
 
+    /// <summary>
+    /// Wird nach erfolgreichem Upgrade gefeuert (fuer UI-Animation).
+    /// </summary>
+    public event EventHandler? UpgradeEffectRequested;
+
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -99,6 +104,20 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
     /// </summary>
     [ObservableProperty]
     private bool _hasCosts;
+
+    /// <summary>
+    /// Trend-Indikator: Pfeil hoch/runter gegenueber letztem Ladevorgang.
+    /// </summary>
+    [ObservableProperty]
+    private string _trendIndicator = "";
+
+    [ObservableProperty]
+    private bool _hasTrendUp;
+
+    [ObservableProperty]
+    private bool _hasTrendDown;
+
+    private decimal _lastNetIncome;
 
     [ObservableProperty]
     private decimal _totalEarned;
@@ -244,6 +263,19 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         IsNetNegative = netIncome < 0;
         HasCosts = totalCostsPerHour > 0;
 
+        // Trend-Indikator: Vergleich mit letztem Nettoeinkommen
+        if (_lastNetIncome != 0 && netIncome != _lastNetIncome)
+        {
+            HasTrendUp = netIncome > _lastNetIncome;
+            HasTrendDown = netIncome < _lastNetIncome;
+        }
+        else
+        {
+            HasTrendUp = false;
+            HasTrendDown = false;
+        }
+        _lastNetIncome = netIncome;
+
         UpgradeCost = workshop.UpgradeCost;
         UpgradeCostDisplay = MoneyFormatter.FormatCompact(UpgradeCost);
         HireWorkerCost = workshop.HireWorkerCost;
@@ -267,6 +299,7 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
         {
             await _audioService.PlaySoundAsync(GameSound.Upgrade);
             LoadWorkshop();
+            UpgradeEffectRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 

@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
 using Android.Widget;
 using Avalonia;
 using Avalonia.Android;
@@ -43,6 +44,9 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         base.OnCreate(savedInstanceState);
 
+        // Immersive Fullscreen aktivieren
+        EnableImmersiveMode();
+
         // Google Mobile Ads initialisieren - Ads erst nach SDK-Callback laden
         AdMobHelper.Initialize(this, () =>
         {
@@ -64,12 +68,48 @@ public class MainActivity : AvaloniaMainActivity<App>
     {
         base.OnResume();
         _adMobHelper?.Resume();
+
+        // Immersive Mode nach Resume wiederherstellen (z.B. nach Ad-Anzeige)
+        EnableImmersiveMode();
     }
 
     protected override void OnPause()
     {
         _adMobHelper?.Pause();
         base.OnPause();
+    }
+
+    /// <summary>
+    /// Immersive Fullscreen: StatusBar + NavigationBar ausblenden.
+    /// Bars erscheinen bei Swipe vom Rand kurz und verschwinden automatisch wieder.
+    /// </summary>
+    private void EnableImmersiveMode()
+    {
+        if (Window == null) return;
+
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.R) // API 30+
+        {
+            Window.SetDecorFitsSystemWindows(false);
+            var controller = Window.InsetsController;
+            if (controller != null)
+            {
+                controller.Hide(WindowInsets.Type.SystemBars());
+                controller.SystemBarsBehavior = (int)WindowInsetsControllerBehavior.ShowTransientBarsBySwipe;
+            }
+        }
+        else
+        {
+            // Fallback fuer aeltere API-Versionen (< 30)
+#pragma warning disable CA1422 // Deprecated API fuer Kompatibilitaet
+            Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(
+                SystemUiFlags.ImmersiveSticky |
+                SystemUiFlags.LayoutStable |
+                SystemUiFlags.LayoutHideNavigation |
+                SystemUiFlags.LayoutFullscreen |
+                SystemUiFlags.HideNavigation |
+                SystemUiFlags.Fullscreen);
+#pragma warning restore CA1422
+        }
     }
 
     [System.Obsolete("Avalonia nutzt OnBackPressed")]

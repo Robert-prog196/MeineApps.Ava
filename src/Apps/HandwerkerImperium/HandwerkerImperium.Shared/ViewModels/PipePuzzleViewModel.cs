@@ -88,6 +88,23 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _adWatched;
 
+    // Countdown vor Spielstart
+    [ObservableProperty]
+    private bool _isCountdownActive;
+
+    [ObservableProperty]
+    private string _countdownText = "";
+
+    // Sterne-Anzeige
+    [ObservableProperty]
+    private double _star1Opacity;
+
+    [ObservableProperty]
+    private double _star2Opacity;
+
+    [ObservableProperty]
+    private double _star3Opacity;
+
     // ═══════════════════════════════════════════════════════════════════════
     // COMPUTED PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -427,13 +444,23 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task StartGameAsync()
     {
-        if (IsPlaying) return;
+        if (IsPlaying || IsCountdownActive) return;
 
-        IsPlaying = true;
         IsResultShown = false;
         _isEnding = false;
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
+        // Countdown 3-2-1-Los!
+        IsCountdownActive = true;
+        foreach (var text in new[] { "3", "2", "1", _localizationService.GetString("CountdownGo") })
+        {
+            CountdownText = text;
+            await Task.Delay(700);
+        }
+        IsCountdownActive = false;
+
+        // Spiel starten
+        IsPlaying = true;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -595,6 +622,20 @@ public partial class PipePuzzleViewModel : ObservableObject, IDisposable
         };
 
         IsResultShown = true;
+
+        // Sterne staggered einblenden
+        Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+        int starCount = Result switch
+        {
+            MiniGameRating.Perfect => 3,
+            MiniGameRating.Good => 2,
+            MiniGameRating.Ok => 1,
+            _ => 0
+        };
+        if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
+        if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
+        if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
+
         AdWatched = false;
         CanWatchAd = _rewardedAdService.IsAvailable;
     }

@@ -11,27 +11,16 @@
     <!-- ================================================================= -->
     <!-- HEADER                                                            -->
     <!-- ================================================================= -->
-    <Border Grid.Row="0"
-            Classes="CardElevated"
-            Padding="16,12"
-            CornerRadius="0,0,12,12">
-      <Grid ColumnDefinitions="Auto,*,Auto">
-        <!-- Back Button -->
-        <Button Classes="Text"
-                Command="{Binding GoBackCommand}">
-          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24" />
-        </Button>
-
-        <!-- Title (Worker Name) -->
-        <TextBlock Grid.Column="1"
-                   Text="{Binding WorkerName}"
+    <Border Grid.Row="0" Padding="16,4,16,12">
+      <Grid ColumnDefinitions="*,Auto">
+        <!-- Worker Name (zentriert) -->
+        <TextBlock Text="{Binding WorkerName}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
-                   HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
 
         <!-- Status Badge -->
-        <Border Grid.Column="2"
+        <Border Grid.Column="1"
                 Background="{DynamicResource SurfaceBrush}"
                 CornerRadius="8"
                 Padding="12,6">

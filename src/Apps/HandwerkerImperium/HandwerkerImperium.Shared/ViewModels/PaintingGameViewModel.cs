@@ -95,6 +95,49 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _adWatched;
 
+    // Countdown vor Spielstart
+    [ObservableProperty]
+    private bool _isCountdownActive;
+
+    [ObservableProperty]
+    private string _countdownText = "";
+
+    // Sterne-Anzeige
+    [ObservableProperty]
+    private double _star1Opacity;
+
+    [ObservableProperty]
+    private double _star2Opacity;
+
+    [ObservableProperty]
+    private double _star3Opacity;
+
+    // Combo-System: Aufeinanderfolgende korrekte Treffer
+    [ObservableProperty]
+    private int _comboCount;
+
+    [ObservableProperty]
+    private string _comboDisplay = "";
+
+    [ObservableProperty]
+    private bool _isComboActive;
+
+    /// <summary>
+    /// Bester Combo im aktuellen Spiel (fuer Bonus-Berechnung).
+    /// </summary>
+    private int _bestCombo;
+
+    /// <summary>
+    /// Combo-Multiplikator: 1.0 + (bestCombo / 5) * 0.25
+    /// z.B. Combo 5 → 1.25x, Combo 10 → 1.5x, Combo 20 → 2.0x
+    /// </summary>
+    public decimal ComboMultiplier => 1.0m + (_bestCombo / 5) * 0.25m;
+
+    /// <summary>
+    /// Event fuer Combo-Animation in der View.
+    /// </summary>
+    public event EventHandler? ComboIncreased;
+
     // ═══════════════════════════════════════════════════════════════════════
     // COMPUTED PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -179,6 +222,10 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         IsPlaying = false;
         IsResultShown = false;
         PaintProgress = 0;
+        ComboCount = 0;
+        _bestCombo = 0;
+        IsComboActive = false;
+        ComboDisplay = "";
 
         // Choose a random paint color
         SelectedColor = GetRandomPaintColor();
@@ -304,14 +351,23 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task StartGameAsync()
     {
-        if (IsPlaying) return;
+        if (IsPlaying || IsCountdownActive) return;
 
-        IsPlaying = true;
         IsResultShown = false;
         _isEnding = false;
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
-        // Start countdown timer using Avalonia DispatcherTimer
+        // Countdown 3-2-1-Los!
+        IsCountdownActive = true;
+        foreach (var text in new[] { "3", "2", "1", _localizationService.GetString("CountdownGo") })
+        {
+            CountdownText = text;
+            await Task.Delay(700);
+        }
+        IsCountdownActive = false;
+
+        // Spiel starten
+        IsPlaying = true;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -344,12 +400,34 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         if (cell.IsTarget)
         {
             PaintedTargetCount++;
-            await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+
+            // Combo erhoehen
+            ComboCount++;
+            if (ComboCount > _bestCombo) _bestCombo = ComboCount;
+
+            if (ComboCount >= 3)
+            {
+                IsComboActive = true;
+                ComboDisplay = string.Format(
+                    _localizationService.GetString("ComboX"), ComboCount);
+                ComboIncreased?.Invoke(this, EventArgs.Empty);
+                await _audioService.PlaySoundAsync(GameSound.ComboHit);
+            }
+            else
+            {
+                await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+            }
         }
         else
         {
             MistakeCount++;
             cell.HasError = true;
+
+            // Combo zuruecksetzen
+            ComboCount = 0;
+            IsComboActive = false;
+            ComboDisplay = "";
+
             await _audioService.PlaySoundAsync(GameSound.Miss);
         }
 
@@ -412,16 +490,16 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         };
         await _audioService.PlaySoundAsync(sound);
 
-        // Calculate rewards
+        // Calculate rewards (Combo-Multiplikator anwenden)
         var order = _gameStateService.GetActiveOrder();
         if (order != null)
         {
             int taskCount = Math.Max(1, order.Tasks.Count);
             decimal baseReward = order.BaseReward / taskCount;
-            RewardAmount = baseReward * Result.GetRewardPercentage();
+            RewardAmount = baseReward * Result.GetRewardPercentage() * ComboMultiplier;
 
             int baseXp = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXp * Result.GetXpPercentage());
+            XpAmount = (int)(baseXp * Result.GetXpPercentage() * ComboMultiplier);
         }
 
         // Set result display
@@ -435,6 +513,20 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         };
 
         IsResultShown = true;
+
+        // Sterne staggered einblenden
+        Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+        int starCount = Result switch
+        {
+            MiniGameRating.Perfect => 3,
+            MiniGameRating.Good => 2,
+            MiniGameRating.Ok => 1,
+            _ => 0
+        };
+        if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
+        if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
+        if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
+
         AdWatched = false;
         CanWatchAd = _rewardedAdService.IsAvailable;
     }

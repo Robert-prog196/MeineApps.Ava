@@ -2426,5 +2426,23 @@
   <data name="TrainingTypeMoraleDesc" xml:space="preserve">
     <value>Reduziert Stimmungsabfall</value>
   </data>
+  <data name="NewRecord" xml:space="preserve">
+    <value>Neuer Rekord!</value>
+  </data>
+  <data name="NextMilestone" xml:space="preserve">
+    <value>Nächster Meilenstein</value>
+  </data>
+  <data name="LevelsUntilBonus" xml:space="preserve">
+    <value>Noch {0} Level bis Bonus!</value>
+  </data>
+  <data name="CountdownGo" xml:space="preserve">
+    <value>Los!</value>
+  </data>
+  <data name="ComboX" xml:space="preserve">
+    <value>Kombo x{0}</value>
+  </data>
+  <data name="TutorialUpgradeHint" xml:space="preserve">
+    <value>Tippe auf eine Werkstatt zum Upgraden!</value>
+  </data>
 
 </root>

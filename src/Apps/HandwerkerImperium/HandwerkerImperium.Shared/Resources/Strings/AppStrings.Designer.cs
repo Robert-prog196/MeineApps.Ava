@@ -1098,5 +1098,17 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string TrainingTypeEnduranceDesc => ResourceManager.GetString("TrainingTypeEnduranceDesc", resourceCulture) ?? "Reduces fatigue rate";
 
         public static string TrainingTypeMoraleDesc => ResourceManager.GetString("TrainingTypeMoraleDesc", resourceCulture) ?? "Reduces mood decay";
+
+        public static string NewRecord => ResourceManager.GetString("NewRecord", resourceCulture) ?? "New Record!";
+
+        public static string NextMilestone => ResourceManager.GetString("NextMilestone", resourceCulture) ?? "Next Milestone";
+
+        public static string LevelsUntilBonus => ResourceManager.GetString("LevelsUntilBonus", resourceCulture) ?? "{0} levels until bonus!";
+
+        public static string CountdownGo => ResourceManager.GetString("CountdownGo", resourceCulture) ?? "Go!";
+
+        public static string ComboX => ResourceManager.GetString("ComboX", resourceCulture) ?? "Combo x{0}";
+
+        public static string TutorialUpgradeHint => ResourceManager.GetString("TutorialUpgradeHint", resourceCulture) ?? "Tap a workshop to upgrade!";
     }
 }

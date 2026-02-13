@@ -9,6 +9,49 @@
              x:Class="HandwerkerImperium.Views.MainView"
              x:DataType="vm:MainViewModel">
 
+  <UserControl.Styles>
+    <!-- Bottom-Sheet Backdrop: Fade-In/Out -->
+    <Style Selector="Border.SheetBackdrop">
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.SheetBackdrop.Open">
+      <Setter Property="Opacity" Value="1" />
+      <Setter Property="IsHitTestVisible" Value="True" />
+    </Style>
+
+    <!-- Bottom-Sheet Panel: Slide-Up/Down -->
+    <Style Selector="Border.BottomSheet">
+      <Setter Property="RenderTransform" Value="translate(0px, 800px)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.BottomSheet.Open">
+      <Setter Property="RenderTransform" Value="translate(0px, 0px)" />
+    </Style>
+
+    <!-- Confirm-Dialog Bottom-Sheet (kleinere Distanz) -->
+    <Style Selector="Border.ConfirmSheet">
+      <Setter Property="RenderTransform" Value="translate(0px, 400px)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.ConfirmSheet.Open">
+      <Setter Property="RenderTransform" Value="translate(0px, 0px)" />
+    </Style>
+  </UserControl.Styles>
+
   <Grid RowDefinitions="*,Auto,Auto">
 
     <!-- ============================================ -->
@@ -91,9 +134,7 @@
       <views:WorkerMarketView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsWorkerMarketActive}"
                               DataContext="{Binding WorkerMarketViewModel}" />
 
-      <!-- Worker Profile (overlay when selected) -->
-      <views:WorkerProfileView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsWorkerProfileActive}"
-                               DataContext="{Binding WorkerProfileViewModel}" />
+      <!-- Worker Profile → als Bottom-Sheet (siehe unten) -->
 
       <!-- Buildings (overlay when selected) -->
       <views:BuildingsView IsVisible="{Binding #ContentPanel.((vm:MainViewModel)DataContext).IsBuildingsActive}"
@@ -124,13 +165,15 @@
     <Border Grid.Row="2" Height="68"
             IsVisible="{Binding !IsTabBarVisible}" />
 
-    <!-- Row 2: Bottom Tab Bar                        -->
+    <!-- Row 2: Floating Tab Bar (abgerundet, leichter Shadow) -->
     <!-- ============================================ -->
     <Border Grid.Row="2"
             Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,1,0,0"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="0,4,0,8"
+            Opacity="0.97"
+            CornerRadius="20"
+            Margin="12,0,12,8"
+            Padding="0,6,0,10"
+            BoxShadow="0 -2 12 0 #30000000"
             IsVisible="{Binding IsTabBarVisible}">
       <Grid ColumnDefinitions="*,*,*,*,*">
 
@@ -141,14 +184,21 @@
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
           <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <Border Height="3" Width="32" CornerRadius="1.5" Margin="0,0,0,2"
-                    Background="{StaticResource CraftPrimaryLightBrush}"
-                    IsVisible="{Binding IsDashboardActive}" />
             <mi:MaterialIcon Kind="Home" Width="24" Height="24"
-                             Foreground="{DynamicResource TextMutedBrush}" />
+                             Foreground="{DynamicResource TextMutedBrush}">
+              <mi:MaterialIcon.Styles>
+                <Style Selector="mi|MaterialIcon">
+                  <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+                </Style>
+              </mi:MaterialIcon.Styles>
+            </mi:MaterialIcon>
             <TextBlock Text="{loc:Translate Home}"
                        FontSize="10" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
+            <!-- Pill-Indikator (breiter, abgerundet) -->
+            <Border Height="4" Width="24" CornerRadius="2" Margin="0,2,0,0"
+                    Background="{StaticResource CraftPrimaryLightBrush}"
+                    IsVisible="{Binding IsDashboardActive}" />
           </StackPanel>
         </Button>
 
@@ -159,14 +209,14 @@
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
           <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <Border Height="3" Width="32" CornerRadius="1.5" Margin="0,0,0,2"
-                    Background="{StaticResource CraftPrimaryLightBrush}"
-                    IsVisible="{Binding IsWorkerMarketActive}" />
             <mi:MaterialIcon Kind="AccountGroup" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Workers}"
                        FontSize="10" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
+            <Border Height="4" Width="24" CornerRadius="2" Margin="0,2,0,0"
+                    Background="{StaticResource CraftPrimaryLightBrush}"
+                    IsVisible="{Binding IsWorkerMarketActive}" />
           </StackPanel>
         </Button>
 
@@ -177,14 +227,14 @@
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
           <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <Border Height="3" Width="32" CornerRadius="1.5" Margin="0,0,0,2"
-                    Background="{StaticResource CraftPrimaryLightBrush}"
-                    IsVisible="{Binding IsResearchActive}" />
             <mi:MaterialIcon Kind="FlaskOutline" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Research}"
                        FontSize="10" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
+            <Border Height="4" Width="24" CornerRadius="2" Margin="0,2,0,0"
+                    Background="{StaticResource CraftPrimaryLightBrush}"
+                    IsVisible="{Binding IsResearchActive}" />
           </StackPanel>
         </Button>
 
@@ -195,14 +245,14 @@
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
           <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <Border Height="3" Width="32" CornerRadius="1.5" Margin="0,0,0,2"
-                    Background="{StaticResource CraftPrimaryLightBrush}"
-                    IsVisible="{Binding IsShopActive}" />
             <mi:MaterialIcon Kind="Cart" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Shop}"
                        FontSize="10" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
+            <Border Height="4" Width="24" CornerRadius="2" Margin="0,2,0,0"
+                    Background="{StaticResource CraftPrimaryLightBrush}"
+                    IsVisible="{Binding IsShopActive}" />
           </StackPanel>
         </Button>
 
@@ -213,14 +263,14 @@
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
           <StackPanel Spacing="2" HorizontalAlignment="Center">
-            <Border Height="3" Width="32" CornerRadius="1.5" Margin="0,0,0,2"
-                    Background="{StaticResource CraftPrimaryLightBrush}"
-                    IsVisible="{Binding IsSettingsActive}" />
             <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Settings}"
                        FontSize="10" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
+            <Border Height="4" Width="24" CornerRadius="2" Margin="0,2,0,0"
+                    Background="{StaticResource CraftPrimaryLightBrush}"
+                    IsVisible="{Binding IsSettingsActive}" />
           </StackPanel>
         </Button>
 
@@ -266,6 +316,16 @@
                      FontSize="36" FontWeight="Bold"
                      HorizontalAlignment="Center"
                      Foreground="#22C55E" />
+          <!-- Neuer Rekord Badge -->
+          <Border Background="#30FFD700" CornerRadius="12" Padding="12,4"
+                  HorizontalAlignment="Center"
+                  IsVisible="{Binding IsOfflineNewRecord}"
+                  BoxShadow="0 0 12 0 #40FFD700">
+            <TextBlock Text="{loc:Translate NewRecord}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="#FFD700"
+                       HorizontalAlignment="Center" />
+          </Border>
           <TextBlock Text="{Binding OfflineEarningsDurationText}"
                      FontSize="12"
                      HorizontalAlignment="Center"
@@ -468,17 +528,25 @@
       </Border>
     </Border>
 
-    <!-- Generic Confirm Dialog -->
+    <!-- Generic Confirm Dialog (Bottom-Sheet Style) -->
     <Border Grid.RowSpan="3" Background="#AA000000"
-            IsVisible="{Binding IsConfirmDialogVisible}"
+            Classes="SheetBackdrop"
+            Classes.Open="{Binding IsConfirmDialogVisible}"
             PointerPressed="OnConfirmOverlayPressed">
-      <Border Background="{DynamicResource SurfaceBrush}"
-              CornerRadius="16" Padding="24"
-              MaxWidth="340" MaxHeight="300"
-              HorizontalAlignment="Center" VerticalAlignment="Center"
-              BoxShadow="0 8 24 0 #40000000"
+      <Border Classes="ConfirmSheet"
+              Classes.Open="{Binding IsConfirmDialogVisible}"
+              Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="20,20,0,0"
+              Padding="24,12,24,24"
+              VerticalAlignment="Bottom"
+              BoxShadow="0 -4 16 0 #40000000"
               PointerPressed="OnDialogContentPressed">
         <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+          <!-- Drag Handle -->
+          <Border Width="40" Height="4" CornerRadius="2"
+                  Background="{DynamicResource TextMutedBrush}"
+                  Opacity="0.4"
+                  HorizontalAlignment="Center" Margin="0,0,0,4" />
           <TextBlock Text="{Binding ConfirmDialogTitle}"
                      FontSize="20" FontWeight="Bold"
                      HorizontalAlignment="Center"
@@ -498,6 +566,33 @@
                     HorizontalContentAlignment="Center" />
           </StackPanel>
         </StackPanel>
+      </Border>
+    </Border>
+
+    <!-- Worker Profile Bottom-Sheet -->
+    <Border Grid.RowSpan="3" Background="#AA000000"
+            Classes="SheetBackdrop"
+            Classes.Open="{Binding IsWorkerProfileActive}"
+            PointerPressed="OnWorkerProfileBackdropPressed">
+      <Border Classes="BottomSheet"
+              Classes.Open="{Binding IsWorkerProfileActive}"
+              Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="20,20,0,0"
+              VerticalAlignment="Bottom"
+              MaxHeight="600"
+              BoxShadow="0 -4 16 0 #40000000"
+              PointerPressed="OnDialogContentPressed">
+        <Grid RowDefinitions="Auto,*">
+          <!-- Drag Handle -->
+          <Border Grid.Row="0"
+                  Width="40" Height="4" CornerRadius="2"
+                  Background="{DynamicResource TextMutedBrush}"
+                  Opacity="0.4"
+                  HorizontalAlignment="Center" Margin="0,10,0,6" />
+          <!-- Worker Profile Content -->
+          <views:WorkerProfileView Grid.Row="1"
+                                   DataContext="{Binding WorkerProfileViewModel}" />
+        </Grid>
       </Border>
     </Border>
 

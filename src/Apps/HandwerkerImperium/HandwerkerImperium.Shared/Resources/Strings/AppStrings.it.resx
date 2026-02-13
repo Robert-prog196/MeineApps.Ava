@@ -2412,5 +2412,23 @@
   <data name="TrainingTypeMoraleDesc" xml:space="preserve">
     <value>Riduce calo morale</value>
   </data>
+  <data name="NewRecord" xml:space="preserve">
+    <value>Nuovo record!</value>
+  </data>
+  <data name="NextMilestone" xml:space="preserve">
+    <value>Prossimo traguardo</value>
+  </data>
+  <data name="LevelsUntilBonus" xml:space="preserve">
+    <value>Ancora {0} livelli al bonus!</value>
+  </data>
+  <data name="CountdownGo" xml:space="preserve">
+    <value>Via!</value>
+  </data>
+  <data name="ComboX" xml:space="preserve">
+    <value>Combo x{0}</value>
+  </data>
+  <data name="TutorialUpgradeHint" xml:space="preserve">
+    <value>Tocca un laboratorio per migliorarlo!</value>
+  </data>
 
 </root>

@@ -120,6 +120,13 @@ public partial class MainView : UserControl
             vm.ConfirmDialogCancelCommand.Execute(null);
     }
 
+    // Worker-Profile Bottom-Sheet: Backdrop-Klick schließt das Sheet
+    private void OnWorkerProfileBackdropPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm)
+            vm.TryGoBack();
+    }
+
     // Klick auf Dialog-Inhalt: Event nicht zum Overlay durchbubblen lassen
     private void OnDialogContentPressed(object? sender, PointerPressedEventArgs e)
     {

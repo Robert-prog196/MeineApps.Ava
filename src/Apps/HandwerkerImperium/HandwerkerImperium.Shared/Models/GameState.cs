@@ -357,6 +357,22 @@ public class GameState
     public int TutorialStep { get; set; }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // UI/UX STATE
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Bisheriger Rekord fuer Offline-Einnahmen (fuer "Neuer Rekord!" Anzeige).
+    /// </summary>
+    [JsonPropertyName("maxOfflineEarnings")]
+    public decimal MaxOfflineEarnings { get; set; }
+
+    /// <summary>
+    /// Ob der Tutorial-Hint (pulsierende Umrandung bei erstem Upgrade) bereits gesehen wurde.
+    /// </summary>
+    [JsonPropertyName("hasSeenTutorialHint")]
+    public bool HasSeenTutorialHint { get; set; }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // OFFLINE
     // ═══════════════════════════════════════════════════════════════════════
 

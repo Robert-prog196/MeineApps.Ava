@@ -119,6 +119,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _levelProgress;
 
+    /// <summary>
+    /// Zeigt pulsierenden Hint um erste Workshop-Karte (Level kleiner 3, noch kein Upgrade gemacht).
+    /// </summary>
+    [ObservableProperty]
+    private bool _showTutorialHint;
+
     [ObservableProperty]
     private ObservableCollection<WorkshopDisplayModel> _workshops = [];
 
@@ -251,6 +257,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _offlineEarningsDurationText = "";
+
+    [ObservableProperty]
+    private bool _isOfflineNewRecord;
 
     [ObservableProperty]
     private bool _isDailyRewardDialogVisible;
@@ -657,6 +666,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (wasCapped)
             durationText += $" (Max. {(int)maxDuration.TotalHours}h)";
         OfflineEarningsDurationText = durationText;
+
+        // Neuer Rekord pruefen
+        IsOfflineNewRecord = earnings > _gameStateService.State.MaxOfflineEarnings;
+        if (IsOfflineNewRecord)
+            _gameStateService.State.MaxOfflineEarnings = earnings;
+
         IsOfflineEarningsDialogVisible = true;
 
         ShowOfflineEarnings?.Invoke(this, new OfflineEarningsEventArgs(
@@ -804,6 +819,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Refresh workshops
         RefreshWorkshops();
+
+        // Tutorial-Hint: Pulsierender Rahmen wenn noch nie ein Upgrade gemacht wurde
+        ShowTutorialHint = !state.HasSeenTutorialHint && state.PlayerLevel < 3;
 
         // Refresh orders
         RefreshOrders();
@@ -1239,8 +1257,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return true;
         }
 
-        // 3. Detail-Views → zurück zum Dashboard
-        if (IsWorkshopDetailActive || IsOrderDetailActive || IsWorkerProfileActive)
+        // 3. Worker-Profile Bottom-Sheet → nur Sheet schließen (darunterliegende View bleibt)
+        if (IsWorkerProfileActive)
+        {
+            IsWorkerProfileActive = false;
+            NotifyTabBarVisibility();
+            return true;
+        }
+
+        // 4. Detail-Views → zurück zum Dashboard
+        if (IsWorkshopDetailActive || IsOrderDetailActive)
         {
             SelectDashboardTab();
             return true;
@@ -1519,6 +1545,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Pure back navigation: ".." or "../.."
         if (route is ".." or "../..")
         {
+            // Worker-Profile Bottom-Sheet: nur schließen, darunterliegende View beibehalten
+            if (IsWorkerProfileActive)
+            {
+                IsWorkerProfileActive = false;
+                NotifyTabBarVisibility();
+                return;
+            }
+
             // QuickJob-Rückkehr: Belohnung nur vergeben wenn MiniGame tatsächlich gespielt wurde
             if (_activeQuickJob != null)
             {
@@ -1584,12 +1618,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // "worker?id=X" = navigate to worker profile
+        // "worker?id=X" = Worker-Profile als Bottom-Sheet Overlay (ohne Tabs zu deaktivieren)
         if (route.StartsWith("worker?id="))
         {
             var workerId = route.Replace("worker?id=", "");
             WorkerProfileViewModel.SetWorker(workerId);
-            DeactivateAllTabs();
             IsWorkerProfileActive = true;
             NotifyTabBarVisibility();
             return;
@@ -1713,6 +1746,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         // Nur den betroffenen Workshop aktualisieren statt alle
         RefreshSingleWorkshop(e.WorkshopType);
+
+        // Tutorial-Hint nach erstem Upgrade ausblenden
+        if (ShowTutorialHint)
+        {
+            ShowTutorialHint = false;
+            _gameStateService.State.HasSeenTutorialHint = true;
+            _gameStateService.MarkDirty();
+        }
     }
 
     private void OnWorkerHired(object? sender, WorkerHiredEventArgs e)

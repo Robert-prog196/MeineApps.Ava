@@ -10,11 +10,34 @@ public partial class DashboardView : UserControl
 {
     private MainViewModel? _vm;
     private readonly Random _random = new();
+    private TranslateTransform? _headerTranslate;
 
     public DashboardView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+
+        // Parallax: ScrollViewer-Event abonnieren
+        var scrollViewer = this.FindControl<ScrollViewer>("DashboardScrollViewer");
+        if (scrollViewer != null)
+            scrollViewer.ScrollChanged += OnScrollChanged;
+    }
+
+    /// <summary>
+    /// Parallax-Effekt: Header-Background verschiebt sich leicht beim Scrollen.
+    /// translateY = -scrollOffset * 0.3, maximal 20px.
+    /// </summary>
+    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        var header = this.FindControl<Border>("HeaderBorder");
+        var scrollViewer = sender as ScrollViewer;
+        if (header == null || scrollViewer == null) return;
+
+        _headerTranslate ??= new TranslateTransform();
+        header.RenderTransform = _headerTranslate;
+
+        var offset = Math.Min(scrollViewer.Offset.Y * 0.3, 20);
+        _headerTranslate.Y = -offset;
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)

@@ -281,6 +281,12 @@ public class Worker
         }
     }
 
+    /// <summary>
+    /// Tier-Farbe als Hex-String fuer UI-Binding (z.B. "#4CAF50").
+    /// </summary>
+    [JsonIgnore]
+    public string TierColorHex => Tier.GetColorKey();
+
     // ═══════════════════════════════════════════════════════════════════════
     // METHODS
     // ═══════════════════════════════════════════════════════════════════════
