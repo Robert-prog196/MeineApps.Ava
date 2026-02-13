@@ -59,6 +59,7 @@
                             </StackPanel>
                             <TextBox Text="{Binding CurrentAmount}"
                                      Watermark="0.00"
+                                     TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
                                      Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
@@ -74,6 +75,7 @@
                             </StackPanel>
                             <TextBox Text="{Binding AnnualInflationRate}"
                                      Watermark="0.00"
+                                     TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
                                      Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
@@ -89,6 +91,7 @@
                             </StackPanel>
                             <TextBox Text="{Binding Years}"
                                      Watermark="1"
+                                     TextInputOptions.ContentType="Digits"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
                                      Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
