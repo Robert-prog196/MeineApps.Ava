@@ -81,6 +81,16 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 ### Game Juice
 - **FloatingText**: Quick-Add (+/- Betrag, income=gruen, expense=rot)
 - **Celebration**: Confetti bei Budget-Analyse (CelebrationRequested Event in MainViewModel)
+- **Animationen (MainView.axaml Styles)**: DialogOverlay (Scale+Opacity 200ms), BouncingFab (Pulse 2s infinite), EmptyPulse (Opacity 2.5s), PremiumShimmer (Opacity 3s), SummaryCard (Hover translateY+BoxShadow), InputError (Shake 0.4s), AnimatedValue (Opacity-Fade 0.3s), MonthFade (Opacity 0.15s), UndoTimer (ScaleX 5s Countdown), ThemePreview (Hover Scale 1.03)
+- **Farbige Kategorie-Chips**: In QuickAdd, AddExpense, AddRecurring Dialogen (CategoryToColorBrushConverter mit Opacity)
+- **Gruppierte Transaktionen**: Date-Headers mit Tages-Summe, Notiz-Anzeige
+- **Recurring Display**: Farbiger Seitenstreifen, Countdown-Text, farbige Beträge, Inaktiv-Styling (Opacity+Strikethrough)
+- **Undo-Countdown**: Visueller Balken in Undo-Snackbars (Scale 1→0 über 5s)
+
+### Neue Converter/Models
+- **BoolToDoubleConverter**: `bool→double` für Opacity-Binding (Parameter: "TrueValue,FalseValue")
+- **RecurringDisplayItem**: Wrapper mit DueDateDisplay, CategoryColor, CategoryColorHex
+- **CategoryDisplayItem.CategoryColorHex**: Hex-Farbe aus CategoryLocalizationHelper
 
 ### Back-Navigation (Double-Back-to-Exit)
 - **MainViewModel.HandleBackPressed()**: Plattformunabhängige Logik, gibt bool zurück (true=behandelt, false=App schließen)
@@ -91,6 +101,7 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 
 ## Changelog (Highlights)
 
+- **13.02.2026 (10)**: UI/UX Verbesserungsplan (10 Batches A-J): (A) Globale Animation-Styles in MainView.axaml (DialogOverlay, BouncingFab, EmptyPulse, PremiumShimmer, SummaryCard, InputError, AnimatedValue, MonthFade, UndoTimer, ThemePreview), (B) Dialog Scale-Up Animation auf 4 Dialogen (QuickAdd, AddExpense, AddBudget, AddRecurring, Restore), (C) Farbige Kategorie-Chips in 3 Dialogen (QuickAdd, AddExpense, AddRecurring) mit CategoryToColorBrushConverter, (D) Gruppierte Transaktionsliste nach Datum mit Date-Headers + Tages-Summe + Notiz-Anzeige, (E) HomeView: EmptyPulse-Icon, SummaryCard-Hover auf Karten, PremiumShimmer auf Premium-Card, (F) Monats-Navigation Fade-Animation (MonthFade auf ScrollViewer), (G) Statistics: SummaryCard-Hover + aktive Period-Buttons mit Scale+Bold, (H) Recurring: Farbiger Seitenstreifen (Kategorie-Farbe), Countdown ("Heute/Morgen/In X Tagen fällig"), farbige Beträge (rot/grün), Inaktiv-Badge+Opacity+Strikethrough, Kategorie-Chips im Dialog, neue RESX-Keys (DaysUntilDue/DueToday/DueTomorrow in 6 Sprachen), RecurringDisplayItem-Wrapper, BoolToDoubleConverter, (I) Undo-Countdown-Balken in 3 Snackbars (5s Scale-Animation), (J) Settings: PremiumShimmer auf Premium-Card, ThemePreview-Hover (Scale 1.03) auf alle 8 Theme-Karten, DialogOverlay auf Restore-Dialog
 - **13.02.2026 (9)**: UI-Bugfixes: (1) \u20ac→€ in allen XAML StringFormats (XAML interpretiert C#-Unicode-Escapes nicht, 8 Stellen in 5 Views), (2) ToggleSwitch "On/Off"-Text entfernt (OnContent=""/OffContent=""), (3) Recurring-Dialog Toggle-Buttons mit Selected-State (rot/grün wie in ExpenseTracker, IsExpenseSelected/IsIncomeSelected Properties), (4) Kategoriefeld-Überschneidung behoben (SelectedCategory vor Categories-Notify setzen + IsExpenseSelected/IsIncomeSelected notifyen)
 - **13.02.2026 (8)**: Double-Back-to-Exit: Android-Zurücktaste navigiert schrittweise zurück (Overlays→SubPages→Calculator→Home-Tab), App schließt erst bei 2x schnellem Drücken auf Home. HandleBackPressed() in MainViewModel (plattformunabhängig), OnBackPressed()-Override in MainActivity mit Toast-Hinweis. Vollständige Overlay-Kette: BudgetAnalysis→BudgetAd→QuickAdd→RestoreDialog→AddExpense→SubPage-Dialoge→SubPage→Calculator→Tab→Home→Exit. Neuer RESX-Key "PressBackToExit" in 6 Sprachen.
 - **13.02.2026 (7)**: Bugfix-Runde 7: (1) Process.Start→UriLauncher.OpenUri in SettingsView (URL+Feedback auf Android crashte mit PlatformNotSupportedException), (2) GetNextDueDate Default-Pattern `_ => baseDate.AddDays(1)` statt `_ => baseDate` (verhindert Endlosschleife bei ungültigem RecurrencePattern-Enum), (3) _sentNotifications.Clear() bei Replace-Restore (Budget-Warnungen werden nach Daten-Replace zurückgesetzt), (4) importedCount zählt jetzt auch Budgets+RecurringTransactions (nicht nur Expenses)

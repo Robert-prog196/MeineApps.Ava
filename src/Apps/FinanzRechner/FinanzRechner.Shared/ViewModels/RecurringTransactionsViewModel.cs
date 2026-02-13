@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FinanzRechner.Helpers;
 using FinanzRechner.Models;
 using FinanzRechner.Services;
 using MeineApps.Core.Ava.Localization;
@@ -44,6 +45,25 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
     public string EditTooltipText => _localizationService.GetString("Edit") ?? "Edit";
     public string DeleteTooltipText => _localizationService.GetString("Delete") ?? "Delete";
 
+    /// <summary>Berechnet den lokalisierten Fälligkeits-Text für ein Datum.</summary>
+    public string GetDueDateDisplay(DateTime dueDate)
+    {
+        var today = DateTime.Today;
+        var days = (dueDate.Date - today).Days;
+
+        if (days == 0)
+            return _localizationService.GetString("DueToday") ?? "Heute fällig";
+        if (days == 1)
+            return _localizationService.GetString("DueTomorrow") ?? "Morgen fällig";
+        if (days > 1)
+            return string.Format(
+                _localizationService.GetString("DaysUntilDue") ?? "In {0} Tagen fällig",
+                days);
+
+        // Vergangenheit: Einfach Datum anzeigen
+        return dueDate.ToString("dd.MM.yyyy");
+    }
+
     public void UpdateLocalizedTexts()
     {
         OnPropertyChanged(nameof(RecurringTransactionsTitleText));
@@ -66,6 +86,8 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         OnPropertyChanged(nameof(UndoText));
         OnPropertyChanged(nameof(EditTooltipText));
         OnPropertyChanged(nameof(DeleteTooltipText));
+        // Liste neu laden damit DueDateDisplay aktualisiert wird
+        _ = LoadTransactionsAsync();
     }
 
     #endregion
@@ -79,6 +101,10 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
 
     [ObservableProperty]
     private ObservableCollection<RecurringTransaction> _recurringTransactions = [];
+
+    /// <summary>Anzeige-Items mit berechneten Properties (Fälligkeit, Farbe etc.)</summary>
+    [ObservableProperty]
+    private ObservableCollection<RecurringDisplayItem> _displayItems = [];
 
     [ObservableProperty]
     private bool _hasTransactions;
@@ -170,6 +196,9 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         RecurrencePattern.Yearly
     ];
 
+    [ObservableProperty]
+    private ObservableCollection<CategoryDisplayItem> _categoryItems = [];
+
     partial void OnTransactionTypeChanged(TransactionType value)
     {
         // Erst Default-Kategorie setzen, dann Liste aktualisieren
@@ -179,6 +208,35 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         OnPropertyChanged(nameof(Categories));
         OnPropertyChanged(nameof(IsExpenseSelected));
         OnPropertyChanged(nameof(IsIncomeSelected));
+        UpdateCategoryItems();
+    }
+
+    private void UpdateCategoryItems()
+    {
+        var categories = TransactionType == TransactionType.Expense
+            ? ExpenseCategories
+            : IncomeCategories;
+
+        var items = new ObservableCollection<CategoryDisplayItem>();
+        foreach (var cat in categories)
+        {
+            items.Add(new CategoryDisplayItem
+            {
+                Category = cat,
+                CategoryName = CategoryLocalizationHelper.GetLocalizedName(cat, _localizationService),
+                IsSelected = cat == SelectedCategory
+            });
+        }
+        CategoryItems = items;
+    }
+
+    [RelayCommand]
+    private void SelectCategory(CategoryDisplayItem item)
+    {
+        foreach (var cat in CategoryItems)
+            cat.IsSelected = false;
+        item.IsSelected = true;
+        SelectedCategory = item.Category;
     }
 
     [RelayCommand]
@@ -196,6 +254,19 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
             var transactions = await _expenseService.GetAllRecurringTransactionsAsync();
             RecurringTransactions = new ObservableCollection<RecurringTransaction>(transactions);
             HasTransactions = RecurringTransactions.Count > 0;
+
+            // Display-Items mit berechneten Properties erstellen
+            var items = new ObservableCollection<RecurringDisplayItem>();
+            foreach (var t in transactions)
+            {
+                items.Add(new RecurringDisplayItem
+                {
+                    Transaction = t,
+                    DueDateDisplay = GetDueDateDisplay(t.GetNextDueDate()),
+                    CategoryColor = CategoryLocalizationHelper.GetCategoryColor(t.Category)
+                });
+            }
+            DisplayItems = items;
         }
         finally
         {
@@ -208,6 +279,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
     {
         ResetForm();
         _editingTransaction = null;
+        UpdateCategoryItems();
         ShowAddDialog = true;
     }
 
@@ -302,6 +374,7 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
         EndDate = transaction.EndDate ?? DateTime.Today.AddYears(1);
         IsActive = transaction.IsActive;
 
+        UpdateCategoryItems();
         ShowAddDialog = true;
     }
 
@@ -453,4 +526,15 @@ public partial class RecurringTransactionsViewModel : ObservableObject, IDisposa
     }
 
     #endregion
+}
+
+/// <summary>Anzeige-Wrapper für RecurringTransaction mit berechneten Properties.</summary>
+public class RecurringDisplayItem
+{
+    public RecurringTransaction Transaction { get; init; } = null!;
+    public string DueDateDisplay { get; init; } = string.Empty;
+    public SkiaSharp.SKColor CategoryColor { get; init; }
+
+    /// <summary>Hex-Farbe für XAML-Binding (z.B. "#FF9800")</summary>
+    public string CategoryColorHex => $"#{CategoryColor.Red:X2}{CategoryColor.Green:X2}{CategoryColor.Blue:X2}";
 }

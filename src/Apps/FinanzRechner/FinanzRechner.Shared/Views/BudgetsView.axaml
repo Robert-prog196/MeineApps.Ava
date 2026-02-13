@@ -205,7 +205,8 @@
       <!-- Add/Edit Budget Dialog Overlay -->
       <Border IsVisible="{Binding ShowAddBudget}"
               Background="#80000000">
-        <Border Background="{DynamicResource CardBrush}"
+        <Border Classes="DialogOverlay"
+                Background="{DynamicResource CardBrush}"
                 CornerRadius="16"
                 Padding="24"
                 Margin="32"
@@ -257,7 +258,7 @@
         </Border>
       </Border>
 
-      <!-- Undo Delete Snackbar -->
+      <!-- Undo Delete Snackbar mit Countdown-Balken -->
       <Border IsVisible="{Binding ShowUndoDelete}"
               Background="{DynamicResource CardBrush}"
               CornerRadius="12"
@@ -266,25 +267,30 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom"
               ZIndex="100">
-        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
-          <TextBlock Grid.Column="0"
-                     Text="{Binding UndoMessage}"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     FontSize="14"
-                     VerticalAlignment="Center"
-                     TextTrimming="CharacterEllipsis" />
-          <Button Grid.Column="1"
-                  Content="{Binding UndoText}"
-                  Command="{Binding UndoDeleteCommand}"
-                  Classes="Primary"
-                  Padding="16,8" />
-          <Button Grid.Column="2" Classes="Text"
-                  Command="{Binding DismissUndoCommand}"
-                  Width="36" Height="36" Padding="0">
-            <mi:MaterialIcon Kind="Close" Width="18" Height="18"
-                             Foreground="{DynamicResource TextSecondaryBrush}" />
-          </Button>
-        </Grid>
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding UndoMessage}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="1"
+                    Content="{Binding UndoText}"
+                    Command="{Binding UndoDeleteCommand}"
+                    Classes="Primary"
+                    Padding="16,8" />
+            <Button Grid.Column="2" Classes="Text"
+                    Command="{Binding DismissUndoCommand}"
+                    Width="36" Height="36" Padding="0">
+              <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Button>
+          </Grid>
+          <!-- Undo-Countdown-Balken -->
+          <Border Classes="UndoTimer" Height="3" CornerRadius="2"
+                  Background="{DynamicResource AccentBrush}" />
+        </StackPanel>
       </Border>
 
     </Panel>

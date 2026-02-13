@@ -1208,4 +1208,14 @@ public partial class CategoryDisplayItem : ObservableObject
     private bool _isSelected;
 
     public string CategoryDisplay => CategoryLocalizationHelper.GetCategoryIcon(Category);
+
+    /// <summary>Hex-Farbcode der Kategorie (z.B. "#FF9800")</summary>
+    public string CategoryColorHex
+    {
+        get
+        {
+            var c = CategoryLocalizationHelper.GetCategoryColor(Category);
+            return $"#{c.Red:X2}{c.Green:X2}{c.Blue:X2}";
+        }
+    }
 }

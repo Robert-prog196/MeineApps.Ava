@@ -34,14 +34,15 @@
             Margin="0,0,0,16">
       <StackPanel Spacing="12">
 
-        <!-- Period Buttons -->
+        <!-- Period Buttons (mit Active-Scale) -->
         <WrapPanel>
           <!-- Week -->
           <Panel Margin="0,0,4,4">
             <Button Background="{DynamicResource AccentBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding IsWeekSelected}"
+                    RenderTransformOrigin="50%,50%" RenderTransform="scale(1.05,1.05)"
                     Command="{Binding SelectPeriodCommand}" CommandParameter="Week">
-              <TextBlock Text="{Binding WeekText}" Foreground="White" FontSize="12" />
+              <TextBlock Text="{Binding WeekText}" Foreground="White" FontSize="12" FontWeight="Bold" />
             </Button>
             <Button Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding !IsWeekSelected}"
@@ -54,8 +55,9 @@
           <Panel Margin="0,0,4,4">
             <Button Background="{DynamicResource AccentBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding IsMonthSelected}"
+                    RenderTransformOrigin="50%,50%" RenderTransform="scale(1.05,1.05)"
                     Command="{Binding SelectPeriodCommand}" CommandParameter="Month">
-              <TextBlock Text="{Binding MonthText}" Foreground="White" FontSize="12" />
+              <TextBlock Text="{Binding MonthText}" Foreground="White" FontSize="12" FontWeight="Bold" />
             </Button>
             <Button Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding !IsMonthSelected}"
@@ -68,8 +70,9 @@
           <Panel Margin="0,0,4,4">
             <Button Background="{DynamicResource AccentBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding IsQuarterSelected}"
+                    RenderTransformOrigin="50%,50%" RenderTransform="scale(1.05,1.05)"
                     Command="{Binding SelectPeriodCommand}" CommandParameter="Quarter">
-              <TextBlock Text="{Binding QuarterText}" Foreground="White" FontSize="12" />
+              <TextBlock Text="{Binding QuarterText}" Foreground="White" FontSize="12" FontWeight="Bold" />
             </Button>
             <Button Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding !IsQuarterSelected}"
@@ -82,8 +85,9 @@
           <Panel Margin="0,0,4,4">
             <Button Background="{DynamicResource AccentBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding IsHalfYearSelected}"
+                    RenderTransformOrigin="50%,50%" RenderTransform="scale(1.05,1.05)"
                     Command="{Binding SelectPeriodCommand}" CommandParameter="HalfYear">
-              <TextBlock Text="{Binding HalfYearText}" Foreground="White" FontSize="12" />
+              <TextBlock Text="{Binding HalfYearText}" Foreground="White" FontSize="12" FontWeight="Bold" />
             </Button>
             <Button Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding !IsHalfYearSelected}"
@@ -96,8 +100,9 @@
           <Panel Margin="0,0,4,4">
             <Button Background="{DynamicResource AccentBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding IsYearSelected}"
+                    RenderTransformOrigin="50%,50%" RenderTransform="scale(1.05,1.05)"
                     Command="{Binding SelectPeriodCommand}" CommandParameter="Year">
-              <TextBlock Text="{Binding YearText}" Foreground="White" FontSize="12" />
+              <TextBlock Text="{Binding YearText}" Foreground="White" FontSize="12" FontWeight="Bold" />
             </Button>
             <Button Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="12,8"
                     IsVisible="{Binding !IsYearSelected}"
@@ -138,10 +143,10 @@
           </Button>
         </Grid>
 
-        <!-- Summary Cards -->
+        <!-- Summary Cards (mit Hover-Effekt) -->
         <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,0,0,4">
           <!-- Einnahmen -->
-          <Border Grid.Column="0" CornerRadius="12" Padding="12">
+          <Border Grid.Column="0" Classes="SummaryCard" CornerRadius="12" Padding="12">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="#22C55E" Offset="0" />
@@ -157,7 +162,7 @@
             </StackPanel>
           </Border>
           <!-- Ausgaben -->
-          <Border Grid.Column="1" CornerRadius="12" Padding="12">
+          <Border Grid.Column="1" Classes="SummaryCard" CornerRadius="12" Padding="12">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="#EF4444" Offset="0" />
@@ -175,7 +180,7 @@
         </Grid>
 
         <!-- Bilanz -->
-        <Border CornerRadius="12" Padding="10,8" HorizontalAlignment="Stretch">
+        <Border Classes="SummaryCard" CornerRadius="12" Padding="10,8" HorizontalAlignment="Stretch">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
               <GradientStop Color="{DynamicResource PrimaryColor}" Offset="0" />
@@ -191,8 +196,8 @@
       </StackPanel>
     </Border>
 
-    <!-- Charts ScrollView -->
-    <ScrollViewer Grid.Row="2">
+    <!-- Charts ScrollView (mit Monats-Fade) -->
+    <ScrollViewer Grid.Row="2" Classes="MonthFade">
       <StackPanel Spacing="16">
 
         <!-- Empty State: No Data -->

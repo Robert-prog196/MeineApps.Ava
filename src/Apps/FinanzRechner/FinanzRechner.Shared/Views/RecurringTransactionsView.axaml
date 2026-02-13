@@ -44,98 +44,131 @@
                    HorizontalAlignment="Center" />
       </StackPanel>
 
-      <!-- Recurring Transactions List -->
+      <!-- Recurring Transactions List (mit farbigem Seitenstreifen + Countdown) -->
       <ScrollViewer IsVisible="{Binding HasTransactions}">
         <StackPanel Spacing="12" Margin="16,0">
-          <ItemsControl ItemsSource="{Binding RecurringTransactions}">
+          <ItemsControl ItemsSource="{Binding DisplayItems}">
             <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="models:RecurringTransaction">
+              <DataTemplate>
                 <Border Background="{DynamicResource CardBrush}"
                         CornerRadius="12"
-                        Padding="16"
+                        Padding="0"
                         Margin="0,0,0,8"
-                        Cursor="Hand">
-                  <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
-                    <!-- Icon -->
-                    <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-                            Background="{DynamicResource PrimaryBrush}"
-                            CornerRadius="10"
-                            Width="40" Height="40"
-                            VerticalAlignment="Top"
-                            Margin="0,0,12,0">
-                      <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                        Cursor="Hand"
+                        Opacity="{Binding Transaction.IsActive, Converter={x:Static conv:BoolToDoubleConverter.Instance}, ConverterParameter='1,0.5'}">
+                  <Grid ColumnDefinitions="4,*">
+                    <!-- Farbiger Seitenstreifen (Kategorie-Farbe) -->
+                    <Border Grid.Column="0"
+                            CornerRadius="12,0,0,12"
+                            Background="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}" />
 
-                    <!-- Description -->
-                    <TextBlock Grid.Row="0" Grid.Column="1"
-                               Text="{Binding Description}"
-                               FontSize="15" FontWeight="Bold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
-
-                    <!-- Pattern & Category (lokalisiert) -->
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                      <TextBlock Text="{Binding Pattern, Converter={x:Static conv:PatternToStringConverter.Instance}}"
-                                 FontSize="12"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="·" FontSize="12"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
-                      <TextBlock Text="{Binding Category, Converter={x:Static conv:CategoryToStringConverter.Instance}}"
-                                 FontSize="12"
-                                 Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
-
-                    <!-- Next Due Date -->
-                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                      <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).NextDueText}"
-                                 FontSize="11"
-                                 Foreground="{DynamicResource IncomeBrush}" />
-                      <TextBlock Text="{Binding StartDate, StringFormat='{}{0:dd.MM.yyyy}'}"
-                                 FontSize="11" FontWeight="Bold"
-                                 Foreground="{DynamicResource IncomeBrush}" />
-                    </StackPanel>
-
-                    <!-- Amount -->
-                    <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
-                                VerticalAlignment="Top" Spacing="4">
-                      <TextBlock Text="{Binding Amount, StringFormat='{}{0:N2} €'}"
-                                 FontSize="16" FontWeight="Bold"
-                                 Foreground="{DynamicResource TextPrimaryBrush}"
-                                 TextAlignment="Right" />
-                      <Border Background="{DynamicResource IncomeBrush}"
-                              CornerRadius="4"
-                              Padding="6,2"
-                              HorizontalAlignment="Right">
-                        <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ActiveText}"
-                                   FontSize="10" FontWeight="Bold" Foreground="White" />
+                    <!-- Content -->
+                    <Grid Grid.Column="1" Margin="12,12,16,12"
+                          ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+                      <!-- Farbiges Kategorie-Icon -->
+                      <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                              Background="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
+                              CornerRadius="10"
+                              Width="40" Height="40"
+                              VerticalAlignment="Top"
+                              Margin="0,0,12,0">
+                        <mi:MaterialIcon Kind="{Binding Transaction.Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
+                                         Width="20" Height="20"
+                                         Foreground="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                    </StackPanel>
 
-                    <!-- Action Buttons: Edit, Delete, Toggle -->
-                    <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Spacing="4"
-                                HorizontalAlignment="Right">
-                      <Button Classes="Text" Padding="6" Width="32" Height="32"
-                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTransactionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTooltipText}">
-                        <mi:MaterialIcon Kind="Pencil" Width="16" Height="16"
-                                         Foreground="{DynamicResource TextSecondaryBrush}" />
-                      </Button>
-                      <Button Classes="Text" Padding="6" Width="32" Height="32"
-                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTransactionCommand}"
-                              CommandParameter="{Binding}"
-                              ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTooltipText}">
-                        <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
-                                         Foreground="{DynamicResource ExpenseBrush}" />
-                      </Button>
-                      <Button Classes="Text" Padding="6" Width="32" Height="32"
-                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ToggleActiveCommand}"
-                              CommandParameter="{Binding}">
-                        <mi:MaterialIcon Kind="ToggleSwitch" Width="16" Height="16"
-                                         Foreground="{DynamicResource PrimaryBrush}" />
-                      </Button>
-                    </StackPanel>
+                      <!-- Beschreibung (durchgestrichen bei inaktiv) -->
+                      <Panel Grid.Row="0" Grid.Column="1">
+                        <TextBlock Text="{Binding Transaction.Description}"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   IsVisible="{Binding Transaction.IsActive}" />
+                        <TextBlock Text="{Binding Transaction.Description}"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   TextDecorations="Strikethrough"
+                                   IsVisible="{Binding !Transaction.IsActive}" />
+                      </Panel>
+
+                      <!-- Pattern & Category -->
+                      <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="{Binding Transaction.Pattern, Converter={x:Static conv:PatternToStringConverter.Instance}}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="·" FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="{Binding Transaction.Category, Converter={x:Static conv:CategoryToStringConverter.Instance}}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </StackPanel>
+
+                      <!-- Fälligkeits-Countdown -->
+                      <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4"
+                                  IsVisible="{Binding Transaction.IsActive}">
+                        <mi:MaterialIcon Kind="CalendarClock" Width="12" Height="12"
+                                         Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding DueDateDisplay}"
+                                   FontSize="11" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AccentBrush}" />
+                      </StackPanel>
+
+                      <!-- Betrag (rot für Ausgaben, grün für Einnahmen) -->
+                      <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+                                  VerticalAlignment="Top" Spacing="4">
+                        <TextBlock FontSize="16" FontWeight="Bold"
+                                   TextAlignment="Right"
+                                   Foreground="{Binding Transaction.Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
+                          <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}{1:N2} €">
+                              <Binding Path="Transaction.Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
+                              <Binding Path="Transaction.Amount" />
+                            </MultiBinding>
+                          </TextBlock.Text>
+                        </TextBlock>
+
+                        <!-- Aktiv/Inaktiv Badge -->
+                        <Panel HorizontalAlignment="Right">
+                          <Border Background="{DynamicResource IncomeBrush}"
+                                  CornerRadius="4" Padding="6,2"
+                                  IsVisible="{Binding Transaction.IsActive}">
+                            <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ActiveText}"
+                                       FontSize="10" FontWeight="Bold" Foreground="White" />
+                          </Border>
+                          <Border Background="{DynamicResource TextMutedBrush}"
+                                  CornerRadius="4" Padding="6,2"
+                                  IsVisible="{Binding !Transaction.IsActive}">
+                            <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).InactiveText}"
+                                       FontSize="10" FontWeight="Bold" Foreground="White" />
+                          </Border>
+                        </Panel>
+                      </StackPanel>
+
+                      <!-- Action Buttons -->
+                      <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                                  HorizontalAlignment="Right">
+                        <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTransactionCommand}"
+                                CommandParameter="{Binding Transaction}"
+                                ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTooltipText}">
+                          <mi:MaterialIcon Kind="Pencil" Width="16" Height="16"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Button>
+                        <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTransactionCommand}"
+                                CommandParameter="{Binding Transaction}"
+                                ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTooltipText}">
+                          <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
+                                           Foreground="{DynamicResource ExpenseBrush}" />
+                        </Button>
+                        <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ToggleActiveCommand}"
+                                CommandParameter="{Binding Transaction}">
+                          <mi:MaterialIcon Kind="ToggleSwitch" Width="16" Height="16"
+                                           Foreground="{DynamicResource PrimaryBrush}" />
+                        </Button>
+                      </StackPanel>
+                    </Grid>
                   </Grid>
                 </Border>
               </DataTemplate>
@@ -165,7 +198,8 @@
       <!-- Add/Edit Dialog Overlay -->
       <Border IsVisible="{Binding ShowAddDialog}"
               Background="#80000000">
-        <Border Background="{DynamicResource CardBrush}"
+        <Border Classes="DialogOverlay"
+                Background="{DynamicResource CardBrush}"
                 CornerRadius="16"
                 Padding="24"
                 Margin="20"
@@ -245,17 +279,46 @@
                        Text="{Binding Amount}"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
-              <ComboBox ItemsSource="{Binding Categories}"
-                        SelectedItem="{Binding SelectedCategory}"
-                        PlaceholderText="{Binding CategoryText}"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
-                        HorizontalAlignment="Stretch">
-                <ComboBox.ItemTemplate>
+              <!-- Kategorie-Chips mit farbigem Hintergrund -->
+              <ItemsControl ItemsSource="{Binding CategoryItems}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <TextBlock Text="{Binding Converter={x:Static conv:CategoryToStringConverter.Instance}}" />
+                    <Panel Margin="0,0,6,6">
+                      <!-- Selected: Volle Kategorie-Farbe -->
+                      <Button CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
+                              Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
+                              BorderBrush="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
+                              BorderThickness="2"
+                              IsVisible="{Binding IsSelected}"
+                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).SelectCategoryCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" Foreground="White" />
+                          <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" />
+                        </StackPanel>
+                      </Button>
+                      <!-- Unselected: Transparenter Kategorie-Hintergrund -->
+                      <Button CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
+                              Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.15}"
+                              BorderThickness="0"
+                              IsVisible="{Binding !IsSelected}"
+                              Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).SelectCategoryCommand}"
+                              CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" />
+                          <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center"
+                                     Foreground="{DynamicResource TextPrimaryBrush}" />
+                        </StackPanel>
+                      </Button>
+                    </Panel>
                   </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
 
               <ComboBox ItemsSource="{Binding Patterns}"
                         SelectedItem="{Binding SelectedPattern}"
@@ -304,7 +367,7 @@
         </Border>
       </Border>
 
-      <!-- Undo Delete Snackbar -->
+      <!-- Undo Delete Snackbar mit Countdown-Balken -->
       <Border IsVisible="{Binding ShowUndoDelete}"
               Background="{DynamicResource CardBrush}"
               CornerRadius="12"
@@ -313,25 +376,30 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom"
               ZIndex="100">
-        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
-          <TextBlock Grid.Column="0"
-                     Text="{Binding UndoMessage}"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     FontSize="14"
-                     VerticalAlignment="Center"
-                     TextTrimming="CharacterEllipsis" />
-          <Button Grid.Column="1"
-                  Content="{Binding UndoText}"
-                  Command="{Binding UndoDeleteCommand}"
-                  Classes="Primary"
-                  Padding="16,8" />
-          <Button Grid.Column="2" Classes="Text"
-                  Command="{Binding DismissUndoCommand}"
-                  Width="36" Height="36" Padding="0">
-            <mi:MaterialIcon Kind="Close" Width="18" Height="18"
-                             Foreground="{DynamicResource TextMutedBrush}" />
-          </Button>
-        </Grid>
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding UndoMessage}"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="1"
+                    Content="{Binding UndoText}"
+                    Command="{Binding UndoDeleteCommand}"
+                    Classes="Primary"
+                    Padding="16,8" />
+            <Button Grid.Column="2" Classes="Text"
+                    Command="{Binding DismissUndoCommand}"
+                    Width="36" Height="36" Padding="0">
+              <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+            </Button>
+          </Grid>
+          <!-- Undo-Countdown-Balken -->
+          <Border Classes="UndoTimer" Height="3" CornerRadius="2"
+                  Background="{DynamicResource AccentBrush}" />
+        </StackPanel>
       </Border>
 
     </Panel>

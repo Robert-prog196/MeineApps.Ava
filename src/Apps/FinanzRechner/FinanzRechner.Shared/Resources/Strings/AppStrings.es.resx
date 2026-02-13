@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -1096,5 +1096,14 @@
   </data>
   <data name="PressBackToExit" xml:space="preserve">
     <value>Pulsa atrás de nuevo para salir</value>
+  </data>
+  <data name="DaysUntilDue" xml:space="preserve">
+    <value>Vence en {0} d├¡as</value>
+  </data>
+  <data name="DueToday" xml:space="preserve">
+    <value>Vence hoy</value>
+  </data>
+  <data name="DueTomorrow" xml:space="preserve">
+    <value>Vence ma├▒ana</value>
   </data>
 </root>

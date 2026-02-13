@@ -12,7 +12,7 @@
   <ScrollViewer Padding="0,0,0,120">
     <StackPanel Spacing="0">
 
-      <!-- ========== A) Hero-Header ========== -->
+      <!-- ========== A) Hero-Header (Gradient passend zum Bilanz-Status) ========== -->
       <Border CornerRadius="0,0,16,16" Padding="20,20,20,16"
               Cursor="Hand">
         <Border.Background>
@@ -22,6 +22,19 @@
             <GradientStop Color="{DynamicResource AccentColor}" Offset="1" />
           </LinearGradientBrush>
         </Border.Background>
+        <!-- Dezenter Overlay-Gradient passend zum Bilanz-Status -->
+        <Border.Styles>
+          <Style Selector="Border.PositiveBalance">
+            <Setter Property="Background">
+              <Setter.Value>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                  <GradientStop Color="#0D22C55E" Offset="0" />
+                  <GradientStop Color="#1A22C55E" Offset="1" />
+                </LinearGradientBrush>
+              </Setter.Value>
+            </Setter>
+          </Style>
+        </Border.Styles>
 
         <StackPanel Spacing="10" HorizontalAlignment="Center">
 
@@ -62,12 +75,16 @@
             </StackPanel>
           </StackPanel>
 
-          <!-- Ohne Transaktionen: Untertitel -->
-          <TextBlock IsVisible="{Binding !HasTransactions}"
-                     Text="{Binding HomeSubtitleText}"
-                     FontSize="13" Foreground="#BBFFFFFF"
-                     HorizontalAlignment="Center" TextAlignment="Center"
-                     TextWrapping="Wrap" MaxWidth="300" />
+          <!-- Ohne Transaktionen: Animiertes Icon + Onboarding-Text -->
+          <StackPanel IsVisible="{Binding !HasTransactions}" Spacing="6" HorizontalAlignment="Center">
+            <Border Classes="EmptyPulse" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="WalletPlus" Width="32" Height="32" Foreground="#CCFFFFFF" />
+            </Border>
+            <TextBlock Text="{Binding HomeSubtitleText}"
+                       FontSize="13" Foreground="#BBFFFFFF"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       TextWrapping="Wrap" MaxWidth="300" />
+          </StackPanel>
 
         </StackPanel>
       </Border>
@@ -109,7 +126,7 @@
       <StackPanel Spacing="16" Margin="16,16,16,0">
 
         <!-- ========== B) Budget-Status Sektion ========== -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card SummaryCard" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasBudgets}">
           <StackPanel Spacing="12">
@@ -165,7 +182,7 @@
         </Border>
 
         <!-- ========== C) Ausgabenverteilung (Mini-Donut) ========== -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card SummaryCard" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasHomeChartData}">
           <StackPanel Spacing="8">
@@ -185,7 +202,7 @@
         </Border>
 
         <!-- ========== D) Letzte Transaktionen ========== -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card SummaryCard" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasRecentTransactions}">
           <StackPanel Spacing="10">
@@ -444,7 +461,7 @@
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                 IsVisible="{Binding !IsPremium}"
                 Command="{Binding NavigateToSettingsCommand}">
-          <Border CornerRadius="16" Padding="16" ClipToBounds="True">
+          <Border Classes="PremiumShimmer" CornerRadius="16" Padding="16" ClipToBounds="True">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
