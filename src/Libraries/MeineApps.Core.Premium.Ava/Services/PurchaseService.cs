@@ -87,6 +87,13 @@ public class PurchaseService : IPurchaseService
         return Task.FromResult(false);
     }
 
+    public virtual Task<bool> PurchaseConsumableAsync(string productId)
+    {
+        // Override in platform-specific implementation (Google Play Billing)
+        System.Diagnostics.Debug.WriteLine($"PurchaseConsumableAsync({productId}): Not implemented on this platform");
+        return Task.FromResult(false);
+    }
+
     /// <summary>
     /// Set premium status (called by platform-specific code after successful purchase)
     /// </summary>

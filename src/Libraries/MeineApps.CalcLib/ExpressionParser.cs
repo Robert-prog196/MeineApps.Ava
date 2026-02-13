@@ -135,6 +135,10 @@ public class ExpressionParser
         // Unäres Minus ist: am Anfang, nach "(", oder nach Operator
         tokens = ProcessUnaryMinus(tokens);
 
+        // Implizite Multiplikation einfügen:
+        // ")(", "Zahl(", ")Zahl" → "× " dazwischen
+        tokens = InsertImplicitMultiplication(tokens);
+
         // Validierung: Zwei Operatoren hintereinander nicht erlaubt (außer nach unärem Minus-Handling)
         for (int j = 0; j < tokens.Count - 1; j++)
         {
@@ -161,6 +165,7 @@ public class ExpressionParser
 
     /// <summary>
     /// Verarbeitet unäre Minus-Zeichen.
+    /// Konsekutive Minus werden zusammengefasst: --5 → 5, ---5 → -5
     /// Wenn gefolgt von einer Zahl: zusammenfügen ("-" + "5" → "-5")
     /// Sonst: Fallback auf "0 - x" (z.B. vor Klammern)
     /// </summary>
@@ -174,23 +179,67 @@ public class ExpressionParser
             if ((tokens[i] == "-" || tokens[i] == "−") &&
                 (i == 0 || tokens[i - 1] == "(" || IsOperator(tokens[i - 1])))
             {
-                // Unäres Minus + Zahl → negative Zahl (z.B. "10 − -5" → "10 − -5" statt "10 − 0 − 5")
-                if (i + 1 < tokens.Count && IsNumber(tokens[i + 1]))
+                // Konsekutive Minus-Zeichen zusammenfassen (--5 → 5, ---5 → -5)
+                int minusCount = 1;
+                while (i + 1 < tokens.Count && (tokens[i + 1] == "-" || tokens[i + 1] == "−"))
                 {
-                    result.Add("-" + tokens[i + 1]);
+                    minusCount++;
                     i++;
                 }
-                else
+
+                bool isNegative = minusCount % 2 == 1;
+
+                if (i + 1 < tokens.Count && IsNumber(tokens[i + 1]))
+                {
+                    // Unäres Minus + Zahl → negative/positive Zahl
+                    result.Add(isNegative ? "-" + tokens[i + 1] : tokens[i + 1]);
+                    i++;
+                }
+                else if (isNegative)
                 {
                     // Fallback für Fälle wie -(expr)
                     result.Add("0");
-                    result.Add(tokens[i]);
+                    result.Add("-");
                 }
+                // Gerade Anzahl ohne nachfolgende Zahl → hebt sich auf
             }
             else
             {
                 result.Add(tokens[i]);
             }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Fügt implizite Multiplikation ein:
+    /// ")(", "Zahl(", ")Zahl" → "×" dazwischen
+    /// z.B. (5+3)(2+1) → (5+3)×(2+1), 5(3+2) → 5×(3+2)
+    /// </summary>
+    private static List<string> InsertImplicitMultiplication(List<string> tokens)
+    {
+        var result = new List<string>(tokens.Count + 4);
+
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            result.Add(tokens[i]);
+
+            if (i + 1 >= tokens.Count) continue;
+
+            var current = tokens[i];
+            var next = tokens[i + 1];
+
+            // ")" gefolgt von "(" → implizites ×
+            // ")" gefolgt von Zahl → implizites ×
+            // Zahl gefolgt von "(" → implizites ×
+            bool needsMultiply =
+                (current == ")" && next == "(") ||
+                (current == ")" && IsNumber(next)) ||
+                (IsNumber(current) && next == "(");
+
+            if (needsMultiply)
+                result.Add("×");
         }
 
         return result;
@@ -279,6 +328,9 @@ public class ExpressionParser
                 // Zahl → auf Stack
                 if (double.TryParse(token, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
                 {
+                    // Zu große Zahlen als Fehler behandeln (z.B. 1e309 = Infinity)
+                    if (double.IsInfinity(num))
+                        return CalculationResult.Error("Number too large");
                     stack.Push(num);
                 }
                 else
@@ -305,6 +357,11 @@ public class ExpressionParser
                 }
 
                 stack.Push(result.Value);
+            }
+            else
+            {
+                // Unbekanntes Token → Fehler
+                return CalculationResult.Error($"Unknown token: {token}");
             }
         }
 

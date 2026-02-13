@@ -24,5 +24,5 @@ public class CalculationHistoryItem
     public Dictionary<string, object> Data { get; set; } = new();
     public DateTime CreatedAt { get; set; }
 
-    public string DisplayDate => CreatedAt.ToString("dd.MM.yyyy HH:mm");
+    public string DisplayDate => CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
 }

@@ -3,8 +3,8 @@ using System.Text.Json;
 namespace MeineApps.Core.Ava.Services;
 
 /// <summary>
-/// JSON-file-based calculation history service.
-/// Stores the last 10 calculations per calculator type.
+/// JSON-file-based calculation history service (thread-safe).
+/// Stores the last 30 calculations per calculator type.
 /// </summary>
 public class CalculationHistoryService : ICalculationHistoryService
 {
@@ -12,6 +12,7 @@ public class CalculationHistoryService : ICalculationHistoryService
     private const int MaxItemsPerCalculator = 30;
 
     private readonly string _historyPath;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     public CalculationHistoryService()
     {
@@ -23,6 +24,7 @@ public class CalculationHistoryService : ICalculationHistoryService
 
     public async Task AddCalculationAsync(string calculatorId, string title, Dictionary<string, object> data)
     {
+        await _semaphore.WaitAsync();
         try
         {
             var item = new CalculationHistoryItem
@@ -31,44 +33,43 @@ public class CalculationHistoryService : ICalculationHistoryService
                 CalculatorId = calculatorId,
                 Title = title,
                 Data = data,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
-            var history = await GetHistoryAsync(calculatorId, 100);
+            var history = await GetHistoryInternalAsync(calculatorId, 100);
             history.Insert(0, item);
 
             if (history.Count > MaxItemsPerCalculator)
                 history = history.Take(MaxItemsPerCalculator).ToList();
 
-            await SaveHistoryAsync(calculatorId, history);
+            await SaveHistoryInternalAsync(calculatorId, history);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: Add error: {ex.Message}");
+            // Fehler still ignorieren
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
     public async Task<List<CalculationHistoryItem>> GetHistoryAsync(string calculatorId, int maxItems = 10)
     {
+        await _semaphore.WaitAsync();
         try
         {
-            var filePath = GetHistoryFilePath(calculatorId);
-            if (!File.Exists(filePath))
-                return [];
-
-            var json = await File.ReadAllTextAsync(filePath);
-            var history = JsonSerializer.Deserialize<List<CalculationHistoryItem>>(json) ?? [];
-            return history.Take(maxItems).ToList();
+            return await GetHistoryInternalAsync(calculatorId, maxItems);
         }
-        catch (Exception ex)
+        finally
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: Load error: {ex.Message}");
-            return [];
+            _semaphore.Release();
         }
     }
 
     public async Task<CalculationHistoryItem?> GetCalculationAsync(string id)
     {
+        await _semaphore.WaitAsync();
         try
         {
             var files = Directory.GetFiles(_historyPath, "*.json");
@@ -83,13 +84,18 @@ public class CalculationHistoryService : ICalculationHistoryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: GetCalculation error: {ex.Message}");
+            // Fehler still ignorieren
             return null;
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
     public async Task DeleteCalculationAsync(string id)
     {
+        await _semaphore.WaitAsync();
         try
         {
             var files = Directory.GetFiles(_historyPath, "*.json");
@@ -111,12 +117,17 @@ public class CalculationHistoryService : ICalculationHistoryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: Delete error: {ex.Message}");
+            // Fehler still ignorieren
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
-    public Task ClearHistoryAsync(string calculatorId)
+    public async Task ClearHistoryAsync(string calculatorId)
     {
+        await _semaphore.WaitAsync();
         try
         {
             var filePath = GetHistoryFilePath(calculatorId);
@@ -125,16 +136,20 @@ public class CalculationHistoryService : ICalculationHistoryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: Clear error: {ex.Message}");
+            // Fehler still ignorieren
         }
-        return Task.CompletedTask;
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     public async Task CleanupOldEntriesAsync(int olderThanDays = 90)
     {
+        await _semaphore.WaitAsync();
         try
         {
-            var cutoffDate = DateTime.Now.AddDays(-olderThanDays);
+            var cutoffDate = DateTime.UtcNow.AddDays(-olderThanDays);
             var files = Directory.GetFiles(_historyPath, "*.json");
 
             foreach (var file in files)
@@ -153,11 +168,40 @@ public class CalculationHistoryService : ICalculationHistoryService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"CalculationHistoryService: Cleanup error: {ex.Message}");
+            // Fehler still ignorieren
+        }
+        finally
+        {
+            _semaphore.Release();
         }
     }
 
-    private async Task SaveHistoryAsync(string calculatorId, List<CalculationHistoryItem> history)
+    /// <summary>
+    /// Interner Read - MUSS innerhalb des Semaphore-Locks aufgerufen werden
+    /// </summary>
+    private async Task<List<CalculationHistoryItem>> GetHistoryInternalAsync(string calculatorId, int maxItems)
+    {
+        try
+        {
+            var filePath = GetHistoryFilePath(calculatorId);
+            if (!File.Exists(filePath))
+                return [];
+
+            var json = await File.ReadAllTextAsync(filePath);
+            var history = JsonSerializer.Deserialize<List<CalculationHistoryItem>>(json) ?? [];
+            return history.Take(maxItems).ToList();
+        }
+        catch (Exception ex)
+        {
+            // Fehler still ignorieren
+            return [];
+        }
+    }
+
+    /// <summary>
+    /// Interner Write - MUSS innerhalb des Semaphore-Locks aufgerufen werden
+    /// </summary>
+    private async Task SaveHistoryInternalAsync(string calculatorId, List<CalculationHistoryItem> history)
     {
         var filePath = GetHistoryFilePath(calculatorId);
         var json = JsonSerializer.Serialize(history, new JsonSerializerOptions { WriteIndented = true });

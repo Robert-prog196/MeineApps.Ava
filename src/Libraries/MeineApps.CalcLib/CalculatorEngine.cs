@@ -6,7 +6,7 @@ namespace MeineApps.CalcLib;
 /// </summary>
 public class CalculatorEngine
 {
-    private const double EPSILON = 1e-10;
+    private const double EPSILON = 1e-15;
 
     #region Grundrechenarten (Basic Mode)
 
@@ -103,17 +103,19 @@ public class CalculatorEngine
 
     public double E => Math.E;
 
-    public double Factorial(int n)
+    public CalculationResult Factorial(int n)
     {
-        if (n < 0) return double.NaN;
-        if (n <= 1) return 1;
+        if (n < 0) return CalculationResult.Error("Factorial of negative number");
+        if (n <= 1) return CalculationResult.Success(1);
 
         double result = 1;
         for (int i = 2; i <= n; i++)
         {
             result *= i;
+            if (double.IsInfinity(result))
+                return CalculationResult.Error("Overflow");
         }
-        return result;
+        return CalculationResult.Success(result);
     }
 
     #endregion

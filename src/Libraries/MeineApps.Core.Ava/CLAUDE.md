@@ -53,6 +53,7 @@ MeineApps.Core.Ava/
 - TimerAccentColor/Brush: Amber-Töne (Timer-Feature)
 - StopwatchAccentColor/Brush: Cyan-Töne (Stoppuhr-Feature)
 - AlarmAccentColor/Brush: Violet-Töne (Wecker-Feature)
+- PomodoroAccentColor/Brush: Rot-Töne (Pomodoro-Feature)
 
 ### Forest
 - Primary: #10B981 (Emerald)

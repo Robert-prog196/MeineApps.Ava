@@ -34,7 +34,7 @@ public class PersistentHistoryService : IHistoryService
             Expression: expression,
             Result: result,
             ResultValue: value,
-            Timestamp: DateTime.Now
+            Timestamp: DateTime.UtcNow
         );
 
         // Neueste Einträge am Anfang

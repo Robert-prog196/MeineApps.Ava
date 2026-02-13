@@ -34,6 +34,17 @@
     <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
   </Style>
 
+  <!-- Validation Error: Roter Rahmen bei ungültiger Eingabe -->
+  <Style Selector="TextBox:error">
+    <Setter Property="BorderBrush" Value="#EF4444" />
+    <Setter Property="BorderThickness" Value="2" />
+  </Style>
+
+  <Style Selector="TextBox:error:focus">
+    <Setter Property="BorderBrush" Value="#DC2626" />
+    <Setter Property="BorderThickness" Value="2" />
+  </Style>
+
   <!-- Filled TextBox -->
   <Style Selector="TextBox.Filled">
     <Setter Property="Background" Value="{DynamicResource CardBrush}" />

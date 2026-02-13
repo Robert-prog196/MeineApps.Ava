@@ -46,6 +46,12 @@ public interface IPurchaseService
     Task<bool> RestorePurchasesAsync();
 
     /// <summary>
+    /// Purchase a consumable product (e.g. golden screws, instant cash).
+    /// Platform-specific: Override in Android for real Google Play Billing.
+    /// </summary>
+    Task<bool> PurchaseConsumableAsync(string productId);
+
+    /// <summary>
     /// Event fired when premium status changes
     /// </summary>
     event EventHandler? PremiumStatusChanged;
