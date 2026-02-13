@@ -875,6 +875,23 @@ public class GameRenderer : IDisposable
             _glowPaint.MaskFilter = null;
         }
 
+        // Schutzschild-Indikator: Cyan-Glow wenn aktiv
+        if (player.HasShield)
+        {
+            float shieldPulse = MathF.Sin(_globalTimer * 4f) * 0.2f + 0.8f;
+            _glowPaint.Color = new SKColor(0, 229, 255, (byte)(100 * shieldPulse));
+            _glowPaint.MaskFilter = _mediumGlow;
+            canvas.DrawCircle(player.X, player.Y + walkBob, cs * 0.55f, _glowPaint);
+            _glowPaint.MaskFilter = null;
+
+            // Innerer Ring
+            _strokePaint.Color = new SKColor(0, 229, 255, (byte)(180 * shieldPulse));
+            _strokePaint.StrokeWidth = 1.5f;
+            _strokePaint.MaskFilter = _smallGlow;
+            canvas.DrawCircle(player.X, player.Y + walkBob, cs * 0.5f, _strokePaint);
+            _strokePaint.MaskFilter = null;
+        }
+
         // Curse-Indikator: Lila Schimmer wenn verflucht
         if (player.IsCursed)
         {
@@ -1380,6 +1397,7 @@ public class GameRenderer : IDisposable
             if (player.HasDetonator) _activePowers.Add(("DET", new SKColor(240, 40, 40)));
             if (player.HasBombpass) _activePowers.Add(("BMP", new SKColor(50, 50, 150)));
             if (player.HasFlamepass) _activePowers.Add(("FLP", new SKColor(240, 190, 40)));
+            if (player.HasShield) _activePowers.Add(("SHIELD", new SKColor(0, 229, 255)));
             if (player.HasKick) _activePowers.Add(("KICK", new SKColor(255, 165, 0)));
             if (player.HasLineBomb) _activePowers.Add(("LINE", new SKColor(0, 180, 255)));
             if (player.HasPowerBomb) _activePowers.Add(("PWR", new SKColor(255, 50, 50)));

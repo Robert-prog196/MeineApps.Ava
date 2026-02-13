@@ -840,4 +840,24 @@
     <value>Erneut drücken zum Beenden</value>
   </data>
 
+  <!-- Shield / CoinBonus / PowerUpLuck Upgrades -->
+  <data name="UpgradeShieldStart" xml:space="preserve">
+    <value>Schutzschild</value>
+  </data>
+  <data name="UpgradeShieldStartDesc" xml:space="preserve">
+    <value>Starte mit einem Schild, das einen Gegnertreffer absorbiert</value>
+  </data>
+  <data name="UpgradeCoinBonus" xml:space="preserve">
+    <value>Münzbonus</value>
+  </data>
+  <data name="UpgradeCoinBonusDesc" xml:space="preserve">
+    <value>Verdiene mehr Münzen pro Level</value>
+  </data>
+  <data name="UpgradePowerUpLuck" xml:space="preserve">
+    <value>PowerUp-Glück</value>
+  </data>
+  <data name="UpgradePowerUpLuckDesc" xml:space="preserve">
+    <value>Zusätzliche zufällige PowerUps pro Level</value>
+  </data>
+
 </root>

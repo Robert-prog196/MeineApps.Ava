@@ -41,7 +41,23 @@ public partial class GameEngine
             {
                 if (!_player.IsInvincible && !_player.HasSpawnProtection)
                 {
-                    KillPlayer();
+                    // Schutzschild absorbiert 1 Gegnerkontakt (nicht Explosionen)
+                    if (_player.HasShield)
+                    {
+                        _player.HasShield = false;
+                        // Partikel-Burst bei Shield-Absorption (Cyan)
+                        _particleSystem.Emit(_player.X, _player.Y, 16,
+                            new SKColor(0, 229, 255), 80f, 0.6f);
+                        _floatingText.Spawn(_player.X, _player.Y - 16,
+                            "SHIELD!", new SKColor(0, 229, 255), 16f, 1.2f);
+                        _soundManager.PlaySound(SoundManager.SFX_POWERUP);
+                        // Kurze Unverwundbarkeit nach Shield-Verbrauch (0.5s)
+                        _player.ActivateInvincibility(0.5f);
+                    }
+                    else
+                    {
+                        KillPlayer();
+                    }
                 }
             }
         }

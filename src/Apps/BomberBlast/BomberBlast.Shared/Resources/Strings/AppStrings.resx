@@ -840,4 +840,24 @@
     <value>Press back again to exit</value>
   </data>
 
+  <!-- Shield / CoinBonus / PowerUpLuck Upgrades -->
+  <data name="UpgradeShieldStart" xml:space="preserve">
+    <value>Shield</value>
+  </data>
+  <data name="UpgradeShieldStartDesc" xml:space="preserve">
+    <value>Start with a shield that absorbs one enemy hit</value>
+  </data>
+  <data name="UpgradeCoinBonus" xml:space="preserve">
+    <value>Coin Bonus</value>
+  </data>
+  <data name="UpgradeCoinBonusDesc" xml:space="preserve">
+    <value>Earn more coins per level</value>
+  </data>
+  <data name="UpgradePowerUpLuck" xml:space="preserve">
+    <value>Power-Up Luck</value>
+  </data>
+  <data name="UpgradePowerUpLuckDesc" xml:space="preserve">
+    <value>Extra random power-ups per level</value>
+  </data>
+
 </root>

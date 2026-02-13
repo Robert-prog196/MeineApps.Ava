@@ -47,6 +47,9 @@ public class Player : Entity
     // Diarrhea: Auto-Bomben-Timer
     public float DiarrheaTimer { get; set; }
 
+    // Schutzschild (absorbiert 1 Gegnerkontakt)
+    public bool HasShield { get; set; }
+
     // Temporary invincibility (Mystery power-up)
     public bool IsInvincible { get; private set; }
     public float InvincibilityTimer { get; private set; }
@@ -365,6 +368,7 @@ public class Player : Entity
         HasKick = false;
         HasLineBomb = false;
         HasPowerBomb = false;
+        HasShield = false;
         IsInvincible = false;
         InvincibilityTimer = 0;
         ActiveCurse = CurseType.None;
@@ -392,6 +396,7 @@ public class Player : Entity
         HasKick = false;
         HasLineBomb = false;
         HasPowerBomb = false;
+        HasShield = false;
         IsInvincible = false;
         InvincibilityTimer = 0;
         HasSpawnProtection = false;

@@ -840,4 +840,24 @@
     <value>Premi di nuovo per uscire</value>
   </data>
 
+  <!-- Shield / CoinBonus / PowerUpLuck Upgrades -->
+  <data name="UpgradeShieldStart" xml:space="preserve">
+    <value>Scudo</value>
+  </data>
+  <data name="UpgradeShieldStartDesc" xml:space="preserve">
+    <value>Inizia con uno scudo che assorbe un colpo nemico</value>
+  </data>
+  <data name="UpgradeCoinBonus" xml:space="preserve">
+    <value>Bonus monete</value>
+  </data>
+  <data name="UpgradeCoinBonusDesc" xml:space="preserve">
+    <value>Guadagna più monete per livello</value>
+  </data>
+  <data name="UpgradePowerUpLuck" xml:space="preserve">
+    <value>Fortuna PowerUp</value>
+  </data>
+  <data name="UpgradePowerUpLuckDesc" xml:space="preserve">
+    <value>PowerUp casuali extra per livello</value>
+  </data>
+
 </root>

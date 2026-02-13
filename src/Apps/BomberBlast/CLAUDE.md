@@ -34,9 +34,13 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - 8 Enemy-Typen (unterschiedliche Speed/AI-Logik)
 
 ### Coin-Economy + Shop
-- **CoinService**: Persistente Coin-Waehrung (Level-Score → Coins: 1:1 bei Level-Complete, 0.5x bei Game Over)
-- **ShopService**: 6 permanente Upgrades (StartBombs, StartFire, StartSpeed, ExtraLives, ScoreMultiplier, TimeBonus)
-- **Upgrade-Preise**: 3.000 - 75.000 Coins, Max-Levels: 1-3
+- **CoinService**: Persistente Coin-Waehrung (Level-Score ÷ 3 → Coins bei Level-Complete, ÷ 6 bei Game Over)
+- **Effizienz-Bonus**: Skaliert nach Welt (1-5), belohnt wenige Bomben (≤5/≤8/≤12)
+- **ShopService**: 9 permanente Upgrades (StartBombs, StartFire, StartSpeed, ExtraLives, ScoreMultiplier, TimeBonus, ShieldStart, CoinBonus, PowerUpLuck)
+- **Upgrade-Preise**: 1.500 - 35.000 Coins, Max-Levels: 1-3, Shop-Gesamtkosten: ~190.000 Coins
+- **ShieldStart**: Spieler startet mit Schutzschild (absorbiert 1 Gegnerkontakt, Cyan-Glow)
+- **CoinBonus**: +25%/+50% extra Coins pro Level
+- **PowerUpLuck**: 1/2 zusaetzliche zufaellige PowerUps pro Level
 
 ### Level-Gating (ProgressService)
 - 50 Story-Level in 5 Welten (World 1-5 a 10 Level) + Arcade-Modus
@@ -248,6 +252,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **13.02.2026 (9)**: Balancing + Shop-Erweiterung + Bug-Fix: Level-Complete Bug gefixt (StartGameLoop() fehlte nach Score-Verdopplungs-Overlay), HandleLevelComplete Delay 3s→1s (Engine hat eigene Iris-Wipe). Coin-Balancing: Score÷3=Coins (statt 1:1), Game-Over÷6 (statt ÷2), Effizienz-Bonus skaliert nach Welt (1-5). 3 neue Shop-Upgrades: ShieldStart (Cyan-Glow, absorbiert 1 Gegnerkontakt, 15.000), CoinBonus (+25%/+50%, 8.000/25.000), PowerUpLuck (1-2 extra PowerUps, 5.000/15.000). Shop-Gesamt: 190.000 Coins (vorher ~68.000). 6 RESX-Keys in 6 Sprachen.
 - **13.02.2026 (8)**: Round 8 Feature-Implementation (6 Features aus Best-Practices-Recherche): Kick-Bomb Mechanik (Bomb.IsSliding/SlideDirection, UpdateBombSlide, TryKickBomb bei Spielerbewegung auf Bombe), Line-Bomb PowerUp (alle Bomben in Blickrichtung platzieren, PlaceLineBombs), Power-Bomb PowerUp (Mega-Bombe Range=FireRange+MaxBombs-1, verbraucht alle Slots), Skull/Curse System (4 CurseTypes: Diarrhea/Slow/Constipation/ReverseControls, 10s Dauer, violetter Glow), Danger Telegraphing (RenderDangerWarning pulsierend rot bei Zündschnur <0.8s), Squash/Stretch Animationen (Birth-Bounce Bomben 0.3s, Slide-Stretch 15%, Enemy-Tod Squash, Player-Tod 2-Phasen). PowerUpType.cs +4 Enum-Werte +CurseType Enum, Player.cs Curse-System +3 HasX Properties, Bomb.cs Kick/Slide, GameEngine.cs ReverseControls+Diarrhea+TryKickBomb, GameEngine.Explosion.cs PlacePowerBomb+PlaceLineBombs+UpdateBombSlide, GameRenderer.cs Danger+Squash/Stretch+4 neue PowerUp-Icons+Curse-HUD, LevelGenerator.cs neue PowerUps in Level-Progression+Arcade-Pool.
 - **13.02.2026 (7)**: Round 7 Deep-Analysis (alle Dateien, 16 Findings): Bugs: Achievement-Sterne vor Score-Speicherung geprüft → SetLevelBestScore in CompleteLevel() verschoben (B-R7-1/2), "DEFEAT ALL!" FloatingText Spam jeden Frame → 2s Cooldown (B-R7-3), LastEnemyKillPoints kumuliert statt Level-Score (B-R7-6), Speed-Boost PowerUp ineffektiv bei bestehendem Speed → SpeedLevel+1 (B-R7-7), Redundantes Lives=1 in Arcade entfernt (B-R7-8), PlayerDied-State stoppt Welt (Bomben/Explosionen/Gegner) → klassisches Bomberman-Verhalten (B-R7-15), Countdown "3-2-1" bei nur 2s → START_DELAY=3f (U-R7-1). Systematisch: (int)-Cast statt MathF.Floor bei Pixel→Grid in 4 Dateien (GameEngine.Explosion, CollisionHelper, GameGrid, GameRenderer) → alle 12 Stellen gefixt (B-R7-4/10/11/12). Tutorial-Warning-Timer nutzt Echtzeit statt Slow-Motion-deltaTime (B-R7-13). Gameplay: Exit-Platzierung weniger vorhersagbar → Zufallswahl aus Blöcken ab 60% Maximaldistanz (G-R7-1). Android-Crash: SettingsVM.OpenPrivacyPolicy Process.Start → UriLauncher.OpenUri (B-R7-16). Performance: HighScoreService.GetTopScores LINQ eliminiert (P-R7-1).
 - **12.02.2026 (6)**: Round 6 Deep-Analysis + Komplett-Fixes: Bugs: Timer+Combo laufen in Echtzeit (kein Slow-Motion Exploit), Score-Multiplikator nur auf Level-Score, Victory-Coins Doppel-Credit gefixt, Exit-Prüfung inkl. Pontans + "DEFEAT ALL!" Feedback, Player.IsMarkedForRemoval entfernt, Pontan-Random als Klassenfeld, GridX/GridY mit MathF.Floor, GameOver Tap Race Condition gefixt. Achievements: IAchievementService in GameEngine injiziert (war komplett disconnected), automatische Prüfung bei Level-Complete/Kill/Wave/Stars, Speedrun-Logik gefixt (timeUsed statt timeRemaining), NoDamage-Tracking via Flag. Performance: DangerZone einmal pro Frame (PreCalculateDangerZone), GetTotalStars gecacht, ExplosionCell als struct.

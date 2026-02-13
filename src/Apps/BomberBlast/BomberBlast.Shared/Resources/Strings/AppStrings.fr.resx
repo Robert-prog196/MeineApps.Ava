@@ -840,4 +840,24 @@
     <value>Appuyez encore pour quitter</value>
   </data>
 
+  <!-- Shield / CoinBonus / PowerUpLuck Upgrades -->
+  <data name="UpgradeShieldStart" xml:space="preserve">
+    <value>Bouclier</value>
+  </data>
+  <data name="UpgradeShieldStartDesc" xml:space="preserve">
+    <value>Commencez avec un bouclier qui absorbe un coup ennemi</value>
+  </data>
+  <data name="UpgradeCoinBonus" xml:space="preserve">
+    <value>Bonus pièces</value>
+  </data>
+  <data name="UpgradeCoinBonusDesc" xml:space="preserve">
+    <value>Gagnez plus de pièces par niveau</value>
+  </data>
+  <data name="UpgradePowerUpLuck" xml:space="preserve">
+    <value>Chance PowerUp</value>
+  </data>
+  <data name="UpgradePowerUpLuckDesc" xml:space="preserve">
+    <value>PowerUps aléatoires supplémentaires par niveau</value>
+  </data>
+
 </root>

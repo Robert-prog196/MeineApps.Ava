@@ -21,5 +21,14 @@ public enum UpgradeType
     ScoreMultiplier,
 
     /// <summary>Zeitbonus verdoppeln (Max 1 Stufe)</summary>
-    TimeBonus
+    TimeBonus,
+
+    /// <summary>Schutzschild beim Level-Start (Max 1 Stufe)</summary>
+    ShieldStart,
+
+    /// <summary>Münzbonus +25%/+50% (Max 2 Stufen)</summary>
+    CoinBonus,
+
+    /// <summary>Zusätzliche PowerUps pro Level (Max 2 Stufen)</summary>
+    PowerUpLuck
 }

@@ -19,7 +19,10 @@ public class PlayerUpgrades
         { UpgradeType.StartSpeed, 1 },
         { UpgradeType.ExtraLives, 2 },
         { UpgradeType.ScoreMultiplier, 3 },
-        { UpgradeType.TimeBonus, 1 }
+        { UpgradeType.TimeBonus, 1 },
+        { UpgradeType.ShieldStart, 1 },
+        { UpgradeType.CoinBonus, 2 },
+        { UpgradeType.PowerUpLuck, 2 }
     };
 
     // Preise pro Level (Index 0 = Level 1, etc.) - ~50% reduziert fuer bessere Progression
@@ -30,7 +33,10 @@ public class PlayerUpgrades
         { UpgradeType.StartSpeed, [2500] },
         { UpgradeType.ExtraLives, [7500, 20000] },
         { UpgradeType.ScoreMultiplier, [5000, 15000, 35000] },
-        { UpgradeType.TimeBonus, [6000] }
+        { UpgradeType.TimeBonus, [6000] },
+        { UpgradeType.ShieldStart, [15000] },
+        { UpgradeType.CoinBonus, [8000, 25000] },
+        { UpgradeType.PowerUpLuck, [5000, 15000] }
     };
 
     // Score-Multiplikatoren pro Level

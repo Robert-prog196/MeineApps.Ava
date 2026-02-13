@@ -42,7 +42,13 @@ public class ShopService : IShopService
             CreateItem(UpgradeType.ScoreMultiplier, "UpgradeScoreMultiplier", "UpgradeScoreMultiplierDesc",
                 MaterialIconKind.Star, Color.Parse("#9C27B0")),
             CreateItem(UpgradeType.TimeBonus, "UpgradeTimeBonus", "UpgradeTimeBonusDesc",
-                MaterialIconKind.ClockFast, Color.Parse("#00BCD4"))
+                MaterialIconKind.ClockFast, Color.Parse("#00BCD4")),
+            CreateItem(UpgradeType.ShieldStart, "UpgradeShieldStart", "UpgradeShieldStartDesc",
+                MaterialIconKind.Shield, Color.Parse("#00E5FF")),
+            CreateItem(UpgradeType.CoinBonus, "UpgradeCoinBonus", "UpgradeCoinBonusDesc",
+                MaterialIconKind.CurrencyUsd, Color.Parse("#FFD700")),
+            CreateItem(UpgradeType.PowerUpLuck, "UpgradePowerUpLuck", "UpgradePowerUpLuckDesc",
+                MaterialIconKind.Clover, Color.Parse("#4CAF50"))
         ];
     }
 
