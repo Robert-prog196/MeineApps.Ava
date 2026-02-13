@@ -10,9 +10,11 @@ public partial class MainView : UserControl
 {
     private Point _swipeStart;
     private DateTime _swipeStartTime;
+    private DateTime _lastHistoryToggle;
     private bool _isSwiping;
-    private const double SwipeThreshold = 50;
-    private const int MinSwipeMs = 80;
+    private const double SwipeThreshold = 120;
+    private const int MinSwipeMs = 200;
+    private const int HistoryToggleCooldownMs = 500;
     private MainViewModel? _vm;
 
     public MainView()
@@ -70,28 +72,35 @@ public partial class MainView : UserControl
         var vm = DataContext as MainViewModel;
         if (vm == null || !vm.IsCalculatorActive) return;
 
+        // Cooldown: Verlauf nicht sofort wieder öffnen/schließen
+        if ((DateTime.UtcNow - _lastHistoryToggle).TotalMilliseconds < HistoryToggleCooldownMs) return;
+
         var end = e.GetPosition(this);
         var deltaX = end.X - _swipeStart.X;
         var deltaY = end.Y - _swipeStart.Y;
 
-        // Nur vertikale Swipes erkennen (nicht diagonal beim Scrollen)
-        if (Math.Abs(deltaX) > Math.Abs(deltaY)) return;
+        // Nur vertikale Swipes erkennen (mindestens 2x so viel vertikal wie horizontal)
+        if (Math.Abs(deltaY) < Math.Abs(deltaX) * 2) return;
 
-        if (deltaY < -SwipeThreshold)
+        if (deltaY < -SwipeThreshold && !vm.CalculatorViewModel.IsHistoryVisible)
         {
-            // Swipe hoch -> Verlauf anzeigen
+            // Swipe hoch -> Verlauf anzeigen (nur wenn geschlossen)
             vm.CalculatorViewModel.ShowHistoryCommand.Execute(null);
+            _lastHistoryToggle = DateTime.UtcNow;
         }
         else if (deltaY > SwipeThreshold && vm.CalculatorViewModel.IsHistoryVisible)
         {
             // Swipe runter -> Verlauf ausblenden
             vm.CalculatorViewModel.HideHistoryCommand.Execute(null);
+            _lastHistoryToggle = DateTime.UtcNow;
         }
     }
 
     private void OnHistoryBackdropTapped(object? sender, PointerPressedEventArgs e)
     {
         var vm = DataContext as MainViewModel;
-        vm?.CalculatorViewModel?.HideHistoryCommand.Execute(null);
+        if (vm?.CalculatorViewModel == null) return;
+        vm.CalculatorViewModel.HideHistoryCommand.Execute(null);
+        _lastHistoryToggle = DateTime.UtcNow;
     }
 }
