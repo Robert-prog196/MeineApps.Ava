@@ -1085,13 +1085,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (!workshop.IsUnlocked || !workshop.CanHireWorker)
             return;
 
-        // Ensure workshop exists in state
-        _gameStateService.State.GetOrCreateWorkshop(workshop.Type);
-
-        if (_gameStateService.TryHireWorker(workshop.Type))
-        {
-            await _audioService.PlaySoundAsync(GameSound.WorkerHired);
-        }
+        // Zum Arbeitermarkt navigieren statt direkt zu hiren
+        await _audioService.PlaySoundAsync(GameSound.ButtonTap);
+        SelectWorkerMarketTab();
     }
 
     [RelayCommand]
@@ -1927,10 +1923,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_floatingTextCounter % 5 == 0)
         {
             UpdateEventDisplay();
+
+            // DailyChallenge-Fortschritt aktualisieren (Service trackt intern, UI muss refreshen)
+            RefreshChallenges();
         }
         else if (HasActiveEvent)
         {
             UpdateEventTimer();
+        }
+
+        // WorkerProfile-Fortschritt aktualisieren (Training/Rest-Balken in Echtzeit)
+        if (IsWorkerProfileActive && _floatingTextCounter % 3 == 0)
+        {
+            WorkerProfileViewModel.RefreshDisplayProperties();
         }
     }
 

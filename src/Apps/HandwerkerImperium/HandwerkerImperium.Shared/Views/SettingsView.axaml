@@ -143,6 +143,12 @@
                 <Run Text="* " /><Run Text="{loc:Translate PremiumBenefitNoAds}" />
               </TextBlock>
               <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                <Run Text="* " /><Run Text="{loc:Translate PremiumBenefitIncome}" />
+              </TextBlock>
+              <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                <Run Text="* " /><Run Text="{loc:Translate PremiumBenefitGoldenScrews}" />
+              </TextBlock>
+              <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
                 <Run Text="* " /><Run Text="{loc:Translate PremiumBenefitOffline}" />
               </TextBlock>
               <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">

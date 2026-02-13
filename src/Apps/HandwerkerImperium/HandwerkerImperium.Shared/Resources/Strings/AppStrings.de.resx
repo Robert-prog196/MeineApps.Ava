@@ -2402,5 +2402,29 @@
   <data name="PressBackAgainToExit" xml:space="preserve">
     <value>Erneut drücken zum Beenden</value>
   </data>
+  <data name="PremiumBenefitIncome" xml:space="preserve">
+    <value>+50% Einkommen</value>
+  </data>
+  <data name="PremiumBenefitGoldenScrews" xml:space="preserve">
+    <value>+100% Goldschrauben aus Mini-Games</value>
+  </data>
+  <data name="TrainingTypeEfficiency" xml:space="preserve">
+    <value>Effizienz</value>
+  </data>
+  <data name="TrainingTypeEndurance" xml:space="preserve">
+    <value>Ausdauer</value>
+  </data>
+  <data name="TrainingTypeMorale" xml:space="preserve">
+    <value>Stimmung</value>
+  </data>
+  <data name="TrainingTypeEfficiencyDesc" xml:space="preserve">
+    <value>Erhöht Effizienz durch XP</value>
+  </data>
+  <data name="TrainingTypeEnduranceDesc" xml:space="preserve">
+    <value>Reduziert Ermüdungsrate</value>
+  </data>
+  <data name="TrainingTypeMoraleDesc" xml:space="preserve">
+    <value>Reduziert Stimmungsabfall</value>
+  </data>
 
 </root>

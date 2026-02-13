@@ -6,6 +6,7 @@ using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
 
+
 namespace HandwerkerImperium.ViewModels;
 
 /// <summary>
@@ -126,6 +127,31 @@ public partial class WorkerProfileViewModel : ObservableObject
     [ObservableProperty]
     private bool _showRestInfo;
 
+    // Training-Typ-Auswahl
+    [ObservableProperty]
+    private TrainingType _selectedTrainingType = TrainingType.Efficiency;
+
+    [ObservableProperty]
+    private double _trainingProgressPercent;
+
+    [ObservableProperty]
+    private string _trainingProgressText = string.Empty;
+
+    [ObservableProperty]
+    private string _enduranceBonusDisplay = string.Empty;
+
+    [ObservableProperty]
+    private string _moraleBonusDisplay = string.Empty;
+
+    [ObservableProperty]
+    private bool _canTrainEfficiency;
+
+    [ObservableProperty]
+    private bool _canTrainEndurance;
+
+    [ObservableProperty]
+    private bool _canTrainMorale;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -243,6 +269,47 @@ public partial class WorkerProfileViewModel : ObservableObject
         CanStartResting = !Worker.IsResting && !Worker.IsTraining;
         CanGiveBonus = _gameStateService.CanAfford(Worker.WagePerHour * 24m);
 
+        // Training-Typ Verfügbarkeit
+        CanTrainEfficiency = Worker.ExperienceLevel < 10;
+        CanTrainEndurance = Worker.EnduranceBonus < 0.5m;
+        CanTrainMorale = Worker.MoraleBonus < 0.5m;
+
+        // Bonus-Anzeige
+        EnduranceBonusDisplay = Worker.EnduranceBonus > 0
+            ? $"-{Worker.EnduranceBonus * 100m:F0}%"
+            : "-";
+        MoraleBonusDisplay = Worker.MoraleBonus > 0
+            ? $"-{Worker.MoraleBonus * 100m:F0}%"
+            : "-";
+
+        // Training-Fortschritt (Echtzeit)
+        if (Worker.IsTraining)
+        {
+            SelectedTrainingType = Worker.ActiveTrainingType;
+            switch (Worker.ActiveTrainingType)
+            {
+                case TrainingType.Efficiency:
+                    TrainingProgressPercent = Worker.XpForNextLevel > 0
+                        ? (double)Worker.ExperienceXp / Worker.XpForNextLevel * 100.0
+                        : 100.0;
+                    TrainingProgressText = $"{Worker.ExperienceXp}/{Worker.XpForNextLevel} XP → Lv.{Worker.ExperienceLevel + 1}";
+                    break;
+                case TrainingType.Endurance:
+                    TrainingProgressPercent = (double)(Worker.EnduranceBonus / 0.5m) * 100.0;
+                    TrainingProgressText = $"{Worker.EnduranceBonus * 100m:F1}% / 50%";
+                    break;
+                case TrainingType.Morale:
+                    TrainingProgressPercent = (double)(Worker.MoraleBonus / 0.5m) * 100.0;
+                    TrainingProgressText = $"{Worker.MoraleBonus * 100m:F1}% / 50%";
+                    break;
+            }
+        }
+        else
+        {
+            TrainingProgressPercent = 0;
+            TrainingProgressText = string.Empty;
+        }
+
         // Training-Info: Dauer bis zum nächsten Level + Kosten pro Stunde
         ShowTrainingInfo = !Worker.IsTraining && CanStartTraining;
         if (ShowTrainingInfo && Worker.ExperienceLevel < 10)
@@ -307,11 +374,18 @@ public partial class WorkerProfileViewModel : ObservableObject
     // ═══════════════════════════════════════════════════════════════════════
 
     [RelayCommand]
+    private void SelectTrainingType(string typeStr)
+    {
+        if (Enum.TryParse<TrainingType>(typeStr, out var type))
+            SelectedTrainingType = type;
+    }
+
+    [RelayCommand]
     private void StartTraining()
     {
         if (_workerId == null) return;
 
-        bool success = _workerService.StartTraining(_workerId);
+        bool success = _workerService.StartTraining(_workerId, SelectedTrainingType);
         if (success)
         {
             RefreshDisplayProperties();

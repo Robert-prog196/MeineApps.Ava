@@ -93,6 +93,21 @@ public class Worker
     [JsonPropertyName("restStartedAt")]
     public DateTime? RestStartedAt { get; set; }
 
+    [JsonPropertyName("activeTrainingType")]
+    public TrainingType ActiveTrainingType { get; set; } = TrainingType.Efficiency;
+
+    /// <summary>
+    /// Ausdauer-Bonus (0-0.5): Reduziert FatiguePerHour permanent um bis zu 50%.
+    /// </summary>
+    [JsonPropertyName("enduranceBonus")]
+    public decimal EnduranceBonus { get; set; }
+
+    /// <summary>
+    /// Stimmungs-Bonus (0-0.5): Reduziert MoodDecayPerHour permanent um bis zu 50%.
+    /// </summary>
+    [JsonPropertyName("moraleBonus")]
+    public decimal MoraleBonus { get; set; }
+
     [JsonPropertyName("trainingStartedAt")]
     public DateTime? TrainingStartedAt { get; set; }
 
@@ -165,16 +180,16 @@ public class Worker
     }
 
     /// <summary>
-    /// Mood decay rate per hour (base 3%, modified by personality and buildings).
+    /// Mood decay rate per hour (base 3%, modified by personality, buildings und MoraleBonus).
     /// </summary>
     [JsonIgnore]
-    public decimal MoodDecayPerHour => 3m * Personality.GetMoodDecayMultiplier();
+    public decimal MoodDecayPerHour => 3m * Personality.GetMoodDecayMultiplier() * (1m - MoraleBonus);
 
     /// <summary>
-    /// Fatigue increase per hour of work (base 12.5, 8h to exhaust).
+    /// Fatigue increase per hour of work (base 12.5, 8h to exhaust, reduziert durch EnduranceBonus).
     /// </summary>
     [JsonIgnore]
-    public decimal FatiguePerHour => 12.5m * Personality.GetFatigueMultiplier();
+    public decimal FatiguePerHour => 12.5m * Personality.GetFatigueMultiplier() * (1m - EnduranceBonus);
 
     /// <summary>
     /// Hours needed to fully rest (base 4h).

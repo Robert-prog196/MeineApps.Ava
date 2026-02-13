@@ -2388,5 +2388,29 @@
   <data name="PressBackAgainToExit" xml:space="preserve">
     <value>Premi di nuovo per uscire</value>
   </data>
+  <data name="PremiumBenefitIncome" xml:space="preserve">
+    <value>+50% Entrate</value>
+  </data>
+  <data name="PremiumBenefitGoldenScrews" xml:space="preserve">
+    <value>+100% Viti Dorate dai Mini-Giochi</value>
+  </data>
+  <data name="TrainingTypeEfficiency" xml:space="preserve">
+    <value>Efficienza</value>
+  </data>
+  <data name="TrainingTypeEndurance" xml:space="preserve">
+    <value>Resistenza</value>
+  </data>
+  <data name="TrainingTypeMorale" xml:space="preserve">
+    <value>Morale</value>
+  </data>
+  <data name="TrainingTypeEfficiencyDesc" xml:space="preserve">
+    <value>Aumenta efficienza con XP</value>
+  </data>
+  <data name="TrainingTypeEnduranceDesc" xml:space="preserve">
+    <value>Riduce tasso di fatica</value>
+  </data>
+  <data name="TrainingTypeMoraleDesc" xml:space="preserve">
+    <value>Riduce calo morale</value>
+  </data>
 
 </root>

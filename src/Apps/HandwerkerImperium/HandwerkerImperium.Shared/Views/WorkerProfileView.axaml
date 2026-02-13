@@ -211,7 +211,74 @@
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
-            <!-- Train / Stop Training -->
+            <!-- Training-Typ-Auswahl (3 Buttons) -->
+            <StackPanel IsVisible="{Binding !IsTraining}" Spacing="6">
+              <TextBlock Text="{loc:Translate TrainingTypeEfficiency}"
+                         FontSize="13" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         IsVisible="{Binding !IsTraining}" />
+              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
+                <!-- Effizienz -->
+                <Button Grid.Column="0" Classes="Secondary"
+                        Command="{Binding SelectTrainingTypeCommand}"
+                        CommandParameter="Efficiency"
+                        IsEnabled="{Binding CanTrainEfficiency}"
+                        HorizontalAlignment="Stretch" Padding="8,8">
+                  <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <mi:MaterialIcon Kind="Dumbbell" Width="20" Height="20"
+                                     HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate TrainingTypeEfficiency}"
+                               FontSize="11" TextAlignment="Center" />
+                  </StackPanel>
+                </Button>
+                <!-- Ausdauer -->
+                <Button Grid.Column="1" Classes="Secondary"
+                        Command="{Binding SelectTrainingTypeCommand}"
+                        CommandParameter="Endurance"
+                        IsEnabled="{Binding CanTrainEndurance}"
+                        HorizontalAlignment="Stretch" Padding="8,8">
+                  <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <mi:MaterialIcon Kind="Run" Width="20" Height="20"
+                                     HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate TrainingTypeEndurance}"
+                               FontSize="11" TextAlignment="Center" />
+                  </StackPanel>
+                </Button>
+                <!-- Stimmung -->
+                <Button Grid.Column="2" Classes="Secondary"
+                        Command="{Binding SelectTrainingTypeCommand}"
+                        CommandParameter="Morale"
+                        IsEnabled="{Binding CanTrainMorale}"
+                        HorizontalAlignment="Stretch" Padding="8,8">
+                  <StackPanel HorizontalAlignment="Center" Spacing="2">
+                    <mi:MaterialIcon Kind="EmoticonHappy" Width="20" Height="20"
+                                     HorizontalAlignment="Center" />
+                    <TextBlock Text="{loc:Translate TrainingTypeMorale}"
+                               FontSize="11" TextAlignment="Center" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+
+              <!-- Ausdauer + Stimmungs-Bonus-Anzeige -->
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,2,0,0">
+                <StackPanel Spacing="2">
+                  <TextBlock Text="{loc:Translate TrainingTypeEnduranceDesc}"
+                             FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Text="{Binding EnduranceBonusDisplay}"
+                             FontSize="12" FontWeight="SemiBold"
+                             Foreground="{DynamicResource SuccessBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="2">
+                  <TextBlock Text="{loc:Translate TrainingTypeMoraleDesc}"
+                             FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Text="{Binding MoraleBonusDisplay}"
+                             FontSize="12" FontWeight="SemiBold"
+                             Foreground="{DynamicResource SuccessBrush}" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+
+            <!-- Training starten / stoppen -->
             <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
               <StackPanel>
                 <Button Classes="Primary"
@@ -237,7 +304,20 @@
                     <TextBlock Text="{loc:Translate StopTraining}" FontSize="13" />
                   </StackPanel>
                 </Button>
-                <!-- Training-Info -->
+
+                <!-- Training-Fortschritt (während Training aktiv) -->
+                <StackPanel IsVisible="{Binding IsTraining}" Margin="0,6,0,0" Spacing="4">
+                  <ProgressBar Value="{Binding TrainingProgressPercent}"
+                               Maximum="100"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}"
+                               Height="6" />
+                  <TextBlock Text="{Binding TrainingProgressText}"
+                             FontSize="11"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Training-Info (vor Training) -->
                 <StackPanel IsVisible="{Binding ShowTrainingInfo}" Margin="0,4,0,0" Spacing="2">
                   <TextBlock Text="{Binding TrainingTimeDisplay}"
                              FontSize="11"

@@ -56,11 +56,25 @@ public class QuickJobService : IQuickJobService
     public List<QuickJob> GetAvailableJobs()
     {
         var jobs = _gameStateService.State.QuickJobs;
+        var level = _gameStateService.State.PlayerLevel;
         foreach (var job in jobs)
         {
+            // Belohnungen bei jedem Abruf neu berechnen (skaliert mit aktuellem Einkommen)
+            if (!job.IsCompleted)
+                RecalculateRewards(job, level);
             PopulateDisplayFields(job);
         }
         return jobs;
+    }
+
+    /// <summary>
+    /// Berechnet Belohnungen eines QuickJobs neu basierend auf aktuellem Einkommen.
+    /// </summary>
+    private void RecalculateRewards(QuickJob job, int level)
+    {
+        var (reward, xpReward) = CalculateQuickJobRewards(level);
+        job.Reward = reward;
+        job.XpReward = xpReward;
     }
 
     public void GenerateJobs(int count = 5)

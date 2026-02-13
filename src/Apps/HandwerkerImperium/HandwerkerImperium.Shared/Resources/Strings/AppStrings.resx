@@ -2406,4 +2406,29 @@
     <value>Press back again to exit</value>
   </data>
 
+  <data name="PremiumBenefitIncome" xml:space="preserve">
+    <value>+50% Income</value>
+  </data>
+  <data name="PremiumBenefitGoldenScrews" xml:space="preserve">
+    <value>+100% Golden Screws from Mini-Games</value>
+  </data>
+  <data name="TrainingTypeEfficiency" xml:space="preserve">
+    <value>Efficiency Training</value>
+  </data>
+  <data name="TrainingTypeEndurance" xml:space="preserve">
+    <value>Endurance Training</value>
+  </data>
+  <data name="TrainingTypeMorale" xml:space="preserve">
+    <value>Morale Training</value>
+  </data>
+  <data name="TrainingTypeEfficiencyDesc" xml:space="preserve">
+    <value>Increases efficiency through XP</value>
+  </data>
+  <data name="TrainingTypeEnduranceDesc" xml:space="preserve">
+    <value>Reduces fatigue rate</value>
+  </data>
+  <data name="TrainingTypeMoraleDesc" xml:space="preserve">
+    <value>Reduces mood decay</value>
+  </data>
+
 </root>

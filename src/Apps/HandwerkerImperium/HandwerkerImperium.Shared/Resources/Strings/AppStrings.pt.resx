@@ -2388,5 +2388,29 @@
   <data name="PressBackAgainToExit" xml:space="preserve">
     <value>Pressione voltar novamente para sair</value>
   </data>
+  <data name="PremiumBenefitIncome" xml:space="preserve">
+    <value>+50% Renda</value>
+  </data>
+  <data name="PremiumBenefitGoldenScrews" xml:space="preserve">
+    <value>+100% Parafusos Dourados de Mini-Jogos</value>
+  </data>
+  <data name="TrainingTypeEfficiency" xml:space="preserve">
+    <value>Eficiência</value>
+  </data>
+  <data name="TrainingTypeEndurance" xml:space="preserve">
+    <value>Resistência</value>
+  </data>
+  <data name="TrainingTypeMorale" xml:space="preserve">
+    <value>Humor</value>
+  </data>
+  <data name="TrainingTypeEfficiencyDesc" xml:space="preserve">
+    <value>Aumenta eficiência por XP</value>
+  </data>
+  <data name="TrainingTypeEnduranceDesc" xml:space="preserve">
+    <value>Reduz taxa de fadiga</value>
+  </data>
+  <data name="TrainingTypeMoraleDesc" xml:space="preserve">
+    <value>Reduz perda de humor</value>
+  </data>
 
 </root>

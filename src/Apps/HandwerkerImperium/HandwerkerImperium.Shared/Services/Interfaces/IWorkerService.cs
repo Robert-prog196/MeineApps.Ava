@@ -3,6 +3,8 @@ using HandwerkerImperium.Models.Enums;
 
 namespace HandwerkerImperium.Services.Interfaces;
 
+
+
 /// <summary>
 /// Manages worker hiring, firing, training, resting, and market rotation.
 /// </summary>
@@ -24,9 +26,9 @@ public interface IWorkerService
     bool TransferWorker(string workerId, WorkshopType targetWorkshop);
 
     /// <summary>
-    /// Starts worker training (costs money, gains XP).
+    /// Starts worker training with the specified type.
     /// </summary>
-    bool StartTraining(string workerId);
+    bool StartTraining(string workerId, TrainingType trainingType = TrainingType.Efficiency);
 
     /// <summary>
     /// Stops worker training.

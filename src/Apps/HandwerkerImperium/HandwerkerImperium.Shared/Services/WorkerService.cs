@@ -110,15 +110,22 @@ public class WorkerService : IWorkerService
         }
     }
 
-    public bool StartTraining(string workerId)
+    public bool StartTraining(string workerId, TrainingType trainingType = TrainingType.Efficiency)
     {
         lock (_lock)
         {
             var worker = GetWorker(workerId);
             if (worker == null || worker.IsTraining || worker.IsResting) return false;
-            if (worker.ExperienceLevel >= 10) return false;
+
+            // Effizienz-Training nur bis Level 10
+            if (trainingType == TrainingType.Efficiency && worker.ExperienceLevel >= 10) return false;
+            // Ausdauer-Training nur bis 50% Reduktion
+            if (trainingType == TrainingType.Endurance && worker.EnduranceBonus >= 0.5m) return false;
+            // Stimmungs-Training nur bis 50% Reduktion
+            if (trainingType == TrainingType.Morale && worker.MoraleBonus >= 0.5m) return false;
 
             worker.IsTraining = true;
+            worker.ActiveTrainingType = trainingType;
             worker.TrainingStartedAt = DateTime.UtcNow;
             return true;
         }
@@ -273,6 +280,25 @@ public class WorkerService : IWorkerService
         var trainingCenter = state.GetBuilding(BuildingType.TrainingCenter);
         decimal trainingMultiplier = trainingCenter?.TrainingSpeedMultiplier ?? 1m;
 
+        switch (worker.ActiveTrainingType)
+        {
+            case TrainingType.Efficiency:
+                UpdateEfficiencyTraining(worker, deltaHours, trainingMultiplier);
+                break;
+            case TrainingType.Endurance:
+                UpdateEnduranceTraining(worker, deltaHours, trainingMultiplier);
+                break;
+            case TrainingType.Morale:
+                UpdateMoraleTraining(worker, deltaHours, trainingMultiplier);
+                break;
+        }
+
+        // Training erhöht Erschöpfung (langsamer als Arbeiten)
+        worker.Fatigue = Math.Min(100m, worker.Fatigue + worker.FatiguePerHour * 0.5m * deltaHours);
+    }
+
+    private void UpdateEfficiencyTraining(Worker worker, decimal deltaHours, decimal trainingMultiplier)
+    {
         // XP-Gewinn (mit Gebäude-Multiplikator, Akkumulator für fraktionale XP)
         decimal xpGain = worker.TrainingXpPerHour * deltaHours * worker.Personality.GetXpMultiplier() * trainingMultiplier;
         worker.TrainingXpAccumulator += xpGain;
@@ -289,16 +315,43 @@ public class WorkerService : IWorkerService
             worker.ExperienceXp -= worker.XpForNextLevel;
             worker.ExperienceLevel++;
 
-            // Increase base efficiency on level up
+            // Effizienz-Steigerung bei Level-Up
             var tierMax = worker.Tier.GetMaxEfficiency();
             var tierMin = worker.Tier.GetMinEfficiency();
             worker.Efficiency = Math.Min(tierMax, worker.Efficiency + (tierMax - tierMin) * 0.05m);
 
             WorkerLevelUp?.Invoke(this, worker);
         }
+    }
 
-        // Training also increases fatigue (slower than working)
-        worker.Fatigue = Math.Min(100m, worker.Fatigue + worker.FatiguePerHour * 0.5m * deltaHours);
+    private static void UpdateEnduranceTraining(Worker worker, decimal deltaHours, decimal trainingMultiplier)
+    {
+        // Ausdauer-Bonus: +0.05 pro Stunde Training (max 0.5 = 50% Reduktion)
+        decimal gain = 0.05m * deltaHours * trainingMultiplier;
+        worker.EnduranceBonus = Math.Min(0.5m, worker.EnduranceBonus + gain);
+
+        // Automatisch stoppen wenn Maximum erreicht
+        if (worker.EnduranceBonus >= 0.5m)
+        {
+            worker.EnduranceBonus = 0.5m;
+            worker.IsTraining = false;
+            worker.TrainingStartedAt = null;
+        }
+    }
+
+    private static void UpdateMoraleTraining(Worker worker, decimal deltaHours, decimal trainingMultiplier)
+    {
+        // Stimmungs-Bonus: +0.05 pro Stunde Training (max 0.5 = 50% Reduktion)
+        decimal gain = 0.05m * deltaHours * trainingMultiplier;
+        worker.MoraleBonus = Math.Min(0.5m, worker.MoraleBonus + gain);
+
+        // Automatisch stoppen wenn Maximum erreicht
+        if (worker.MoraleBonus >= 0.5m)
+        {
+            worker.MoraleBonus = 0.5m;
+            worker.IsTraining = false;
+            worker.TrainingStartedAt = null;
+        }
     }
 
     private void UpdateWorking(Worker worker, decimal deltaHours, GameState state)

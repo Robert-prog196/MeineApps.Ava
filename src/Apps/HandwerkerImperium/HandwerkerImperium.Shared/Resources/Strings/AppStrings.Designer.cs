@@ -1082,5 +1082,21 @@ namespace HandwerkerImperium.Resources.Strings {
 
         // Android Back-Button
         public static string PressBackAgainToExit => ResourceManager.GetString("PressBackAgainToExit", resourceCulture) ?? "Press back again to exit";
+
+        public static string PremiumBenefitIncome => ResourceManager.GetString("PremiumBenefitIncome", resourceCulture) ?? "+50% Income";
+
+        public static string PremiumBenefitGoldenScrews => ResourceManager.GetString("PremiumBenefitGoldenScrews", resourceCulture) ?? "+100% Golden Screws from Mini-Games";
+
+        public static string TrainingTypeEfficiency => ResourceManager.GetString("TrainingTypeEfficiency", resourceCulture) ?? "Efficiency Training";
+
+        public static string TrainingTypeEndurance => ResourceManager.GetString("TrainingTypeEndurance", resourceCulture) ?? "Endurance Training";
+
+        public static string TrainingTypeMorale => ResourceManager.GetString("TrainingTypeMorale", resourceCulture) ?? "Morale Training";
+
+        public static string TrainingTypeEfficiencyDesc => ResourceManager.GetString("TrainingTypeEfficiencyDesc", resourceCulture) ?? "Increases efficiency through XP";
+
+        public static string TrainingTypeEnduranceDesc => ResourceManager.GetString("TrainingTypeEnduranceDesc", resourceCulture) ?? "Reduces fatigue rate";
+
+        public static string TrainingTypeMoraleDesc => ResourceManager.GetString("TrainingTypeMoraleDesc", resourceCulture) ?? "Reduces mood decay";
     }
 }

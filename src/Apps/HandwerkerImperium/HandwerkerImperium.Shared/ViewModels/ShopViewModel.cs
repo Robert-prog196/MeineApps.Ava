@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HandwerkerImperium.Helpers;
 using HandwerkerImperium.Models;
+using HandwerkerImperium.Models.Events;
 using HandwerkerImperium.Services.Interfaces;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
@@ -89,6 +90,10 @@ public partial class ShopViewModel : ObservableObject, IDisposable
 
         // Subscribe to premium status changes
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
+
+        // Geld- und Goldschrauben-Anzeige live aktualisieren
+        _gameStateService.MoneyChanged += OnMoneyChanged;
+        _gameStateService.GoldenScrewsChanged += OnGoldenScrewsChanged;
 
         LoadShopData();
         LoadTools();
@@ -567,10 +572,22 @@ public partial class ShopViewModel : ObservableObject, IDisposable
 
     private static string FormatMoney(decimal amount) => MoneyFormatter.Format(amount, 2);
 
+    private void OnMoneyChanged(object? sender, MoneyChangedEventArgs e)
+    {
+        CurrentBalance = FormatMoney(e.NewAmount);
+    }
+
+    private void OnGoldenScrewsChanged(object? sender, GoldenScrewsChangedEventArgs e)
+    {
+        GoldenScrewsBalance = e.NewAmount.ToString("N0");
+    }
+
     public void Dispose()
     {
         if (_disposed) return;
         _purchaseService.PremiumStatusChanged -= OnPremiumStatusChanged;
+        _gameStateService.MoneyChanged -= OnMoneyChanged;
+        _gameStateService.GoldenScrewsChanged -= OnGoldenScrewsChanged;
         _disposed = true;
         GC.SuppressFinalize(this);
     }
