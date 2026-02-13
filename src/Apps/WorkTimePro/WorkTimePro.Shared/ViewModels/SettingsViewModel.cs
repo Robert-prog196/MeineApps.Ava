@@ -17,6 +17,7 @@ namespace WorkTimePro.ViewModels;
 public partial class SettingsViewModel : ObservableObject, IDisposable
 {
     public event Action<string, string>? MessageRequested;
+    public event EventHandler? SettingsChanged;
 
     private readonly IDatabaseService _database;
     private readonly IThemeService _themeService;
@@ -28,6 +29,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     private WorkSettings? _settings;
     private bool _disposed;
     private bool _isInitializing;
+    private bool _workTimeSettingsChanged;
     private CancellationTokenSource? _autoSaveCts;
     private CancellationTokenSource? _reminderRescheduleCts;
 
@@ -177,21 +179,21 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
 
     // === Automatische Wochenstunden-Berechnung ===
 
-    partial void OnUseIndividualHoursChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnMondayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnTuesdayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnWednesdayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnThursdayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnFridayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnSaturdayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnSundayHoursChanged(double value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnMondayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnTuesdayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnWednesdayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnThursdayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnFridayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnSaturdayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
-    partial void OnSundayEnabledChanged(bool value) { RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnUseIndividualHoursChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnMondayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnTuesdayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnWednesdayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnThursdayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnFridayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnSaturdayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnSundayHoursChanged(double value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnMondayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnTuesdayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnWednesdayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnThursdayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnFridayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnSaturdayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
+    partial void OnSundayEnabledChanged(bool value) { _workTimeSettingsChanged = true; RecalculateWeeklyHours(); ScheduleAutoSave(); }
 
     /// <summary>
     /// Berechnet WeeklyHours automatisch aus den individuellen Tagesstunden
@@ -426,14 +428,14 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     {
         if (value < 0) DailyHours = 0;
         else if (value > 24) DailyHours = 24;
-        else ScheduleAutoSave();
+        else { _workTimeSettingsChanged = true; ScheduleAutoSave(); }
     }
 
     partial void OnWeeklyHoursChanged(double value)
     {
         if (value < 0) WeeklyHours = 0;
         else if (value > 168) WeeklyHours = 168;
-        else ScheduleAutoSave();
+        else { _workTimeSettingsChanged = true; ScheduleAutoSave(); }
     }
 
     partial void OnAutoPauseMinutesChanged(int value)
@@ -623,10 +625,42 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
             _settings.LegalComplianceEnabled = LegalComplianceEnabled;
 
             await _database.SaveSettingsAsync(_settings);
+
+            // Andere Tabs über Änderungen informieren
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
+
+            // Warnung bei Arbeitszeit-relevanten Änderungen wenn bestehende Daten vorhanden
+            if (_workTimeSettingsChanged)
+            {
+                _workTimeSettingsChanged = false;
+                await ShowWorkTimeSettingsWarningAsync();
+            }
         }
         catch (Exception ex)
         {
             MessageRequested?.Invoke(AppStrings.Error, string.Format(AppStrings.ErrorSaving, ex.Message));
+        }
+    }
+
+    /// <summary>
+    /// Zeigt Warnung wenn bestehende WorkDays von der Settings-Änderung betroffen sein könnten
+    /// </summary>
+    private async Task ShowWorkTimeSettingsWarningAsync()
+    {
+        try
+        {
+            var today = DateTime.Today;
+            var futureWorkDays = await _database.GetWorkDaysAsync(today, today.AddDays(30));
+            var withData = futureWorkDays.Count(w => w.ActualWorkMinutes > 0);
+            if (withData > 0)
+            {
+                MessageRequested?.Invoke(AppStrings.Info,
+                    string.Format(AppStrings.SettingsChangedWarning, withData));
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Settings-Warnung Fehler: {ex.Message}");
         }
     }
 

@@ -30,6 +30,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private System.Timers.Timer? _updateTimer;
     private bool _disposed;
+    private Task? _initTask;
 
     // Undo-Mechanismus (5 Sekunden Fenster nach CheckIn/CheckOut)
     private CancellationTokenSource? _undoCts;
@@ -132,6 +133,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         WireSubPageNavigation(vacationVm);
         WireSubPageNavigation(shiftPlanVm);
 
+        // Settings-Änderungen propagieren
+        SettingsVm.SettingsChanged += OnSettingsChanged;
+
         // Event handler
         _timeTracking.StatusChanged += OnStatusChanged;
         _localization.LanguageChanged += OnLanguageChanged;
@@ -142,7 +146,33 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Timer is NOT started immediately - starts on status change
 
         // Initiale Daten laden (Status aus DB, Today-Ansicht)
-        _ = LoadDataAsync();
+        _initTask = InitializeAsync();
+    }
+
+    /// <summary>
+    /// Initialisierung mit Fehlerbehandlung (statt Fire-and-Forget)
+    /// </summary>
+    private async Task InitializeAsync()
+    {
+        try { await LoadDataAsync(); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Init-Fehler: {ex.Message}"); }
+    }
+
+    /// <summary>
+    /// Stellt sicher, dass initiale Daten geladen sind bevor Commands ausgeführt werden
+    /// </summary>
+    private async Task EnsureInitializedAsync()
+    {
+        if (_initTask != null) await _initTask;
+    }
+
+    /// <summary>
+    /// Settings-Änderungen propagieren: aktiven Tab neu laden
+    /// </summary>
+    private async void OnSettingsChanged(object? sender, EventArgs e)
+    {
+        try { await LoadTabDataAsync(CurrentTab); }
+        catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"Settings-Reload Fehler: {ex.Message}"); }
     }
 
     private void WireSubPageNavigation(ObservableObject vm)
@@ -336,6 +366,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task ToggleTrackingAsync()
     {
+        await EnsureInitializedAsync();
         if (IsLoading) return;
 
         try
@@ -389,6 +420,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task TogglePauseAsync()
     {
+        await EnsureInitializedAsync();
         if (IsLoading || CurrentStatus == TrackingStatus.Idle) return;
 
         try
@@ -479,48 +511,48 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void NavigateToDayDetail()
+    private async Task NavigateToDayDetailAsync()
     {
         CloseAllSubPages();
         IsDayDetailActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
-        _ = DayDetailVm.LoadDataAsync();
+        await DayDetailVm.LoadDataAsync();
     }
 
     [RelayCommand]
-    private void NavigateToMonth()
+    private async Task NavigateToMonthAsync()
     {
         CloseAllSubPages();
         IsMonthActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
-        _ = MonthVm.LoadDataAsync();
+        await MonthVm.LoadDataAsync();
     }
 
     [RelayCommand]
-    private void NavigateToYear()
+    private async Task NavigateToYearAsync()
     {
         CloseAllSubPages();
         IsYearActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
-        _ = YearVm.LoadDataAsync();
+        await YearVm.LoadDataAsync();
     }
 
     [RelayCommand]
-    private void NavigateToVacation()
+    private async Task NavigateToVacationAsync()
     {
         CloseAllSubPages();
         IsVacationActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
-        _ = VacationVm.LoadDataAsync();
+        await VacationVm.LoadDataAsync();
     }
 
     [RelayCommand]
-    private void NavigateToShiftPlan()
+    private async Task NavigateToShiftPlanAsync()
     {
         CloseAllSubPages();
         IsShiftPlanActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
-        _ = ShiftPlanVm.LoadDataAsync();
+        await ShiftPlanVm.LoadDataAsync();
     }
 
     [RelayCommand]
@@ -835,6 +867,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _localization.LanguageChanged -= OnLanguageChanged;
         _rewardedAdService.AdUnavailable -= OnAdUnavailable;
         _adService.AdsStateChanged -= OnAdsStateChanged;
+        SettingsVm.SettingsChanged -= OnSettingsChanged;
 
         // Sub-Page Navigation Events abmelden
         foreach (var (vm, eventName, handler) in _wiredEvents)

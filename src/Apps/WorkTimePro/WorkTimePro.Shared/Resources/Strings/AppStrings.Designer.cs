@@ -2553,5 +2553,14 @@ namespace WorkTimePro.Resources.Strings {
                 return ResourceManager.GetString("PerHour", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Note: {0} existing days keep their current settings. New settings apply to future days. ähnelt.
+        /// </summary>
+        internal static string SettingsChangedWarning {
+            get {
+                return ResourceManager.GetString("SettingsChangedWarning", resourceCulture);
+            }
+        }
     }
 }

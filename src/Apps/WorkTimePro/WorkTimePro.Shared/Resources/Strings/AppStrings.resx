@@ -1156,5 +1156,8 @@
   <data name="PerHour" xml:space="preserve">
     <value>per hour</value>
   </data>
+  <data name="SettingsChangedWarning" xml:space="preserve">
+    <value>Note: {0} existing days keep their current settings. New settings apply to future days.</value>
+  </data>
 
 </root>

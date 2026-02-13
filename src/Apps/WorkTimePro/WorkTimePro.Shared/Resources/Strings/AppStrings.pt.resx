@@ -510,5 +510,6 @@
   <data name="WeekGoalReached" xml:space="preserve"><value>Meta semanal atingida!</value></data>
   <data name="DayStreak" xml:space="preserve"><value>dias</value></data>
   <data name="PerHour" xml:space="preserve"><value>por hora</value></data>
+  <data name="SettingsChangedWarning" xml:space="preserve"><value>Nota: {0} dias existentes mantêm suas configurações atuais. As novas configurações se aplicam a dias futuros.</value></data>
 
 </root>
