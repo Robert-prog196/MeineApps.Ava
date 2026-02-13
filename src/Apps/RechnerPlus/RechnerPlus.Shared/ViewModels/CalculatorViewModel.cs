@@ -91,7 +91,7 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
 
     /// <summary>Responsive Schriftgröße für lange Zahlen im Display.</summary>
     [ObservableProperty]
-    private double _displayFontSize = 42;
+    private double _displayFontSize = 52;
 
     public string AngleModeText => IsRadians ? "RAD" : "DEG";
     public bool IsBasicMode => CurrentMode == CalculatorMode.Basic;
@@ -121,6 +121,40 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
 
     public bool HasHistory => _historyService.History.Count > 0;
     public IReadOnlyList<CalculationHistoryEntry> HistoryEntries => _historyService.History;
+
+    /// <summary>Die letzten 2 Berechnungen für Mini-History unter dem Display.</summary>
+    public IReadOnlyList<CalculationHistoryEntry> RecentHistory =>
+        _historyService.History.Take(2).ToList();
+
+    /// <summary>Gruppierte History nach Datum (Heute/Gestern/Älter).</summary>
+    public List<HistoryGroup> GroupedHistory => BuildGroupedHistory();
+
+    // Lokalisierte Gruppen-Header
+    public string HistoryTodayText => _localization.GetString("HistoryToday") ?? "Heute";
+    public string HistoryYesterdayText => _localization.GetString("HistoryYesterday") ?? "Gestern";
+    public string HistoryOlderText => _localization.GetString("HistoryOlder") ?? "Älter";
+
+    private List<HistoryGroup> BuildGroupedHistory()
+    {
+        var groups = new List<HistoryGroup>();
+        if (!HasHistory) return groups;
+
+        var today = DateTime.Today;
+        var yesterday = today.AddDays(-1);
+
+        var todayEntries = _historyService.History.Where(e => e.Timestamp.Date == today).ToList();
+        var yesterdayEntries = _historyService.History.Where(e => e.Timestamp.Date == yesterday).ToList();
+        var olderEntries = _historyService.History.Where(e => e.Timestamp.Date < yesterday).ToList();
+
+        if (todayEntries.Count > 0)
+            groups.Add(new HistoryGroup(HistoryTodayText, todayEntries));
+        if (yesterdayEntries.Count > 0)
+            groups.Add(new HistoryGroup(HistoryYesterdayText, yesterdayEntries));
+        if (olderEntries.Count > 0)
+            groups.Add(new HistoryGroup(HistoryOlderText, olderEntries));
+
+        return groups;
+    }
 
     [ObservableProperty]
     private double _memory;
@@ -160,6 +194,9 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
     /// <summary>Event zum Teilen eines Textes (Share Intent auf Android, Clipboard auf Desktop).</summary>
     public event Func<string, Task>? ShareRequested;
 
+    /// <summary>Event nach erfolgreicher Berechnung (für Ergebnis-Animation im View).</summary>
+    public event EventHandler? CalculationCompleted;
+
     [ObservableProperty]
     private bool _showClearHistoryConfirm;
 
@@ -194,11 +231,11 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
         var len = value.Length;
         DisplayFontSize = len switch
         {
-            <= 8 => 42,
-            <= 12 => 34,
-            <= 16 => 28,
-            <= 20 => 22,
-            _ => 18
+            <= 8 => 52,
+            <= 12 => 42,
+            <= 16 => 34,
+            <= 20 => 26,
+            _ => 20
         };
     }
 
@@ -209,12 +246,18 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(HistoryTitleText));
         OnPropertyChanged(nameof(ClearHistoryText));
         OnPropertyChanged(nameof(NoCalculationsYetText));
+        OnPropertyChanged(nameof(HistoryTodayText));
+        OnPropertyChanged(nameof(HistoryYesterdayText));
+        OnPropertyChanged(nameof(HistoryOlderText));
+        OnPropertyChanged(nameof(GroupedHistory));
     }
 
     private void OnHistoryChanged(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(HistoryEntries));
         OnPropertyChanged(nameof(HasHistory));
+        OnPropertyChanged(nameof(RecentHistory));
+        OnPropertyChanged(nameof(GroupedHistory));
         if (!_isLoading)
             SaveHistory();
     }
@@ -881,6 +924,7 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
             _lastResult = repeatResult.Value;
             Display = formatted;
             FloatingTextRequested?.Invoke($"= {formatted}", "result");
+            CalculationCompleted?.Invoke(this, EventArgs.Empty);
         }
         else
         {
@@ -981,6 +1025,7 @@ public partial class CalculatorViewModel : ObservableObject, IDisposable
                 _lastOperator = operatorForRepeat;
                 _lastOperand = operandForRepeat;
                 _haptic.HeavyClick();
+                CalculationCompleted?.Invoke(this, EventArgs.Empty);
             }
             else
             {
@@ -1505,3 +1550,6 @@ public enum CalculatorMode
     Basic,
     Scientific
 }
+
+/// <summary>Gruppierter Verlaufs-Abschnitt (Heute/Gestern/Älter).</summary>
+public record HistoryGroup(string Header, IReadOnlyList<CalculationHistoryEntry> Entries);

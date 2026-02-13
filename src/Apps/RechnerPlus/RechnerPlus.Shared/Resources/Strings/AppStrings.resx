@@ -552,4 +552,26 @@
     <value>Tangent undefined</value>
   </data>
 
+  <!-- History Groups -->
+  <data name="HistoryToday" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="HistoryYesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="HistoryOlder" xml:space="preserve">
+    <value>Older</value>
+  </data>
+
+  <!-- Onboarding -->
+  <data name="OnboardingSwipeDelete" xml:space="preserve">
+    <value>Swipe left on display to delete</value>
+  </data>
+  <data name="OnboardingSwipeHistory" xml:space="preserve">
+    <value>Swipe up for history</value>
+  </data>
+  <data name="OnboardingScientific" xml:space="preserve">
+    <value>Rotate your device for Scientific mode</value>
+  </data>
+
 </root>

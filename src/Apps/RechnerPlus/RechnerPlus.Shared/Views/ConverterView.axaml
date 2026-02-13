@@ -44,11 +44,21 @@
         </StackPanel>
       </Border>
 
-      <!-- Swap Button -->
+      <!-- Swap Button (mit Rotations-Animation) -->
       <Button Classes="FAB Mini"
+              x:Name="SwapButton"
               HorizontalAlignment="Center"
               Command="{Binding SwapUnitsCommand}"
-              ToolTip.Tip="{Binding SwapUnitsText}">
+              ToolTip.Tip="{Binding SwapUnitsText}"
+              RenderTransformOrigin="0.5,0.5">
+        <Button.RenderTransform>
+          <RotateTransform Angle="0"/>
+        </Button.RenderTransform>
+        <Button.Transitions>
+          <Transitions>
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+          </Transitions>
+        </Button.Transitions>
         <mi:MaterialIcon Kind="SwapVertical" Width="20" Height="20" />
       </Button>
 
@@ -64,12 +74,19 @@
           <!-- Result Display mit Copy-Button -->
           <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,4">
             <TextBlock Grid.Column="0"
+                       x:Name="ResultText"
                        Text="{Binding OutputValue}"
-                       FontSize="28"
+                       FontSize="32"
                        FontWeight="Bold"
                        Foreground="{DynamicResource PrimaryBrush}"
                        HorizontalAlignment="Center"
-                       TextTrimming="CharacterEllipsis" />
+                       TextTrimming="CharacterEllipsis">
+              <TextBlock.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+              </TextBlock.Transitions>
+            </TextBlock>
             <Button Grid.Column="1"
                     Classes="Text"
                     Padding="8,4"

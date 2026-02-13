@@ -549,4 +549,26 @@
     <value>Tangens undefiniert</value>
   </data>
 
+  <!-- History Groups -->
+  <data name="HistoryToday" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="HistoryYesterday" xml:space="preserve">
+    <value>Gestern</value>
+  </data>
+  <data name="HistoryOlder" xml:space="preserve">
+    <value>Älter</value>
+  </data>
+
+  <!-- Onboarding -->
+  <data name="OnboardingSwipeDelete" xml:space="preserve">
+    <value>Wische nach links zum Löschen</value>
+  </data>
+  <data name="OnboardingSwipeHistory" xml:space="preserve">
+    <value>Wische hoch für den Verlauf</value>
+  </data>
+  <data name="OnboardingScientific" xml:space="preserve">
+    <value>Drehe dein Gerät für den Wissenschaftsmodus</value>
+  </data>
+
 </root>

@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Threading;
 using RechnerPlus.ViewModels;
 
 namespace RechnerPlus.Views;
@@ -49,6 +51,7 @@ public partial class CalculatorView : UserControl
             _currentVm.ClipboardCopyRequested -= OnClipboardCopy;
             _currentVm.ClipboardPasteRequested -= OnClipboardPaste;
             _currentVm.ShareRequested -= OnShare;
+            _currentVm.CalculationCompleted -= OnCalculationCompleted;
         }
 
         _currentVm = DataContext as CalculatorViewModel;
@@ -58,6 +61,7 @@ public partial class CalculatorView : UserControl
             _currentVm.ClipboardCopyRequested += OnClipboardCopy;
             _currentVm.ClipboardPasteRequested += OnClipboardPaste;
             _currentVm.ShareRequested += OnShare;
+            _currentVm.CalculationCompleted += OnCalculationCompleted;
         }
     }
 
@@ -137,6 +141,43 @@ public partial class CalculatorView : UserControl
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel?.Clipboard != null)
             await topLevel.Clipboard.SetTextAsync(text);
+    }
+
+    #endregion
+
+    #region Ergebnis-Animation
+
+    private void OnCalculationCompleted(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            // Display: Fade+Scale-Animation
+            var displayText = this.FindControl<TextBlock>("DisplayText");
+            if (displayText != null)
+            {
+                displayText.Opacity = 0.3;
+                displayText.RenderTransform = new ScaleTransform(0.96, 0.96);
+
+                DispatcherTimer.RunOnce(() =>
+                {
+                    displayText.Opacity = 1;
+                    displayText.RenderTransform = new ScaleTransform(1, 1);
+                }, TimeSpan.FromMilliseconds(16));
+            }
+
+            // Equals-Button: Kurzer Weiß-Flash (100ms)
+            var equalsBtn = this.FindControl<Button>("EqualsButton");
+            if (equalsBtn != null)
+            {
+                var originalBg = equalsBtn.Background;
+                equalsBtn.Background = new SolidColorBrush(Colors.White, 0.3);
+
+                DispatcherTimer.RunOnce(() =>
+                {
+                    equalsBtn.Background = originalBg;
+                }, TimeSpan.FromMilliseconds(100));
+            }
+        });
     }
 
     #endregion

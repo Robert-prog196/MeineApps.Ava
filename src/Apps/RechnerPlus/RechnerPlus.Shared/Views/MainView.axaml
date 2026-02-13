@@ -62,7 +62,44 @@
       <Panel Grid.Row="0" Name="ContentPanel">
         <Border Classes="TabContent"
                 Classes.Active="{Binding IsCalculatorActive}">
-          <views:CalculatorView DataContext="{Binding CalculatorViewModel}" />
+          <Grid RowDefinitions="*,Auto">
+            <views:CalculatorView Grid.Row="0" DataContext="{Binding CalculatorViewModel}" />
+
+            <!-- Mini-History unter dem Calculator (letzte 2 Berechnungen) -->
+            <ItemsControl Grid.Row="1"
+                          ItemsSource="{Binding CalculatorViewModel.RecentHistory}"
+                          IsVisible="{Binding CalculatorViewModel.HasHistory}"
+                          Margin="16,0,16,4">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" Spacing="8"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="calc:CalculationHistoryEntry">
+                  <Button Classes="Text"
+                          Padding="8,4"
+                          CornerRadius="12"
+                          MinHeight="0" MinWidth="0"
+                          Background="{DynamicResource DigitButtonBrush}"
+                          Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
+                          CommandParameter="{Binding}">
+                    <TextBlock FontSize="11"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               MaxWidth="160">
+                      <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} = {1}">
+                          <Binding Path="Expression"/>
+                          <Binding Path="Result"/>
+                        </MultiBinding>
+                      </TextBlock.Text>
+                    </TextBlock>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Grid>
         </Border>
         <Border Classes="TabContent"
                 Classes.Active="{Binding IsConverterActive}">
@@ -207,6 +244,24 @@
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
                                    IsHitTestVisible="False" />
 
+    <!-- Onboarding Overlay -->
+    <Panel x:Name="OnboardingOverlay" IsVisible="False">
+      <!-- Halbtransparenter Hintergrund -->
+      <Border Background="#60000000" />
+      <!-- Tooltip wird per Code-Behind positioniert -->
+      <controls:TooltipBubble x:Name="OnboardingTooltip"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="32,0">
+        <controls:TooltipBubble.Transitions>
+          <Transitions>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+          </Transitions>
+        </controls:TooltipBubble.Transitions>
+      </controls:TooltipBubble>
+    </Panel>
+
     <!-- ============================================ -->
     <!-- History Bottom Sheet Overlay                  -->
     <!-- ============================================ -->
@@ -260,7 +315,7 @@
         <!-- History Entries -->
         <ScrollViewer Grid.Row="2" Margin="0,0,0,0">
           <Panel>
-            <!-- Empty State -->
+            <!-- Empty State (mit Puls-Animation) -->
             <StackPanel IsVisible="{Binding !CalculatorViewModel.HasHistory}"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
@@ -269,54 +324,90 @@
               <mi:MaterialIcon Kind="CalculatorVariantOutline" Width="48" Height="48"
                                Foreground="{DynamicResource TextMutedBrush}"
                                HorizontalAlignment="Center"
-                               Opacity="0.5" />
+                               Opacity="0.4">
+                <mi:MaterialIcon.Styles>
+                  <Style Selector="mi|MaterialIcon">
+                    <Style.Animations>
+                      <Animation Duration="0:0:2" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                        <KeyFrame Cue="0%">
+                          <Setter Property="Opacity" Value="0.3"/>
+                        </KeyFrame>
+                        <KeyFrame Cue="100%">
+                          <Setter Property="Opacity" Value="0.6"/>
+                        </KeyFrame>
+                      </Animation>
+                    </Style.Animations>
+                  </Style>
+                </mi:MaterialIcon.Styles>
+              </mi:MaterialIcon>
               <TextBlock Text="{Binding CalculatorViewModel.NoCalculationsYetText}"
                          Foreground="{DynamicResource TextMutedBrush}"
                          HorizontalAlignment="Center"
                          FontSize="14" />
             </StackPanel>
 
-            <!-- Entries List -->
-            <ItemsControl ItemsSource="{Binding CalculatorViewModel.HistoryEntries}"
+            <!-- Gruppierte Entries (Heute/Gestern/Älter) -->
+            <ItemsControl ItemsSource="{Binding CalculatorViewModel.GroupedHistory}"
                           IsVisible="{Binding CalculatorViewModel.HasHistory}">
               <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="calc:CalculationHistoryEntry">
-                  <Grid ColumnDefinitions="*,Auto">
-                    <Button Grid.Column="0"
-                            Classes="Text HistoryEntry"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Padding="20,14,4,14"
-                            CornerRadius="0"
-                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
-                            CommandParameter="{Binding}">
-                      <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding Expression}"
-                                   FontSize="14"
-                                   Foreground="{DynamicResource TextMutedBrush}"
-                                   TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{Binding Result}"
-                                   FontSize="20"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                   TextTrimming="CharacterEllipsis" />
-                      </StackPanel>
-                    </Button>
-                    <!-- Einzelnen Eintrag löschen -->
-                    <Button Grid.Column="1"
-                            Classes="Text"
-                            Padding="8"
-                            MinWidth="0"
-                            MinHeight="0"
-                            VerticalAlignment="Center"
-                            Margin="0,0,12,0"
-                            Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).CalculatorViewModel.DeleteHistoryEntryCommand}"
-                            CommandParameter="{Binding}">
-                      <mi:MaterialIcon Kind="Close" Width="16" Height="16"
-                                       Foreground="{DynamicResource TextMutedBrush}"
-                                       Opacity="0.5" />
-                    </Button>
-                  </Grid>
+                <DataTemplate x:DataType="vm:HistoryGroup">
+                  <StackPanel>
+                    <!-- Gruppen-Header -->
+                    <TextBlock Text="{Binding Header}"
+                               FontSize="12"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               Opacity="0.7"
+                               Margin="20,12,20,4"/>
+
+                    <!-- Einträge der Gruppe -->
+                    <ItemsControl ItemsSource="{Binding Entries}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="calc:CalculationHistoryEntry">
+                          <Grid ColumnDefinitions="*,Auto"
+                                x:Name="HistoryEntryRow">
+                            <Grid.RenderTransform>
+                              <TranslateTransform X="0"/>
+                            </Grid.RenderTransform>
+                            <Button Grid.Column="0"
+                                    Classes="Text HistoryEntry"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="20,14,4,14"
+                                    CornerRadius="0"
+                                    Command="{Binding $parent[Border].((vm:MainViewModel)DataContext).CalculatorViewModel.SelectHistoryEntryCommand}"
+                                    CommandParameter="{Binding}">
+                              <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding Expression}"
+                                           FontSize="14"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Result}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <!-- Einzelnen Eintrag löschen -->
+                            <Button Grid.Column="1"
+                                    Classes="Text"
+                                    Padding="8"
+                                    MinWidth="0"
+                                    MinHeight="0"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,12,0"
+                                    Command="{Binding $parent[Border].((vm:MainViewModel)DataContext).CalculatorViewModel.DeleteHistoryEntryCommand}"
+                                    CommandParameter="{Binding}">
+                              <mi:MaterialIcon Kind="Close" Width="16" Height="16"
+                                               Foreground="{DynamicResource TextMutedBrush}"
+                                               Opacity="0.5" />
+                            </Button>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>

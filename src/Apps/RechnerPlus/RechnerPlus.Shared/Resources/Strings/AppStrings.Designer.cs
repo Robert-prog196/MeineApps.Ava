@@ -1211,5 +1211,41 @@ namespace RechnerPlus.Resources.Strings {
                 return ResourceManager.GetString("VersionFormat", resourceCulture);
             }
         }
+
+        public static string HistoryToday {
+            get {
+                return ResourceManager.GetString("HistoryToday", resourceCulture);
+            }
+        }
+
+        public static string HistoryYesterday {
+            get {
+                return ResourceManager.GetString("HistoryYesterday", resourceCulture);
+            }
+        }
+
+        public static string HistoryOlder {
+            get {
+                return ResourceManager.GetString("HistoryOlder", resourceCulture);
+            }
+        }
+
+        public static string OnboardingSwipeDelete {
+            get {
+                return ResourceManager.GetString("OnboardingSwipeDelete", resourceCulture);
+            }
+        }
+
+        public static string OnboardingSwipeHistory {
+            get {
+                return ResourceManager.GetString("OnboardingSwipeHistory", resourceCulture);
+            }
+        }
+
+        public static string OnboardingScientific {
+            get {
+                return ResourceManager.GetString("OnboardingScientific", resourceCulture);
+            }
+        }
     }
 }

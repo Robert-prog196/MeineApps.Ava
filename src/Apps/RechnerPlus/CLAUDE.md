@@ -40,11 +40,23 @@ Scientific Calculator mit Unit Converter - werbefrei, kostenlos.
 - **Haptic Feedback (Android)**: Tick/Click/HeavyClick bei Button-Aktionen, **abschaltbar** in Settings (IHapticService.IsEnabled)
 - **Double-Back-to-Exit (Android)**: Zurücktaste navigiert intern (History→Tab→Rechner), erst 2x schnell drücken schließt App
 - **Tausender-Trennzeichen**: Display zeigt `1,000,000` statt `1000000` (RawDisplay ohne Kommas für Berechnungen)
-- **Responsive Schriftgröße**: DisplayFontSize passt sich an Zahlenlänge an (42→34→28→22→18)
+- **Responsive Schriftgröße**: DisplayFontSize passt sich an Zahlenlänge an (52→42→34→26→20)
 - **Startup-Modus persistent**: Basic/Scientific-Wahl wird gespeichert (nicht bei Auto-Landscape)
-- **Button-Press-Animation**: scale(0.92) mit TransformOperationsTransition (80ms)
+- **Button-Press-Animation**: scale(0.92) mit TransformOperationsTransition (80ms) + BrushTransition (150ms)
 - **Dezimalstellen-Einstellung**: Auto oder 0-10 feste Stellen (in Settings konfigurierbar)
 - **Floating-Point-Rounding**: Math.Round(value, 10) verhindert `0.30000000000000004`
+- **Expression Syntax-Highlighting**: ExpressionHighlightControl (Zahlen: TextPrimary, Operatoren: Primary+Bold, Klammern: Muted)
+- **Ergebnis-Animation**: CalculationCompleted Event → Display Fade+Scale (0.3→1, 0.96→1) + Equals-Button Weiß-Flash (100ms)
+- **Display-Gradient**: Theme-spezifischer Gradient-Hintergrund (DisplayGradientBrush)
+- **Equals-Gradient**: Theme-spezifischer Gradient (EqualsGradientBrush) statt einfarbig
+- **Operator-Glow**: Aktiver Operator mit PrimaryBrush-Background + Border-Highlight
+- **Digit-Buttons**: Fast-transparente DigitButtonBrush (Glassmorphism-Effekt)
+- **Scientific-Panel Slide**: Opacity+MaxHeight Animation statt IsVisible (smooth Ein-/Ausblenden)
+- **Memory-Row Animation**: Opacity 0.4→1 wenn Memory aktiv (DoubleTransition)
+- **Mini-History**: Letzte 2 Berechnungen als Chips unter Display (tappbar)
+- **Gruppierter Verlauf**: Einträge nach Heute/Gestern/Älter gruppiert
+- **Onboarding**: 3 Tooltips beim ersten Start (Swipe-Delete, Swipe-History, Scientific-Mode)
+- **Converter Swap-Animation**: Swap-Button rotiert 180° bei jedem Klick
 
 ### Converter
 11 Kategorien mit offset-basierter Temperature-Konvertierung:
@@ -78,6 +90,8 @@ baseValue = value * ToBase + Offset
 - CalculatorViewModel: `IsHistoryVisible`, `HistoryEntries`, Show/Hide/Clear/Delete/SelectHistoryEntry Commands
 - MainView: Bottom-Sheet Overlay mit Backdrop, Slide-Animation (TransformOperationsTransition)
 - Swipe-Gesten in MainView.axaml.cs: Up=ShowHistory, Down=HideHistory (nur im Calculator-Tab)
+- **Gruppierung**: HistoryGroup record (Heute/Gestern/Älter), GroupedHistory Property
+- **Mini-History**: RecentHistory (letzte 2 Einträge) als Chips unter CalculatorView
 - "Verlauf löschen"-Button mit Bestätigungsdialog (ShowClearHistoryConfirm)
 
 ### Floating Text (Game Juice)
@@ -184,3 +198,10 @@ baseValue = value * ToBase + Offset
   - **6 kritische Bugs**: SelectHistoryEntry nutzt ResultValue (Locale-sicher), RefreshNumberFormat mit Parse-Validierung, Undo/Redo speichert _lastResult, Tan()-Validierung > 1e15, Converter akzeptiert EU-Komma, Parser implizite Multiplikation `(5+3)(2+1)`
   - **9 mittlere Bugs**: Backspace auf "0" setzt _isNewCalculation=true, EPSILON 1e-15 (statt 1e-10), Percent/InputDecimal UpdatePreview, InputDigit strip Tausender beim Append, Swipe nur auf Calculator-Tab, Parser Infinity-Check, Factorial Overflow-Check, Unbekannte Tokens als Fehler, ShareDisplay kontextabhängig
   - **5 UX**: Haptic-Toggle in Settings (IHapticService.IsEnabled), Equals-Button farbig hervorgehoben, Lokalisierung 2 Keys (6 Sprachen)
+- **UI/UX Komplett-Upgrade (13.02.2026)**: 6-Phasen-Modernisierung:
+  - Phase 1: Neue Theme-Ressourcen (EqualsGradientBrush, DisplayGradientBrush, OperatorGlowShadow, DigitButtonBrush, DigitButtonHoverBrush) in allen 4 Themes
+  - Phase 2: Button-Grid (MinHeight 56, CornerRadius 16, Spacing 8, BrushTransition), Display-Gradient, ExpressionHighlightControl, größere Schrift (52/42/34/26/20), CalculationCompleted-Animation
+  - Phase 3: Operator-Glow (PrimaryBrush+Border), Scientific-Panel Slide (Opacity+MaxHeight statt IsVisible), Memory-Row Opacity-Animation
+  - Phase 4: Mini-History Chips, gruppierter Verlauf (Heute/Gestern/Älter), Empty-State Puls-Animation, 6 neue RESX-Keys (6 Sprachen)
+  - Phase 5: Converter Swap-Rotation (180° pro Klick), Equals Weiß-Flash, Result FontSize 32
+  - Phase 6: TooltipBubble Control (MeineApps.UI), Onboarding-Flow (3 Tooltips, Preference onboarding_shown_v2), 6 neue RESX-Keys (6 Sprachen)

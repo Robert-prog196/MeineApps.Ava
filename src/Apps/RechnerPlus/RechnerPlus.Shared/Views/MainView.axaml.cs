@@ -1,7 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
+using MeineApps.Core.Ava.Localization;
+using MeineApps.Core.Ava.Services;
+using Microsoft.Extensions.DependencyInjection;
 using RechnerPlus.ViewModels;
 
 namespace RechnerPlus.Views;
@@ -17,6 +22,11 @@ public partial class MainView : UserControl
     private const int HistoryToggleCooldownMs = 500;
     private MainViewModel? _vm;
 
+    // Onboarding
+    private int _onboardingStep;
+    private string[] _onboardingTexts = [];
+    private VerticalAlignment[] _onboardingPositions = [];
+
     public MainView()
     {
         InitializeComponent();
@@ -25,6 +35,12 @@ public partial class MainView : UserControl
         // Tunnel-Routing fuer Swipe-Erkennung auch ueber Buttons
         AddHandler(PointerPressedEvent, OnPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnPointerReleased, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        TryStartOnboarding();
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -103,4 +119,89 @@ public partial class MainView : UserControl
         vm.CalculatorViewModel.HideHistoryCommand.Execute(null);
         _lastHistoryToggle = DateTime.UtcNow;
     }
+
+    #region Onboarding
+
+    private void TryStartOnboarding()
+    {
+        try
+        {
+            var prefs = App.Services.GetService<IPreferencesService>();
+            if (prefs == null) return;
+
+            if (prefs.Get("onboarding_shown_v2", false)) return;
+
+            // Lokalisierte Texte laden
+            var loc = App.Services.GetService<ILocalizationService>();
+            _onboardingTexts =
+            [
+                loc?.GetString("OnboardingSwipeDelete") ?? "Wische nach links zum Löschen",
+                loc?.GetString("OnboardingSwipeHistory") ?? "Wische hoch für den Verlauf",
+                loc?.GetString("OnboardingScientific") ?? "Drehe dein Gerät für den Wissenschaftsmodus"
+            ];
+            _onboardingPositions =
+            [
+                VerticalAlignment.Top,      // Display-Bereich (oben)
+                VerticalAlignment.Center,    // Button-Grid (Mitte)
+                VerticalAlignment.Top        // Mode-Selector (oben)
+            ];
+
+            _onboardingStep = 0;
+
+            // 500ms Delay nach App-Start
+            DispatcherTimer.RunOnce(ShowNextOnboardingStep, TimeSpan.FromMilliseconds(500));
+        }
+        catch
+        {
+            // Onboarding nicht kritisch - Fehler ignorieren
+        }
+    }
+
+    private void ShowNextOnboardingStep()
+    {
+        if (_onboardingStep >= _onboardingTexts.Length)
+        {
+            // Alle Schritte abgeschlossen
+            OnboardingOverlay.IsVisible = false;
+
+            try
+            {
+                var prefs = App.Services.GetService<IPreferencesService>();
+                prefs?.Set("onboarding_shown_v2", true);
+            }
+            catch { /* nicht kritisch */ }
+
+            return;
+        }
+
+        OnboardingOverlay.IsVisible = true;
+        OnboardingTooltip.Text = _onboardingTexts[_onboardingStep];
+        OnboardingTooltip.VerticalAlignment = _onboardingPositions[_onboardingStep];
+
+        // Tooltip-Position anpassen
+        OnboardingTooltip.Margin = _onboardingStep switch
+        {
+            0 => new Thickness(32, 120, 32, 0), // Unter dem Display
+            1 => new Thickness(32, 0, 32, 80),   // Über der Tab-Bar
+            2 => new Thickness(32, 60, 32, 0),   // Am Mode-Selector
+            _ => new Thickness(32, 0)
+        };
+
+        // Dismissed-Event einmalig registrieren
+        OnboardingTooltip.Dismissed -= OnTooltipDismissed;
+        OnboardingTooltip.Dismissed += OnTooltipDismissed;
+
+        OnboardingTooltip.Show();
+    }
+
+    private void OnTooltipDismissed(object? sender, EventArgs e)
+    {
+        OnboardingTooltip.Dismissed -= OnTooltipDismissed;
+        _onboardingStep++;
+
+        // Nächster Tooltip nach 300ms
+        DispatcherTimer.RunOnce(ShowNextOnboardingStep, TimeSpan.FromMilliseconds(300));
+    }
+
+    #endregion
 }

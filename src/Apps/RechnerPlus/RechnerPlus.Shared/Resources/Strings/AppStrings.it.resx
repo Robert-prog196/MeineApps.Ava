@@ -463,5 +463,23 @@
   <data name="TangentUndefined" xml:space="preserve">
     <value>Tangente indefinita</value>
   </data>
+  <data name="HistoryToday" xml:space="preserve">
+    <value>Oggi</value>
+  </data>
+  <data name="HistoryYesterday" xml:space="preserve">
+    <value>Ieri</value>
+  </data>
+  <data name="HistoryOlder" xml:space="preserve">
+    <value>Precedente</value>
+  </data>
+  <data name="OnboardingSwipeDelete" xml:space="preserve">
+    <value>Scorri a sinistra per cancellare</value>
+  </data>
+  <data name="OnboardingSwipeHistory" xml:space="preserve">
+    <value>Scorri verso l'alto per la cronologia</value>
+  </data>
+  <data name="OnboardingScientific" xml:space="preserve">
+    <value>Ruota il dispositivo per la modalità scientifica</value>
+  </data>
 
 </root>

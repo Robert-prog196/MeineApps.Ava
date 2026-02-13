@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:RechnerPlus.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:ctrl="using:RechnerPlus.Controls"
              x:Class="RechnerPlus.Views.CalculatorView"
              x:DataType="vm:CalculatorViewModel">
 
@@ -9,23 +10,33 @@
     <!-- Base calculator button: fills grid cell, larger touch target, centered content -->
     <Style Selector="Button.CalcButton">
       <Setter Property="Height" Value="NaN"/>
-      <Setter Property="MinHeight" Value="52"/>
-      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="MinHeight" Value="56"/>
+      <Setter Property="CornerRadius" Value="16"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
+          <BrushTransition Property="Background" Duration="0:0:0.15"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.CalcButton:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.92)"/>
     </Style>
 
-    <!-- Digit button styling -->
+    <!-- Digit button styling (fast transparent, glasmorphism-ähnlich) -->
     <Style Selector="Button.Digit">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource DigitButtonBrush}"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
       <Setter Property="FontSize" Value="24"/>
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
     <Style Selector="Button.Digit:pointerover">
-      <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource DigitButtonHoverBrush}"/>
     </Style>
 
     <!-- Operator button styling -->
@@ -34,44 +45,17 @@
       <Setter Property="FontWeight" Value="Bold"/>
     </Style>
 
-    <!-- Aktiver Operator: verstärkter Background + Border -->
+    <!-- Aktiver Operator: invertierte Farben + auffälliger Border -->
     <Style Selector="Button.ActiveOp">
-      <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryContrastBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHoverBrush}"/>
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <!-- Scientific function button styling -->
     <Style Selector="Button.Function">
       <Setter Property="FontSize" Value="13"/>
-    </Style>
-
-    <!-- INV-Button aktiv -->
-    <Style Selector="Button.InvActive">
-      <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
-    </Style>
-
-    <!-- Equals-Button hervorheben (größerer, auffälligerer Button) -->
-    <Style Selector="Button.Equals">
-      <Setter Property="FontSize" Value="28"/>
-      <Setter Property="FontWeight" Value="ExtraBold"/>
-    </Style>
-
-    <!-- Button-Press-Animation: Scale-Down bei Druck -->
-    <Style Selector="Button.CalcButton">
-      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-      <Setter Property="Transitions">
-        <Transitions>
-          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
-        </Transitions>
-      </Setter>
-    </Style>
-    <Style Selector="Button.CalcButton:pressed">
-      <Setter Property="RenderTransform" Value="scale(0.92)"/>
-    </Style>
-    <Style Selector="Button.Function">
       <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
       <Setter Property="Transitions">
         <Transitions>
@@ -82,6 +66,35 @@
     <Style Selector="Button.Function:pressed">
       <Setter Property="RenderTransform" Value="scale(0.92)"/>
     </Style>
+
+    <!-- INV-Button aktiv -->
+    <Style Selector="Button.InvActive">
+      <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+    <!-- Equals-Button: Gradient + Auffällig -->
+    <Style Selector="Button.Equals">
+      <Setter Property="FontSize" Value="28"/>
+      <Setter Property="FontWeight" Value="ExtraBold"/>
+      <Setter Property="Background" Value="{DynamicResource EqualsGradientBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryContrastBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHoverBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Memory-Row: dezent wenn leer, volle Sichtbarkeit wenn aktiv -->
+    <Style Selector="Grid.MemoryRow">
+      <Setter Property="Opacity" Value="0.4"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Grid.MemoryActive">
+      <Setter Property="Opacity" Value="1"/>
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="16">
@@ -90,7 +103,8 @@
     <!-- 1. Display Area                              -->
     <!-- ============================================ -->
     <Border Grid.Row="0"
-            Classes="Card"
+            Background="{DynamicResource DisplayGradientBrush}"
+            CornerRadius="16"
             Padding="16"
             Margin="0,0,0,8"
             x:Name="DisplayBorder">
@@ -106,8 +120,9 @@
                      VerticalAlignment="Center"
                      Margin="0,0,6,0"
                      ToolTip.Tip="{Binding MemoryDisplay}"/>
-          <TextBlock Grid.Column="1"
-                     Text="{Binding Expression}"
+          <ctrl:ExpressionHighlightControl Grid.Column="1"
+                     x:Name="ExpressionText"
+                     Expression="{Binding Expression}"
                      FontSize="14"
                      Foreground="{DynamicResource TextMutedBrush}"
                      HorizontalAlignment="Right"
@@ -147,15 +162,23 @@
           </Button>
         </Grid>
 
-        <!-- Main display -->
+        <!-- Main display (größere Schrift, Animation via Code-Behind) -->
         <TextBlock Grid.Row="1"
+                   x:Name="DisplayText"
                    Text="{Binding Display}"
                    FontSize="{Binding DisplayFontSize}"
                    FontFamily="JetBrains Mono, Consolas, monospace"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    HorizontalAlignment="Right"
                    Margin="0,4,0,0"
-                   TextTrimming="CharacterEllipsis"/>
+                   TextTrimming="CharacterEllipsis"
+                   RenderTransformOrigin="1,0.5">
+          <TextBlock.Transitions>
+            <Transitions>
+              <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+            </Transitions>
+          </TextBlock.Transitions>
+        </TextBlock>
 
         <!-- Live Preview -->
         <TextBlock Grid.Row="2"
@@ -232,7 +255,7 @@
     </Grid>
 
     <!-- ============================================ -->
-    <!-- 3. Scientific Functions Panel                -->
+    <!-- 3. Scientific Functions Panel (Slide-Animation) -->
     <!-- ============================================ -->
     <Grid Grid.Row="2"
           RowDefinitions="Auto,Auto,Auto"
@@ -240,7 +263,25 @@
           RowSpacing="6"
           ColumnSpacing="6"
           Margin="0,0,0,8"
-          IsVisible="{Binding IsScientificMode}">
+          Classes.ScientificVisible="{Binding IsScientificMode}"
+          Opacity="0"
+          MaxHeight="0"
+          IsHitTestVisible="False">
+      <Grid.Styles>
+        <Style Selector="Grid">
+          <Setter Property="Transitions">
+            <Transitions>
+              <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+              <DoubleTransition Property="MaxHeight" Duration="0:0:0.25" Easing="CubicEaseOut"/>
+            </Transitions>
+          </Setter>
+        </Style>
+        <Style Selector="Grid.ScientificVisible">
+          <Setter Property="Opacity" Value="1"/>
+          <Setter Property="MaxHeight" Value="500"/>
+          <Setter Property="IsHitTestVisible" Value="True"/>
+        </Style>
+      </Grid.Styles>
 
       <!-- Row 0: sin/asin, cos/acos, tan/atan, log/10^x, ln/e^x -->
       <Button Grid.Row="0" Grid.Column="0" Content="{Binding SinButtonText}"
@@ -297,9 +338,11 @@
     </Grid>
 
     <!-- ============================================ -->
-    <!-- 4. Memory Row                                -->
+    <!-- 4. Memory Row (dezent wenn leer)             -->
     <!-- ============================================ -->
     <Grid Grid.Row="3"
+          Classes="MemoryRow"
+          Classes.MemoryActive="{Binding HasMemory}"
           ColumnDefinitions="*,*,*,*,*"
           ColumnSpacing="6"
           Margin="0,0,0,8">
@@ -327,8 +370,8 @@
     <Grid Grid.Row="4"
           RowDefinitions="*,*,*,*,*"
           ColumnDefinitions="*,*,*,*"
-          RowSpacing="6"
-          ColumnSpacing="6">
+          RowSpacing="8"
+          ColumnSpacing="8">
 
       <!-- Row 0: C, ( ), %, ÷ -->
       <Button Grid.Row="0" Grid.Column="0"
@@ -438,6 +481,7 @@
               Classes="Digit CalcButton"
               Command="{Binding InputDecimalCommand}"/>
       <Button Grid.Row="4" Grid.Column="3"
+              x:Name="EqualsButton"
               Content="="
               Classes="Primary Operator CalcButton Equals"
               Command="{Binding CalculateCommand}"/>
