@@ -73,6 +73,9 @@ public partial class AlarmViewModel : ObservableObject
     // Guards gegen Double-Tap
     private bool _isToggling;
 
+    // Initialisierung abwarten bevor Alarme erstellt werden (Race Condition verhindern)
+    private Task _initTask = null!;
+
     // Delete confirmation state
     private AlarmItem? _alarmToDelete;
 
@@ -158,7 +161,7 @@ public partial class AlarmViewModel : ObservableObject
         _shiftScheduleViewModel = shiftScheduleViewModel;
         _availableSounds = _audioService.AvailableSounds;
         _localization.LanguageChanged += OnLanguageChanged;
-        _ = InitializeAsync();
+        _initTask = InitializeAsync();
     }
 
     private async Task InitializeAsync()
@@ -266,6 +269,7 @@ public partial class AlarmViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAlarm()
     {
+        await _initTask; // Warten bis LoadAlarms fertig ist
         var alarm = EditingAlarm ?? new AlarmItem();
         alarm.Name = AlarmName;
         alarm.Time = new TimeOnly(AlarmHour, AlarmMinute);

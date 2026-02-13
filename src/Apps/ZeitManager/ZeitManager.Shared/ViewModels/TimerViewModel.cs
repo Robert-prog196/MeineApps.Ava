@@ -37,6 +37,9 @@ public partial class TimerViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<TimerPreset> _presets = [];
 
+    // Initialisierung abwarten bevor Timer erstellt werden (Race Condition verhindern)
+    private Task _initTask = null!;
+
     // Delete confirmation state
     private TimerItem? _timerToDelete;
 
@@ -86,7 +89,7 @@ public partial class TimerViewModel : ObservableObject
         _timerService.TimersChanged += (_, _) => LoadTimers();
         _timerService.TimerTick += (_, timer) => timer.RemainingTimeTicks = _timerService.GetRemainingTime(timer).Ticks;
 
-        _ = InitializeAsync();
+        _initTask = InitializeAsync();
     }
 
     private async Task InitializeAsync()
@@ -126,6 +129,7 @@ public partial class TimerViewModel : ObservableObject
     [RelayCommand]
     private async Task CreateTimer()
     {
+        await _initTask; // Warten bis LoadTimersAsync fertig ist
         var duration = new TimeSpan(NewTimerHours, NewTimerMinutes, NewTimerSeconds);
         if (duration <= TimeSpan.Zero)
         {
@@ -152,6 +156,7 @@ public partial class TimerViewModel : ObservableObject
     [RelayCommand]
     private async Task AddQuickTimer(string minutes)
     {
+        await _initTask; // Warten bis LoadTimersAsync fertig ist
         if (int.TryParse(minutes, out var min))
         {
             var timer = await _timerService.CreateTimerAsync($"{min} min", TimeSpan.FromMinutes(min));
@@ -225,6 +230,7 @@ public partial class TimerViewModel : ObservableObject
     [RelayCommand]
     private async Task StartFromPreset(TimerPreset preset)
     {
+        await _initTask; // Warten bis LoadTimersAsync fertig ist
         var timer = await _timerService.CreateTimerAsync(preset.Name, preset.Duration);
         timer.AutoRepeat = preset.AutoRepeat;
         await _timerService.StartTimerAsync(timer);
