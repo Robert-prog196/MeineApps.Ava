@@ -228,7 +228,8 @@ Dispatcher.UIThread.Post(() => { SomeProperty = newValue; });
 
 ## Ad-Banner Layout (WICHTIG)
 
-- **MainView Grid**: `RowDefinitions="*,Auto,Auto"` → Row 0 Content, Row 1 Ad-Spacer (50dp), Row 2 Tab-Bar
+- **MainView Grid**: `RowDefinitions="*,Auto,Auto"` → Row 0 Content, Row 1 Ad-Spacer (64dp), Row 2 Tab-Bar
+- **Ad-Spacer 64dp**: Adaptive Banner (`GetCurrentOrientationAnchoredAdaptiveBannerAdSize`) können 50-60dp+ hoch sein → 64dp als sicherer Spacer
 - **Jeder MainViewModel**: Muss `_adService.ShowBanner()` explizit aufrufen (AdMobHelper verschluckt Fehler)
 - **ScrollViewer Bottom-Padding**: Mindestens 60dp in ALLEN scrollbaren Sub-Views
 - **Tab-Bar Heights**: FinanzRechner/FitnessRechner/HandwerkerRechner/WorkTimePro=56, HandwerkerImperium=64, BomberBlast=0
@@ -296,6 +297,12 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | TransformOperations CS0103 | `Avalonia.Media` reicht nicht | `using Avalonia.Media.Transformation;` hinzufügen |
 | IsAnimating Property-Warnung | Kollidiert mit `AvaloniaObject.IsAnimating()` | Property umbenennen (z.B. `IsPulsing`) oder `new` Keyword |
 | KeyFrame-Animation Crash "No animator" | `Style.Animations` hat keinen Animator fuer `RenderTransform` | NUR `Opacity`/`Width`/`Height` (double) in KeyFrames verwenden. `TransformOperationsTransition` in `Transitions` funktioniert |
+| TapScaleBehavior Crash "InvalidCastException" | `animation.RunAsync(ScaleTransform)` crasht in `TransformAnimator.Apply` | DispatcherTimer-basierte Animation statt Animation API fuer ScaleTransform verwenden |
+| Content hinter Ad-Banner abgeschnitten | Ad-Spacer 50dp, aber adaptive Banner 50-60dp+ | Ad-Spacer auf 64dp erhoehen (alle 6 MainViews). Adaptive Banner variieren je nach Geraet |
+| Style Selector AVLN2200 "Can not find parent" | `#Name` ohne Typ-Prefix | IMMER `Typ#Name` schreiben: `Grid#ModeSelector`, `Border#DisplayBorder` |
+| Enum-Werte englisch in UI | Direktes Binding an Enum-Property | Display-Property mit lokalisiertem Text verwenden, im ViewModel per `GetString()` setzen |
+| Daten erscheinen kurz, verschwinden | `_ = InitializeAsync()` mit `_list.Clear()` raced mit User-Aktionen | Task speichern: `_initTask = InitializeAsync()`, in Methoden `await _initTask` |
+| Sprache immer Englisch trotz Geräteeinstellung | Erkannte Sprache nicht in Preferences gespeichert | `_preferences.Set(key, lang)` nach Gerätesprach-Erkennung in `Initialize()` |
 
 ---
 
