@@ -114,6 +114,7 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 
 ## Changelog (Highlights)
 
+- **13.02.2026 (11)**: Crash-Fix: StaggerFadeInBehavior + FadeInBehavior (MeineApps.UI + MeineApps.Core.Ava) hatten `async void OnAttachedToVisualTree` ohne try-catch. Bei detached Control während Animation → unhandled Exception → App-Crash. Fix: try-catch + Fallback `Opacity=1` bei Fehler (Element bleibt sichtbar statt unsichtbar hängen). Behebt den "leeren Bereich" auf Dashboard (Elemente blieben bei Opacity=0 wenn Animation fehlschlug).
 - **13.02.2026 (10)**: Phase 6 Polish: IHapticService (Tick/Click/HeavyClick, Android Vibrator), IFitnessSoundService (System-Sound bei Erfolgen), IReminderService (3 Typen: Wasser/Gewicht/Abend, AlarmManager + NotificationChannel), Abend-Zusammenfassung Dashboard-Card (nach 20 Uhr), Settings-Toggles (Haptic/Sound/3 Reminders). 10 neue RESX-Keys in 6 Sprachen.
 - **13.02.2026 (9)**: Phase 5 Gamification: AchievementService (20 Badges in 5 Kategorien), LevelService (XP/Level-System, Max 50), ChallengeService (10 tägliche Challenges), AchievementsView Fullscreen-Overlay, Dashboard XP-Bar + Challenge-Card + Badge-Reihe + Wochenvergleich, LocalizeKeyConverter, 73 neue RESX-Keys in 6 Sprachen.
 - **13.02.2026 (8)**: Phase 4 Charts: HeatmapCalendar Control (Aktivitäts-Heatmap wie GitHub), Trend-Pfeil (TrendingUp/Down/Flat mit Puls-Animation), Chart-Morphing (AnimationsSpeed 300ms), StreakService.GetActivityDates(). 8 neue RESX-Keys.
