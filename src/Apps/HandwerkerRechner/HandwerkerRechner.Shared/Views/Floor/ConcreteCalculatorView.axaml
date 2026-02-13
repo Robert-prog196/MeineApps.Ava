@@ -33,7 +33,7 @@
     </Border>
 
     <!-- Row 1: Scrollable Content -->
-    <ScrollViewer Grid.Row="1" Padding="16,16,16,120">
+    <ScrollViewer Grid.Row="1" Padding="16,16,16,200">
       <StackPanel Spacing="16">
 
         <!-- Sub-Rechner Auswahl -->
