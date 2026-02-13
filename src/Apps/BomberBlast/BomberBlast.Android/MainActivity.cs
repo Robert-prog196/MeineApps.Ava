@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
 using Android.Widget;
 using Avalonia;
 using Avalonia.Android;
@@ -45,14 +46,8 @@ public class MainActivity : AvaloniaMainActivity<App>
 
         base.OnCreate(savedInstanceState);
 
-        // Fullscreen/Immersive Mode (Landscape-Spiel, System-Bars ausblenden)
-        if (Window != null)
-        {
-            AndroidX.Core.View.WindowCompat.SetDecorFitsSystemWindows(Window, false);
-            var controller = AndroidX.Core.View.WindowCompat.GetInsetsController(Window, Window.DecorView);
-            controller.Hide(AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars());
-            controller.SystemBarsBehavior = AndroidX.Core.View.WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
-        }
+        // Fullscreen/Immersive Mode (Landscape-Spiel, System-Bars komplett ausblenden)
+        EnableImmersiveMode();
 
         // Back-Navigation: ViewModel holen + Toast-Event verdrahten
         _mainVm = App.Services.GetService<MainViewModel>();
@@ -85,13 +80,7 @@ public class MainActivity : AvaloniaMainActivity<App>
         base.OnResume();
 
         // Fullscreen/Immersive Mode erneut setzen (kann bei Alt-Tab etc. verloren gehen)
-        if (Window != null)
-        {
-            AndroidX.Core.View.WindowCompat.SetDecorFitsSystemWindows(Window, false);
-            var controller = AndroidX.Core.View.WindowCompat.GetInsetsController(Window, Window.DecorView);
-            controller.Hide(AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars());
-            controller.SystemBarsBehavior = AndroidX.Core.View.WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
-        }
+        EnableImmersiveMode();
 
         _adMobHelper?.Resume();
     }
@@ -109,6 +98,45 @@ public class MainActivity : AvaloniaMainActivity<App>
             return;
 
         base.OnBackPressed();
+    }
+
+    public override void OnWindowFocusChanged(bool hasFocus)
+    {
+        base.OnWindowFocusChanged(hasFocus);
+        if (hasFocus) EnableImmersiveMode();
+    }
+
+    /// <summary>
+    /// Immersive Fullscreen: StatusBar + NavigationBar ausblenden.
+    /// Bars erscheinen bei Swipe vom Rand kurz und verschwinden automatisch wieder.
+    /// </summary>
+    private void EnableImmersiveMode()
+    {
+        if (Window == null) return;
+
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.R) // API 30+
+        {
+            Window.SetDecorFitsSystemWindows(false);
+            var controller = Window.InsetsController;
+            if (controller != null)
+            {
+                controller.Hide(WindowInsets.Type.SystemBars());
+                controller.SystemBarsBehavior = (int)WindowInsetsControllerBehavior.ShowTransientBarsBySwipe;
+            }
+        }
+        else
+        {
+            // Fallback fuer aeltere API-Versionen (< 30)
+#pragma warning disable CA1422 // Deprecated API fuer Kompatibilitaet
+            Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(
+                SystemUiFlags.ImmersiveSticky |
+                SystemUiFlags.LayoutStable |
+                SystemUiFlags.LayoutHideNavigation |
+                SystemUiFlags.LayoutFullscreen |
+                SystemUiFlags.HideNavigation |
+                SystemUiFlags.Fullscreen);
+#pragma warning restore CA1422
+        }
     }
 
     protected override void OnDestroy()
