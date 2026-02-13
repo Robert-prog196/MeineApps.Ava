@@ -25,6 +25,7 @@ public partial class MainView : UserControl
         {
             _vm.FloatingTextRequested -= OnFloatingText;
             _vm.CelebrationRequested -= OnCelebration;
+            _vm.MessageRequested -= OnMessage;
         }
 
         _vm = DataContext as MainViewModel;
@@ -34,6 +35,7 @@ public partial class MainView : UserControl
         {
             _vm.FloatingTextRequested += OnFloatingText;
             _vm.CelebrationRequested += OnCelebration;
+            _vm.MessageRequested += OnMessage;
         }
     }
 
@@ -97,5 +99,18 @@ public partial class MainView : UserControl
     private void OnCelebration()
     {
         CelebrationCanvas.ShowConfetti();
+    }
+
+    private void OnMessage(string title, string message)
+    {
+        System.Diagnostics.Debug.WriteLine($"[WorkTimePro] {title}: {message}");
+
+        // Fehlermeldungen als FloatingText anzeigen
+        var color = Color.Parse("#F44336"); // Rot für Fehler
+        var w = FloatingTextCanvas.Bounds.Width;
+        if (w < 10) w = 300;
+        var h = FloatingTextCanvas.Bounds.Height;
+        if (h < 10) h = 400;
+        FloatingTextCanvas.ShowFloatingText(title, w * 0.5, Math.Max(80, h * 0.3), color, 16);
     }
 }

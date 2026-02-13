@@ -140,6 +140,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _updateTimer = new System.Timers.Timer(1000);
         _updateTimer.Elapsed += OnUpdateTimerElapsed;
         // Timer is NOT started immediately - starts on status change
+
+        // Initiale Daten laden (Status aus DB, Today-Ansicht)
+        _ = LoadDataAsync();
     }
 
     private void WireSubPageNavigation(ObservableObject vm)
@@ -461,6 +464,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CloseAllSubPages();
         IsDayDetailActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
+        _ = DayDetailVm.LoadDataAsync();
     }
 
     [RelayCommand]
@@ -469,6 +473,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CloseAllSubPages();
         IsMonthActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
+        _ = MonthVm.LoadDataAsync();
     }
 
     [RelayCommand]
@@ -477,6 +482,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CloseAllSubPages();
         IsYearActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
+        _ = YearVm.LoadDataAsync();
     }
 
     [RelayCommand]
@@ -485,6 +491,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CloseAllSubPages();
         IsVacationActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
+        _ = VacationVm.LoadDataAsync();
     }
 
     [RelayCommand]
@@ -493,6 +500,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         CloseAllSubPages();
         IsShiftPlanActive = true;
         OnPropertyChanged(nameof(IsSubPageActive));
+        _ = ShiftPlanVm.LoadDataAsync();
     }
 
     [RelayCommand]
