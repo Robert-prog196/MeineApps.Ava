@@ -12,7 +12,7 @@
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Month Navigation ==================== -->
-        <Border Classes="CardElevated">
+        <Border Classes="CardElevated" Padding="16">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
                     Command="{Binding PreviousMonthCommand}">
@@ -42,7 +42,7 @@
                 HorizontalAlignment="Center" />
 
         <!-- ==================== Month Summary ==================== -->
-        <Border Classes="Card">
+        <Border Classes="Card" Padding="16">
           <Grid ColumnDefinitions="*,*">
             <StackPanel Grid.Column="0" HorizontalAlignment="Center">
               <TextBlock Text="{loc:Translate WorkTime}"
@@ -123,26 +123,52 @@
                                 Padding="0" Margin="1"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center">
-                          <Border Background="{Binding BackgroundColor}"
-                                  CornerRadius="6"
-                                  Width="46" Height="46">
-                            <Grid>
-                              <!-- Day number -->
-                              <TextBlock Text="{Binding DayNumber}"
-                                         FontSize="14"
-                                         Foreground="{Binding TextColor}"
-                                         HorizontalAlignment="Center"
-                                         VerticalAlignment="Center" />
-                              <!-- Status icon -->
-                              <mi:MaterialIcon Kind="{Binding StatusIconKind}"
-                                               IsVisible="{Binding HasStatusIcon}"
-                                               Width="12" Height="12"
-                                               Foreground="{DynamicResource PrimaryBrush}"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Bottom"
-                                               Margin="0,0,2,2" />
-                            </Grid>
-                          </Border>
+                          <!-- Panel fuer Hintergrund + Puls-Overlay -->
+                          <Panel Width="46" Height="46">
+                            <!-- Hintergrund -->
+                            <Border Background="{Binding BackgroundColor}"
+                                    CornerRadius="6"
+                                    Width="46" Height="46">
+                              <Grid>
+                                <!-- Day number -->
+                                <TextBlock Text="{Binding DayNumber}"
+                                           FontSize="14"
+                                           Foreground="{Binding TextColor}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                                <!-- Status icon -->
+                                <mi:MaterialIcon Kind="{Binding StatusIconKind}"
+                                                 IsVisible="{Binding HasStatusIcon}"
+                                                 Width="12" Height="12"
+                                                 Foreground="{DynamicResource PrimaryBrush}"
+                                                 HorizontalAlignment="Right"
+                                                 VerticalAlignment="Bottom"
+                                                 Margin="0,0,2,2" />
+                              </Grid>
+                            </Border>
+                            <!-- Heute-Puls-Overlay -->
+                            <Border CornerRadius="6" Width="46" Height="46"
+                                    BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="2"
+                                    IsVisible="{Binding IsToday}">
+                              <Border.Styles>
+                                <Style Selector="Border">
+                                  <Style.Animations>
+                                    <Animation Duration="0:0:2" IterationCount="INFINITE">
+                                      <KeyFrame Cue="0%">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                      </KeyFrame>
+                                      <KeyFrame Cue="50%">
+                                        <Setter Property="Opacity" Value="1.0" />
+                                      </KeyFrame>
+                                      <KeyFrame Cue="100%">
+                                        <Setter Property="Opacity" Value="0.5" />
+                                      </KeyFrame>
+                                    </Animation>
+                                  </Style.Animations>
+                                </Style>
+                              </Border.Styles>
+                            </Border>
+                          </Panel>
                         </Button>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -155,7 +181,7 @@
         </Border>
 
         <!-- ==================== Heatmap Legend ==================== -->
-        <Border Classes="Card" Padding="12">
+        <Border Classes="Card" Padding="16">
           <StackPanel Spacing="8">
             <TextBlock Text="{loc:Translate Legend}"
                        FontSize="16" FontWeight="Bold"
@@ -329,7 +355,7 @@
 
               <!-- Calculated work days -->
               <TextBlock Text="{Binding OverlayCalculatedDaysDisplay}"
-                         FontSize="13"
+                         FontSize="13" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}"
                          HorizontalAlignment="Center" />
             </StackPanel>

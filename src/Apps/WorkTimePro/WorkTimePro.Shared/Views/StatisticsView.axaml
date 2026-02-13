@@ -23,97 +23,78 @@
                        VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- Period Buttons -->
-          <WrapPanel Orientation="Horizontal"
-                     HorizontalAlignment="Center">
-            <Panel Margin="4">
-              <Button Classes="Primary Small"
-                      Content="{loc:Translate Week}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Week"
-                      IsVisible="{Binding IsWeekSelected}" />
-              <Button Classes="Outlined Small"
-                      Content="{loc:Translate Week}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Week"
-                      IsVisible="{Binding !IsWeekSelected}" />
-            </Panel>
-            <Panel Margin="4">
-              <Button Classes="Primary Small"
-                      Content="{loc:Translate Month}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Month"
-                      IsVisible="{Binding IsMonthSelected}" />
-              <Button Classes="Outlined Small"
-                      Content="{loc:Translate Month}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Month"
-                      IsVisible="{Binding !IsMonthSelected}" />
-            </Panel>
-            <Panel Margin="4">
-              <Button Classes="Primary Small"
-                      Content="{loc:Translate Quarter}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Quarter"
-                      IsVisible="{Binding IsQuarterSelected}" />
-              <Button Classes="Outlined Small"
-                      Content="{loc:Translate Quarter}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Quarter"
-                      IsVisible="{Binding !IsQuarterSelected}" />
-            </Panel>
-            <Panel Margin="4">
-              <Button Classes="Primary Small"
-                      Content="{loc:Translate Year}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Year"
-                      IsVisible="{Binding IsYearSelected}" />
-              <Button Classes="Outlined Small"
-                      Content="{loc:Translate Year}"
-                      Command="{Binding ChangePeriodCommand}"
-                      CommandParameter="Year"
-                      IsVisible="{Binding !IsYearSelected}" />
-            </Panel>
-          </WrapPanel>
+          <!-- Period Buttons (SegmentedControl) -->
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="4">
+            <Grid ColumnDefinitions="*,*,*,*">
+              <Button Grid.Column="0" Classes="Primary Small" Content="{loc:Translate Week}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Week"
+                      IsVisible="{Binding IsWeekSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8" />
+              <Button Grid.Column="0" Classes="Text Small" Content="{loc:Translate Week}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Week"
+                      IsVisible="{Binding !IsWeekSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+              <Button Grid.Column="1" Classes="Primary Small" Content="{loc:Translate Month}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Month"
+                      IsVisible="{Binding IsMonthSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8" />
+              <Button Grid.Column="1" Classes="Text Small" Content="{loc:Translate Month}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Month"
+                      IsVisible="{Binding !IsMonthSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+              <Button Grid.Column="2" Classes="Primary Small" Content="{loc:Translate Quarter}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Quarter"
+                      IsVisible="{Binding IsQuarterSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8" />
+              <Button Grid.Column="2" Classes="Text Small" Content="{loc:Translate Quarter}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Quarter"
+                      IsVisible="{Binding !IsQuarterSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+              <Button Grid.Column="3" Classes="Primary Small" Content="{loc:Translate Year}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Year"
+                      IsVisible="{Binding IsYearSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" CornerRadius="8" />
+              <Button Grid.Column="3" Classes="Text Small" Content="{loc:Translate Year}"
+                      Command="{Binding ChangePeriodCommand}" CommandParameter="Year"
+                      IsVisible="{Binding !IsYearSelected}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+            </Grid>
+          </Border>
 
           <TextBlock Text="{Binding PeriodDisplay}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource AccentBrush}"
                      HorizontalAlignment="Center" />
 
-          <!-- View Toggle + Export -->
-          <StackPanel Orientation="Horizontal"
-                      HorizontalAlignment="Center"
-                      Spacing="8" Margin="0,8,0,0">
-            <Panel>
+          <!-- View Toggle + Export (SegmentedControl) -->
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="4"
+                  HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <Panel>
+                <Button Classes="Primary Small"
+                        Content="{Binding ChartsButtonText}"
+                        Command="{Binding ToggleViewCommand}"
+                        IsVisible="{Binding !ShowTable}"
+                        CornerRadius="8" />
+                <Button Classes="Text Small"
+                        Content="{Binding ChartsButtonText}"
+                        Command="{Binding ToggleViewCommand}"
+                        IsVisible="{Binding ShowTable}" />
+              </Panel>
+              <Panel>
+                <Button Classes="Primary Small"
+                        Content="{Binding TableButtonText}"
+                        Command="{Binding ToggleViewCommand}"
+                        IsVisible="{Binding ShowTable}"
+                        CornerRadius="8" />
+                <Button Classes="Text Small"
+                        Content="{Binding TableButtonText}"
+                        Command="{Binding ToggleViewCommand}"
+                        IsVisible="{Binding !ShowTable}" />
+              </Panel>
               <Button Classes="Primary Small"
-                      Content="{Binding ChartsButtonText}"
-                      Command="{Binding ToggleViewCommand}"
-                      IsVisible="{Binding !ShowTable}" />
-              <Button Classes="Outlined Small"
-                      Content="{Binding ChartsButtonText}"
-                      Command="{Binding ToggleViewCommand}"
-                      IsVisible="{Binding ShowTable}" />
-            </Panel>
-            <Panel>
-              <Button Classes="Primary Small"
-                      Content="{Binding TableButtonText}"
-                      Command="{Binding ToggleViewCommand}"
-                      IsVisible="{Binding ShowTable}" />
-              <Button Classes="Outlined Small"
-                      Content="{Binding TableButtonText}"
-                      Command="{Binding ToggleViewCommand}"
-                      IsVisible="{Binding !ShowTable}" />
-            </Panel>
-            <Button Classes="Primary Small"
-                    Content="{Binding ExportButtonText}"
-                    Command="{Binding ExportCommand}" />
-          </StackPanel>
+                      Content="{Binding ExportButtonText}"
+                      Command="{Binding ExportCommand}"
+                      CornerRadius="8" />
+            </StackPanel>
+          </Border>
         </StackPanel>
       </Border>
 
       <!-- ==================== Main Summary (Charts mode) ==================== -->
-      <Border Classes="Card"
+      <Border Classes="CardElevated"
               IsVisible="{Binding !ShowTable}">
         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
               ColumnSpacing="16" RowSpacing="16">
@@ -125,7 +106,7 @@
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{Binding TotalWorkDisplay}"
-                       FontSize="28" FontWeight="Bold"
+                       FontSize="32" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
           </StackPanel>
@@ -137,7 +118,7 @@
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{Binding TotalOvertimeDisplay}"
-                       FontSize="28" FontWeight="Bold"
+                       FontSize="32" FontWeight="Bold"
                        Foreground="{Binding OvertimeColor}"
                        HorizontalAlignment="Center" />
           </StackPanel>

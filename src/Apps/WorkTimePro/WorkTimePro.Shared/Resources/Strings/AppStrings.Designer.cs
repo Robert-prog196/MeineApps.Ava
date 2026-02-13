@@ -2526,5 +2526,32 @@ namespace WorkTimePro.Resources.Strings {
                 return ResourceManager.GetString("PressBackAgainToExit", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Weekly goal reached! ähnelt.
+        /// </summary>
+        internal static string WeekGoalReached {
+            get {
+                return ResourceManager.GetString("WeekGoalReached", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die days ähnelt.
+        /// </summary>
+        internal static string DayStreak {
+            get {
+                return ResourceManager.GetString("DayStreak", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die per hour ähnelt.
+        /// </summary>
+        internal static string PerHour {
+            get {
+                return ResourceManager.GetString("PerHour", resourceCulture);
+            }
+        }
     }
 }

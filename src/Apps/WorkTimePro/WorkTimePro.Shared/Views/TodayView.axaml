@@ -7,6 +7,46 @@
              x:Class="WorkTimePro.Views.TodayView"
              x:DataType="vm:MainViewModel">
 
+  <!-- Styles fuer Animationen und Effekte -->
+  <UserControl.Styles>
+    <!-- Pulsierender Glow-Ring wenn Tracking aktiv -->
+    <Style Selector="ctrl|CircularProgressControl[IsPulsing=True]">
+      <Style.Animations>
+        <Animation Duration="0:0:2" IterationCount="INFINITE">
+          <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.75" /></KeyFrame>
+          <KeyFrame Cue="50%"><Setter Property="Opacity" Value="1.0" /></KeyFrame>
+          <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.75" /></KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- Big Action Button: Basis-Transition -->
+    <Style Selector="Button.BigAction">
+      <Style.Setters>
+        <Setter Property="Transitions">
+          <Transitions>
+            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
+          </Transitions>
+        </Setter>
+      </Style.Setters>
+    </Style>
+    <!-- Big Action Button: Hover-Effekt -->
+    <Style Selector="Button.BigAction:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.04)" />
+    </Style>
+    <!-- Big Action Button: Press-Effekt -->
+    <Style Selector="Button.BigAction:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.92)" />
+      <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <!-- Quick-Nav Cards: Hover-Effekt -->
+    <Style Selector="Button.QuickNav:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.03)" />
+    </Style>
+  </UserControl.Styles>
+
   <ScrollViewer>
     <StackPanel Spacing="12" Margin="16">
 
@@ -19,11 +59,16 @@
       <Border Classes="CardElevated" Padding="24">
         <StackPanel Spacing="20">
 
-          <!-- Status Badge -->
+          <!-- Status Badge mit BrushTransition -->
           <Border Background="{Binding StatusColor}"
                   CornerRadius="16"
                   Padding="16,8"
                   HorizontalAlignment="Center">
+            <Border.Transitions>
+              <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.4" />
+              </Transitions>
+            </Border.Transitions>
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="{Binding StatusIconKind}"
                                Width="18" Height="18"
@@ -37,15 +82,17 @@
 
           <!-- Big Start/Stop Button mit Fortschrittsring -->
           <Panel HorizontalAlignment="Center" Width="140" Height="140">
-            <!-- Fortschrittsring (hinter dem Button) -->
+            <!-- Fortschrittsring (hinter dem Button) mit Puls-Animation -->
             <ctrl:CircularProgressControl
                 Progress="{Binding DayProgress}"
+                IsPulsing="{Binding IsWorking}"
                 TrackBrush="{DynamicResource CardBorderBrush}"
                 ProgressBrush="{DynamicResource SuccessBrush}"
                 StrokeWidth="6"
                 Width="140" Height="140" />
             <!-- Button zentriert im Ring -->
             <Button Command="{Binding ToggleTrackingCommand}"
+                    Classes="BigAction"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Width="120" Height="120"
@@ -58,6 +105,13 @@
                                Width="48" Height="48"
                                Foreground="White" />
             </Button>
+            <!-- Fortschritts-Prozent unter dem Button -->
+            <TextBlock Text="{Binding DayProgressPercent}"
+                       FontSize="12" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Bottom"
+                       Margin="0,0,0,2" />
           </Panel>
 
           <!-- Pause Button -->
@@ -91,6 +145,25 @@
             </StackPanel>
           </Button>
         </Grid>
+      </Border>
+
+      <!-- ==================== Streak-Anzeige ==================== -->
+      <Border Background="{DynamicResource WarningLightBrush}" CornerRadius="12" Padding="10,6"
+              HorizontalAlignment="Center"
+              IsVisible="{Binding HasStreak}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <mi:MaterialIcon Kind="Fire" Width="20" Height="20"
+                           Foreground="{DynamicResource WarningBrush}" />
+          <TextBlock FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource WarningBrush}"
+                     VerticalAlignment="Center">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0} Tage">
+                <Binding Path="StreakCount" />
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
+        </StackPanel>
       </Border>
 
       <!-- ==================== Time Metrics Card ==================== -->
@@ -169,15 +242,18 @@
 
       <!-- ==================== Earnings Card (nur wenn Stundenlohn konfiguriert) ==================== -->
       <Border Classes="Card" Padding="12"
+              BorderBrush="{DynamicResource SuccessBrush}"
+              BorderThickness="1"
+              CornerRadius="12"
               IsVisible="{Binding HasEarnings}">
         <StackPanel Orientation="Horizontal" Spacing="12"
                     HorizontalAlignment="Center">
           <mi:MaterialIcon Kind="CurrencyEur"
-                           Width="24" Height="24"
+                           Width="28" Height="28"
                            Foreground="{DynamicResource SuccessBrush}" />
           <StackPanel>
             <TextBlock Text="{Binding TodayEarnings}"
-                       FontSize="20" FontWeight="Bold"
+                       FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource SuccessBrush}" />
             <TextBlock Text="{loc:Translate TodayEarnings}"
                        FontSize="12"
@@ -227,13 +303,20 @@
 
         <!-- Month Overview -->
         <Button Grid.Row="0" Grid.Column="0"
+                Classes="QuickNav"
                 Command="{Binding NavigateToMonthCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Height="80"
                 CornerRadius="12"
-                Background="{DynamicResource SecondaryBrush}">
+                Background="{DynamicResource SecondaryBrush}"
+                RenderTransform="scale(1)">
+          <Button.Transitions>
+            <Transitions>
+              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" />
+            </Transitions>
+          </Button.Transitions>
           <StackPanel HorizontalAlignment="Center" Spacing="4">
             <mi:MaterialIcon Kind="CalendarMonth"
                              Width="24" Height="24"
@@ -248,13 +331,20 @@
 
         <!-- Year Overview -->
         <Button Grid.Row="0" Grid.Column="1"
+                Classes="QuickNav"
                 Command="{Binding NavigateToYearCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Height="80"
                 CornerRadius="12"
-                Background="{DynamicResource SecondaryBrush}">
+                Background="{DynamicResource SecondaryBrush}"
+                RenderTransform="scale(1)">
+          <Button.Transitions>
+            <Transitions>
+              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" />
+            </Transitions>
+          </Button.Transitions>
           <StackPanel HorizontalAlignment="Center" Spacing="4">
             <mi:MaterialIcon Kind="ChartBar"
                              Width="24" Height="24"
@@ -269,13 +359,20 @@
 
         <!-- Vacation -->
         <Button Grid.Row="1" Grid.Column="0"
+                Classes="QuickNav"
                 Command="{Binding NavigateToVacationCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Height="80"
                 CornerRadius="12"
-                Background="{DynamicResource InfoBrush}">
+                Background="{DynamicResource InfoBrush}"
+                RenderTransform="scale(1)">
+          <Button.Transitions>
+            <Transitions>
+              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" />
+            </Transitions>
+          </Button.Transitions>
           <StackPanel HorizontalAlignment="Center" Spacing="4">
             <mi:MaterialIcon Kind="Beach"
                              Width="24" Height="24"
@@ -290,13 +387,20 @@
 
         <!-- Shift Plan -->
         <Button Grid.Row="1" Grid.Column="1"
+                Classes="QuickNav"
                 Command="{Binding NavigateToShiftPlanCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Height="80"
                 CornerRadius="12"
-                Background="{DynamicResource WarningBrush}">
+                Background="{DynamicResource WarningBrush}"
+                RenderTransform="scale(1)">
+          <Button.Transitions>
+            <Transitions>
+              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15" />
+            </Transitions>
+          </Button.Transitions>
           <StackPanel HorizontalAlignment="Center" Spacing="4">
             <mi:MaterialIcon Kind="SwapHorizontal"
                              Width="24" Height="24"

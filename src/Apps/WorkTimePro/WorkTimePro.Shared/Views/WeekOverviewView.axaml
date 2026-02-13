@@ -11,7 +11,7 @@
     <StackPanel Spacing="16" Margin="16">
 
       <!-- ==================== Week Navigation ==================== -->
-      <Border Classes="CardElevated">
+      <Border Classes="CardElevated" Padding="16">
         <Grid ColumnDefinitions="Auto,*,Auto">
           <Button Grid.Column="0" Classes="Text"
                   Command="{Binding PreviousWeekCommand}">
@@ -47,7 +47,7 @@
               HorizontalAlignment="Center" />
 
       <!-- ==================== Week Summary ==================== -->
-      <Border Classes="Card">
+      <Border Classes="Card" Padding="16">
         <StackPanel Spacing="16">
 
           <!-- Progress Bar -->
@@ -65,7 +65,7 @@
             <ProgressBar Value="{Binding ProgressPercent}"
                          Maximum="100"
                          Foreground="{DynamicResource AccentBrush}"
-                         Height="12" />
+                         Height="12" CornerRadius="6" />
           </StackPanel>
 
           <!-- Time Metrics -->
@@ -144,7 +144,7 @@
       </Border>
 
       <!-- ==================== Days List ==================== -->
-      <Border Classes="Card">
+      <Border Classes="Card" Padding="16">
         <StackPanel Spacing="8">
           <TextBlock Text="{loc:Translate DaysThisWeek}"
                      FontSize="16" FontWeight="Bold"
@@ -159,18 +159,24 @@
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         Margin="0,2" Padding="0">
-                  <Border Classes="Card" Padding="16" Margin="0" MinHeight="64">
-                    <Grid ColumnDefinitions="Auto,*,Auto,60">
+                  <Border Padding="0" Margin="0" MinHeight="64" CornerRadius="12"
+                          Background="{DynamicResource CardBrush}"
+                          BorderBrush="{DynamicResource CardBorderBrush}" BorderThickness="1">
+                    <Grid ColumnDefinitions="4,Auto,*,Auto,60">
+
+                      <!-- Farbige Seitenleiste -->
+                      <Border Grid.Column="0" Background="{Binding BalanceColor}"
+                              CornerRadius="12,0,0,12" />
 
                       <!-- Status Icon -->
-                      <TextBlock Grid.Column="0"
+                      <TextBlock Grid.Column="1"
                                  Text="{Binding StatusIcon}"
                                  FontSize="24"
                                  VerticalAlignment="Center"
-                                 Margin="0,0,12,0" />
+                                 Margin="12,0,12,0" />
 
                       <!-- Date and Status -->
-                      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                      <StackPanel Grid.Column="2" VerticalAlignment="Center">
                         <TextBlock Text="{Binding DayName}"
                                    FontSize="14" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -180,7 +186,7 @@
                       </StackPanel>
 
                       <!-- Work Time -->
-                      <StackPanel Grid.Column="2" VerticalAlignment="Center"
+                      <StackPanel Grid.Column="3" VerticalAlignment="Center"
                                   HorizontalAlignment="Right" Margin="0,0,8,0">
                         <TextBlock Text="{Binding ActualWorkDisplay}"
                                    FontSize="16" FontWeight="Bold"
@@ -193,7 +199,7 @@
                       </StackPanel>
 
                       <!-- Balance -->
-                      <TextBlock Grid.Column="3"
+                      <TextBlock Grid.Column="4"
                                  Text="{Binding BalanceDisplay}"
                                  FontSize="14" FontWeight="Bold"
                                  Foreground="{Binding BalanceColor}"

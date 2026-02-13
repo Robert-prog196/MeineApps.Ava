@@ -506,4 +506,9 @@
   <data name="Earnings" xml:space="preserve"><value>Ingresos</value></data>
   <data name="PressBackAgainToExit" xml:space="preserve"><value>Pulsa atrás de nuevo para salir</value></data>
 
+  <!-- UI/UX Overhaul -->
+  <data name="WeekGoalReached" xml:space="preserve"><value>¡Objetivo semanal alcanzado!</value></data>
+  <data name="DayStreak" xml:space="preserve"><value>días</value></data>
+  <data name="PerHour" xml:space="preserve"><value>por hora</value></data>
+
 </root>

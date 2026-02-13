@@ -28,7 +28,7 @@
     </Border>
 
     <ScrollViewer Grid.Row="1">
-      <StackPanel Spacing="8" Margin="16">
+      <StackPanel Spacing="12" Margin="16">
 
         <!-- ==================== Month Navigation ==================== -->
         <Border Classes="CardElevated">
@@ -67,7 +67,7 @@
         </Border>
 
         <!-- ==================== Summary ==================== -->
-        <Border Classes="Card">
+        <Border Classes="CardElevated">
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
                 ColumnSpacing="16" RowSpacing="16">
 
@@ -77,7 +77,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding WorkTimeDisplay}"
-                         FontSize="24" FontWeight="Bold"
+                         FontSize="26" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 
@@ -87,7 +87,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding TargetTimeDisplay}"
-                         FontSize="24"
+                         FontSize="26"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
 
@@ -136,7 +136,7 @@
         <Border Classes="Card">
           <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Center"
-                      Spacing="24">
+                      Spacing="32">
             <!-- Vacation -->
             <StackPanel HorizontalAlignment="Center">
               <mi:MaterialIcon Kind="Beach" Width="24" Height="24"
@@ -199,7 +199,7 @@
             <ItemsControl ItemsSource="{Binding Weeks}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:WorkWeek">
-                  <Border Classes="Card" Padding="12" Margin="0,2">
+                  <Border Classes="Card" Padding="16" Margin="0,2">
                     <Grid ColumnDefinitions="Auto,*,Auto,60" ColumnSpacing="12">
                       <TextBlock Grid.Column="0"
                                  Text="{Binding WeekDisplay}"
@@ -239,7 +239,9 @@
                 Command="{Binding LockMonthCommand}"
                 IsVisible="{Binding !IsLocked}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                CornerRadius="12"
+                Padding="16,12">
           <Button.Tag>
             <mi:MaterialIcon Kind="Lock" Width="16" Height="16" Foreground="White" />
           </Button.Tag>
@@ -250,7 +252,9 @@
                 Command="{Binding UnlockMonthCommand}"
                 IsVisible="{Binding IsLocked}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                CornerRadius="12"
+                Padding="16,12">
           <Button.Tag>
             <mi:MaterialIcon Kind="LockOpen" Width="16" Height="16" />
           </Button.Tag>

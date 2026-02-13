@@ -1146,4 +1146,15 @@
     <value>Press back again to exit</value>
   </data>
 
+  <!-- UI/UX Overhaul -->
+  <data name="WeekGoalReached" xml:space="preserve">
+    <value>Weekly goal reached!</value>
+  </data>
+  <data name="DayStreak" xml:space="preserve">
+    <value>days</value>
+  </data>
+  <data name="PerHour" xml:space="preserve">
+    <value>per hour</value>
+  </data>
+
 </root>

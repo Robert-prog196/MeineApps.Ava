@@ -246,6 +246,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _dayProgress;
 
+    // Tages-Fortschritt als Prozent-Text
+    public string DayProgressPercent => $"{DayProgress:F0}%";
+
+    partial void OnDayProgressChanged(double value) => OnPropertyChanged(nameof(DayProgressPercent));
+
     [ObservableProperty]
     private double _weekProgress;
 
@@ -294,6 +299,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _undoMessage = "";
+
+    // === Streak (aufeinanderfolgende Arbeitstage) ===
+
+    [ObservableProperty]
+    private int _streakCount;
+
+    public bool HasStreak => StreakCount >= 2;
+
+    partial void OnStreakCountChanged(int value) => OnPropertyChanged(nameof(HasStreak));
+
+    // Wochenziel-Celebration (einmal pro Session)
+    private bool _weekGoalCelebrated;
 
     // Derived properties
     public bool IsWorking => CurrentStatus == TrackingStatus.Working || CurrentStatus == TrackingStatus.OnBreak;
@@ -436,6 +453,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // Week progress
             WeekProgress = await _calculation.GetWeekProgressAsync();
             WeekProgressText = $"{WeekProgress:F0}%";
+
+            // Streak berechnen (aufeinanderfolgende Arbeitstage)
+            StreakCount = await CalculateStreakAsync();
 
             // Premium status
             ShowAds = !_purchaseService.IsPremium && !_trialService.IsTrialActive;
@@ -725,6 +745,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     DayProgress = Math.Min(100, (workTime.TotalMinutes * 100) / today.TargetWorkMinutes);
                 }
 
+                // Wochenziel-Celebration (einmal pro Session wenn Ziel erreicht)
+                if (WeekProgress >= 100 && !_weekGoalCelebrated)
+                {
+                    _weekGoalCelebrated = true;
+                    CelebrationRequested?.Invoke();
+                    FloatingTextRequested?.Invoke(AppStrings.WeekGoalReached ?? "Wochenziel erreicht!", "success");
+                }
+
                 // Verdienst berechnen (falls Stundenlohn konfiguriert)
                 if (settings.HourlyRate > 0)
                 {
@@ -742,6 +770,41 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             MessageRequested?.Invoke(AppStrings.Error, string.Format(AppStrings.ErrorGeneric, ex.Message));
         }
+    }
+
+    /// <summary>
+    /// Berechnet die Anzahl aufeinanderfolgender Arbeitstage (Streak).
+    /// Wochenenden (Sa/So) werden übersprungen.
+    /// </summary>
+    private async Task<int> CalculateStreakAsync()
+    {
+        var streak = 0;
+        var date = DateTime.Today;
+
+        // Maximal 60 Tage zurückschauen
+        for (int i = 0; i < 60; i++)
+        {
+            // Wochenende überspringen
+            if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                date = date.AddDays(-1);
+                continue;
+            }
+
+            var workDay = await _database.GetWorkDayAsync(date);
+
+            if (workDay != null && workDay.ActualWorkMinutes > 0)
+            {
+                streak++;
+                date = date.AddDays(-1);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return streak;
     }
 
     private static string FormatTimeSpan(TimeSpan ts)

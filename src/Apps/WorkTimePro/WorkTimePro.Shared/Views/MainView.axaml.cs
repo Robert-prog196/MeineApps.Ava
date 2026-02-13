@@ -1,6 +1,9 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Transformation;
+using Material.Icons.Avalonia;
 using WorkTimePro.ViewModels;
 
 namespace WorkTimePro.Views;
@@ -10,12 +13,38 @@ public partial class MainView : UserControl
     private MainViewModel? _vm;
     private readonly Random _rng = new();
 
+    // Tab-Icon/Label Referenzen für Highlighting
+    private MaterialIcon?[] _tabIcons = new MaterialIcon?[5];
+    private TextBlock?[] _tabLabels = new TextBlock?[5];
+
     public MainView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
         KeyDown += OnKeyDown;
         Focusable = true;
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        // Tab-Icon/Label Referenzen cachen
+        _tabIcons[0] = this.FindControl<MaterialIcon>("TabIconToday");
+        _tabIcons[1] = this.FindControl<MaterialIcon>("TabIconWeek");
+        _tabIcons[2] = this.FindControl<MaterialIcon>("TabIconCalendar");
+        _tabIcons[3] = this.FindControl<MaterialIcon>("TabIconStatistics");
+        _tabIcons[4] = this.FindControl<MaterialIcon>("TabIconSettings");
+
+        _tabLabels[0] = this.FindControl<TextBlock>("TabLabelToday");
+        _tabLabels[1] = this.FindControl<TextBlock>("TabLabelWeek");
+        _tabLabels[2] = this.FindControl<TextBlock>("TabLabelCalendar");
+        _tabLabels[3] = this.FindControl<TextBlock>("TabLabelStatistics");
+        _tabLabels[4] = this.FindControl<TextBlock>("TabLabelSettings");
+
+        // Initialer Tab-State
+        UpdateTabHighlighting(0);
+        UpdateTabIndicator(0);
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -26,6 +55,7 @@ public partial class MainView : UserControl
             _vm.FloatingTextRequested -= OnFloatingText;
             _vm.CelebrationRequested -= OnCelebration;
             _vm.MessageRequested -= OnMessage;
+            _vm.PropertyChanged -= OnVmPropertyChanged;
         }
 
         _vm = DataContext as MainViewModel;
@@ -36,7 +66,65 @@ public partial class MainView : UserControl
             _vm.FloatingTextRequested += OnFloatingText;
             _vm.CelebrationRequested += OnCelebration;
             _vm.MessageRequested += OnMessage;
+            _vm.PropertyChanged += OnVmPropertyChanged;
         }
+    }
+
+    private void OnVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.CurrentTab) && _vm != null)
+        {
+            UpdateTabHighlighting(_vm.CurrentTab);
+            UpdateTabIndicator(_vm.CurrentTab);
+        }
+    }
+
+    /// <summary>
+    /// Aktiver Tab bekommt PrimaryBrush, alle anderen TextSecondaryBrush
+    /// </summary>
+    private void UpdateTabHighlighting(int activeTab)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            var brush = i == activeTab ? "PrimaryBrush" : "TextSecondaryBrush";
+
+            if (_tabIcons[i] != null && Application.Current != null &&
+                Application.Current.TryGetResource(brush, Avalonia.Styling.ThemeVariant.Default, out var res) &&
+                res is IBrush b)
+            {
+                _tabIcons[i]!.Foreground = b;
+                if (_tabLabels[i] != null)
+                    _tabLabels[i]!.Foreground = b;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Bewegt den Tab-Indikator zum aktiven Tab (via translateX)
+    /// </summary>
+    private void UpdateTabIndicator(int activeTab)
+    {
+        var indicator = this.FindControl<Border>("TabIndicator");
+        if (indicator == null) return;
+
+        // Tab-Bereich berechnen: Der Canvas ist in einem Grid mit 5 gleichen Spalten
+        // Wir nutzen die aktuelle Breite der Tab-Bar
+        var tabBar = indicator.Parent;
+        if (tabBar == null) return;
+
+        // Offset berechnen: Canvas-Breite / 5 * activeTab + Zentrierung
+        // Die Berechnung erfolgt bei LayoutUpdated falls Breite noch 0 ist
+        var totalWidth = Bounds.Width;
+        if (totalWidth < 10)
+        {
+            // Verzögert ausführen wenn noch nicht gelayoutet
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => UpdateTabIndicator(activeTab), Avalonia.Threading.DispatcherPriority.Render);
+            return;
+        }
+
+        var tabWidth = totalWidth / 5.0;
+        var offset = tabWidth * activeTab + (tabWidth - 48) / 2.0;
+        indicator.RenderTransform = new TranslateTransform(offset, 0);
     }
 
     // === Keyboard Shortcuts (Desktop) ===
@@ -86,6 +174,8 @@ public partial class MainView : UserControl
         {
             "success" => Color.Parse("#22C55E"),
             "overtime" => Color.Parse("#F59E0B"),
+            "achievement" => Color.Parse("#FFD700"),
+            "error" => Color.Parse("#F44336"),
             _ => Color.Parse("#3B82F6")
         };
         var w = FloatingTextCanvas.Bounds.Width;

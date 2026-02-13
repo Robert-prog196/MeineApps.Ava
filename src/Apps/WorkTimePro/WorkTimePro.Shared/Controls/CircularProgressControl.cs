@@ -24,6 +24,16 @@ public class CircularProgressControl : Control
     public static readonly StyledProperty<double> StrokeWidthProperty =
         AvaloniaProperty.Register<CircularProgressControl, double>(nameof(StrokeWidth), 6.0);
 
+    public static readonly StyledProperty<bool> IsPulsingProperty =
+        AvaloniaProperty.Register<CircularProgressControl, bool>(nameof(IsPulsing));
+
+    /// <summary>Aktiviert Puls-Animation (Opacity + Scale)</summary>
+    public bool IsPulsing
+    {
+        get => GetValue(IsPulsingProperty);
+        set => SetValue(IsPulsingProperty, value);
+    }
+
     /// <summary>Fortschritt 0-100</summary>
     public double Progress
     {
