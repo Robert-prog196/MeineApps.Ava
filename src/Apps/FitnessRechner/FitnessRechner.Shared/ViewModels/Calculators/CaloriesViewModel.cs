@@ -137,7 +137,7 @@ public partial class CaloriesViewModel : ObservableObject
         {
             // In Avalonia we don't have DisplayActionSheet, so we save the TDEE as default goal.
             // The UI can provide a selection mechanism separately.
-            _preferences.Set("daily_calorie_goal", Result.Tdee);
+            _preferences.Set(PreferenceKeys.CalorieGoal, Result.Tdee);
 
             MessageRequested?.Invoke(
                 _localization.GetString("AlertSuccess"),
@@ -158,6 +158,14 @@ public partial class CaloriesViewModel : ObservableObject
     /// Set a specific calorie goal (maintenance, weight loss, or weight gain).
     /// Called from UI with the selected goal type.
     /// </summary>
+    /// <summary>
+    /// Aktualisiert lokalisierte Texte (z.B. bei Sprachwechsel)
+    /// </summary>
+    public void UpdateLocalizedTexts()
+    {
+        OnPropertyChanged(nameof(ActivityLevels));
+    }
+
     [RelayCommand]
     private void SetSpecificCalorieGoal(string goalType)
     {
@@ -175,7 +183,7 @@ public partial class CaloriesViewModel : ObservableObject
 
         try
         {
-            _preferences.Set("daily_calorie_goal", selectedGoal);
+            _preferences.Set(PreferenceKeys.CalorieGoal, selectedGoal);
 
             MessageRequested?.Invoke(
                 _localization.GetString("AlertSuccess"),

@@ -25,6 +25,8 @@ public class AndroidBarcodeService : Services.IBarcodeService
 
     public Task<string?> ScanBarcodeAsync()
     {
+        // Laufenden Scan abbrechen falls vorhanden
+        _tcs?.TrySetResult(null);
         _tcs = new TaskCompletionSource<string?>();
 
         // Kamera-Permission pruefen

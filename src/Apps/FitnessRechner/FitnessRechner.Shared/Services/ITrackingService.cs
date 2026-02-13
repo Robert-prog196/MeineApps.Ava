@@ -8,6 +8,11 @@ namespace FitnessRechner.Services;
 public interface ITrackingService
 {
     /// <summary>
+    /// Wird ausgelöst wenn ein neuer Eintrag hinzugefügt wurde.
+    /// </summary>
+    event Action? EntryAdded;
+
+    /// <summary>
     /// Adds a new tracking entry
     /// </summary>
     Task<TrackingEntry> AddEntryAsync(TrackingEntry entry);

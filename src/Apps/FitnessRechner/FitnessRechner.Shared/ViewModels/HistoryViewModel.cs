@@ -8,6 +8,7 @@ using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using System.Globalization;
 using MeineApps.Core.Premium.Ava.Services;
 using SkiaSharp;
 
@@ -16,7 +17,7 @@ namespace FitnessRechner.ViewModels;
 public partial class HistoryViewModel : ObservableObject, IDisposable
 {
     private bool _disposed;
-    private const int UNDO_TIMEOUT_MS = 8000;
+    // Undo-Timeout zentral in PreferenceKeys.cs
     private readonly ITrackingService _trackingService;
     private readonly IPurchaseService _purchaseService;
 
@@ -72,6 +73,14 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     partial void OnSelectedTabChanged(bool value)
     {
         ShowAddPanel = false;
+
+        // Pendenten Undo committen bei Tab-Wechsel
+        if (_recentlyDeletedEntry != null)
+        {
+            _undoCancellation?.Cancel();
+            _recentlyDeletedEntry = null;
+            ShowUndoBanner = false;
+        }
     }
 
     [RelayCommand]
@@ -84,15 +93,31 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
         try
         {
             var bmiEntries = await _trackingService.GetEntriesAsync(TrackingType.Bmi, 30);
-            BmiEntries = new ObservableCollection<TrackingEntry>(bmiEntries.OrderByDescending(e => e.Date));
+            // Pending-Delete-Eintrag filtern (verhindert Flicker während Undo-Phase)
+            var pendingDeleteId = _recentlyDeletedEntry?.Id;
+            BmiEntries = new ObservableCollection<TrackingEntry>(
+                bmiEntries.Where(e => e.Id != pendingDeleteId).OrderByDescending(e => e.Date));
             HasBmiEntries = BmiEntries.Count > 0;
 
             var bodyFatEntries = await _trackingService.GetEntriesAsync(TrackingType.BodyFat, 30);
-            BodyFatEntries = new ObservableCollection<TrackingEntry>(bodyFatEntries.OrderByDescending(e => e.Date));
+            BodyFatEntries = new ObservableCollection<TrackingEntry>(
+                bodyFatEntries.Where(e => e.Id != pendingDeleteId).OrderByDescending(e => e.Date));
             HasBodyFatEntries = BodyFatEntries.Count > 0;
 
             BmiStats = await _trackingService.GetStatsAsync(TrackingType.Bmi, 30);
             BodyFatStats = await _trackingService.GetStatsAsync(TrackingType.BodyFat, 30);
+
+            // Computed Display-Properties notifizieren
+            OnPropertyChanged(nameof(BmiCurrentDisplay));
+            OnPropertyChanged(nameof(BmiAverageDisplay));
+            OnPropertyChanged(nameof(BmiMinDisplay));
+            OnPropertyChanged(nameof(BmiMaxDisplay));
+            OnPropertyChanged(nameof(BmiTrendDisplay));
+            OnPropertyChanged(nameof(BodyFatCurrentDisplay));
+            OnPropertyChanged(nameof(BodyFatAverageDisplay));
+            OnPropertyChanged(nameof(BodyFatMinDisplay));
+            OnPropertyChanged(nameof(BodyFatMaxDisplay));
+            OnPropertyChanged(nameof(BodyFatTrendDisplay));
 
             UpdateCharts();
         }
@@ -116,7 +141,7 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
                         var ticks = (long)value;
                         if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
                             return "";
-                        return new DateTime(ticks).ToString("dd.MM");
+                        return new DateTime(ticks).ToString("d MMM", CultureInfo.CurrentCulture);
                     }
                     catch
                     {
@@ -234,7 +259,9 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task SaveEntryAsync()
     {
-        if (NewValue <= 0)
+        // Bereichsvalidierung: BMI ≤ 100, BodyFat ≤ 100%
+        var maxValue = SelectedTab ? 100.0 : 100.0;
+        if (NewValue <= 0 || NewValue > maxValue)
         {
             MessageRequested?.Invoke(AppStrings.Error, AppStrings.InvalidValueEntered);
             return;
@@ -260,6 +287,7 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     private async Task DeleteEntryAsync(TrackingEntry entry)
     {
         _undoCancellation?.Cancel();
+        _undoCancellation?.Dispose();
         _undoCancellation = new CancellationTokenSource();
 
         _recentlyDeletedEntry = entry;
@@ -273,12 +301,12 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
             BodyFatEntries.Remove(entry);
         }
 
-        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("dd.MM.yyyy"));
+        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("d", CultureInfo.CurrentCulture));
         ShowUndoBanner = true;
 
         try
         {
-            await Task.Delay(UNDO_TIMEOUT_MS, _undoCancellation.Token);
+            await Task.Delay(PreferenceKeys.UndoTimeoutMs, _undoCancellation.Token);
             await _trackingService.DeleteEntryAsync(entry.Id);
             _recentlyDeletedEntry = null;
             await LoadDataAsync();

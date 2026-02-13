@@ -5,7 +5,7 @@ namespace FitnessRechner.Models;
 /// </summary>
 public class FoodItem
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Id { get; set; } = "";
     public string Name { get; set; } = "";
     public string[] Aliases { get; set; } = [];
     public FoodCategory Category { get; set; }

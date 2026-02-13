@@ -35,9 +35,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IFileShareService _fileShareService;
 
-    private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
-    private const string WATER_GOAL_KEY = "daily_water_goal";
-    private const int UNDO_TIMEOUT_MS = 8000;
+    // Preference-Keys und Undo-Timeout zentral in PreferenceKeys.cs
 
     /// <summary>
     /// Raised when the VM wants to navigate
@@ -91,6 +89,16 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(IsBodyTab));
         OnPropertyChanged(nameof(IsWaterTab));
         OnPropertyChanged(nameof(IsCaloriesTab));
+
+        // Laufenden Undo committen um falsche Collection-Zuordnung zu vermeiden
+        if (_recentlyDeletedEntry != null || _recentlyDeletedMeal != null)
+        {
+            _undoCancellation?.Cancel();
+            _recentlyDeletedEntry = null;
+            _recentlyDeletedMeal = null;
+            ShowUndoBanner = false;
+        }
+
         ShowAddForm = false;
         ShowFoodSearch = false;
         _ = LoadCurrentTabDataAsync();
@@ -131,6 +139,8 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     // Ziel-Flag: Confetti nur einmal pro Session
     private bool _wasWaterGoalReached;
+    private bool _wasWeightGoalCelebrated;
+    private DateTime _lastWaterCelebrationDate = DateTime.MinValue;
 
     #endregion
 
@@ -144,6 +154,18 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private IEnumerable<ISeries> _weightChartSeries = [];
+
+    [ObservableProperty]
+    private double _weightGoal;
+
+    [ObservableProperty]
+    private bool _hasWeightGoal;
+
+    [ObservableProperty]
+    private double _weightGoalProgress;
+
+    [ObservableProperty]
+    private string _weightGoalStatusText = "";
 
     public string WeightCurrentDisplay => WeightStats != null ? $"{WeightStats.CurrentValue:F1}" : "-";
     public string WeightAverageDisplay => WeightStats != null ? $"{WeightStats.AverageValue:F1}" : "-";
@@ -304,7 +326,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     public double FatProgress => FatGoal > 0 ? Math.Min(FatConsumed / FatGoal, 1.0) : 0;
     public bool HasMacroGoals => ProteinGoal > 0 || CarbsGoal > 0 || FatGoal > 0;
 
-    public List<string> Meals { get; } =
+    public List<string> Meals =>
     [
         AppStrings.Breakfast,
         AppStrings.Lunch,
@@ -329,6 +351,68 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     #region Tracking Export
 
     [ObservableProperty] private bool _showExportAdOverlay;
+
+    #endregion
+
+    #region Chart Range
+
+    [ObservableProperty]
+    private int _chartDays = PreferenceKeys.DefaultChartDays;
+
+    public bool IsChart7Days => ChartDays == 7;
+    public bool IsChart30Days => ChartDays == 30;
+    public bool IsChart90Days => ChartDays == 90;
+
+    partial void OnChartDaysChanged(int value)
+    {
+        OnPropertyChanged(nameof(IsChart7Days));
+        OnPropertyChanged(nameof(IsChart30Days));
+        OnPropertyChanged(nameof(IsChart90Days));
+        _preferences.Set(PreferenceKeys.ChartDays, value);
+        _ = LoadCurrentTabDataAsync();
+    }
+
+    #endregion
+
+    #region Weekly Calories Chart
+
+    [ObservableProperty]
+    private IEnumerable<ISeries> _weeklyCaloriesSeries = [];
+
+    [ObservableProperty]
+    private Axis[] _weeklyXAxes = [];
+
+    [ObservableProperty]
+    private Axis[] _weeklyYAxes = [];
+
+    [ObservableProperty]
+    private bool _hasWeeklyData;
+
+    #endregion
+
+    #region Meal Grouping
+
+    [ObservableProperty]
+    private ObservableCollection<FoodLogEntry> _breakfastMeals = [];
+
+    [ObservableProperty]
+    private ObservableCollection<FoodLogEntry> _lunchMeals = [];
+
+    [ObservableProperty]
+    private ObservableCollection<FoodLogEntry> _dinnerMeals = [];
+
+    [ObservableProperty]
+    private ObservableCollection<FoodLogEntry> _snackMeals = [];
+
+    public double BreakfastCalories => BreakfastMeals.Sum(m => m.Calories);
+    public double LunchCalories => LunchMeals.Sum(m => m.Calories);
+    public double DinnerCalories => DinnerMeals.Sum(m => m.Calories);
+    public double SnackCalories => SnackMeals.Sum(m => m.Calories);
+
+    public bool HasBreakfast => BreakfastMeals.Count > 0;
+    public bool HasLunch => LunchMeals.Count > 0;
+    public bool HasDinner => DinnerMeals.Count > 0;
+    public bool HasSnack => SnackMeals.Count > 0;
 
     #endregion
 
@@ -411,6 +495,55 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void SetChartRange(string daysStr)
+    {
+        if (int.TryParse(daysStr, out var days) && (days == 7 || days == 30 || days == 90))
+            ChartDays = days;
+    }
+
+    [RelayCommand]
+    private void SetWeightGoalValue()
+    {
+        if (WeightGoal > 0 && WeightGoal <= 500)
+        {
+            _preferences.Set(PreferenceKeys.WeightGoal, WeightGoal);
+            HasWeightGoal = true;
+            UpdateWeightGoalStatus();
+        }
+    }
+
+    [RelayCommand]
+    private async Task CopyYesterdayMeals()
+    {
+        var yesterdayMeals = await _foodSearchService.GetFoodLogAsync(DateTime.Today.AddDays(-1));
+        if (yesterdayMeals.Count == 0)
+        {
+            MessageRequested?.Invoke(AppStrings.Error, AppStrings.NoMealsYesterday);
+            return;
+        }
+
+        foreach (var meal in yesterdayMeals)
+        {
+            var copy = new FoodLogEntry
+            {
+                Date = DateTime.Today,
+                FoodName = meal.FoodName,
+                Grams = meal.Grams,
+                Calories = meal.Calories,
+                Protein = meal.Protein,
+                Carbs = meal.Carbs,
+                Fat = meal.Fat,
+                Meal = meal.Meal
+            };
+            await _foodSearchService.SaveFoodLogAsync(copy);
+        }
+
+        FloatingTextRequested?.Invoke(
+            string.Format(AppStrings.MealsCopied, yesterdayMeals.Count), "success");
+        await LoadCalorieDataAsync();
+    }
+
+    [RelayCommand]
     private void ToggleAddForm()
     {
         ShowAddForm = !ShowAddForm;
@@ -425,6 +558,21 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private async Task AddEntry()
     {
         if (NewValue <= 0)
+        {
+            MessageRequested?.Invoke(AppStrings.Error, AppStrings.InvalidValueEntered);
+            return;
+        }
+
+        // Bereichsvalidierung je nach Tracking-Typ
+        var maxValue = SelectedTab switch
+        {
+            ProgressTab.Weight => 500.0,
+            ProgressTab.Body => IsBmiSelected ? 100.0 : 100.0,
+            ProgressTab.Water => 20000.0,
+            _ => double.MaxValue
+        };
+
+        if (NewValue > maxValue)
         {
             MessageRequested?.Invoke(AppStrings.Error, AppStrings.InvalidValueEntered);
             return;
@@ -469,6 +617,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         _undoCancellation?.Cancel();
         _undoCancellation = new CancellationTokenSource();
 
+        _recentlyDeletedMeal = null; // Alten Meal-Undo verwerfen
         _recentlyDeletedEntry = entry;
 
         // Remove from appropriate collection
@@ -485,12 +634,12 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 break;
         }
 
-        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("dd.MM.yyyy"));
+        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("d", CultureInfo.CurrentCulture));
         ShowUndoBanner = true;
 
         try
         {
-            await Task.Delay(UNDO_TIMEOUT_MS, _undoCancellation.Token);
+            await Task.Delay(PreferenceKeys.UndoTimeoutMs, _undoCancellation.Token);
             await _trackingService.DeleteEntryAsync(entry.Id);
             _recentlyDeletedEntry = null;
             await LoadCurrentTabDataAsync();
@@ -545,9 +694,11 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
             var meals = TodayMeals.ToList();
             meals.Add(_recentlyDeletedMeal);
             TodayMeals = new ObservableCollection<FoodLogEntry>(meals.OrderBy(m => m.Date));
+            HasMeals = TodayMeals.Count > 0;
             _recentlyDeletedMeal = null;
             ShowUndoBanner = false;
-            _ = UpdateCalorieDataAsync();
+            // Lokal berechnen statt DB-Read (Eintrag existiert dort evtl. noch/nicht mehr)
+            RecalculateCalorieDataFromMeals();
         }
     }
 
@@ -597,7 +748,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
             DailyWaterGoal = 2500;
         }
         HasWaterGoal = true;
-        _preferences.Set(WATER_GOAL_KEY, DailyWaterGoal);
+        _preferences.Set(PreferenceKeys.WaterGoal, DailyWaterGoal);
         UpdateWaterStatus();
     }
 
@@ -609,7 +760,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         {
             DailyCalorieGoal = 2000;
         }
-        _preferences.Set(CALORIE_GOAL_KEY, DailyCalorieGoal);
+        _preferences.Set(PreferenceKeys.CalorieGoal, DailyCalorieGoal);
         UpdateCalorieStatus();
     }
 
@@ -622,7 +773,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         {
             DailyWaterGoal = goal;
             HasWaterGoal = true;
-            _preferences.Set(WATER_GOAL_KEY, goal);
+            _preferences.Set(PreferenceKeys.WaterGoal, goal);
             UpdateWaterStatus();
         }
     }
@@ -635,7 +786,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         if (goal > 0)
         {
             DailyCalorieGoal = goal;
-            _preferences.Set(CALORIE_GOAL_KEY, goal);
+            _preferences.Set(PreferenceKeys.CalorieGoal, goal);
             UpdateCalorieStatus();
         }
     }
@@ -722,15 +873,20 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         _undoCancellation?.Cancel();
         _undoCancellation = new CancellationTokenSource();
 
+        _recentlyDeletedEntry = null; // Alten Tracking-Undo verwerfen
         _recentlyDeletedMeal = entry;
         TodayMeals.Remove(entry);
+        HasMeals = TodayMeals.Count > 0;
+
+        // Summary lokal aus aktueller UI-Liste berechnen (Eintrag noch in DB)
+        RecalculateCalorieDataFromMeals();
 
         UndoMessage = string.Format(AppStrings.ItemDeleted, entry.FoodName);
         ShowUndoBanner = true;
 
         try
         {
-            await Task.Delay(UNDO_TIMEOUT_MS, _undoCancellation.Token);
+            await Task.Delay(PreferenceKeys.UndoTimeoutMs, _undoCancellation.Token);
             await _foodSearchService.DeleteFoodLogAsync(entry.Id);
             _recentlyDeletedMeal = null;
             await UpdateCalorieDataAsync();
@@ -841,7 +997,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         AvgCaloriesDisplay = daysWithCals > 0 ? $"{totalCals / daysWithCals:F0} kcal" : "-";
 
         // Kalorienziel-Erreichung
-        var calorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 0.0);
+        var calorieGoal = _preferences.Get(PreferenceKeys.CalorieGoal, 0.0);
         if (calorieGoal > 0 && daysWithCals > 0)
         {
             var avgCals = totalCals / daysWithCals;
@@ -933,21 +1089,29 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
             var bmiEntries = await _trackingService.GetEntriesAsync(TrackingType.Bmi, startDate, endDate);
             var waterEntries = await _trackingService.GetEntriesAsync(TrackingType.Water, startDate, endDate);
 
-            // Alle Daten nach Datum zusammenfuehren
-            var weightByDate = weightEntries.ToDictionary(e => e.Date.Date, e => e.Value);
-            var bmiByDate = bmiEntries.ToDictionary(e => e.Date.Date, e => e.Value);
-            var waterByDate = waterEntries.ToDictionary(e => e.Date.Date, e => e.Value);
+            // Alle Daten nach Datum zusammenfuehren (letzter Eintrag pro Tag gewinnt)
+            var weightByDate = weightEntries.GroupBy(e => e.Date.Date).ToDictionary(g => g.Key, g => g.Last().Value);
+            var bmiByDate = bmiEntries.GroupBy(e => e.Date.Date).ToDictionary(g => g.Key, g => g.Last().Value);
+            var waterByDate = waterEntries.GroupBy(e => e.Date.Date).ToDictionary(g => g.Key, g => g.Last().Value);
+
+            // Kalorien parallel laden (max 5 gleichzeitig um Thread Pool Starvation zu vermeiden)
+            var dates = Enumerable.Range(0, 90).Select(i => startDate.AddDays(i)).ToArray();
+            var throttle = new SemaphoreSlim(5);
+            var summaryTasks = dates.Select(async d =>
+            {
+                await throttle.WaitAsync();
+                try { return await _foodSearchService.GetDailySummaryAsync(d); }
+                finally { throttle.Release(); }
+            }).ToArray();
+            var summaries = await Task.WhenAll(summaryTasks);
 
             for (int i = 0; i < 90; i++)
             {
-                var date = startDate.AddDays(i);
+                var date = dates[i];
                 var weight = weightByDate.TryGetValue(date, out var w) ? w.ToString("F1", CultureInfo.InvariantCulture) : "";
                 var bmi = bmiByDate.TryGetValue(date, out var b) ? b.ToString("F1", CultureInfo.InvariantCulture) : "";
                 var water = waterByDate.TryGetValue(date, out var wa) ? wa.ToString("F0", CultureInfo.InvariantCulture) : "";
-
-                // Kalorien fuer den Tag
-                var summary = await _foodSearchService.GetDailySummaryAsync(date);
-                var cals = summary.TotalCalories > 0 ? summary.TotalCalories.ToString("F0", CultureInfo.InvariantCulture) : "";
+                var cals = summaries[i].TotalCalories > 0 ? summaries[i].TotalCalories.ToString("F0", CultureInfo.InvariantCulture) : "";
 
                 // Nur Zeilen mit mindestens einem Wert
                 if (!string.IsNullOrEmpty(weight) || !string.IsNullOrEmpty(bmi) ||
@@ -977,10 +1141,28 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     {
         ShowAds = !_purchaseService.IsPremium;
 
-        DailyWaterGoal = _preferences.Get(WATER_GOAL_KEY, 0.0);
+        // Wasser-Celebration Flag für neuen Tag zurücksetzen
+        if (_lastWaterCelebrationDate != DateTime.Today)
+        {
+            _wasWaterGoalReached = false;
+            _lastWaterCelebrationDate = DateTime.Today;
+        }
+
+        DailyWaterGoal = _preferences.Get(PreferenceKeys.WaterGoal, 0.0);
         HasWaterGoal = DailyWaterGoal > 0;
 
-        DailyCalorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 0.0);
+        DailyCalorieGoal = _preferences.Get(PreferenceKeys.CalorieGoal, 0.0);
+
+        WeightGoal = _preferences.Get(PreferenceKeys.WeightGoal, 0.0);
+        HasWeightGoal = WeightGoal > 0;
+
+        ChartDays = _preferences.Get(PreferenceKeys.ChartDays, PreferenceKeys.DefaultChartDays);
+
+        // Makro-Ziele laden
+        ProteinGoal = _preferences.Get(PreferenceKeys.MacroProteinGoal, 0.0);
+        CarbsGoal = _preferences.Get(PreferenceKeys.MacroCarbsGoal, 0.0);
+        FatGoal = _preferences.Get(PreferenceKeys.MacroFatGoal, 0.0);
+        OnPropertyChanged(nameof(HasMacroGoals));
 
         await LoadCurrentTabDataAsync();
     }
@@ -1021,26 +1203,34 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     private async Task LoadWeightDataAsync()
     {
-        var entries = await _trackingService.GetEntriesAsync(TrackingType.Weight, 30);
-        WeightEntries = new ObservableCollection<TrackingEntry>(entries.OrderByDescending(e => e.Date));
-        WeightStats = await _trackingService.GetStatsAsync(TrackingType.Weight, 30);
+        var entries = await _trackingService.GetEntriesAsync(TrackingType.Weight, ChartDays);
+        // Pending-Delete-Eintrag filtern (verhindert Flicker während Undo-Phase)
+        var pendingId = _recentlyDeletedEntry?.Id;
+        WeightEntries = new ObservableCollection<TrackingEntry>(
+            entries.Where(e => e.Id != pendingId).OrderByDescending(e => e.Date));
+        WeightStats = await _trackingService.GetStatsAsync(TrackingType.Weight, ChartDays);
 
         OnPropertyChanged(nameof(WeightCurrentDisplay));
         OnPropertyChanged(nameof(WeightAverageDisplay));
         OnPropertyChanged(nameof(WeightTrendDisplay));
 
+        UpdateWeightGoalStatus();
         UpdateWeightChart();
     }
 
     private async Task LoadBodyDataAsync()
     {
-        var bmiEntries = await _trackingService.GetEntriesAsync(TrackingType.Bmi, 30);
-        BmiEntries = new ObservableCollection<TrackingEntry>(bmiEntries.OrderByDescending(e => e.Date));
-        BmiStats = await _trackingService.GetStatsAsync(TrackingType.Bmi, 30);
+        var pendingId = _recentlyDeletedEntry?.Id;
 
-        var bodyFatEntries = await _trackingService.GetEntriesAsync(TrackingType.BodyFat, 30);
-        BodyFatEntries = new ObservableCollection<TrackingEntry>(bodyFatEntries.OrderByDescending(e => e.Date));
-        BodyFatStats = await _trackingService.GetStatsAsync(TrackingType.BodyFat, 30);
+        var bmiEntries = await _trackingService.GetEntriesAsync(TrackingType.Bmi, ChartDays);
+        BmiEntries = new ObservableCollection<TrackingEntry>(
+            bmiEntries.Where(e => e.Id != pendingId).OrderByDescending(e => e.Date));
+        BmiStats = await _trackingService.GetStatsAsync(TrackingType.Bmi, ChartDays);
+
+        var bodyFatEntries = await _trackingService.GetEntriesAsync(TrackingType.BodyFat, ChartDays);
+        BodyFatEntries = new ObservableCollection<TrackingEntry>(
+            bodyFatEntries.Where(e => e.Id != pendingId).OrderByDescending(e => e.Date));
+        BodyFatStats = await _trackingService.GetStatsAsync(TrackingType.BodyFat, ChartDays);
 
         OnPropertyChanged(nameof(HasBmiEntries));
         OnPropertyChanged(nameof(HasBodyFatEntries));
@@ -1068,10 +1258,17 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private async Task LoadCalorieDataAsync()
     {
         var meals = await _foodSearchService.GetFoodLogAsync(DateTime.Today);
-        TodayMeals = new ObservableCollection<FoodLogEntry>(meals);
+        // Pending-Delete-Meal filtern (verhindert Flicker während Undo-Phase)
+        var pendingMealId = _recentlyDeletedMeal?.Id;
+        var filteredMeals = meals.Where(m => m.Id != pendingMealId).ToList();
+        TodayMeals = new ObservableCollection<FoodLogEntry>(filteredMeals);
         HasMeals = TodayMeals.Count > 0;
 
+        // Mahlzeiten nach Typ gruppieren
+        GroupMealsByType(filteredMeals);
+
         await UpdateCalorieDataAsync();
+        await LoadWeeklyCaloriesAsync();
     }
 
     private async Task UpdateCalorieDataAsync()
@@ -1081,6 +1278,27 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         ProteinConsumed = summary.TotalProtein;
         CarbsConsumed = summary.TotalCarbs;
         FatConsumed = summary.TotalFat;
+
+        UpdateCalorieStatus();
+
+        OnPropertyChanged(nameof(ProteinProgress));
+        OnPropertyChanged(nameof(CarbsProgress));
+        OnPropertyChanged(nameof(FatProgress));
+        OnPropertyChanged(nameof(HasMacroGoals));
+    }
+
+    /// <summary>
+    /// Berechnet Kalorien/Macros lokal aus TodayMeals statt DB-Read.
+    /// Wird bei Delete/Undo verwendet, da DB-Zustand während Undo-Phase
+    /// nicht dem UI-Zustand entspricht.
+    /// </summary>
+    private void RecalculateCalorieDataFromMeals()
+    {
+        var meals = TodayMeals.ToList();
+        ConsumedCalories = meals.Sum(m => m.Calories);
+        ProteinConsumed = meals.Sum(m => m.Protein);
+        CarbsConsumed = meals.Sum(m => m.Carbs);
+        FatConsumed = meals.Sum(m => m.Fat);
 
         UpdateCalorieStatus();
 
@@ -1317,6 +1535,118 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void UpdateWeightGoalStatus()
+    {
+        if (!HasWeightGoal || WeightStats == null)
+        {
+            WeightGoalProgress = 0;
+            WeightGoalStatusText = "";
+            return;
+        }
+
+        var current = WeightStats.CurrentValue;
+        var goal = WeightGoal;
+        var startWeight = WeightStats.MaxValue; // Höchstes Gewicht als Ausgangspunkt
+
+        if (Math.Abs(startWeight - goal) > 0.1)
+        {
+            var progress = Math.Abs(startWeight - current) / Math.Abs(startWeight - goal);
+            WeightGoalProgress = Math.Min(Math.Max(progress, 0), 1.0);
+        }
+
+        var remaining = Math.Abs(current - goal);
+        if (remaining < 0.5)
+        {
+            WeightGoalStatusText = AppStrings.GoalReached;
+            if (!_wasWeightGoalCelebrated)
+            {
+                _wasWeightGoalCelebrated = true;
+                FloatingTextRequested?.Invoke(AppStrings.GoalReached, "success");
+                CelebrationRequested?.Invoke();
+            }
+        }
+        else
+        {
+            WeightGoalStatusText = string.Format(AppStrings.WeightRemaining, $"{remaining:F1}");
+        }
+    }
+
+    private void GroupMealsByType(List<FoodLogEntry> meals)
+    {
+        BreakfastMeals = new ObservableCollection<FoodLogEntry>(
+            meals.Where(m => m.Meal == MealType.Breakfast));
+        LunchMeals = new ObservableCollection<FoodLogEntry>(
+            meals.Where(m => m.Meal == MealType.Lunch));
+        DinnerMeals = new ObservableCollection<FoodLogEntry>(
+            meals.Where(m => m.Meal == MealType.Dinner));
+        SnackMeals = new ObservableCollection<FoodLogEntry>(
+            meals.Where(m => m.Meal == MealType.Snack));
+
+        OnPropertyChanged(nameof(HasBreakfast));
+        OnPropertyChanged(nameof(HasLunch));
+        OnPropertyChanged(nameof(HasDinner));
+        OnPropertyChanged(nameof(HasSnack));
+        OnPropertyChanged(nameof(BreakfastCalories));
+        OnPropertyChanged(nameof(LunchCalories));
+        OnPropertyChanged(nameof(DinnerCalories));
+        OnPropertyChanged(nameof(SnackCalories));
+    }
+
+    private async Task LoadWeeklyCaloriesAsync()
+    {
+        var startDate = DateTime.Today.AddDays(-6);
+        var summaryTasks = Enumerable.Range(0, 7)
+            .Select(i => _foodSearchService.GetDailySummaryAsync(startDate.AddDays(i)))
+            .ToArray();
+        var summaries = await Task.WhenAll(summaryTasks);
+
+        HasWeeklyData = summaries.Any(s => s.TotalCalories > 0);
+        if (!HasWeeklyData) return;
+
+        var values = summaries.Select(s => s.TotalCalories).ToArray();
+        var labels = Enumerable.Range(0, 7)
+            .Select(i => startDate.AddDays(i).ToString("ddd", CultureInfo.CurrentCulture))
+            .ToArray();
+
+        WeeklyCaloriesSeries =
+        [
+            new ColumnSeries<double>
+            {
+                Values = values,
+                Fill = new LinearGradientPaint(
+                    [new SKColor(245, 158, 11, 200), new SKColor(239, 68, 68, 200)],
+                    new SKPoint(0f, 0f), new SKPoint(0f, 1f)),
+                Stroke = null,
+                MaxBarWidth = 24,
+                Rx = 4,
+                Ry = 4
+            }
+        ];
+
+        WeeklyXAxes =
+        [
+            new Axis
+            {
+                Labels = labels,
+                LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                TextSize = 11
+            }
+        ];
+
+        var maxVal = values.Max();
+        WeeklyYAxes =
+        [
+            new Axis
+            {
+                MinLimit = 0,
+                MaxLimit = maxVal > 0 ? maxVal * 1.2 : 2500,
+                LabelsPaint = new SolidColorPaint(SKColors.Gray),
+                TextSize = 11,
+                Labeler = v => $"{v:F0}"
+            }
+        ];
+    }
+
     private void InitializeXAxes()
     {
         XAxes =
@@ -1330,7 +1660,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                         var ticks = (long)value;
                         if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
                             return "";
-                        return new DateTime(ticks).ToString("dd.MM");
+                        return new DateTime(ticks).ToString("d MMM", CultureInfo.CurrentCulture);
                     }
                     catch
                     {

@@ -6,10 +6,11 @@ using FitnessRechner.Services;
 
 namespace FitnessRechner.ViewModels;
 
-public partial class BarcodeScannerViewModel : ObservableObject
+public partial class BarcodeScannerViewModel : ObservableObject, IDisposable
 {
     private readonly IBarcodeLookupService _barcodeLookupService;
     private CancellationTokenSource? _delayCancellation;
+    private bool _disposed;
     private const int RETRY_DELAY_MS = 2000;
 
     /// <summary>
@@ -53,8 +54,9 @@ public partial class BarcodeScannerViewModel : ObservableObject
         if (IsBusy || !IsScanning) return;
         if (string.IsNullOrEmpty(barcodeValue)) return;
 
-        // Cancel any pending delay
+        // Altes CTS ordentlich aufräumen
         _delayCancellation?.Cancel();
+        _delayCancellation?.Dispose();
         _delayCancellation = new CancellationTokenSource();
 
         IsBusy = true;
@@ -172,6 +174,8 @@ public partial class BarcodeScannerViewModel : ObservableObject
     public void Cleanup()
     {
         _delayCancellation?.Cancel();
+        _delayCancellation?.Dispose();
+        _delayCancellation = null;
         IsScanning = false;
         IsBusy = false;
         FoundFood = null;
@@ -181,5 +185,15 @@ public partial class BarcodeScannerViewModel : ObservableObject
         StatusMessage = AppStrings.ScanBarcode;
     }
 
-    // NOTE: No Finalizer to avoid GC-Thread SIGSEGV crashes
+    public void Dispose()
+    {
+        if (_disposed) return;
+
+        _delayCancellation?.Cancel();
+        _delayCancellation?.Dispose();
+        _delayCancellation = null;
+
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
 }

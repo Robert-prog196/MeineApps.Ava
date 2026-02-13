@@ -367,6 +367,20 @@
   <data name="AlertInvalidInput" xml:space="preserve"><value>Por favor, verifique os valores inseridos. Alguns valores estão fora do intervalo válido.</value></data>
   <data name="AlertBodyFatMeasurement" xml:space="preserve"><value>A circunferência da cintura deve ser maior que a do pescoço.</value></data>
   <data name="BarcodeScanHint" xml:space="preserve"><value>Mantenha o código de barras no quadro</value></data>
+  <data name="PressBackAgainToExit" xml:space="preserve"><value>Pressione voltar novamente para sair</value></data>
+
+  <!-- Quick-Add -->
+  <data name="QuickAddCalories" xml:space="preserve"><value>Entrada rápida</value></data>
+  <data name="QuickAddCaloriesHint" xml:space="preserve"><value>Insira calorias diretamente</value></data>
+  <data name="QuickAddFoodName" xml:space="preserve"><value>Descrição (opcional)</value></data>
+
+  <!-- Streak -->
+  <data name="StreakTitle" xml:space="preserve"><value>Sequência de registro</value></data>
+  <data name="StreakDays" xml:space="preserve"><value>{0} dias</value></data>
+  <data name="StreakDay" xml:space="preserve"><value>1 dia</value></data>
+  <data name="StreakBest" xml:space="preserve"><value>Recorde: {0}</value></data>
+  <data name="StreakMilestone" xml:space="preserve"><value>Sequência de {0} dias!</value></data>
+  <data name="StreakStart" xml:space="preserve"><value>Comece sua sequência!</value></data>
 
   <!-- Calculator Input Labels -->
   <data name="Input" xml:space="preserve"><value>Entrada</value></data>
@@ -374,4 +388,43 @@
   <data name="CreffWeight" xml:space="preserve"><value>Peso Creff</value></data>
   <data name="Years" xml:space="preserve"><value>Anos</value></data>
   <data name="Minutes" xml:space="preserve"><value>Minutos</value></data>
+
+  <!-- Weight Goal -->
+  <data name="WeightGoalLabel" xml:space="preserve"><value>Objetivo de peso</value></data>
+  <data name="SetWeightGoal" xml:space="preserve"><value>Defina seu objetivo</value></data>
+  <data name="WeightGoalKg" xml:space="preserve"><value>Objetivo: {0} kg</value></data>
+  <data name="WeightRemaining" xml:space="preserve"><value>{0} kg restantes</value></data>
+
+  <!-- Motivating Empty States -->
+  <data name="EmptyWeightHint" xml:space="preserve"><value>Registre seu peso para ver seu progresso</value></data>
+  <data name="EmptyCaloriesHint" xml:space="preserve"><value>Registre suas refeições para acompanhar a nutrição</value></data>
+  <data name="EmptyWaterHint" xml:space="preserve"><value>Comece a registrar sua ingestão de água</value></data>
+  <data name="EmptyBmiHint" xml:space="preserve"><value>Registre seu IMC para monitorar mudanças</value></data>
+  <data name="EmptyBodyFatHint" xml:space="preserve"><value>Registre seu percentual de gordura corporal</value></data>
+
+  <!-- Meal Grouping -->
+  <data name="MealSubtotal" xml:space="preserve"><value>Subtotal</value></data>
+
+  <!-- Recent Foods -->
+  <data name="RecentFoods" xml:space="preserve"><value>Usados recentemente</value></data>
+
+  <!-- Copy Meals -->
+  <data name="CopyYesterday" xml:space="preserve"><value>Copiar de ontem</value></data>
+  <data name="MealsCopied" xml:space="preserve"><value>{0} refeições copiadas</value></data>
+  <data name="NoMealsYesterday" xml:space="preserve"><value>Sem refeições de ontem</value></data>
+
+  <!-- Chart Range -->
+  <data name="Days7" xml:space="preserve"><value>7 Dias</value></data>
+  <data name="Days90" xml:space="preserve"><value>90 Dias</value></data>
+
+  <!-- Greeting -->
+  <data name="GreetingMorning" xml:space="preserve"><value>Bom dia!</value></data>
+  <data name="GreetingAfternoon" xml:space="preserve"><value>Boa tarde!</value></data>
+  <data name="GreetingEvening" xml:space="preserve"><value>Boa noite!</value></data>
+
+  <!-- Portions -->
+  <data name="PortionDefault" xml:space="preserve"><value>Porção</value></data>
+
+  <!-- Weekly Overview -->
+  <data name="WeeklyCalories" xml:space="preserve"><value>Visão semanal</value></data>
 </root>

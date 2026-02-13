@@ -25,14 +25,13 @@
                                Foreground="White"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="{loc:Translate AppName}"
-                       FontSize="20" FontWeight="Bold" Foreground="White"
-                       VerticalAlignment="Center" />
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock Text="{Binding GreetingText}"
+                         FontSize="13" Foreground="#CCFFFFFF" />
+              <TextBlock Text="{loc:Translate AppName}"
+                         FontSize="20" FontWeight="Bold" Foreground="White" />
+            </StackPanel>
           </StackPanel>
-          <TextBlock Text="{loc:Translate AppDescription}"
-                     FontSize="13" Foreground="#BBFFFFFF"
-                     HorizontalAlignment="Center" TextAlignment="Center"
-                     TextWrapping="Wrap" MaxWidth="300" />
         </StackPanel>
       </Border>
 
@@ -129,10 +128,11 @@
                     <TextBlock Text="{Binding TodayWaterDisplay}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="ml" FontSize="12"
-                               Foreground="{DynamicResource TextMutedBrush}"
-                               VerticalAlignment="Bottom" Margin="0,0,0,2" />
                   </StackPanel>
+                  <!-- Wasser-Fortschrittsbalken -->
+                  <ProgressBar Value="{Binding WaterProgress}" Maximum="100"
+                               Height="4" CornerRadius="2" Margin="4,2,4,0"
+                               Foreground="#22C55E" />
                 </StackPanel>
               </Border>
 
@@ -160,11 +160,49 @@
                                Foreground="{DynamicResource TextMutedBrush}"
                                VerticalAlignment="Bottom" Margin="0,0,0,2" />
                   </StackPanel>
+                  <!-- Kalorien-Fortschrittsbalken -->
+                  <ProgressBar Value="{Binding CalorieProgress}" Maximum="100"
+                               Height="4" CornerRadius="2" Margin="4,2,4,0"
+                               Foreground="#F59E0B" />
                 </StackPanel>
               </Border>
 
             </Grid>
           </StackPanel>
+        </Border>
+
+        <!-- ========== Streak Card ========== -->
+        <Border Classes="Card" Padding="14" BoxShadow="{DynamicResource CardShadow}">
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Flammen-Icon mit Gradient -->
+            <Border Grid.Column="0" Width="44" Height="44" CornerRadius="12" Margin="0,0,12,0">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                  <GradientStop Color="#F59E0B" Offset="0" />
+                  <GradientStop Color="#EF4444" Offset="1" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <mi:MaterialIcon Kind="Fire" Width="24" Height="24"
+                               Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <!-- Streak-Text -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{Binding StreakTitleText}"
+                         FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
+              <TextBlock Text="{Binding StreakDisplay}"
+                         FontSize="18" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+            <!-- Best-Streak Badge -->
+            <Border Grid.Column="2" VerticalAlignment="Center"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="8,4"
+                    IsVisible="{Binding HasStreak}">
+              <TextBlock Text="{Binding StreakBestDisplay}"
+                         FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+            </Border>
+          </Grid>
         </Border>
 
         <!-- ========== Calculators Section ========== -->

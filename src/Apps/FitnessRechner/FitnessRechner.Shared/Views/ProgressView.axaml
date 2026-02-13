@@ -11,7 +11,33 @@
 
   <UserControl.Resources>
     <conv:IsNotNullConverter x:Key="IsNotNullConverter" />
-    <conv:BoolToStringConverter x:Key="BmiBodyFatConverter" TrueValue="BMI" FalseValue="Body Fat" />
+    <conv:BoolToStringConverter x:Key="BmiBodyFatConverter" TrueValue="BMI" FalseValue="{loc:Translate BodyFat}" />
+
+    <!-- Wiederverwendbares Mahlzeit-Item Template -->
+    <DataTemplate x:Key="MealItemTemplate" x:DataType="models:FoodLogEntry">
+      <Border Classes="Card Compact" Margin="0,3" Padding="10">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <StackPanel>
+            <TextBlock Text="{Binding FoodName}" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="{Binding Grams, StringFormat='{}{0:F0}g'}"
+                       FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+          </StackPanel>
+          <TextBlock Grid.Column="1"
+                     Text="{Binding Calories, StringFormat='{}{0:F0} kcal'}"
+                     FontSize="14" FontWeight="Bold"
+                     Foreground="{DynamicResource ErrorBrush}"
+                     VerticalAlignment="Center" />
+          <Button Grid.Column="2" Classes="Icon"
+                  Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteMealCommand}"
+                  CommandParameter="{Binding .}"
+                  Margin="4,0,0,0">
+            <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
+                             Foreground="{DynamicResource ErrorBrush}" />
+          </Button>
+        </Grid>
+      </Border>
+    </DataTemplate>
   </UserControl.Resources>
 
   <Grid RowDefinitions="Auto,Auto,*,Auto">
@@ -184,10 +210,80 @@
             </StackPanel>
           </Border>
 
+          <!-- Gewichtsziel-Karte (wenn Ziel gesetzt) -->
+          <Border Classes="Card" Padding="14" IsVisible="{Binding HasWeightGoal}">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Target" Width="16" Height="16"
+                                   Foreground="#8B5CF6" VerticalAlignment="Center" />
+                  <TextBlock Text="{loc:Translate WeightGoalLabel}"
+                             FontSize="14" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding WeightGoalStatusText}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           VerticalAlignment="Center" />
+              </Grid>
+              <ProgressBar Value="{Binding WeightGoalProgress}" Maximum="1"
+                           Foreground="#8B5CF6" Height="10" />
+            </StackPanel>
+          </Border>
+
+          <!-- Gewichtsziel setzen (wenn noch kein Ziel) -->
+          <Border Classes="Card" Padding="14" IsVisible="{Binding !HasWeightGoal}">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{loc:Translate SetWeightGoal}"
+                         FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
+              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <TextBox Text="{Binding WeightGoal}"
+                         Watermark="{loc:Translate WeightGoalKg}" />
+                <TextBlock Grid.Column="1" Text="kg" FontSize="14"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           VerticalAlignment="Center" />
+                <Button Grid.Column="2" Classes="Primary Small"
+                        Command="{Binding SetWeightGoalValueCommand}">
+                  <mi:MaterialIcon Kind="Check" Width="18" Height="18" />
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Chart-Zeitraum Auswahl -->
+          <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="7">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                <TextBlock Text="{loc:Translate Days7}" FontSize="12"
+                           Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="30">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                <TextBlock Text="{loc:Translate Days30}" FontSize="12"
+                           Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="90">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                <TextBlock Text="{loc:Translate Days90}" FontSize="12"
+                           Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+          </StackPanel>
+
           <!-- Chart Card -->
           <Border Classes="Card" Padding="16">
             <StackPanel Spacing="8">
-              <TextBlock Text="{loc:Translate WeightStats30Days}"
+              <TextBlock Text="{loc:Translate Trend}"
                          FontSize="16" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <lvc:CartesianChart Height="220"
@@ -242,12 +338,16 @@
 
             <!-- Empty State -->
             <StackPanel IsVisible="{Binding !WeightEntries.Count}"
-                        HorizontalAlignment="Center" Spacing="8" Margin="0,20">
-              <mi:MaterialIcon Kind="ScaleBathroom" Width="32" Height="32"
+                        HorizontalAlignment="Center" Spacing="8" Margin="0,24">
+              <mi:MaterialIcon Kind="ScaleBathroom" Width="40" Height="40"
                                Foreground="{DynamicResource TextMutedBrush}"
                                HorizontalAlignment="Center" />
-              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
+              <TextBlock Text="{loc:Translate NoEntriesYet}" FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
+              <TextBlock Text="{loc:Translate EmptyWeightHint}" Classes="Caption"
+                         HorizontalAlignment="Center" TextAlignment="Center"
+                         MaxWidth="250" TextWrapping="Wrap" />
             </StackPanel>
 
             <ItemsControl ItemsSource="{Binding WeightEntries}">
@@ -314,6 +414,34 @@
               </Border>
             </Button>
           </Grid>
+
+          <!-- Chart-Zeitraum Auswahl -->
+          <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="7">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                <TextBlock Text="{loc:Translate Days7}" FontSize="12"
+                           Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="30">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                <TextBlock Text="{loc:Translate Days30}" FontSize="12"
+                           Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+            <Button Classes="Text" Padding="0" Height="NaN"
+                    Command="{Binding SetChartRangeCommand}" CommandParameter="90">
+              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
+                      Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                <TextBlock Text="{loc:Translate Days90}" FontSize="12"
+                           Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+              </Border>
+            </Button>
+          </StackPanel>
 
           <!-- BMI Content -->
           <StackPanel Spacing="16" IsVisible="{Binding IsBmiSelected}">
@@ -396,9 +524,15 @@
               <TextBlock Text="{loc:Translate BmiEntries}"
                          FontSize="16" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
-                         HorizontalAlignment="Center" Margin="0,20"
-                         IsVisible="{Binding !HasBmiEntries}" />
+              <StackPanel IsVisible="{Binding !HasBmiEntries}"
+                          HorizontalAlignment="Center" Spacing="6" Margin="0,20">
+                <mi:MaterialIcon Kind="ScaleBalance" Width="36" Height="36"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate EmptyBmiHint}" Classes="Caption"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           MaxWidth="250" TextWrapping="Wrap" />
+              </StackPanel>
               <ItemsControl ItemsSource="{Binding BmiEntries}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="models:TrackingEntry">
@@ -512,9 +646,15 @@
               <TextBlock Text="{loc:Translate BodyFatEntries}"
                          FontSize="16" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBlock Text="{loc:Translate NoEntriesYet}" Classes="Caption"
-                         HorizontalAlignment="Center" Margin="0,20"
-                         IsVisible="{Binding !HasBodyFatEntries}" />
+              <StackPanel IsVisible="{Binding !HasBodyFatEntries}"
+                          HorizontalAlignment="Center" Spacing="6" Margin="0,20">
+                <mi:MaterialIcon Kind="PercentCircle" Width="36" Height="36"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:Translate EmptyBodyFatHint}" Classes="Caption"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           MaxWidth="250" TextWrapping="Wrap" />
+              </StackPanel>
               <ItemsControl ItemsSource="{Binding BodyFatEntries}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="models:TrackingEntry">
@@ -559,7 +699,7 @@
             <StackPanel Spacing="12">
               <TextBlock Text="{Binding IsBmiSelected, Converter={StaticResource BmiBodyFatConverter}}"
                          FontSize="18" FontWeight="Bold" Foreground="White" />
-              <TextBox Text="{Binding NewValue}" Watermark="Value" />
+              <TextBox Text="{Binding NewValue}" Watermark="{loc:Translate Input}" />
               <CalendarDatePicker SelectedDate="{Binding NewDate}"
                                   HorizontalAlignment="Stretch" />
               <TextBox Text="{Binding NewNote}"
@@ -789,52 +929,126 @@
             </StackPanel>
           </Border>
 
-          <!-- Today's Meals -->
-          <StackPanel Spacing="8">
+          <!-- Kopier-Button + Überschrift -->
+          <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="{loc:Translate TodayMeals}"
                        FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="Text Small"
+                    Command="{Binding CopyYesterdayMealsCommand}"
+                    ToolTip.Tip="{loc:Translate CopyYesterday}">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{loc:Translate CopyYesterday}" FontSize="11"
+                           Foreground="{DynamicResource TextMutedBrush}"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
 
-            <!-- Empty State -->
-            <TextBlock Text="{loc:Translate NoMealsYet}" Classes="Caption"
-                       HorizontalAlignment="Center" Margin="0,20"
-                       IsVisible="{Binding !HasMeals}" />
-
-            <ItemsControl ItemsSource="{Binding TodayMeals}"
-                          IsVisible="{Binding HasMeals}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="models:FoodLogEntry">
-                  <Border Classes="Card Compact" Margin="0,4" Padding="12">
-                    <Grid ColumnDefinitions="*,Auto,Auto">
-                      <StackPanel>
-                        <TextBlock Text="{Binding FoodName}"
-                                   FontSize="14" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                          <TextBlock Text="{Binding Grams, StringFormat='{}{0:F0}g'}"
-                                     Classes="Caption" />
-                          <TextBlock Text="|" Classes="Caption" />
-                          <TextBlock Text="{Binding Meal}" Classes="Caption" />
-                        </StackPanel>
-                      </StackPanel>
-                      <TextBlock Grid.Column="1"
-                                 Text="{Binding Calories, StringFormat='{}{0:F0} kcal'}"
-                                 FontSize="16" FontWeight="Bold"
-                                 Foreground="{DynamicResource ErrorBrush}"
-                                 VerticalAlignment="Center" />
-                      <Button Grid.Column="2" Classes="Icon"
-                              Command="{Binding $parent[ItemsControl].((vm:ProgressViewModel)DataContext).DeleteMealCommand}"
-                              CommandParameter="{Binding .}"
-                              Margin="4,0,0,0">
-                        <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
-                                         Foreground="{DynamicResource ErrorBrush}" />
-                      </Button>
-                    </Grid>
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
+          <!-- Motivierender Empty State -->
+          <StackPanel IsVisible="{Binding !HasMeals}"
+                      HorizontalAlignment="Center" Spacing="8" Margin="0,24">
+            <mi:MaterialIcon Kind="FoodApple" Width="40" Height="40"
+                             Foreground="{DynamicResource TextMutedBrush}"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate NoMealsYet}" FontSize="14" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate EmptyCaloriesHint}" Classes="Caption"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       MaxWidth="250" TextWrapping="Wrap" />
           </StackPanel>
+
+          <!-- Gruppierte Mahlzeiten -->
+          <StackPanel Spacing="10" IsVisible="{Binding HasMeals}">
+
+            <!-- Frühstück -->
+            <StackPanel Spacing="2" IsVisible="{Binding HasBreakfast}">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,2">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Coffee" Width="16" Height="16" Foreground="#F59E0B" />
+                  <TextBlock Text="{loc:Translate Breakfast}" FontSize="13" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding BreakfastCalories, StringFormat='{}{0:F0} kcal'}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
+              </Grid>
+              <ItemsControl ItemsSource="{Binding BreakfastMeals}"
+                            ItemTemplate="{StaticResource MealItemTemplate}" />
+            </StackPanel>
+
+            <!-- Mittagessen -->
+            <StackPanel Spacing="2" IsVisible="{Binding HasLunch}">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,2">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="FoodDrumstick" Width="16" Height="16" Foreground="#22C55E" />
+                  <TextBlock Text="{loc:Translate Lunch}" FontSize="13" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding LunchCalories, StringFormat='{}{0:F0} kcal'}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
+              </Grid>
+              <ItemsControl ItemsSource="{Binding LunchMeals}"
+                            ItemTemplate="{StaticResource MealItemTemplate}" />
+            </StackPanel>
+
+            <!-- Abendessen -->
+            <StackPanel Spacing="2" IsVisible="{Binding HasDinner}">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,2">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Silverware" Width="16" Height="16" Foreground="#8B5CF6" />
+                  <TextBlock Text="{loc:Translate Dinner}" FontSize="13" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding DinnerCalories, StringFormat='{}{0:F0} kcal'}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
+              </Grid>
+              <ItemsControl ItemsSource="{Binding DinnerMeals}"
+                            ItemTemplate="{StaticResource MealItemTemplate}" />
+            </StackPanel>
+
+            <!-- Snacks -->
+            <StackPanel Spacing="2" IsVisible="{Binding HasSnack}">
+              <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,2">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <mi:MaterialIcon Kind="Cookie" Width="16" Height="16" Foreground="#EF4444" />
+                  <TextBlock Text="{loc:Translate Snack}" FontSize="13" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding SnackCalories, StringFormat='{}{0:F0} kcal'}"
+                           FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
+              </Grid>
+              <ItemsControl ItemsSource="{Binding SnackMeals}"
+                            ItemTemplate="{StaticResource MealItemTemplate}" />
+            </StackPanel>
+          </StackPanel>
+
+          <!-- Wochen-Kalorien Chart -->
+          <Border Classes="Card" Padding="16" IsVisible="{Binding HasWeeklyData}">
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="ChartBar" Width="18" Height="18"
+                                 Foreground="#F59E0B" />
+                <TextBlock Text="{loc:Translate WeeklyCalories}"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+              <lvc:CartesianChart Height="160"
+                                  Series="{Binding WeeklyCaloriesSeries}"
+                                  XAxes="{Binding WeeklyXAxes}"
+                                  YAxes="{Binding WeeklyYAxes}"
+                                  DrawMarginFrame="{Binding ChartFrame}"
+                                  Background="{DynamicResource CardBrush}"
+                                  ZoomMode="None" />
+            </StackPanel>
+          </Border>
 
           <!-- Add Food Button -->
           <Button Classes="Primary"

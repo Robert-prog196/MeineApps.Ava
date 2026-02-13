@@ -3,11 +3,25 @@ using FitnessRechner.Models;
 namespace FitnessRechner.Services;
 
 /// <summary>
-/// Local database with nutritional information for common foods
+/// Lokale Datenbank mit Nährwertinformationen für gängige Lebensmittel.
+/// IDs sind deterministisch (Name-basiert) und stabil über App-Neustarts.
 /// </summary>
 public static class FoodDatabase
 {
-    public static readonly List<FoodItem> Foods =
+    public static readonly List<FoodItem> Foods;
+
+    static FoodDatabase()
+    {
+        Foods = CreateFoods();
+
+        // Deterministische IDs statt zufällige GUIDs (stabil über App-Neustarts)
+        foreach (var food in Foods)
+        {
+            food.Id = $"db_{food.Name.ToLowerInvariant().Replace(' ', '_')}";
+        }
+    }
+
+    private static List<FoodItem> CreateFoods() =>
     [
         // === OBST ===
         new() { Name = "Apfel", Aliases = ["Apple", "Äpfel"], Category = FoodCategory.Fruit,
@@ -134,7 +148,7 @@ public static class FoodDatabase
         new() { Name = "Haferflocken", Aliases = ["Oats", "Oatmeal", "Hafer"], Category = FoodCategory.Grain,
             CaloriesPer100g = 372, ProteinPer100g = 13, CarbsPer100g = 59, FatPer100g = 7, FiberPer100g = 10,
             DefaultPortion = "Portion", DefaultPortionGrams = 50 },
-        new() { Name = "Müsli", Aliases = ["Muesli", "Cerealien"], Category = FoodCategory.Grain,
+        new() { Name = "Müsli", Aliases = ["Muesli", "Cerealien", "Hafermüsli"], Category = FoodCategory.Grain,
             CaloriesPer100g = 367, ProteinPer100g = 9, CarbsPer100g = 66, FatPer100g = 6, FiberPer100g = 7,
             DefaultPortion = "Portion", DefaultPortionGrams = 50 },
 
@@ -170,7 +184,7 @@ public static class FoodDatabase
             DefaultPortion = "Portion", DefaultPortionGrams = 30 },
 
         // === FAST FOOD ===
-        new() { Name = "Pizza", Aliases = ["Pizza Margherita"], Category = FoodCategory.FastFood,
+        new() { Name = "Pizza", Aliases = [], Category = FoodCategory.FastFood,
             CaloriesPer100g = 266, ProteinPer100g = 11, CarbsPer100g = 33, FatPer100g = 10, FiberPer100g = 2.3,
             DefaultPortion = "1 Stück", DefaultPortionGrams = 120 },
         new() { Name = "Hamburger", Aliases = ["Burger", "Cheeseburger"], Category = FoodCategory.FastFood,
@@ -190,7 +204,7 @@ public static class FoodDatabase
         new() { Name = "Schokolade", Aliases = ["Chocolate", "Vollmilchschokolade"], Category = FoodCategory.Sweet,
             CaloriesPer100g = 535, ProteinPer100g = 8, CarbsPer100g = 60, FatPer100g = 30, FiberPer100g = 2,
             DefaultPortion = "1 Riegel", DefaultPortionGrams = 25 },
-        new() { Name = "Gummibärchen", Aliases = ["Haribo", "Weingummi"], Category = FoodCategory.Sweet,
+        new() { Name = "Gummibärchen", Aliases = ["Haribo", "Weingummi", "Gummy Bears"], Category = FoodCategory.Sweet,
             CaloriesPer100g = 343, ProteinPer100g = 7, CarbsPer100g = 77, FatPer100g = 0.5, FiberPer100g = 0,
             DefaultPortion = "Handvoll", DefaultPortionGrams = 30 },
         new() { Name = "Kekse", Aliases = ["Cookies", "Butterkekse"], Category = FoodCategory.Sweet,
@@ -258,15 +272,9 @@ public static class FoodDatabase
         new() { Name = "Toast", Aliases = ["Toastbrot", "White Bread"], Category = FoodCategory.Grain,
             CaloriesPer100g = 266, ProteinPer100g = 8.4, CarbsPer100g = 49, FatPer100g = 3.3, FiberPer100g = 2.7,
             DefaultPortion = "2 Scheiben", DefaultPortionGrams = 50 },
-        new() { Name = "Brötchen", Aliases = ["Semmel", "Roll", "Weizenbrötchen"], Category = FoodCategory.Grain,
-            CaloriesPer100g = 268, ProteinPer100g = 8, CarbsPer100g = 53, FatPer100g = 2, FiberPer100g = 2.8,
-            DefaultPortion = "1 Stück", DefaultPortionGrams = 60 },
         new() { Name = "Croissant", Aliases = ["Buttercroissant"], Category = FoodCategory.Grain,
             CaloriesPer100g = 406, ProteinPer100g = 8, CarbsPer100g = 43, FatPer100g = 21, FiberPer100g = 2.6,
             DefaultPortion = "1 Stück", DefaultPortionGrams = 50 },
-        new() { Name = "Müsli", Aliases = ["Muesli", "Hafermüsli"], Category = FoodCategory.Grain,
-            CaloriesPer100g = 368, ProteinPer100g = 10, CarbsPer100g = 66, FatPer100g = 6, FiberPer100g = 8,
-            DefaultPortion = "Schale", DefaultPortionGrams = 50 },
         new() { Name = "Cornflakes", Aliases = ["Corn Flakes"], Category = FoodCategory.Grain,
             CaloriesPer100g = 357, ProteinPer100g = 7, CarbsPer100g = 84, FatPer100g = 0.9, FiberPer100g = 3,
             DefaultPortion = "Schale", DefaultPortionGrams = 40 },
@@ -293,9 +301,6 @@ public static class FoodDatabase
         new() { Name = "Frischkäse", Aliases = ["Cream Cheese", "Philadelphia"], Category = FoodCategory.Dairy,
             CaloriesPer100g = 206, ProteinPer100g = 5.5, CarbsPer100g = 4, FatPer100g = 20, FiberPer100g = 0,
             DefaultPortion = "1 EL", DefaultPortionGrams = 25 },
-        new() { Name = "Butter", Aliases = ["Butter gesalzen"], Category = FoodCategory.Dairy,
-            CaloriesPer100g = 717, ProteinPer100g = 0.7, CarbsPer100g = 0.6, FatPer100g = 81, FiberPer100g = 0,
-            DefaultPortion = "1 TL", DefaultPortionGrams = 5 },
         new() { Name = "Sahne", Aliases = ["Schlagsahne", "Cream", "Heavy Cream"], Category = FoodCategory.Dairy,
             CaloriesPer100g = 309, ProteinPer100g = 2.4, CarbsPer100g = 3.4, FatPer100g = 31, FiberPer100g = 0,
             DefaultPortion = "1 EL", DefaultPortionGrams = 15 },
@@ -304,18 +309,9 @@ public static class FoodDatabase
         new() { Name = "Schokoriegel", Aliases = ["Chocolate Bar", "Mars", "Snickers"], Category = FoodCategory.Snack,
             CaloriesPer100g = 479, ProteinPer100g = 4.4, CarbsPer100g = 61, FatPer100g = 24, FiberPer100g = 1.5,
             DefaultPortion = "1 Riegel", DefaultPortionGrams = 50 },
-        new() { Name = "Gummibärchen", Aliases = ["Gummy Bears", "Haribo"], Category = FoodCategory.Snack,
-            CaloriesPer100g = 343, ProteinPer100g = 6.9, CarbsPer100g = 77, FatPer100g = 0.5, FiberPer100g = 0,
-            DefaultPortion = "Tüte", DefaultPortionGrams = 25 },
         new() { Name = "Eis Vanille", Aliases = ["Vanilla Ice Cream", "Vanilleeis"], Category = FoodCategory.Snack,
             CaloriesPer100g = 207, ProteinPer100g = 3.5, CarbsPer100g = 24, FatPer100g = 11, FiberPer100g = 0.5,
             DefaultPortion = "Kugel", DefaultPortionGrams = 75 },
-        new() { Name = "Popcorn", Aliases = ["Popcorn gesalzen"], Category = FoodCategory.Snack,
-            CaloriesPer100g = 387, ProteinPer100g = 13, CarbsPer100g = 63, FatPer100g = 5, FiberPer100g = 15,
-            DefaultPortion = "Tüte", DefaultPortionGrams = 40 },
-        new() { Name = "Kekse", Aliases = ["Cookies", "Butterkekse"], Category = FoodCategory.Snack,
-            CaloriesPer100g = 486, ProteinPer100g = 6, CarbsPer100g = 67, FatPer100g = 22, FiberPer100g = 2,
-            DefaultPortion = "3 Stück", DefaultPortionGrams = 30 },
         new() { Name = "Brownie", Aliases = ["Schokoladenbrownie", "Chocolate Brownie"], Category = FoodCategory.Snack,
             CaloriesPer100g = 466, ProteinPer100g = 5, CarbsPer100g = 54, FatPer100g = 26, FiberPer100g = 3,
             DefaultPortion = "1 Stück", DefaultPortionGrams = 60 },
@@ -330,9 +326,6 @@ public static class FoodDatabase
         new() { Name = "Pizza Margherita", Aliases = ["Cheese Pizza"], Category = FoodCategory.FastFood,
             CaloriesPer100g = 233, ProteinPer100g = 9, CarbsPer100g = 29, FatPer100g = 9, FiberPer100g = 2,
             DefaultPortion = "2 Stücke", DefaultPortionGrams = 200 },
-        new() { Name = "Döner Kebab", Aliases = ["Kebab", "Dönertasche"], Category = FoodCategory.FastFood,
-            CaloriesPer100g = 215, ProteinPer100g = 11, CarbsPer100g = 18, FatPer100g = 11, FiberPer100g = 1.5,
-            DefaultPortion = "1 Portion", DefaultPortionGrams = 350 },
         new() { Name = "Currywurst", Aliases = ["Currywurst mit Pommes"], Category = FoodCategory.FastFood,
             CaloriesPer100g = 201, ProteinPer100g = 8, CarbsPer100g = 12, FatPer100g = 14, FiberPer100g = 0.8,
             DefaultPortion = "1 Portion", DefaultPortionGrams = 250 },
@@ -341,9 +334,6 @@ public static class FoodDatabase
             DefaultPortion = "6 Stück", DefaultPortionGrams = 100 },
 
         // === ZUSÄTZLICHE GETRÄNKE ===
-        new() { Name = "Bier", Aliases = ["Beer", "Pils"], Category = FoodCategory.Beverage,
-            CaloriesPer100g = 43, ProteinPer100g = 0.5, CarbsPer100g = 3.6, FatPer100g = 0, FiberPer100g = 0,
-            DefaultPortion = "1 Flasche", DefaultPortionGrams = 330 },
         new() { Name = "Wein rot", Aliases = ["Red Wine", "Rotwein"], Category = FoodCategory.Beverage,
             CaloriesPer100g = 85, ProteinPer100g = 0.1, CarbsPer100g = 2.6, FatPer100g = 0, FiberPer100g = 0,
             DefaultPortion = "1 Glas", DefaultPortionGrams = 150 },

@@ -190,6 +190,15 @@ public class BarcodeScannerActivity : AndroidX.AppCompat.App.AppCompatActivity
             _scanner = BarcodeScanning.GetClient(options);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _scanner.Close();
+            }
+            base.Dispose(disposing);
+        }
+
         public void Analyze(IImageProxy? imageProxy)
         {
             if (imageProxy == null) return;
@@ -269,6 +278,7 @@ public class BarcodeScannerActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         private readonly Paint _overlayPaint;
         private readonly Paint _borderPaint;
+        private readonly Paint _cornerPaint;
 
         public BarcodeScanOverlay(Context context) : base(context)
         {
@@ -285,6 +295,13 @@ public class BarcodeScannerActivity : AndroidX.AppCompat.App.AppCompatActivity
                 StrokeWidth = 4f,
             };
             _borderPaint.SetStyle(Paint.Style.Stroke);
+
+            _cornerPaint = new Paint
+            {
+                Color = Color.Argb(255, 100, 181, 246),
+                StrokeWidth = 6f,
+                StrokeCap = Paint.Cap.Round
+            };
         }
 
         protected override void OnDraw(Canvas? canvas)
@@ -310,27 +327,21 @@ public class BarcodeScannerActivity : AndroidX.AppCompat.App.AppCompatActivity
             // Scan-Bereich Rahmen
             canvas.DrawRect(left, top, left + scanWidth, top + scanHeight, _borderPaint);
 
-            // Ecken-Akzente (Material Blue)
+            // Ecken-Akzente (Material Blue) - Paint wiederverwendet (kein Alloc pro Frame)
             var cornerLength = 40f;
-            var cornerPaint = new Paint
-            {
-                Color = Color.Argb(255, 100, 181, 246),
-                StrokeWidth = 6f,
-                StrokeCap = Paint.Cap.Round
-            };
 
             // Oben links
-            canvas.DrawLine(left, top, left + cornerLength, top, cornerPaint);
-            canvas.DrawLine(left, top, left, top + cornerLength, cornerPaint);
+            canvas.DrawLine(left, top, left + cornerLength, top, _cornerPaint);
+            canvas.DrawLine(left, top, left, top + cornerLength, _cornerPaint);
             // Oben rechts
-            canvas.DrawLine(left + scanWidth - cornerLength, top, left + scanWidth, top, cornerPaint);
-            canvas.DrawLine(left + scanWidth, top, left + scanWidth, top + cornerLength, cornerPaint);
+            canvas.DrawLine(left + scanWidth - cornerLength, top, left + scanWidth, top, _cornerPaint);
+            canvas.DrawLine(left + scanWidth, top, left + scanWidth, top + cornerLength, _cornerPaint);
             // Unten links
-            canvas.DrawLine(left, top + scanHeight, left + cornerLength, top + scanHeight, cornerPaint);
-            canvas.DrawLine(left, top + scanHeight - cornerLength, left, top + scanHeight, cornerPaint);
+            canvas.DrawLine(left, top + scanHeight, left + cornerLength, top + scanHeight, _cornerPaint);
+            canvas.DrawLine(left, top + scanHeight - cornerLength, left, top + scanHeight, _cornerPaint);
             // Unten rechts
-            canvas.DrawLine(left + scanWidth - cornerLength, top + scanHeight, left + scanWidth, top + scanHeight, cornerPaint);
-            canvas.DrawLine(left + scanWidth, top + scanHeight - cornerLength, left + scanWidth, top + scanHeight, cornerPaint);
+            canvas.DrawLine(left + scanWidth - cornerLength, top + scanHeight, left + scanWidth, top + scanHeight, _cornerPaint);
+            canvas.DrawLine(left + scanWidth, top + scanHeight - cornerLength, left + scanWidth, top + scanHeight, _cornerPaint);
         }
     }
 }

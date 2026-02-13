@@ -48,8 +48,9 @@ public class UndoService<T> : IUndoService<T> where T : class
 
     public async Task StartUndoTimeoutAsync(T item, string message, Func<T, Task> onCommit, int timeoutMs = 5000)
     {
-        // Cancel previous undo if exists
+        // Vorherigen Undo ordentlich aufräumen
         _undoCancellation?.Cancel();
+        _undoCancellation?.Dispose();
         _undoCancellation = new CancellationTokenSource();
 
         // Store deleted item
@@ -94,9 +95,9 @@ public class UndoService<T> : IUndoService<T> where T : class
     public void CancelUndo()
     {
         _undoCancellation?.Cancel();
+        _undoCancellation?.Dispose();
+        _undoCancellation = null;
         _deletedItem = null;
         ShowUndoBanner = false;
     }
-
-    // NOTE: No finalizer - CancellationTokenSource will be cleaned up when service is no longer referenced
 }

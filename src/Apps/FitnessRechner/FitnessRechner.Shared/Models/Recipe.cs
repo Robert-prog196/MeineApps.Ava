@@ -24,7 +24,7 @@ public class Recipe
     /// <summary>
     /// When the recipe was created
     /// </summary>
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// How many times this recipe has been used

@@ -16,8 +16,7 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
     private readonly IFoodSearchService _foodSearchService;
     private readonly IPreferencesService _preferences;
 
-    private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
-    private const string WATER_GOAL_KEY = "daily_water_goal";
+    // Preference-Keys zentral in PreferenceKeys.cs
 
     /// <summary>
     /// Raised when the VM wants to navigate
@@ -287,12 +286,12 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
 
         Entries.Remove(entry);
 
-        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("dd.MM.yyyy"));
+        UndoMessage = string.Format(AppStrings.EntryDeletedOn, entry.Date.ToString("d", System.Globalization.CultureInfo.CurrentCulture));
         ShowUndoBanner = true;
 
         try
         {
-            await Task.Delay(5000, _undoCancellation.Token);
+            await Task.Delay(PreferenceKeys.UndoTimeoutMs, _undoCancellation.Token);
             await _trackingService.DeleteEntryAsync(entry.Id);
             _recentlyDeletedEntry = null;
         }
@@ -457,7 +456,7 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
         if (goal > 0)
         {
             DailyCalorieGoal = goal;
-            _preferences.Set(CALORIE_GOAL_KEY, goal);
+            _preferences.Set(PreferenceKeys.CalorieGoal, goal);
             UpdateCalorieStatus();
         }
     }
@@ -471,7 +470,7 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
         {
             DailyWaterGoal = goal;
             HasWaterGoal = true;
-            _preferences.Set(WATER_GOAL_KEY, goal);
+            _preferences.Set(PreferenceKeys.WaterGoal, goal);
             _ = LoadWaterDataAsync();
         }
     }
@@ -485,7 +484,7 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
         IsPremium = _purchaseService.IsPremium;
         ShowAds = !IsPremium;
 
-        DailyWaterGoal = _preferences.Get(WATER_GOAL_KEY, 0.0);
+        DailyWaterGoal = _preferences.Get(PreferenceKeys.WaterGoal, 0.0);
         HasWaterGoal = DailyWaterGoal > 0;
 
         if (IsCaloriesMode)
@@ -590,7 +589,7 @@ public partial class TrackingViewModel : ObservableObject, IDisposable
 
         try
         {
-            DailyCalorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 0.0);
+            DailyCalorieGoal = _preferences.Get(PreferenceKeys.CalorieGoal, 0.0);
 
             var meals = await _foodSearchService.GetFoodLogAsync(DateTime.Today);
             TodayMeals = new ObservableCollection<FoodLogEntry>(meals);

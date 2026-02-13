@@ -1041,6 +1041,24 @@ namespace FitnessRechner.Resources.Strings {
             }
         }
 
+        public static string QuickAddCalories {
+            get {
+                return ResourceManager.GetString("QuickAddCalories", resourceCulture);
+            }
+        }
+
+        public static string QuickAddCaloriesHint {
+            get {
+                return ResourceManager.GetString("QuickAddCaloriesHint", resourceCulture);
+            }
+        }
+
+        public static string QuickAddFoodName {
+            get {
+                return ResourceManager.GetString("QuickAddFoodName", resourceCulture);
+            }
+        }
+
         public static string Remaining {
             get {
                 return ResourceManager.GetString("Remaining", resourceCulture);
@@ -1698,6 +1716,138 @@ namespace FitnessRechner.Resources.Strings {
         public static string BarcodeScanHint {
             get {
                 return ResourceManager.GetString("BarcodeScanHint", resourceCulture);
+            }
+        }
+
+        public static string PressBackAgainToExit {
+            get {
+                return ResourceManager.GetString("PressBackAgainToExit", resourceCulture);
+            }
+        }
+
+        public static string WeightGoalLabel {
+            get {
+                return ResourceManager.GetString("WeightGoalLabel", resourceCulture);
+            }
+        }
+
+        public static string SetWeightGoal {
+            get {
+                return ResourceManager.GetString("SetWeightGoal", resourceCulture);
+            }
+        }
+
+        public static string WeightGoalKg {
+            get {
+                return ResourceManager.GetString("WeightGoalKg", resourceCulture);
+            }
+        }
+
+        public static string WeightRemaining {
+            get {
+                return ResourceManager.GetString("WeightRemaining", resourceCulture);
+            }
+        }
+
+        public static string EmptyWeightHint {
+            get {
+                return ResourceManager.GetString("EmptyWeightHint", resourceCulture);
+            }
+        }
+
+        public static string EmptyCaloriesHint {
+            get {
+                return ResourceManager.GetString("EmptyCaloriesHint", resourceCulture);
+            }
+        }
+
+        public static string EmptyWaterHint {
+            get {
+                return ResourceManager.GetString("EmptyWaterHint", resourceCulture);
+            }
+        }
+
+        public static string EmptyBmiHint {
+            get {
+                return ResourceManager.GetString("EmptyBmiHint", resourceCulture);
+            }
+        }
+
+        public static string EmptyBodyFatHint {
+            get {
+                return ResourceManager.GetString("EmptyBodyFatHint", resourceCulture);
+            }
+        }
+
+        public static string MealSubtotal {
+            get {
+                return ResourceManager.GetString("MealSubtotal", resourceCulture);
+            }
+        }
+
+        public static string RecentFoods {
+            get {
+                return ResourceManager.GetString("RecentFoods", resourceCulture);
+            }
+        }
+
+        public static string CopyYesterday {
+            get {
+                return ResourceManager.GetString("CopyYesterday", resourceCulture);
+            }
+        }
+
+        public static string MealsCopied {
+            get {
+                return ResourceManager.GetString("MealsCopied", resourceCulture);
+            }
+        }
+
+        public static string NoMealsYesterday {
+            get {
+                return ResourceManager.GetString("NoMealsYesterday", resourceCulture);
+            }
+        }
+
+        public static string Days7 {
+            get {
+                return ResourceManager.GetString("Days7", resourceCulture);
+            }
+        }
+
+        public static string Days90 {
+            get {
+                return ResourceManager.GetString("Days90", resourceCulture);
+            }
+        }
+
+        public static string GreetingMorning {
+            get {
+                return ResourceManager.GetString("GreetingMorning", resourceCulture);
+            }
+        }
+
+        public static string GreetingAfternoon {
+            get {
+                return ResourceManager.GetString("GreetingAfternoon", resourceCulture);
+            }
+        }
+
+        public static string GreetingEvening {
+            get {
+                return ResourceManager.GetString("GreetingEvening", resourceCulture);
+            }
+        }
+
+        public static string PortionDefault {
+            get {
+                return ResourceManager.GetString("PortionDefault", resourceCulture);
+            }
+        }
+
+        public static string WeeklyCalories {
+            get {
+                return ResourceManager.GetString("WeeklyCalories", resourceCulture);
             }
         }
     }

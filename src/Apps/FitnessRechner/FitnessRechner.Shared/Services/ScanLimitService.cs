@@ -14,9 +14,9 @@ public class ScanLimitService : IScanLimitService
 
     private const int DailyFreeScans = 3;
     private const int AdBonusScans = 5;
-    private const string ScanCountKey = "ScanLimit_Count";
-    private const string ScanDateKey = "ScanLimit_Date";
+    // Preference-Keys zentral in PreferenceKeys.cs
 
+    private readonly object _lock = new();
     private int _remainingScans;
 
     public ScanLimitService(IPurchaseService purchaseService, IPreferencesService preferences)
@@ -30,8 +30,11 @@ public class ScanLimitService : IScanLimitService
     {
         get
         {
-            ResetDailyIfNeeded();
-            return _remainingScans;
+            lock (_lock)
+            {
+                ResetDailyIfNeeded();
+                return _remainingScans;
+            }
         }
     }
 
@@ -40,8 +43,11 @@ public class ScanLimitService : IScanLimitService
         get
         {
             if (_purchaseService.IsPremium) return true;
-            ResetDailyIfNeeded();
-            return _remainingScans > 0;
+            lock (_lock)
+            {
+                ResetDailyIfNeeded();
+                return _remainingScans > 0;
+            }
         }
     }
 
@@ -49,20 +55,26 @@ public class ScanLimitService : IScanLimitService
     {
         if (_purchaseService.IsPremium) return;
 
-        ResetDailyIfNeeded();
-
-        if (_remainingScans > 0)
+        lock (_lock)
         {
-            _remainingScans--;
-            SaveState();
+            ResetDailyIfNeeded();
+
+            if (_remainingScans > 0)
+            {
+                _remainingScans--;
+                SaveState();
+            }
         }
     }
 
     public void AddScans(int count)
     {
-        ResetDailyIfNeeded();
-        _remainingScans += count;
-        SaveState();
+        lock (_lock)
+        {
+            ResetDailyIfNeeded();
+            _remainingScans += count;
+            SaveState();
+        }
     }
 
     /// <summary>
@@ -70,37 +82,37 @@ public class ScanLimitService : IScanLimitService
     /// </summary>
     private void ResetDailyIfNeeded()
     {
-        var savedDate = _preferences.Get(ScanDateKey, "");
+        var savedDate = _preferences.Get(PreferenceKeys.ScanLimitDate, "");
         var todayStr = DateTime.Today.ToString("yyyy-MM-dd");
 
         if (savedDate != todayStr)
         {
             _remainingScans = DailyFreeScans;
-            _preferences.Set(ScanDateKey, todayStr);
-            _preferences.Set(ScanCountKey, _remainingScans);
+            _preferences.Set(PreferenceKeys.ScanLimitDate, todayStr);
+            _preferences.Set(PreferenceKeys.ScanLimitCount, _remainingScans);
         }
     }
 
     private void LoadState()
     {
-        var savedDate = _preferences.Get(ScanDateKey, "");
+        var savedDate = _preferences.Get(PreferenceKeys.ScanLimitDate, "");
         var todayStr = DateTime.Today.ToString("yyyy-MM-dd");
 
         if (savedDate == todayStr)
         {
-            _remainingScans = _preferences.Get(ScanCountKey, DailyFreeScans);
+            _remainingScans = _preferences.Get(PreferenceKeys.ScanLimitCount, DailyFreeScans);
         }
         else
         {
             // Neuer Tag oder erster Start
             _remainingScans = DailyFreeScans;
-            _preferences.Set(ScanDateKey, todayStr);
-            _preferences.Set(ScanCountKey, _remainingScans);
+            _preferences.Set(PreferenceKeys.ScanLimitDate, todayStr);
+            _preferences.Set(PreferenceKeys.ScanLimitCount, _remainingScans);
         }
     }
 
     private void SaveState()
     {
-        _preferences.Set(ScanCountKey, _remainingScans);
+        _preferences.Set(PreferenceKeys.ScanLimitCount, _remainingScans);
     }
 }

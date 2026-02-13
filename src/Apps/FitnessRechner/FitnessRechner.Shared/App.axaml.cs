@@ -109,6 +109,7 @@ public partial class App : Application
 
         // App Services
         services.AddSingleton<FitnessEngine>();
+        services.AddSingleton<StreakService>();
         services.AddSingleton<ITrackingService, TrackingService>();
         services.AddSingleton<IFoodSearchService, FoodSearchService>();
         services.AddSingleton<IBarcodeLookupService, BarcodeLookupService>();

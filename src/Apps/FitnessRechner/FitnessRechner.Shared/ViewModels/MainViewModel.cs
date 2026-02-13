@@ -21,9 +21,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IPreferencesService _preferences;
     private readonly ILocalizationService _localization;
     private readonly IRewardedAdService _rewardedAdService;
-
-    private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
-    private const string WATER_GOAL_KEY = "daily_water_goal";
+    private readonly StreakService _streakService;
 
     /// <summary>
     /// Raised when the VM wants to show a message (title, message).
@@ -52,6 +50,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IPreferencesService preferences,
         ILocalizationService localization,
         IThemeService themeService,
+        StreakService streakService,
         SettingsViewModel settingsViewModel,
         ProgressViewModel progressViewModel,
         FoodSearchViewModel foodSearchViewModel)
@@ -63,11 +62,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _foodSearchService = foodSearchService;
         _preferences = preferences;
         _localization = localization;
+        _streakService = streakService;
 
-        _rewardedAdService.AdUnavailable += () => MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);
+        _rewardedAdService.AdUnavailable += OnAdUnavailable;
 
         IsAdBannerVisible = _adService.BannerVisible;
-        _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
+        _adService.AdsStateChanged += OnAdsStateChanged;
 
         // Banner beim Start anzeigen (fuer Desktop + Fallback falls AdMobHelper fehlschlaegt)
         if (_adService.AdsEnabled && !_purchaseService.IsPremium)
@@ -78,14 +78,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         FoodSearchViewModel = foodSearchViewModel;
 
         // Game Juice Events vom ProgressViewModel weiterleiten
-        progressViewModel.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
-        progressViewModel.CelebrationRequested += () => CelebrationRequested?.Invoke();
+        progressViewModel.FloatingTextRequested += OnProgressFloatingText;
+        progressViewModel.CelebrationRequested += OnProgressCelebration;
 
         // FoodSearchViewModel Navigation verdrahten (Barcode-Scanner)
         foodSearchViewModel.NavigationRequested += OnFoodSearchNavigation;
 
         _purchaseService.PremiumStatusChanged += OnPremiumStatusChanged;
         settingsViewModel.LanguageChanged += OnLanguageChanged;
+
+        // Streak bei jeder Logging-Aktivität aktualisieren
+        _trackingService.EntryAdded += RecordStreakActivity;
+        _foodSearchService.FoodLogAdded += RecordStreakActivity;
     }
 
     private void OnLanguageChanged()
@@ -105,6 +109,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(RemoveAdsText));
         OnPropertyChanged(nameof(PremiumPriceText));
         OnPropertyChanged(nameof(SectionCalculatorsText));
+        OnPropertyChanged(nameof(StreakTitleText));
+        OnPropertyChanged(nameof(GreetingText));
+        UpdateStreakDisplay();
+
+        // Aktiven Calculator aktualisieren falls nötig
+        if (CurrentCalculatorVm is CaloriesViewModel cal)
+            cal.UpdateLocalizedTexts();
     }
 
     #region Tab Navigation
@@ -124,9 +135,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(IsFoodActive));
         OnPropertyChanged(nameof(IsSettingsActive));
 
-        // Load data for the selected tab
+        // Daten für ausgewählten Tab laden
         if (value == 1)
             _ = ProgressViewModel.OnAppearingAsync();
+        else if (value == 2)
+            FoodSearchViewModel.OnAppearing();
     }
 
     [RelayCommand]
@@ -181,6 +194,26 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _hasDashboardData;
 
+    // Fortschritt (0-100)
+    [ObservableProperty]
+    private double _calorieProgress;
+
+    [ObservableProperty]
+    private double _waterProgress;
+
+    // Streak
+    [ObservableProperty]
+    private int _currentStreak;
+
+    [ObservableProperty]
+    private string _streakDisplay = "";
+
+    [ObservableProperty]
+    private string _streakBestDisplay = "";
+
+    [ObservableProperty]
+    private bool _hasStreak;
+
     #endregion
 
     #region Localized Labels
@@ -198,13 +231,70 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public string RemoveAdsText => _localization.GetString("RemoveAds") ?? "Go Ad-Free";
     public string PremiumPriceText => _localization.GetString("PremiumPrice") ?? "From 3.99 €";
     public string SectionCalculatorsText => _localization.GetString("SectionCalculators") ?? "Calculators";
+    public string StreakTitleText => _localization.GetString("StreakTitle") ?? "Logging Streak";
+
+    // Tageszeit-Begrüßung
+    public string GreetingText
+    {
+        get
+        {
+            var hour = DateTime.Now.Hour;
+            var key = hour switch
+            {
+                < 12 => "GreetingMorning",
+                < 18 => "GreetingAfternoon",
+                _ => "GreetingEvening"
+            };
+            return _localization.GetString(key) ?? "Hello!";
+        }
+    }
 
     #endregion
 
     public async Task OnAppearingAsync()
     {
         IsPremium = _purchaseService.IsPremium;
+        UpdateStreakDisplay();
         await LoadDashboardDataAsync();
+    }
+
+    /// <summary>
+    /// Streak-Aktivität registrieren (wird von Child-VMs aufgerufen).
+    /// </summary>
+    public void RecordStreakActivity()
+    {
+        var isMilestone = _streakService.RecordActivity();
+        UpdateStreakDisplay();
+
+        if (isMilestone)
+        {
+            var milestone = _streakService.CurrentStreak;
+            var text = string.Format(_localization.GetString("StreakMilestone") ?? "{0} day streak!", milestone);
+            FloatingTextRequested?.Invoke(text, "streak");
+            CelebrationRequested?.Invoke();
+        }
+    }
+
+    private void UpdateStreakDisplay()
+    {
+        CurrentStreak = _streakService.CurrentStreak;
+        HasStreak = CurrentStreak > 0;
+
+        if (CurrentStreak == 0)
+        {
+            StreakDisplay = _localization.GetString("StreakStart") ?? "Start your streak!";
+        }
+        else if (CurrentStreak == 1)
+        {
+            StreakDisplay = _localization.GetString("StreakDay") ?? "1 day";
+        }
+        else
+        {
+            StreakDisplay = string.Format(_localization.GetString("StreakDays") ?? "{0} days", CurrentStreak);
+        }
+
+        var best = _streakService.BestStreak;
+        StreakBestDisplay = string.Format(_localization.GetString("StreakBest") ?? "Best: {0}", best);
     }
 
     private async Task LoadDashboardDataAsync()
@@ -240,29 +330,35 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             // Water (today only)
             var waterEntry = await _trackingService.GetLatestEntryAsync(TrackingType.Water);
+            var waterGoal = _preferences.Get(PreferenceKeys.WaterGoal, 2500.0);
             if (waterEntry != null && waterEntry.Date.Date == DateTime.Today)
             {
-                var waterGoal = _preferences.Get(WATER_GOAL_KEY, 2500.0);
                 var progress = waterGoal > 0 ? (waterEntry.Value / waterGoal) * 100 : 0;
                 TodayWaterDisplay = $"{progress:F0}%";
+                WaterProgress = Math.Min(progress, 100);
                 HasDashboardData = true;
             }
             else
             {
                 TodayWaterDisplay = "0%";
+                WaterProgress = 0;
             }
 
             // Calories (today only)
             var summary = await _foodSearchService.GetDailySummaryAsync(DateTime.Today);
-            var calorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 2000.0);
+            var calorieGoal = _preferences.Get(PreferenceKeys.CalorieGoal, 2000.0);
             if (summary.TotalCalories > 0 || calorieGoal > 0)
             {
                 TodayCaloriesDisplay = $"{summary.TotalCalories:F0}";
+                CalorieProgress = calorieGoal > 0
+                    ? Math.Min((summary.TotalCalories / calorieGoal) * 100, 100)
+                    : 0;
                 HasDashboardData = true;
             }
             else
             {
                 TodayCaloriesDisplay = "-";
+                CalorieProgress = 0;
             }
         }
         catch (Exception)
@@ -285,6 +381,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         OnPropertyChanged(nameof(IsCalculatorOpen));
 
+        // Alte Events abmelden bevor neues VM erstellt wird
+        CleanupCurrentCalculatorVm();
+
         if (value != null)
         {
             CurrentCalculatorVm = CreateCalculatorVm(value);
@@ -292,6 +391,41 @@ public partial class MainViewModel : ObservableObject, IDisposable
         else
         {
             CurrentCalculatorVm = null;
+        }
+    }
+
+    /// <summary>
+    /// Meldet Event-Handler des aktuellen Calculator-VMs ab um Speicherlecks zu vermeiden.
+    /// </summary>
+    private void CleanupCurrentCalculatorVm()
+    {
+        switch (CurrentCalculatorVm)
+        {
+            case BmiViewModel bmi:
+                bmi.NavigationRequested -= OnCalculatorGoBack;
+                bmi.MessageRequested -= OnCalculatorMessage;
+                break;
+            case CaloriesViewModel cal:
+                cal.NavigationRequested -= OnCalculatorGoBack;
+                cal.MessageRequested -= OnCalculatorMessage;
+                break;
+            case WaterViewModel water:
+                water.NavigationRequested -= OnCalculatorGoBack;
+                water.MessageRequested -= OnCalculatorMessage;
+                break;
+            case IdealWeightViewModel iw:
+                iw.NavigationRequested -= OnCalculatorGoBack;
+                iw.MessageRequested -= OnCalculatorMessage;
+                break;
+            case BodyFatViewModel bf:
+                bf.NavigationRequested -= OnCalculatorGoBack;
+                bf.MessageRequested -= OnCalculatorMessage;
+                break;
+            case BarcodeScannerViewModel scanner:
+                scanner.NavigationRequested -= OnCalculatorGoBack;
+                scanner.FoodSelected -= OnFoodSelectedFromScanner;
+                scanner.Dispose();
+                break;
         }
     }
 
@@ -412,6 +546,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     #endregion
 
+    /// <summary>
+    /// Versucht eine Ebene zurückzunavigieren (Overlays schließen, Sub-Views verlassen).
+    /// Gibt true zurück wenn etwas geschlossen wurde, false wenn bereits auf Root-Ebene.
+    /// </summary>
+    public bool TryGoBack()
+    {
+        // 1. Calculator-Page offen → schließen
+        if (CurrentPage != null)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => CurrentPage = null);
+            return true;
+        }
+
+        // 2. ProgressVM Overlays prüfen
+        if (SelectedTab == 1)
+        {
+            var vm = ProgressViewModel;
+            if (vm.ShowAnalysisOverlay) { vm.ShowAnalysisOverlay = false; return true; }
+            if (vm.ShowAnalysisAdOverlay) { vm.ShowAnalysisAdOverlay = false; return true; }
+            if (vm.ShowExportAdOverlay) { vm.ShowExportAdOverlay = false; return true; }
+            if (vm.ShowFoodSearch) { vm.ShowFoodSearch = false; return true; }
+            if (vm.ShowAddForm) { vm.ShowAddForm = false; return true; }
+            if (vm.ShowAddFoodPanel) { vm.ShowAddFoodPanel = false; return true; }
+        }
+
+        // 3. Nicht auf Home-Tab → zum Home-Tab wechseln
+        if (SelectedTab != 0)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => SelectedTab = 0);
+            return true;
+        }
+
+        // 4. Auf Root-Ebene → false (App kann beendet werden)
+        return false;
+    }
+
     [RelayCommand]
     private void OpenSettings() => SelectedTab = 3;
 
@@ -433,6 +603,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void OpenProgress() { CurrentPage = null; SelectedTab = 1; }
 
+    private void OnAdUnavailable() =>
+        MessageRequested?.Invoke(AppStrings.AdVideoNotAvailableTitle, AppStrings.AdVideoNotAvailableMessage);
+
+    private void OnAdsStateChanged(object? sender, EventArgs e) =>
+        IsAdBannerVisible = _adService.BannerVisible;
+
+    private void OnProgressFloatingText(string text, string category) =>
+        FloatingTextRequested?.Invoke(text, category);
+
+    private void OnProgressCelebration() =>
+        CelebrationRequested?.Invoke();
+
     private void OnPremiumStatusChanged(object? sender, EventArgs e)
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
@@ -446,6 +628,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_disposed) return;
 
         _purchaseService.PremiumStatusChanged -= OnPremiumStatusChanged;
+        SettingsViewModel.LanguageChanged -= OnLanguageChanged;
+        _trackingService.EntryAdded -= RecordStreakActivity;
+        _foodSearchService.FoodLogAdded -= RecordStreakActivity;
+        _rewardedAdService.AdUnavailable -= OnAdUnavailable;
+        _adService.AdsStateChanged -= OnAdsStateChanged;
+        ProgressViewModel.FloatingTextRequested -= OnProgressFloatingText;
+        ProgressViewModel.CelebrationRequested -= OnProgressCelebration;
+        FoodSearchViewModel.NavigationRequested -= OnFoodSearchNavigation;
 
         ProgressViewModel.Dispose();
         FoodSearchViewModel.Dispose();

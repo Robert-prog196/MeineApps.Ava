@@ -10,11 +10,18 @@ public partial class SettingsView : UserControl
     {
         InitializeComponent();
         AttachedToVisualTree += OnAttachedToVisualTree;
+        DetachedFromVisualTree += OnDetachedFromVisualTree;
     }
 
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         if (DataContext is SettingsViewModel vm)
             vm.Initialize();
+    }
+
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        AttachedToVisualTree -= OnAttachedToVisualTree;
+        DetachedFromVisualTree -= OnDetachedFromVisualTree;
     }
 }

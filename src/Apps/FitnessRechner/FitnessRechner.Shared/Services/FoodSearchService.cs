@@ -6,8 +6,11 @@ namespace FitnessRechner.Services;
 /// <summary>
 /// Implementation of intelligent food search with fuzzy matching
 /// </summary>
-public class FoodSearchService : IFoodSearchService
+public class FoodSearchService : IFoodSearchService, IDisposable
 {
+    private bool _disposed;
+    public event Action? FoodLogAdded;
+
     private const string FOOD_LOG_FILE = "food_log.json";
     private const string FOOD_LOG_ARCHIVE_FILE = "food_log_archive.json";
     private const string FAVORITES_FILE = "food_favorites.json";
@@ -196,49 +199,62 @@ public class FoodSearchService : IFoodSearchService
 
     public async Task SaveFoodLogAsync(FoodLogEntry entry)
     {
-        // Transactional save: First save file, then update memory
-        var tempLog = new List<FoodLogEntry>(_foodLog) { entry };
+        await EnsureFoodLogLoadedAsync();
 
-        // Create temp file for atomic save
-        var tempFilePath = _filePath + ".tmp";
+        await _loadLock.WaitAsync();
         try
         {
-            // Save to temp file
-            var json = JsonSerializer.Serialize(tempLog, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(tempFilePath, json);
+            // Transaktionale Speicherung: Erst Datei, dann Speicher
+            var tempLog = new List<FoodLogEntry>(_foodLog) { entry };
 
-            // Create backup
-            if (File.Exists(_filePath))
+            var tempFilePath = _filePath + ".tmp";
+            try
             {
-                var backupPath = _filePath + ".backup";
-                File.Copy(_filePath, backupPath, overwrite: true);
+                var json = JsonSerializer.Serialize(tempLog, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(tempFilePath, json);
+
+                if (File.Exists(_filePath))
+                {
+                    var backupPath = _filePath + ".backup";
+                    File.Copy(_filePath, backupPath, overwrite: true);
+                }
+
+                File.Move(tempFilePath, _filePath, overwrite: true);
+
+                _foodLog.Add(entry);
             }
-
-            // Make temp file the final file (atomic operation)
-            File.Move(tempFilePath, _filePath, overwrite: true);
-
-            // Only if everything succeeded: memory update
-            _foodLog.Add(entry);
+            catch
+            {
+                if (File.Exists(tempFilePath))
+                    File.Delete(tempFilePath);
+                throw;
+            }
         }
-        catch
+        finally
         {
-            // Cleanup on error
-            if (File.Exists(tempFilePath))
-            {
-                File.Delete(tempFilePath);
-            }
-            throw;
+            _loadLock.Release();
         }
+
+        // Event außerhalb des Locks feuern (verhindert Deadlocks durch Subscriber)
+        FoodLogAdded?.Invoke();
     }
 
     public async Task<IReadOnlyList<FoodLogEntry>> GetFoodLogAsync(DateTime date)
     {
         await EnsureFoodLogLoadedAsync();
 
-        return _foodLog
-            .Where(e => e.Date.Date == date.Date)
-            .OrderBy(e => e.Meal)
-            .ToList();
+        await _loadLock.WaitAsync();
+        try
+        {
+            return _foodLog
+                .Where(e => e.Date.Date == date.Date)
+                .OrderBy(e => e.Meal)
+                .ToList();
+        }
+        finally
+        {
+            _loadLock.Release();
+        }
     }
 
     public async Task<DailyNutritionSummary> GetDailySummaryAsync(DateTime date)
@@ -257,40 +273,40 @@ public class FoodSearchService : IFoodSearchService
 
     public async Task DeleteFoodLogAsync(string entryId)
     {
-        var entry = _foodLog.FirstOrDefault(e => e.Id == entryId);
-        if (entry != null)
-        {
-            // Transactional deletion: First save file, then update memory
-            var tempLog = _foodLog.Where(e => e.Id != entryId).ToList();
+        await EnsureFoodLogLoadedAsync();
 
-            // Create temp file
+        await _loadLock.WaitAsync();
+        try
+        {
+            var entry = _foodLog.FirstOrDefault(e => e.Id == entryId);
+            if (entry == null) return;
+
+            var tempLog = _foodLog.Where(e => e.Id != entryId).ToList();
             var tempFilePath = _filePath + ".tmp";
             try
             {
                 var json = JsonSerializer.Serialize(tempLog, new JsonSerializerOptions { WriteIndented = true });
                 await File.WriteAllTextAsync(tempFilePath, json);
 
-                // Create backup
                 if (File.Exists(_filePath))
                 {
                     var backupPath = _filePath + ".backup";
                     File.Copy(_filePath, backupPath, overwrite: true);
                 }
 
-                // Atomic operation
                 File.Move(tempFilePath, _filePath, overwrite: true);
-
-                // Only if successful: memory update
                 _foodLog.Remove(entry);
             }
             catch
             {
                 if (File.Exists(tempFilePath))
-                {
                     File.Delete(tempFilePath);
-                }
                 throw;
             }
+        }
+        finally
+        {
+            _loadLock.Release();
         }
     }
 
@@ -348,20 +364,24 @@ public class FoodSearchService : IFoodSearchService
 
     private async Task SaveFoodLogToFileAsync()
     {
+        var tempFilePath = _filePath + ".tmp";
         try
         {
-            // Create backup BEFORE saving (safety against data loss)
+            var json = JsonSerializer.Serialize(_foodLog, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(tempFilePath, json);
+
             if (File.Exists(_filePath))
             {
                 var backupPath = _filePath + ".backup";
                 File.Copy(_filePath, backupPath, overwrite: true);
             }
 
-            var json = JsonSerializer.Serialize(_foodLog, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_filePath, json);
+            File.Move(tempFilePath, _filePath, overwrite: true);
         }
         catch
         {
+            if (File.Exists(tempFilePath))
+                File.Delete(tempFilePath);
             throw;
         }
     }
@@ -374,61 +394,96 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureFavoritesLoadedAsync();
 
-        // Check if already exists
-        var existing = _favorites.FirstOrDefault(f => f.Food.Name == food.Name);
-        if (existing != null)
+        await _favoritesLock.WaitAsync();
+        try
         {
-            return; // Already a favorite
+            var existing = _favorites.FirstOrDefault(f => f.Food.Name == food.Name);
+            if (existing != null) return;
+
+            var favorite = new FavoriteFoodEntry
+            {
+                Food = food,
+                AddedAt = DateTime.UtcNow,
+                TimesUsed = 0
+            };
+
+            _favorites.Add(favorite);
+            await SaveFavoritesToFileAsync();
         }
-
-        var favorite = new FavoriteFoodEntry
+        finally
         {
-            Food = food,
-            AddedAt = DateTime.Now,
-            TimesUsed = 0
-        };
-
-        _favorites.Add(favorite);
-        await SaveFavoritesToFileAsync();
+            _favoritesLock.Release();
+        }
     }
 
     public async Task<IReadOnlyList<FavoriteFoodEntry>> GetFavoritesAsync()
     {
         await EnsureFavoritesLoadedAsync();
 
-        return _favorites
-            .OrderByDescending(f => f.TimesUsed)
-            .ThenByDescending(f => f.AddedAt)
-            .ToList();
+        await _favoritesLock.WaitAsync();
+        try
+        {
+            return _favorites
+                .OrderByDescending(f => f.TimesUsed)
+                .ThenByDescending(f => f.AddedAt)
+                .ToList();
+        }
+        finally
+        {
+            _favoritesLock.Release();
+        }
     }
 
     public async Task RemoveFavoriteAsync(string id)
     {
         await EnsureFavoritesLoadedAsync();
 
-        var favorite = _favorites.FirstOrDefault(f => f.Id == id);
-        if (favorite != null)
+        await _favoritesLock.WaitAsync();
+        try
         {
+            var favorite = _favorites.FirstOrDefault(f => f.Id == id);
+            if (favorite == null) return;
+
             _favorites.Remove(favorite);
             await SaveFavoritesToFileAsync();
+        }
+        finally
+        {
+            _favoritesLock.Release();
         }
     }
 
     public async Task<bool> IsFavoriteAsync(string foodName)
     {
         await EnsureFavoritesLoadedAsync();
-        return _favorites.Any(f => f.Food.Name == foodName);
+
+        await _favoritesLock.WaitAsync();
+        try
+        {
+            return _favorites.Any(f => f.Food.Name == foodName);
+        }
+        finally
+        {
+            _favoritesLock.Release();
+        }
     }
 
     public async Task IncrementFavoriteUsageAsync(string foodName)
     {
         await EnsureFavoritesLoadedAsync();
 
-        var favorite = _favorites.FirstOrDefault(f => f.Food.Name == foodName);
-        if (favorite != null)
+        await _favoritesLock.WaitAsync();
+        try
         {
+            var favorite = _favorites.FirstOrDefault(f => f.Food.Name == foodName);
+            if (favorite == null) return;
+
             favorite.TimesUsed++;
             await SaveFavoritesToFileAsync();
+        }
+        finally
+        {
+            _favoritesLock.Release();
         }
     }
 
@@ -469,15 +524,8 @@ public class FoodSearchService : IFoodSearchService
 
     private async Task SaveFavoritesToFileAsync()
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(_favorites, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(_favoritesPath, json);
-        }
-        catch
-        {
-            throw;
-        }
+        var json = JsonSerializer.Serialize(_favorites, new JsonSerializerOptions { WriteIndented = true });
+        await File.WriteAllTextAsync(_favoritesPath, json);
     }
 
     #endregion
@@ -488,42 +536,47 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureFoodLogLoadedAsync();
 
-        var cutoffDate = DateTime.Now.AddMonths(-monthsOld);
-        var entriesToArchive = _foodLog.Where(e => e.Date < cutoffDate).ToList();
-
-        if (entriesToArchive.Count == 0)
-            return 0;
-
-        // Load existing archive
-        var archive = await LoadArchiveAsync();
-        archive.AddRange(entriesToArchive);
-
-        // Save archive with atomic operation
-        var tempArchivePath = _archivePath + ".tmp";
+        await _loadLock.WaitAsync();
         try
         {
-            var archiveJson = JsonSerializer.Serialize(archive, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync(tempArchivePath, archiveJson);
+            var cutoffDate = DateTime.Today.AddMonths(-monthsOld);
+            var entriesToArchive = _foodLog.Where(e => e.Date.Date < cutoffDate).ToList();
 
-            if (File.Exists(_archivePath))
+            if (entriesToArchive.Count == 0)
+                return 0;
+
+            var archive = await LoadArchiveAsync();
+            archive.AddRange(entriesToArchive);
+
+            var tempArchivePath = _archivePath + ".tmp";
+            try
             {
-                var backupPath = _archivePath + ".backup";
-                File.Copy(_archivePath, backupPath, overwrite: true);
+                var archiveJson = JsonSerializer.Serialize(archive, new JsonSerializerOptions { WriteIndented = true });
+                await File.WriteAllTextAsync(tempArchivePath, archiveJson);
+
+                if (File.Exists(_archivePath))
+                {
+                    var backupPath = _archivePath + ".backup";
+                    File.Copy(_archivePath, backupPath, overwrite: true);
+                }
+
+                File.Move(tempArchivePath, _archivePath, overwrite: true);
+
+                _foodLog = _foodLog.Where(e => e.Date.Date >= cutoffDate.Date).ToList();
+                await SaveFoodLogToFileAsync();
+
+                return entriesToArchive.Count;
             }
-
-            File.Move(tempArchivePath, _archivePath, overwrite: true);
-
-            // Remove archived entries from main log
-            _foodLog = _foodLog.Where(e => e.Date >= cutoffDate).ToList();
-            await SaveFoodLogToFileAsync();
-
-            return entriesToArchive.Count;
+            catch
+            {
+                if (File.Exists(tempArchivePath))
+                    File.Delete(tempArchivePath);
+                throw;
+            }
         }
-        catch
+        finally
         {
-            if (File.Exists(tempArchivePath))
-                File.Delete(tempArchivePath);
-            throw;
+            _loadLock.Release();
         }
     }
 
@@ -531,8 +584,16 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureFoodLogLoadedAsync();
 
-        var cutoffDate = DateTime.Now.AddMonths(-monthsOld);
-        return _foodLog.Count(e => e.Date < cutoffDate);
+        await _loadLock.WaitAsync();
+        try
+        {
+            var cutoffDate = DateTime.Today.AddMonths(-monthsOld);
+            return _foodLog.Count(e => e.Date.Date < cutoffDate.Date);
+        }
+        finally
+        {
+            _loadLock.Release();
+        }
     }
 
     public async Task ClearArchiveAsync()
@@ -569,42 +630,63 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureRecipesLoadedAsync();
 
-        // Check if recipe with same name exists
-        var existing = _recipes.FirstOrDefault(r => r.Name == recipe.Name);
-        if (existing != null)
+        await _recipesLock.WaitAsync();
+        try
         {
-            // Update existing
-            existing.Ingredients = recipe.Ingredients;
-            existing.Description = recipe.Description;
-            existing.Servings = recipe.Servings;
-        }
-        else
-        {
-            _recipes.Add(recipe);
-        }
+            var existing = _recipes.FirstOrDefault(r => r.Name == recipe.Name);
+            if (existing != null)
+            {
+                existing.Ingredients = recipe.Ingredients;
+                existing.Description = recipe.Description;
+                existing.Servings = recipe.Servings;
+            }
+            else
+            {
+                _recipes.Add(recipe);
+            }
 
-        await SaveRecipesToFileAsync();
+            await SaveRecipesToFileAsync();
+        }
+        finally
+        {
+            _recipesLock.Release();
+        }
     }
 
     public async Task<IReadOnlyList<Recipe>> GetRecipesAsync()
     {
         await EnsureRecipesLoadedAsync();
 
-        return _recipes
-            .OrderByDescending(r => r.TimesUsed)
-            .ThenByDescending(r => r.CreatedAt)
-            .ToList();
+        await _recipesLock.WaitAsync();
+        try
+        {
+            return _recipes
+                .OrderByDescending(r => r.TimesUsed)
+                .ThenByDescending(r => r.CreatedAt)
+                .ToList();
+        }
+        finally
+        {
+            _recipesLock.Release();
+        }
     }
 
     public async Task DeleteRecipeAsync(string recipeId)
     {
         await EnsureRecipesLoadedAsync();
 
-        var recipe = _recipes.FirstOrDefault(r => r.Id == recipeId);
-        if (recipe != null)
+        await _recipesLock.WaitAsync();
+        try
         {
+            var recipe = _recipes.FirstOrDefault(r => r.Id == recipeId);
+            if (recipe == null) return;
+
             _recipes.Remove(recipe);
             await SaveRecipesToFileAsync();
+        }
+        finally
+        {
+            _recipesLock.Release();
         }
     }
 
@@ -612,11 +694,18 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureRecipesLoadedAsync();
 
-        var recipe = _recipes.FirstOrDefault(r => r.Id == recipeId);
-        if (recipe != null)
+        await _recipesLock.WaitAsync();
+        try
         {
+            var recipe = _recipes.FirstOrDefault(r => r.Id == recipeId);
+            if (recipe == null) return;
+
             recipe.TimesUsed++;
             await SaveRecipesToFileAsync();
+        }
+        finally
+        {
+            _recipesLock.Release();
         }
     }
 
@@ -624,12 +713,19 @@ public class FoodSearchService : IFoodSearchService
     {
         await EnsureRecipesLoadedAsync();
 
-        var existing = _recipes.FirstOrDefault(r => r.Id == recipe.Id);
-        if (existing != null)
+        await _recipesLock.WaitAsync();
+        try
         {
+            var existing = _recipes.FirstOrDefault(r => r.Id == recipe.Id);
+            if (existing == null) return;
+
             var index = _recipes.IndexOf(existing);
             _recipes[index] = recipe;
             await SaveRecipesToFileAsync();
+        }
+        finally
+        {
+            _recipesLock.Release();
         }
     }
 
@@ -693,6 +789,16 @@ public class FoodSearchService : IFoodSearchService
     }
 
     #endregion
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _loadLock.Dispose();
+        _favoritesLock.Dispose();
+        _recipesLock.Dispose();
+        _disposed = true;
+        GC.SuppressFinalize(this);
+    }
 
     private static string GetDataDirectory()
     {

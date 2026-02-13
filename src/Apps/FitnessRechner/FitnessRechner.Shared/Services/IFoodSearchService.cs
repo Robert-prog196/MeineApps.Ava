@@ -8,6 +8,11 @@ namespace FitnessRechner.Services;
 public interface IFoodSearchService
 {
     /// <summary>
+    /// Wird ausgelöst wenn ein neuer Food-Log-Eintrag hinzugefügt wurde.
+    /// </summary>
+    event Action? FoodLogAdded;
+
+    /// <summary>
     /// Searches for foods with fuzzy matching
     /// </summary>
     /// <param name="query">Search term</param>

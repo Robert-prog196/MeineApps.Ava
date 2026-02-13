@@ -36,78 +36,78 @@ public class BarcodeLookupService : IBarcodeLookupService
 
     public async Task<FoodItem?> LookupByBarcodeAsync(string barcode)
     {
+        // 1. Cache-Prüfung (mit Lock)
         await _cacheLock.WaitAsync();
         try
         {
-            // 1. Check cache (with invalidation after 30 days)
             if (_barcodeCache.TryGetValue(barcode, out var cachedEntry))
             {
                 if ((DateTime.UtcNow - cachedEntry.CachedAt).TotalDays <= 30)
                 {
-                    // Update scan statistics
                     cachedEntry.ScannedCount++;
                     cachedEntry.LastScannedAt = DateTime.UtcNow;
                     await SaveCacheInternalAsync();
                     return cachedEntry.Food;
                 }
-                else
-                {
-                    // Cache expired - remove
-                    _barcodeCache.Remove(barcode);
-                    await SaveCacheInternalAsync();
-                }
-            }
 
-            // 2. First search in local database (if already available)
-            var localResult = _foodSearchService.Search(barcode, 1).FirstOrDefault();
-            if (localResult != null)
-            {
-                return localResult.Food;
+                // Cache abgelaufen → entfernen
+                _barcodeCache.Remove(barcode);
+                await SaveCacheInternalAsync();
             }
-
-            // 3. Query Open Food Facts API (release lock during network call)
+        }
+        finally
+        {
             _cacheLock.Release();
-            OpenFoodFactsResponse? apiResponse;
-            try
-            {
-                var response = await _httpClient.GetAsync($"product/{barcode}");
-                if (!response.IsSuccessStatusCode)
-                    return null;
+        }
 
-                apiResponse = await response.Content.ReadFromJsonAsync<OpenFoodFactsResponse>();
-            }
-            finally
-            {
-                await _cacheLock.WaitAsync();
-            }
+        // 2. Lokale Datenbank durchsuchen (kein Lock nötig, Search ist thread-safe)
+        var localResult = _foodSearchService.Search(barcode, 1).FirstOrDefault();
+        if (localResult != null)
+            return localResult.Food;
 
-            if (apiResponse?.Status != 1 || apiResponse.Product == null)
+        // 3. Open Food Facts API abfragen (OHNE Lock → blockiert nicht)
+        OpenFoodFactsResponse? apiResponse;
+        try
+        {
+            var response = await _httpClient.GetAsync($"product/{barcode}");
+            if (!response.IsSuccessStatusCode)
                 return null;
 
-            var product = apiResponse.Product;
+            apiResponse = await response.Content.ReadFromJsonAsync<OpenFoodFactsResponse>();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
 
-            // Extract nutritional values (per 100g)
-            var calories = product.Nutriments?.EnergyKcal100g ?? 0;
-            var protein = product.Nutriments?.Proteins100g ?? 0;
-            var carbs = product.Nutriments?.Carbohydrates100g ?? 0;
-            var fat = product.Nutriments?.Fat100g ?? 0;
+        if (apiResponse?.Status != 1 || apiResponse.Product == null)
+            return null;
 
-            // Extract product name
-            var name = product.ProductName ?? product.ProductNameDe ?? product.ProductNameEn ?? AppStrings.UnknownProduct;
+        var product = apiResponse.Product;
 
-            // Create FoodItem
-            var foodItem = new FoodItem
-            {
-                Name = name,
-                Category = DetermineCategoryFromProduct(product),
-                CaloriesPer100g = calories,
-                ProteinPer100g = protein,
-                CarbsPer100g = carbs,
-                FatPer100g = fat,
-                DefaultPortionGrams = 100
-            };
+        // Nährwerte extrahieren (pro 100g)
+        var calories = product.Nutriments?.EnergyKcal100g ?? 0;
+        var protein = product.Nutriments?.Proteins100g ?? 0;
+        var carbs = product.Nutriments?.Carbohydrates100g ?? 0;
+        var fat = product.Nutriments?.Fat100g ?? 0;
 
-            // 4. Save to cache for future offline use
+        var name = product.ProductName ?? product.ProductNameDe ?? product.ProductNameEn ?? AppStrings.UnknownProduct;
+
+        var foodItem = new FoodItem
+        {
+            Name = name,
+            Category = DetermineCategoryFromProduct(product),
+            CaloriesPer100g = calories,
+            ProteinPer100g = protein,
+            CarbsPer100g = carbs,
+            FatPer100g = fat,
+            DefaultPortionGrams = 100
+        };
+
+        // 4. Ergebnis im Cache speichern (mit Lock)
+        await _cacheLock.WaitAsync();
+        try
+        {
             _barcodeCache[barcode] = new CachedBarcodeEntry
             {
                 Barcode = barcode,
@@ -117,17 +117,13 @@ public class BarcodeLookupService : IBarcodeLookupService
                 LastScannedAt = DateTime.UtcNow
             };
             await SaveCacheInternalAsync();
-
-            return foodItem;
-        }
-        catch (Exception)
-        {
-            return null;
         }
         finally
         {
             _cacheLock.Release();
         }
+
+        return foodItem;
     }
 
     public async Task<IReadOnlyList<CachedBarcodeEntry>> GetScanHistoryAsync(int limit = 10)
@@ -206,32 +202,42 @@ public class BarcodeLookupService : IBarcodeLookupService
     {
         var categories = product.CategoriesTags?.ToList() ?? new List<string>();
 
-        // Determine category based on tags
-        if (categories.Any(c => c.Contains("fruit") || c.Contains("obst")))
+        // Kategorie-Erkennung: EN, DE, ES, FR, IT, PT Tags
+        if (categories.Any(c => c.Contains("fruit") || c.Contains("obst") ||
+            c.Contains("fruta") || c.Contains("frutta")))
             return FoodCategory.Fruit;
 
-        if (categories.Any(c => c.Contains("vegetable") || c.Contains("gemuse")))
+        if (categories.Any(c => c.Contains("vegetable") || c.Contains("gemüse") || c.Contains("gemuse") ||
+            c.Contains("verdura") || c.Contains("légume") || c.Contains("legume")))
             return FoodCategory.Vegetable;
 
-        if (categories.Any(c => c.Contains("meat") || c.Contains("fleisch")))
+        if (categories.Any(c => c.Contains("meat") || c.Contains("fleisch") ||
+            c.Contains("carne") || c.Contains("viande")))
             return FoodCategory.Meat;
 
-        if (categories.Any(c => c.Contains("fish") || c.Contains("fisch")))
+        if (categories.Any(c => c.Contains("fish") || c.Contains("fisch") ||
+            c.Contains("pescado") || c.Contains("poisson") || c.Contains("pesce") || c.Contains("peixe")))
             return FoodCategory.Fish;
 
-        if (categories.Any(c => c.Contains("dairy") || c.Contains("milk") || c.Contains("milch")))
+        if (categories.Any(c => c.Contains("dairy") || c.Contains("milk") || c.Contains("milch") ||
+            c.Contains("lait") || c.Contains("latte") || c.Contains("leche") || c.Contains("leite") ||
+            c.Contains("lácteo") || c.Contains("lacteo") || c.Contains("laitier") || c.Contains("latticin")))
             return FoodCategory.Dairy;
 
-        if (categories.Any(c => c.Contains("bread") || c.Contains("cereal") || c.Contains("grain") || c.Contains("getreide")))
+        if (categories.Any(c => c.Contains("bread") || c.Contains("cereal") || c.Contains("grain") || c.Contains("getreide") ||
+            c.Contains("pan") || c.Contains("pain") || c.Contains("pane") || c.Contains("pão") || c.Contains("pao") ||
+            c.Contains("céréale") || c.Contains("cereale")))
             return FoodCategory.Grain;
 
-        if (categories.Any(c => c.Contains("beverage") || c.Contains("drink") || c.Contains("getrank")))
+        if (categories.Any(c => c.Contains("beverage") || c.Contains("drink") || c.Contains("getränk") || c.Contains("getrank") ||
+            c.Contains("bebida") || c.Contains("boisson") || c.Contains("bevanda")))
             return FoodCategory.Beverage;
 
-        if (categories.Any(c => c.Contains("snack") || c.Contains("candy") || c.Contains("chocolate") || c.Contains("sweet")))
+        if (categories.Any(c => c.Contains("snack") || c.Contains("candy") || c.Contains("chocolate") || c.Contains("sweet") ||
+            c.Contains("dulce") || c.Contains("bonbon") || c.Contains("dolce") || c.Contains("doce") ||
+            c.Contains("süßigkeit") || c.Contains("sussigkeit")))
             return FoodCategory.Snack;
 
-        // Default
         return FoodCategory.Other;
     }
 

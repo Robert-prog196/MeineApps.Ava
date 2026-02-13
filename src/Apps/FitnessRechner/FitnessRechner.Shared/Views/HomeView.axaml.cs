@@ -14,7 +14,14 @@ public partial class HomeView : UserControl
 
     private async void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
-        if (DataContext is MainViewModel vm)
-            await vm.OnAppearingAsync();
+        try
+        {
+            if (DataContext is MainViewModel vm)
+                await vm.OnAppearingAsync();
+        }
+        catch (Exception)
+        {
+            // async void darf keine Exception werfen → App-Crash verhindern
+        }
     }
 }

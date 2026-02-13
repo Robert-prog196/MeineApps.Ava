@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using FitnessRechner.ViewModels;
@@ -13,6 +14,19 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        // Events sauber abmelden bei Entfernung aus dem Visual Tree
+        if (_vm != null)
+        {
+            _vm.FloatingTextRequested -= OnFloatingText;
+            _vm.CelebrationRequested -= OnCelebration;
+            _vm = null;
+        }
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)

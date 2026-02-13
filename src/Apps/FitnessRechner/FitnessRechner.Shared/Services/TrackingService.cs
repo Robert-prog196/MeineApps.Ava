@@ -6,14 +6,20 @@ namespace FitnessRechner.Services;
 /// <summary>
 /// JSON-based tracking service
 /// </summary>
-public class TrackingService : ITrackingService
+public class TrackingService : ITrackingService, IDisposable
 {
+    private bool _disposed;
     private const string TRACKING_FILE = "tracking.json";
     private const int DEFAULT_STATS_DAYS = 30;
+    private static readonly TimeSpan BackupInterval = TimeSpan.FromMinutes(1);
     private readonly string _filePath;
     private List<TrackingEntry> _entries = [];
     private readonly SemaphoreSlim _loadLock = new(1, 1);
+    private readonly SemaphoreSlim _writeLock = new(1, 1);
     private bool _isLoaded = false;
+    private DateTime _lastBackupTime = DateTime.MinValue;
+
+    public event Action? EntryAdded;
 
     public TrackingService()
     {
@@ -24,10 +30,19 @@ public class TrackingService : ITrackingService
     {
         await EnsureLoadedAsync();
 
-        entry.Id = Guid.NewGuid().ToString();
-        _entries.Add(entry);
-        await SaveEntriesAsync();
+        await _writeLock.WaitAsync();
+        try
+        {
+            entry.Id = Guid.NewGuid().ToString();
+            _entries.Add(entry);
+            await SaveEntriesAsync();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
 
+        EntryAdded?.Invoke();
         return entry;
     }
 
@@ -35,98 +50,154 @@ public class TrackingService : ITrackingService
     {
         await EnsureLoadedAsync();
 
-        var existing = _entries.FirstOrDefault(e => e.Id == entry.Id);
-        if (existing == null) return false;
+        await _writeLock.WaitAsync();
+        try
+        {
+            var existing = _entries.FirstOrDefault(e => e.Id == entry.Id);
+            if (existing == null) return false;
 
-        existing.Date = entry.Date;
-        existing.Type = entry.Type;
-        existing.Value = entry.Value;
-        existing.Note = entry.Note;
+            existing.Date = entry.Date;
+            existing.Type = entry.Type;
+            existing.Value = entry.Value;
+            existing.Note = entry.Note;
 
-        await SaveEntriesAsync();
-        return true;
+            await SaveEntriesAsync();
+            return true;
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task<bool> DeleteEntryAsync(string id)
     {
         await EnsureLoadedAsync();
 
-        var entry = _entries.FirstOrDefault(e => e.Id == id);
-        if (entry == null) return false;
+        await _writeLock.WaitAsync();
+        try
+        {
+            var entry = _entries.FirstOrDefault(e => e.Id == id);
+            if (entry == null) return false;
 
-        _entries.Remove(entry);
-        await SaveEntriesAsync();
-        return true;
+            _entries.Remove(entry);
+            await SaveEntriesAsync();
+            return true;
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task<IReadOnlyList<TrackingEntry>> GetEntriesAsync(TrackingType type, int limit = DEFAULT_STATS_DAYS)
     {
         await EnsureLoadedAsync();
 
-        return _entries
-            .Where(e => e.Type == type)
-            .OrderByDescending(e => e.Date)
-            .Take(limit)
-            .ToList();
+        await _writeLock.WaitAsync();
+        try
+        {
+            return _entries
+                .Where(e => e.Type == type)
+                .OrderByDescending(e => e.Date)
+                .Take(limit)
+                .ToList();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task<IReadOnlyList<TrackingEntry>> GetEntriesAsync(TrackingType type, DateTime startDate, DateTime endDate)
     {
         await EnsureLoadedAsync();
 
-        return _entries
-            .Where(e => e.Type == type && e.Date >= startDate && e.Date <= endDate)
-            .OrderByDescending(e => e.Date)
-            .ToList();
+        await _writeLock.WaitAsync();
+        try
+        {
+            return _entries
+                .Where(e => e.Type == type && e.Date.Date >= startDate.Date && e.Date.Date <= endDate.Date)
+                .OrderByDescending(e => e.Date)
+                .ToList();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task<TrackingEntry?> GetLatestEntryAsync(TrackingType type)
     {
         await EnsureLoadedAsync();
 
-        return _entries
-            .Where(e => e.Type == type)
-            .OrderByDescending(e => e.Date)
-            .FirstOrDefault();
+        await _writeLock.WaitAsync();
+        try
+        {
+            return _entries
+                .Where(e => e.Type == type)
+                .OrderByDescending(e => e.Date)
+                .FirstOrDefault();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task<TrackingStats?> GetStatsAsync(TrackingType type, int days = DEFAULT_STATS_DAYS)
     {
         await EnsureLoadedAsync();
 
-        var cutoffDate = DateTime.Today.AddDays(-days);
-        var typeEntries = _entries
-            .Where(e => e.Type == type && e.Date >= cutoffDate)
-            .OrderByDescending(e => e.Date)
-            .ToList();
-
-        if (typeEntries.Count == 0)
-            return null;
-
-        var current = typeEntries.First().Value;
-        var values = typeEntries.Select(e => e.Value).ToList();
-
-        // Trend: Difference between today and yesterday (or last two entries)
-        double trend = 0;
-        if (typeEntries.Count >= 2)
+        await _writeLock.WaitAsync();
+        try
         {
-            trend = typeEntries[0].Value - typeEntries[1].Value;
-        }
+            var cutoffDate = DateTime.Today.AddDays(-days);
+            var typeEntries = _entries
+                .Where(e => e.Type == type && e.Date.Date >= cutoffDate.Date)
+                .OrderByDescending(e => e.Date)
+                .ToList();
 
-        return new TrackingStats(
-            type,
-            current,
-            values.Average(),
-            values.Min(),
-            values.Max(),
-            trend,
-            typeEntries.Count);
+            if (typeEntries.Count == 0)
+                return null;
+
+            var current = typeEntries.First().Value;
+            var values = typeEntries.Select(e => e.Value).ToList();
+
+            // Trend: Differenz zwischen letztem und vorletztem Eintrag
+            double trend = 0;
+            if (typeEntries.Count >= 2)
+            {
+                trend = typeEntries[0].Value - typeEntries[1].Value;
+            }
+
+            return new TrackingStats(
+                type,
+                current,
+                values.Average(),
+                values.Min(),
+                values.Max(),
+                trend,
+                typeEntries.Count);
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     public async Task ClearAllAsync()
     {
-        _entries.Clear();
-        await SaveEntriesAsync();
+        await _writeLock.WaitAsync();
+        try
+        {
+            _entries.Clear();
+            await SaveEntriesAsync();
+        }
+        finally
+        {
+            _writeLock.Release();
+        }
     }
 
     private async Task EnsureLoadedAsync()
@@ -194,11 +265,12 @@ public class TrackingService : ITrackingService
             });
             await File.WriteAllTextAsync(tempFilePath, json);
 
-            // 2. Create backup if original exists
-            if (File.Exists(_filePath))
+            // 2. Backup erstellen (max. alle 1 Minute, vermeidet unnötige Disk-IO bei Quick-Add)
+            if (File.Exists(_filePath) && DateTime.UtcNow - _lastBackupTime > BackupInterval)
             {
                 var backupPath = _filePath + ".backup";
                 File.Copy(_filePath, backupPath, overwrite: true);
+                _lastBackupTime = DateTime.UtcNow;
             }
 
             // 3. Atomic move: temp -> final
@@ -214,6 +286,15 @@ public class TrackingService : ITrackingService
 
             throw;
         }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _loadLock.Dispose();
+        _writeLock.Dispose();
+        _disposed = true;
+        GC.SuppressFinalize(this);
     }
 
     private static string GetDataDirectory()

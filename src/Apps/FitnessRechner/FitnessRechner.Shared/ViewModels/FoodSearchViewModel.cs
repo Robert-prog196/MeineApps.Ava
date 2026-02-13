@@ -20,10 +20,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     private readonly IBarcodeService _barcodeService;
     private CancellationTokenSource? _searchCancellationTokenSource;
 
-    private const string CALORIE_GOAL_KEY = "daily_calorie_goal";
-    private const string MACRO_PROTEIN_KEY = "macro_goal_protein";
-    private const string MACRO_CARBS_KEY = "macro_goal_carbs";
-    private const string MACRO_FAT_KEY = "macro_goal_fat";
+    // Preference-Keys zentral in PreferenceKeys.cs
 
     /// <summary>
     /// Raised when the VM wants to navigate
@@ -82,7 +79,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _showExtendedDbOverlay;
     [ObservableProperty] private bool _showExtendedDbHint;
 
-    private const string EXTENDED_FOOD_DB_EXPIRY_KEY = "ExtendedFoodDbExpiry";
+    // Extended Food DB Key zentral in PreferenceKeys.cs
 
     // Pagination
     private List<FoodSearchResult> _allSearchResults = [];
@@ -112,7 +109,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     private const double MAX_PORTION_GRAMS = 10000;
     private const double HIGH_CALORIE_WARNING_THRESHOLD = 2000;
     private const int SEARCH_DEBOUNCE_MS = 300;
-    private const int UNDO_TIMEOUT_MS = 5000;
+    // Undo-Timeout zentral in PreferenceKeys.cs
 
     // Calculated values for selected portion
     [ObservableProperty] private double _calculatedCalories;
@@ -137,12 +134,18 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     [ObservableProperty] private DailyMacroSummary? _dailyMacroSummary;
     [ObservableProperty] private bool _hasMacroGoals;
 
+    // Quick-Add Kalorien
+    [ObservableProperty] private bool _showQuickAddPanel;
+    [ObservableProperty] private double _quickAddCalories;
+    [ObservableProperty] private string _quickAddName = "";
+    [ObservableProperty] private int _quickAddMeal;
+
     // Favorites
     [ObservableProperty] private ObservableCollection<FavoriteFoodEntry> _favorites = [];
     [ObservableProperty] private bool _hasFavorites;
     [ObservableProperty] private bool _isSelectedFoodFavorite;
 
-    public List<string> Meals { get; } =
+    public List<string> Meals =>
     [
         AppStrings.Breakfast,
         AppStrings.Lunch,
@@ -161,12 +164,11 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // Cancel previous search
         _searchCancellationTokenSource?.Cancel();
         _searchCancellationTokenSource = new CancellationTokenSource();
         var token = _searchCancellationTokenSource.Token;
+        var capturedQuery = value.Trim(); // Query-Wert capturen statt Property zu lesen
 
-        // Debounce: Wait before searching
         Task.Run(async () =>
         {
             try
@@ -178,14 +180,14 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            PerformSearch(SearchQuery);
+                            PerformSearch(capturedQuery);
                         }
                     });
                 }
             }
             catch (TaskCanceledException)
             {
-                // Expected when search is cancelled
+                // Erwartet wenn Suche abgebrochen wird
             }
         }, token);
     }
@@ -350,6 +352,54 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void OpenQuickAdd()
+    {
+        ShowQuickAddPanel = true;
+        QuickAddCalories = 0;
+        QuickAddName = "";
+        QuickAddMeal = 3; // Snack als Default
+    }
+
+    [RelayCommand]
+    private void CancelQuickAdd()
+    {
+        ShowQuickAddPanel = false;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmQuickAdd()
+    {
+        if (QuickAddCalories <= 0) return;
+
+        var name = string.IsNullOrWhiteSpace(QuickAddName)
+            ? AppStrings.QuickAddCalories
+            : QuickAddName.Trim();
+
+        var entry = new FoodLogEntry
+        {
+            Date = DateTime.Today,
+            FoodName = name,
+            Grams = 0,
+            Calories = QuickAddCalories,
+            Protein = 0,
+            Carbs = 0,
+            Fat = 0,
+            Meal = (MealType)QuickAddMeal
+        };
+
+        try
+        {
+            await _foodSearchService.SaveFoodLogAsync(entry);
+            ShowQuickAddPanel = false;
+            await LoadTodaySummaryAsync();
+        }
+        catch (Exception)
+        {
+            MessageRequested?.Invoke(AppStrings.Error, AppStrings.ErrorSavingData);
+        }
+    }
+
+    [RelayCommand]
     private async Task DeleteLogEntry(FoodLogEntry entry)
     {
         _undoCancellation?.Cancel();
@@ -358,15 +408,18 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
         _recentlyDeletedLogEntry = entry;
 
         TodayLog.Remove(entry);
+        HasLogEntries = TodayLog.Count > 0;
 
-        await LoadTodaySummaryAsync();
+        // Summary aus aktueller UI-Kollektion berechnen (nicht aus DB,
+        // da Eintrag dort noch existiert bis Undo-Timeout abläuft)
+        RecalculateSummaryFromTodayLog();
 
         UndoMessage = string.Format(AppStrings.ItemDeleted, entry.FoodName);
         ShowUndoBanner = true;
 
         try
         {
-            await Task.Delay(UNDO_TIMEOUT_MS, _undoCancellation.Token);
+            await Task.Delay(PreferenceKeys.UndoTimeoutMs, _undoCancellation.Token);
             await _foodSearchService.DeleteFoodLogAsync(entry.Id);
             _recentlyDeletedLogEntry = null;
         }
@@ -390,8 +443,10 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             var logs = TodayLog.ToList();
             logs.Add(_recentlyDeletedLogEntry);
             TodayLog = new ObservableCollection<FoodLogEntry>(logs.OrderByDescending(e => e.Date));
+            HasLogEntries = TodayLog.Count > 0;
 
-            await LoadTodaySummaryAsync();
+            // Summary aus wiederhergestellter UI-Kollektion neu berechnen
+            RecalculateSummaryFromTodayLog();
 
             _recentlyDeletedLogEntry = null;
             ShowUndoBanner = false;
@@ -429,9 +484,29 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
 
     private void LoadCalorieGoal()
     {
-        DailyCalorieGoal = _preferences.Get(CALORIE_GOAL_KEY, 0.0);
+        DailyCalorieGoal = _preferences.Get(PreferenceKeys.CalorieGoal, 0.0);
         HasCalorieGoal = DailyCalorieGoal > 0;
         UpdateRemainingCalories();
+    }
+
+    /// <summary>
+    /// Berechnet Summary aus der aktuellen TodayLog-Kollektion statt aus der DB.
+    /// Wird bei Delete/Undo verwendet, da der DB-Zustand während der Undo-Phase
+    /// nicht dem UI-Zustand entspricht.
+    /// </summary>
+    private void RecalculateSummaryFromTodayLog()
+    {
+        var entries = TodayLog.ToList();
+        TodaySummary = new DailyNutritionSummary(
+            DateTime.Today,
+            entries.Sum(e => e.Calories),
+            entries.Sum(e => e.Protein),
+            entries.Sum(e => e.Carbs),
+            entries.Sum(e => e.Fat),
+            entries.Count);
+
+        UpdateRemainingCalories();
+        UpdateDailyMacroSummary();
     }
 
     private void UpdateRemainingCalories()
@@ -482,7 +557,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
         {
             DailyCalorieGoal = goal;
             HasCalorieGoal = true;
-            _preferences.Set(CALORIE_GOAL_KEY, goal);
+            _preferences.Set(PreferenceKeys.CalorieGoal, goal);
             UpdateRemainingCalories();
         }
     }
@@ -566,9 +641,9 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
 
     private void LoadMacroGoals()
     {
-        var protein = _preferences.Get(MACRO_PROTEIN_KEY, 0.0);
-        var carbs = _preferences.Get(MACRO_CARBS_KEY, 0.0);
-        var fat = _preferences.Get(MACRO_FAT_KEY, 0.0);
+        var protein = _preferences.Get(PreferenceKeys.MacroProteinGoal, 0.0);
+        var carbs = _preferences.Get(PreferenceKeys.MacroCarbsGoal, 0.0);
+        var fat = _preferences.Get(PreferenceKeys.MacroFatGoal, 0.0);
 
         if (protein > 0 || carbs > 0 || fat > 0)
         {
@@ -610,6 +685,8 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     /// </summary>
     public void SaveMacroGoals(double protein, double carbs, double fat)
     {
+        if (protein < 0 || carbs < 0 || fat < 0) return;
+
         MacroGoals = new MacroGoals
         {
             ProteinGrams = protein,
@@ -617,16 +694,19 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             FatGrams = fat
         };
 
-        _preferences.Set(MACRO_PROTEIN_KEY, protein);
-        _preferences.Set(MACRO_CARBS_KEY, carbs);
-        _preferences.Set(MACRO_FAT_KEY, fat);
+        _preferences.Set(PreferenceKeys.MacroProteinGoal, protein);
+        _preferences.Set(PreferenceKeys.MacroCarbsGoal, carbs);
+        _preferences.Set(PreferenceKeys.MacroFatGoal, fat);
 
         HasMacroGoals = true;
 
-        // Auto-update calorie goal based on macros
-        DailyCalorieGoal = MacroGoals.TotalCalories;
-        HasCalorieGoal = true;
-        _preferences.Set(CALORIE_GOAL_KEY, DailyCalorieGoal);
+        // Kalorienziel nur automatisch setzen wenn noch keins manuell definiert wurde
+        if (!HasCalorieGoal)
+        {
+            DailyCalorieGoal = MacroGoals.TotalCalories;
+            HasCalorieGoal = true;
+            _preferences.Set(PreferenceKeys.CalorieGoal, DailyCalorieGoal);
+        }
 
         UpdateDailyMacroSummary();
         UpdateRemainingCalories();
@@ -763,7 +843,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var expiryStr = _preferences.Get(EXTENDED_FOOD_DB_EXPIRY_KEY, "");
+        var expiryStr = _preferences.Get(PreferenceKeys.ExtendedFoodDbExpiry, "");
         if (!string.IsNullOrEmpty(expiryStr) &&
             DateTime.TryParse(expiryStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var expiry) &&
             DateTime.UtcNow < expiry)
@@ -810,7 +890,7 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
         {
             // 24h Zugang freischalten
             var expiry = DateTime.UtcNow.AddHours(24);
-            _preferences.Set(EXTENDED_FOOD_DB_EXPIRY_KEY, expiry.ToString("O"));
+            _preferences.Set(PreferenceKeys.ExtendedFoodDbExpiry, expiry.ToString("O"));
             HasExtendedFoodAccess = true;
             ShowExtendedDbHint = false;
 
@@ -832,26 +912,9 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// Erweiterte Suche: Liefert alle Ergebnisse (keine Score-Filterung).
+    /// Erweiterte Suche nach Ad-Freischaltung: Nutzt die gemeinsame PerformSearch-Methode.
     /// </summary>
-    private void PerformExtendedSearch(string query)
-    {
-        IsSearching = true;
-
-        // Erweiterte Suche mit hoeherem Limit
-        _allSearchResults = _foodSearchService.Search(query, 200).ToList();
-
-        SearchResults.Clear();
-        var firstPage = _allSearchResults.Take(RESULTS_PAGE_SIZE);
-        foreach (var result in firstPage)
-        {
-            SearchResults.Add(result);
-        }
-
-        HasResults = SearchResults.Count > 0;
-        HasMoreResults = _allSearchResults.Count > RESULTS_PAGE_SIZE;
-        IsSearching = false;
-    }
+    private void PerformExtendedSearch(string query) => PerformSearch(query);
 
     #endregion
 
