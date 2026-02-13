@@ -9,6 +9,8 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
              xmlns:controls="using:MeineApps.UI.Controls"
+             xmlns:behaviors="using:MeineApps.UI.Behaviors"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
              x:Class="HandwerkerRechner.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -30,6 +32,38 @@
       <Setter Property="Opacity" Value="1" />
       <Setter Property="IsHitTestVisible" Value="True" />
       <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- Premium-Badge Gold-Glow (3s Loop) -->
+    <Style Selector="Border.GoldGlow">
+      <Style.Animations>
+        <Animation Duration="0:0:3" IterationCount="Infinite">
+          <KeyFrame Cue="0%"><Setter Property="BoxShadow" Value="0 0 4 0 #20FFD700"/></KeyFrame>
+          <KeyFrame Cue="50%"><Setter Property="BoxShadow" Value="0 0 14 0 #60FFD700"/></KeyFrame>
+          <KeyFrame Cue="100%"><Setter Property="BoxShadow" Value="0 0 4 0 #20FFD700"/></KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- Premium-Card Shimmer (subtil) -->
+    <Style Selector="Border.PremiumShimmer">
+      <Style.Animations>
+        <Animation Duration="0:0:2.5" IterationCount="Infinite">
+          <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.88"/></KeyFrame>
+          <KeyFrame Cue="50%"><Setter Property="Opacity" Value="1.0"/></KeyFrame>
+          <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.88"/></KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
+    <!-- Export-Icon Spin-Animation -->
+    <Style Selector="mi|MaterialIcon.Spinning">
+      <Style.Animations>
+        <Animation Duration="0:0:1" IterationCount="Infinite">
+          <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="rotate(0deg)"/></KeyFrame>
+          <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="rotate(360deg)"/></KeyFrame>
+        </Animation>
+      </Style.Animations>
     </Style>
   </UserControl.Styles>
 
@@ -115,6 +149,50 @@
             <!-- ========== Content ========== -->
             <StackPanel Spacing="16" Margin="16,16,16,0">
 
+              <!-- ========== Premium-Card (direkt unter Hero) ========== -->
+              <Button Background="Transparent" Padding="0"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      IsVisible="{Binding !IsPremium}"
+                      Command="{Binding PurchaseRemoveAdsCommand}">
+                <i:Interaction.Behaviors>
+                  <behaviors:TapScaleBehavior PressedScale="0.97"/>
+                  <behaviors:FadeInBehavior Duration="300"/>
+                </i:Interaction.Behaviors>
+                <Border Classes="PremiumShimmer" CornerRadius="16" Padding="18" ClipToBounds="True">
+                  <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                      <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
+                      <GradientStop Color="{DynamicResource SecondaryColor}" Offset="1" />
+                    </LinearGradientBrush>
+                  </Border.Background>
+                  <Panel>
+                    <Ellipse Width="100" Height="100"
+                             Opacity="0.1" Fill="White"
+                             HorizontalAlignment="Right" VerticalAlignment="Center"
+                             Margin="0,0,-20,0" />
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                      <Border Grid.Column="0" Width="44" Height="44"
+                              CornerRadius="22" Background="#33FFFFFF"
+                              Classes="GoldGlow"
+                              Margin="0,0,14,0">
+                        <mi:MaterialIcon Kind="Star" Width="24" Height="24"
+                                         Foreground="White"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </Border>
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{Binding GetPremiumText}"
+                                   FontSize="15" FontWeight="Bold" Foreground="White" />
+                        <TextBlock Text="{Binding PremiumPriceText}"
+                                   FontSize="12" Foreground="#CCFFFFFF" />
+                      </StackPanel>
+                      <mi:MaterialIcon Grid.Column="2"
+                                       Kind="ChevronRight" Width="20" Height="20"
+                                       Foreground="#AAFFFFFF" VerticalAlignment="Center" />
+                    </Grid>
+                  </Panel>
+                </Border>
+              </Button>
+
               <!-- ========== Section: Boden & Wand ========== -->
               <StackPanel Spacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -133,6 +211,10 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToTilesCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="0" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -162,6 +244,10 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToWallpaperCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="60" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -191,6 +277,10 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToPaintCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="120" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -220,6 +310,10 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToFlooringCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="180" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -248,6 +342,10 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToConcreteCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="240" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -292,28 +390,39 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToDrywallCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="300" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#EF4444" Offset="0" />
-                            <GradientStop Color="#DC2626" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="Wall" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#EF4444" Offset="0" />
+                              <GradientStop Color="#DC2626" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="Wall" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CategoryDrywallLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CategoryDrywallLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
 
                   <!-- Elektro -->
@@ -321,28 +430,39 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToElectricalCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="360" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#F97316" Offset="0" />
-                            <GradientStop Color="#EA580C" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="Flash" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#F97316" Offset="0" />
+                              <GradientStop Color="#EA580C" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="Flash" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CategoryElectricalLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CategoryElectricalLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
 
                   <!-- Metall -->
@@ -350,28 +470,39 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToMetalCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="420" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#6B7280" Offset="0" />
-                            <GradientStop Color="#4B5563" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="Wrench" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#6B7280" Offset="0" />
+                              <GradientStop Color="#4B5563" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="Wrench" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CategoryMetalLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CategoryMetalLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
 
                   <!-- Garten -->
@@ -379,28 +510,39 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToGardenCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="480" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#10B981" Offset="0" />
-                            <GradientStop Color="#059669" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="Flower" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#10B981" Offset="0" />
+                              <GradientStop Color="#059669" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="Flower" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CategoryGardenLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CategoryGardenLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
 
                   <!-- Dach/Solar -->
@@ -408,28 +550,39 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToRoofSolarCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="540" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#06B6D4" Offset="0" />
-                            <GradientStop Color="#0891B2" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="SolarPanel" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#06B6D4" Offset="0" />
+                              <GradientStop Color="#0891B2" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="SolarPanel" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CategoryRoofSolarLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CategoryRoofSolarLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
 
                   <!-- Treppen -->
@@ -437,70 +590,42 @@
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToStairsCommand}">
+                    <i:Interaction.Behaviors>
+                      <behaviors:TapScaleBehavior PressedScale="0.96"/>
+                      <behaviors:FadeInBehavior Delay="600" Duration="250"/>
+                    </i:Interaction.Behaviors>
                     <Button.Background>
                       <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
                         <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
                       </LinearGradientBrush>
                     </Button.Background>
-                    <StackPanel VerticalAlignment="Center" Spacing="8">
-                      <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
-                        <Border.Background>
-                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                            <GradientStop Color="#A855F7" Offset="0" />
-                            <GradientStop Color="#9333EA" Offset="1" />
-                          </LinearGradientBrush>
-                        </Border.Background>
-                        <mi:MaterialIcon Kind="Stairs" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Panel>
+                      <StackPanel VerticalAlignment="Center" Spacing="8">
+                        <Border CornerRadius="12" Width="48" Height="48" HorizontalAlignment="Center">
+                          <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                              <GradientStop Color="#A855F7" Offset="0" />
+                              <GradientStop Color="#9333EA" Offset="1" />
+                            </LinearGradientBrush>
+                          </Border.Background>
+                          <mi:MaterialIcon Kind="Stairs" Width="24" Height="24"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="{Binding CalcStairsLabel}"
+                                   FontSize="13" FontWeight="Bold" TextAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <Border Classes="GoldGlow" CornerRadius="6" Padding="4,2"
+                              Background="#FFD700" HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Margin="0,-2,-2,0">
+                        <TextBlock Text="PRO" FontSize="9" FontWeight="Bold" Foreground="#92400E"/>
                       </Border>
-                      <TextBlock Text="{Binding CalcStairsLabel}"
-                                 FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                                 Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </StackPanel>
+                    </Panel>
                   </Button>
                 </Grid>
               </StackPanel>
-
-              <!-- ========== Premium-Card ========== -->
-              <Button Background="Transparent" Padding="0"
-                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                      IsVisible="{Binding !IsPremium}"
-                      Command="{Binding PurchaseRemoveAdsCommand}">
-                <Border CornerRadius="16" Padding="18" ClipToBounds="True">
-                  <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                      <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
-                      <GradientStop Color="{DynamicResource SecondaryColor}" Offset="1" />
-                    </LinearGradientBrush>
-                  </Border.Background>
-                  <Panel>
-                    <Ellipse Width="100" Height="100"
-                             Opacity="0.1" Fill="White"
-                             HorizontalAlignment="Right" VerticalAlignment="Center"
-                             Margin="0,0,-20,0" />
-                    <Grid ColumnDefinitions="Auto,*,Auto">
-                      <Border Grid.Column="0" Width="44" Height="44"
-                              CornerRadius="22" Background="#33FFFFFF"
-                              Margin="0,0,14,0">
-                        <mi:MaterialIcon Kind="Star" Width="24" Height="24"
-                                         Foreground="White"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
-                      </Border>
-                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="{Binding GetPremiumText}"
-                                   FontSize="15" FontWeight="Bold" Foreground="White" />
-                        <TextBlock Text="{Binding PremiumPriceText}"
-                                   FontSize="12" Foreground="#CCFFFFFF" />
-                      </StackPanel>
-                      <mi:MaterialIcon Grid.Column="2"
-                                       Kind="ChevronRight" Width="20" Height="20"
-                                       Foreground="#AAFFFFFF" VerticalAlignment="Center" />
-                    </Grid>
-                  </Panel>
-                </Border>
-              </Button>
 
               <!-- ========== Extended History Card ========== -->
               <Button Background="Transparent" Padding="0" Height="NaN"
@@ -508,6 +633,10 @@
                       VerticalContentAlignment="Stretch"
                       IsVisible="{Binding !IsPremium}"
                       Command="{Binding ShowExtendedHistoryAdCommand}">
+                <i:Interaction.Behaviors>
+                  <behaviors:TapScaleBehavior PressedScale="0.97"/>
+                  <behaviors:FadeInBehavior Delay="660" Duration="250"/>
+                </i:Interaction.Behaviors>
                 <Border Classes="Card" CornerRadius="12" Padding="16,14">
                   <Grid ColumnDefinitions="Auto,*,Auto">
                     <Border Grid.Column="0" Width="44" Height="44"

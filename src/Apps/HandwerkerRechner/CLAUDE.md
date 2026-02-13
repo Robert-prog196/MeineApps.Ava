@@ -74,6 +74,14 @@ Handwerker-App mit 11 Rechnern (5 Free Floor + 6 Premium), Projektverwaltung und
 
 ## Changelog (Highlights)
 
+- **13.02.2026**: UI/UX Überarbeitung (Game Juice):
+  - MainView: Hero-Header Gradient, Premium-Card mit Shimmer direkt unter Hero, PRO-Badges (GoldGlow) auf 6 Premium-Cards
+  - TapScaleBehavior + FadeInBehavior (Stagger 0-660ms) auf allen 11 Calculator-Cards + Premium/History-Cards
+  - CSS-Animationen: GoldGlow (3s Loop), PremiumShimmer (2.5s), Spinning (Export-Icon)
+  - Calculator-Farbpalette: 11 individuelle Farben pro Rechner (Amber, Violet, Grün, Blau, Grau, Rot, Orange, Stahl, Emerald, Cyan, Purple)
+  - Premium-Views Konsistenz: Share+Export aus Bottom-Bar in Result-Cards verschoben (5 Views: Drywall, Electrical, Metal, Garden, RoofSolar)
+  - ProjectsView: EmptyStateView (Shared Control) statt manuelles StackPanel, TapScale+FadeIn auf Projekt-Cards
+  - Neue Shared Behaviors: TapScaleBehavior, FadeInBehavior, StaggerFadeInBehavior, CountUpBehavior (MeineApps.UI)
 - **13.02.2026**: Double-Back-to-Exit: Android-Zurücktaste navigiert schrittweise zurück (Overlays→SaveDialog→Calculator→Home-Tab), App schließt erst bei 2x schnellem Drücken auf Home. HandleBackPressed() in MainViewModel (plattformunabhängig), OnBackPressed()-Override in MainActivity mit Toast-Hinweis. Overlay-Kette: PremiumAccess→ExtendedHistory→SaveDialog→Calculator→Tab→Home→Exit. Neuer RESX-Key "PressBackToExit" in 6 Sprachen.
 - **13.02.2026**: Vierter Pass: Result-Daten + Code-Qualität:
   - Result-Daten in ConfirmSaveProject: Alle 11 VMs speichern jetzt Results im Projekt-Dictionary
