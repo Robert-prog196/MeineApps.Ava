@@ -13,6 +13,7 @@ public partial class CalculatorView : UserControl
     private Point _swipeStart;
     private bool _isSwiping;
     private bool _autoSwitchedToScientific;
+    private bool _isLandscapeLayout;
     private const double SwipeThreshold = 40;
 
     public CalculatorView()
@@ -84,6 +85,122 @@ public partial class CalculatorView : UserControl
             // Portrait → zurück zu Basic (nur wenn automatisch gewechselt)
             _currentVm.CurrentMode = CalculatorMode.Basic;
             _autoSwitchedToScientific = false;
+        }
+
+        // Layout umschalten
+        if (isLandscape && !_isLandscapeLayout)
+            ApplyLandscapeLayout();
+        else if (!isLandscape && _isLandscapeLayout)
+            ApplyPortraitLayout();
+    }
+
+    private void ApplyLandscapeLayout()
+    {
+        _isLandscapeLayout = true;
+        var rootGrid = this.FindControl<Grid>("RootGrid");
+        if (rootGrid == null) return;
+
+        rootGrid.Classes.Add("Landscape");
+        rootGrid.Margin = new Thickness(8);
+        rootGrid.RowDefinitions = new RowDefinitions("Auto,Auto,*,Auto");
+        rootGrid.ColumnDefinitions = new ColumnDefinitions("2*,3*");
+        rootGrid.ColumnSpacing = 8;
+
+        var display = this.FindControl<Border>("DisplayBorder");
+        var mode = this.FindControl<Grid>("ModeSelector");
+        var scientific = this.FindControl<Grid>("ScientificPanel");
+        var memory = this.FindControl<Grid>("MemoryRowGrid");
+        var basic = this.FindControl<Grid>("BasicGrid");
+
+        // Display: oben, volle Breite
+        if (display != null)
+            Grid.SetColumnSpan(display, 2);
+
+        // Mode Selector: zweite Zeile, volle Breite
+        if (mode != null)
+        {
+            Grid.SetRow(mode, 1);
+            Grid.SetColumnSpan(mode, 2);
+        }
+
+        // Scientific Panel: links, Zeilen strecken
+        if (scientific != null)
+        {
+            Grid.SetRow(scientific, 2);
+            Grid.SetColumn(scientific, 0);
+            scientific.RowDefinitions = new RowDefinitions("*,*,*");
+        }
+
+        // Memory Row: links unten
+        if (memory != null)
+        {
+            Grid.SetRow(memory, 3);
+            Grid.SetColumn(memory, 0);
+        }
+
+        // Basic Grid: rechts, über Scientific+Memory Zeilen
+        if (basic != null)
+        {
+            Grid.SetRow(basic, 2);
+            Grid.SetColumn(basic, 1);
+            Grid.SetRowSpan(basic, 2);
+            basic.RowSpacing = 4;
+            basic.ColumnSpacing = 4;
+        }
+    }
+
+    private void ApplyPortraitLayout()
+    {
+        _isLandscapeLayout = false;
+        var rootGrid = this.FindControl<Grid>("RootGrid");
+        if (rootGrid == null) return;
+
+        rootGrid.Classes.Remove("Landscape");
+        rootGrid.Margin = new Thickness(16);
+        rootGrid.RowDefinitions = new RowDefinitions("Auto,Auto,Auto,Auto,*");
+        rootGrid.ColumnDefinitions = new ColumnDefinitions();
+        rootGrid.ColumnSpacing = 0;
+
+        var display = this.FindControl<Border>("DisplayBorder");
+        var mode = this.FindControl<Grid>("ModeSelector");
+        var scientific = this.FindControl<Grid>("ScientificPanel");
+        var memory = this.FindControl<Grid>("MemoryRowGrid");
+        var basic = this.FindControl<Grid>("BasicGrid");
+
+        // Display: oben
+        if (display != null)
+            Grid.SetColumnSpan(display, 1);
+
+        // Mode Selector: Zeile 1
+        if (mode != null)
+        {
+            Grid.SetRow(mode, 1);
+            Grid.SetColumnSpan(mode, 1);
+        }
+
+        // Scientific Panel: Zeile 2, Auto-Rows zurücksetzen
+        if (scientific != null)
+        {
+            Grid.SetRow(scientific, 2);
+            Grid.SetColumn(scientific, 0);
+            scientific.RowDefinitions = new RowDefinitions("Auto,Auto,Auto");
+        }
+
+        // Memory Row: Zeile 3
+        if (memory != null)
+        {
+            Grid.SetRow(memory, 3);
+            Grid.SetColumn(memory, 0);
+        }
+
+        // Basic Grid: Zeile 4
+        if (basic != null)
+        {
+            Grid.SetRow(basic, 4);
+            Grid.SetColumn(basic, 0);
+            Grid.SetRowSpan(basic, 1);
+            basic.RowSpacing = 8;
+            basic.ColumnSpacing = 8;
         }
     }
 
