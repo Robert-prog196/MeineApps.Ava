@@ -61,36 +61,32 @@ public partial class App : Application
         // Initialize theme (must be resolved to apply saved theme at startup)
         _ = Services.GetRequiredService<IThemeService>();
 
+        // Window/View sofort erstellen (Avalonia braucht das synchron)
+        // DataContext wird erst nach DB-Init gesetzt
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = Services.GetRequiredService<MainViewModel>()
-            };
+            desktop.MainWindow = new MainWindow();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = Services.GetRequiredService<MainViewModel>()
-            };
+            singleViewPlatform.MainView = new MainView();
         }
 
-        // Reminder-Service initialisieren (nach DI + UI Setup)
-        _ = InitializeServicesAsync();
+        // DB + Reminder initialisieren, dann MainViewModel erstellen
+        _ = InitializeAndStartAsync();
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static async Task InitializeServicesAsync()
+    private async Task InitializeAndStartAsync()
     {
         try
         {
-            // DB zuerst initialisieren (Tabellen + Indizes erstellen)
-            // bevor ReminderService darauf zugreift
+            // 1. DB zuerst initialisieren (Tabellen + Indizes erstellen)
             var db = Services.GetRequiredService<IDatabaseService>();
             await db.InitializeAsync();
 
+            // 2. Reminder-Service initialisieren
             var reminderService = Services.GetRequiredService<IReminderService>();
             await reminderService.InitializeAsync();
         }
@@ -98,6 +94,24 @@ public partial class App : Application
         {
             System.Diagnostics.Debug.WriteLine($"InitializeServicesAsync Fehler: {ex.Message}");
         }
+
+        // 3. MainViewModel erstellen (DB ist jetzt garantiert bereit)
+        var mainVm = Services.GetRequiredService<MainViewModel>();
+
+        // 4. DataContext auf UI-Thread setzen
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                && desktop.MainWindow != null)
+            {
+                desktop.MainWindow.DataContext = mainVm;
+            }
+            else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform
+                     && singleViewPlatform.MainView != null)
+            {
+                singleViewPlatform.MainView.DataContext = mainVm;
+            }
+        });
     }
 
     private static void ConfigureServices(IServiceCollection services)

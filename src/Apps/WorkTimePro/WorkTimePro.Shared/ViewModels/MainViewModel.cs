@@ -158,20 +158,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     /// <summary>
     /// Initialisierung mit Fehlerbehandlung (statt Fire-and-Forget).
-    /// Stellt sicher, dass die Datenbank bereit ist, bevor Daten geladen werden.
+    /// DB ist bereits von App.InitializeAndStartAsync() initialisiert.
     /// </summary>
     private async Task InitializeAsync()
     {
         try
         {
-            // DB explizit initialisieren (Tabellen + Indizes erstellen)
-            await _database.InitializeAsync();
             await LoadDataAsync();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Init-Fehler: {ex}");
-            // Fehler dem User anzeigen statt verschlucken
             MessageRequested?.Invoke(
                 AppStrings.Error,
                 string.Format(AppStrings.ErrorLoading, ex.Message));

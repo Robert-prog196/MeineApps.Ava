@@ -10,8 +10,8 @@ public class DatabaseService : IDatabaseService
 {
     private SQLiteAsyncConnection? _database;
     private readonly string _dbPath;
-    private readonly SemaphoreSlim _initLock = new(1, 1);
-    private bool _isInitialized;
+    private Task<SQLiteAsyncConnection>? _initTask;
+    private readonly object _initLock = new();
 
     public DatabaseService()
     {
@@ -22,48 +22,42 @@ public class DatabaseService : IDatabaseService
         _dbPath = Path.Combine(appDataDir, "worktimepro.db3");
     }
 
-    private async Task<SQLiteAsyncConnection> GetDatabaseAsync()
+    private Task<SQLiteAsyncConnection> GetDatabaseAsync()
     {
-        if (_isInitialized && _database != null)
-            return _database;
-
-        await _initLock.WaitAsync();
-        try
+        // Alle Aufrufer warten auf denselben Task - keine Race-Condition möglich
+        lock (_initLock)
         {
-            // Double-check after lock
-            if (_isInitialized && _database != null)
-                return _database;
-
-            _database = new SQLiteAsyncConnection(_dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
-
-            // Create tables
-            await _database.CreateTableAsync<WorkDay>();
-            await _database.CreateTableAsync<TimeEntry>();
-            await _database.CreateTableAsync<PauseEntry>();
-            await _database.CreateTableAsync<WorkSettings>();
-            await _database.CreateTableAsync<VacationEntry>();
-            await _database.CreateTableAsync<VacationQuota>();
-            await _database.CreateTableAsync<HolidayEntry>();
-            await _database.CreateTableAsync<Project>();
-            await _database.CreateTableAsync<ProjectTimeEntry>();
-            await _database.CreateTableAsync<Employer>();
-            await _database.CreateTableAsync<ShiftPattern>();
-            await _database.CreateTableAsync<ShiftAssignment>();
-
-            // Indizes für häufig abgefragte FK-Spalten
-            await _database.ExecuteAsync("CREATE UNIQUE INDEX IF NOT EXISTS idx_workday_date ON WorkDay(Date)");
-            await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_timeentry_workdayid ON TimeEntry(WorkDayId)");
-            await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_pauseentry_workdayid ON PauseEntry(WorkDayId)");
-            await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_vacation_year ON VacationEntry(Year)");
-            await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_shiftassignment_date ON ShiftAssignment(Date)");
-
-            _isInitialized = true;
-            return _database;
+            _initTask ??= InitializeDatabaseAsync();
         }
-        finally
-        {
-            _initLock.Release();
-        }
+        return _initTask!;
+    }
+
+    private async Task<SQLiteAsyncConnection> InitializeDatabaseAsync()
+    {
+        _database = new SQLiteAsyncConnection(_dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
+
+        // Tabellen erstellen
+        await _database.CreateTableAsync<WorkDay>();
+        await _database.CreateTableAsync<TimeEntry>();
+        await _database.CreateTableAsync<PauseEntry>();
+        await _database.CreateTableAsync<WorkSettings>();
+        await _database.CreateTableAsync<VacationEntry>();
+        await _database.CreateTableAsync<VacationQuota>();
+        await _database.CreateTableAsync<HolidayEntry>();
+        await _database.CreateTableAsync<Project>();
+        await _database.CreateTableAsync<ProjectTimeEntry>();
+        await _database.CreateTableAsync<Employer>();
+        await _database.CreateTableAsync<ShiftPattern>();
+        await _database.CreateTableAsync<ShiftAssignment>();
+
+        // Indizes für häufig abgefragte FK-Spalten
+        await _database.ExecuteAsync("CREATE UNIQUE INDEX IF NOT EXISTS idx_workday_date ON WorkDay(Date)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_timeentry_workdayid ON TimeEntry(WorkDayId)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_pauseentry_workdayid ON PauseEntry(WorkDayId)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_vacation_year ON VacationEntry(Year)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_shiftassignment_date ON ShiftAssignment(Date)");
+
+        return _database;
     }
 
     public async Task InitializeAsync()
