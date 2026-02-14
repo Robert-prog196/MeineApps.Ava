@@ -41,7 +41,7 @@
       <StackPanel Spacing="16" Margin="16,12,16,80">
 
         <!-- Manuelle Barcode-Eingabe (IsScanning = true) -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card StatsCard" Padding="16"
                 IsVisible="{Binding IsScanning}">
           <StackPanel Spacing="12">
             <!-- Hinweis: Kein Kamera-Zugang auf Desktop -->
@@ -77,7 +77,7 @@
         </Border>
 
         <!-- Lade-Indikator (IsBusy = true) -->
-        <Border Classes="Card" Padding="24"
+        <Border Classes="Card StatsCard" Padding="24"
                 IsVisible="{Binding IsBusy}">
           <StackPanel Spacing="12" HorizontalAlignment="Center">
             <ProgressBar IsIndeterminate="True"
@@ -98,7 +98,7 @@
                    IsVisible="{Binding !IsBusy}" />
 
         <!-- Ergebnis-Anzeige (ShowResult = true) -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card StatsCard" Padding="16"
                 IsVisible="{Binding ShowResult}">
           <StackPanel Spacing="12">
 

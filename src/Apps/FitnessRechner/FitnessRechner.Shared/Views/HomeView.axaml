@@ -76,7 +76,7 @@
       <StackPanel Spacing="16" Margin="12,16,12,0">
 
         <!-- ========== Tages-Score Ring ========== -->
-        <Border Classes="Card" Padding="16" BoxShadow="{DynamicResource CardShadow}">
+        <Border Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="0" StaggerDelay="80" BaseDuration="400" />
           </i:Interaction.Behaviors>
@@ -122,7 +122,7 @@
         </Border>
 
         <!-- ========== XP / Level Bar ========== -->
-        <Border Classes="Card" Padding="10,8" BoxShadow="{DynamicResource CardShadow}">
+        <Border Classes="Card StatsCard" Padding="10,8" BoxShadow="{DynamicResource CardShadow}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="1" StaggerDelay="80" BaseDuration="300" />
           </i:Interaction.Behaviors>
@@ -152,7 +152,7 @@
         </Border>
 
         <!-- ========== Today Dashboard Card ========== -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card StatsCard" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
@@ -368,7 +368,7 @@
         </Grid>
 
         <!-- ========== Weight Quick-Add Panel ========== -->
-        <Border Classes="Card" Padding="16" BoxShadow="{DynamicResource CardShadow}"
+        <Border Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding ShowWeightQuickAdd}">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -454,7 +454,7 @@
         </Border>
 
         <!-- ========== Streak Card ========== -->
-        <Border Classes="Card" Padding="14" BoxShadow="{DynamicResource CardShadow}">
+        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="5" StaggerDelay="80" BaseDuration="300" />
           </i:Interaction.Behaviors>
@@ -492,7 +492,7 @@
         </Border>
 
         <!-- ========== Recent Badges ========== -->
-        <Border Classes="Card" Padding="12" BoxShadow="{DynamicResource CardShadow}"
+        <Border Classes="Card StatsCard" Padding="12" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasRecentAchievements}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="6" StaggerDelay="80" BaseDuration="300" />
@@ -542,7 +542,7 @@
         </Border>
 
         <!-- ========== Aktivitäts-Heatmap ========== -->
-        <Border Classes="Card" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasHeatmapData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="7" StaggerDelay="80" BaseDuration="300" />
@@ -589,7 +589,7 @@
         </Border>
 
         <!-- ========== Weekly Comparison Card ========== -->
-        <Border Classes="Card" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasWeeklyComparison}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="8" StaggerDelay="80" BaseDuration="300" />
@@ -652,7 +652,7 @@
         </Border>
 
         <!-- ========== Abend-Zusammenfassung (nach 20 Uhr) ========== -->
-        <Border Classes="Card" IsVisible="{Binding ShowEveningSummary}" Margin="0,0,0,12">
+        <Border Classes="Card StatsCard" IsVisible="{Binding ShowEveningSummary}" Margin="0,0,0,12">
           <i:Interaction.Behaviors>
             <behaviors:FadeInBehavior Duration="400" />
           </i:Interaction.Behaviors>

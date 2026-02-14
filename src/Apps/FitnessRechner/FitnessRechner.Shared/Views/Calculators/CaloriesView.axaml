@@ -8,83 +8,98 @@
 
   <Grid RowDefinitions="Auto,*,Auto">
 
-    <!-- ============================================ -->
-    <!-- Row 0: Header with Back Button + Title       -->
-    <!-- ============================================ -->
+    <!-- ═══════ Header Banner ═══════ -->
     <Border Grid.Row="0"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,0,0,1"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="16,12">
+            Background="{DynamicResource WarningBrush}"
+            Padding="16,12,16,20"
+            CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Grid.Column="0"
-                Classes="Text"
-                Command="{Binding GoBackCommand}"
-                Padding="4"
-                VerticalAlignment="Center">
-          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        <Button Command="{Binding GoBackCommand}"
+                Background="#33FFFFFF"
+                CornerRadius="20"
+                Width="40" Height="40"
+                Padding="0">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
-        <TextBlock Grid.Column="1"
-                   Text="{loc:Translate CalcCalories}"
-                   FontSize="20" FontWeight="Bold"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
-                   VerticalAlignment="Center"
-                   Margin="12,0,0,0" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                    Margin="12,0,0,0" VerticalAlignment="Center">
+          <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+            <mi:MaterialIcon Kind="Fire" Width="22" Height="22"
+                             Foreground="White"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <TextBlock Text="{loc:Translate CalcCalories}"
+                     FontSize="20" FontWeight="Bold" Foreground="White"
+                     VerticalAlignment="Center" />
+        </StackPanel>
       </Grid>
     </Border>
 
-    <!-- ============================================ -->
-    <!-- Row 1: Scrollable Content                    -->
-    <!-- ============================================ -->
+    <!-- ═══════ Content ═══════ -->
     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-      <StackPanel Spacing="16" Margin="12,12,12,80">
+      <StackPanel Spacing="16" Margin="16,16,16,0">
 
-        <!-- Input Section -->
-        <Border Classes="Card" Padding="16" CornerRadius="12">
-          <StackPanel Spacing="12">
-            <TextBlock Text="{loc:Translate Input}"
-                       FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
+        <!-- Input Card -->
+        <Border Classes="Card">
+          <StackPanel Spacing="14">
 
             <!-- Weight -->
             <StackPanel Spacing="4">
-              <TextBlock Text="{loc:Translate Weight}"
-                         FontSize="13"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="ScaleBalance" Width="16" Height="16"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                <TextBlock Text="{loc:Translate Weight}"
+                           FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
               <TextBox Text="{Binding Weight}"
                        Watermark="kg"
                        TextInputOptions.ContentType="Number"
-                       Classes="Outlined" />
+                       Background="{DynamicResource ButtonFunctionBgBrush}"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 
             <!-- Height -->
             <StackPanel Spacing="4">
-              <TextBlock Text="{loc:Translate Height}"
-                         FontSize="13"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="HumanMaleHeight" Width="16" Height="16"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                <TextBlock Text="{loc:Translate Height}"
+                           FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
               <TextBox Text="{Binding Height}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
-                       Classes="Outlined" />
+                       Background="{DynamicResource ButtonFunctionBgBrush}"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 
             <!-- Age -->
             <StackPanel Spacing="4">
-              <TextBlock Text="{loc:Translate Age}"
-                         FontSize="13"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="CalendarRange" Width="16" Height="16"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                <TextBlock Text="{loc:Translate Age}"
+                           FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
               <TextBox Text="{Binding Age}"
                        Watermark="{loc:Translate Years}"
                        TextInputOptions.ContentType="Digits"
-                       Classes="Outlined" />
+                       Background="{DynamicResource ButtonFunctionBgBrush}"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 
             <!-- Gender -->
             <StackPanel Spacing="4">
-              <TextBlock Text="{loc:Translate Gender}"
-                         FontSize="13"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="GenderMaleFemale" Width="16" Height="16"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                <TextBlock Text="{loc:Translate Gender}"
+                           FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
               <StackPanel Orientation="Horizontal" Spacing="16">
                 <RadioButton Content="{loc:Translate Male}"
                              IsChecked="{Binding IsMale}"
@@ -97,9 +112,13 @@
 
             <!-- Activity Level -->
             <StackPanel Spacing="4">
-              <TextBlock Text="{loc:Translate ActivityLevel}"
-                         FontSize="13"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <mi:MaterialIcon Kind="Run" Width="16" Height="16"
+                                 Foreground="{DynamicResource WarningBrush}" />
+                <TextBlock Text="{loc:Translate ActivityLevel}"
+                           FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
               <ComboBox ItemsSource="{Binding ActivityLevels}"
                         SelectedIndex="{Binding ActivityLevelIndex}"
                         HorizontalAlignment="Stretch" />
@@ -107,68 +126,69 @@
           </StackPanel>
         </Border>
 
-        <!-- Results Section -->
-        <Border Classes="CardElevated" Padding="16" CornerRadius="12"
+        <!-- Result Card -->
+        <Border Classes="Card Elevated"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
-            <TextBlock Text="{loc:Translate Result}"
-                       FontSize="16" FontWeight="Bold"
-                       Foreground="{DynamicResource PrimaryBrush}" />
 
-            <!-- BMR -->
-            <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Grid.Column="0"
-                         Text="{loc:Translate Bmr}"
-                         FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
-                         Text="{Binding BmrDisplay}"
-                         FontSize="14" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </Grid>
-
-            <!-- TDEE -->
-            <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Grid.Column="0"
-                         Text="{loc:Translate Tdee}"
-                         FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
-                         Text="{Binding TdeeDisplay}"
+            <!-- Result Header -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                               Foreground="{DynamicResource WarningBrush}" />
+              <TextBlock Text="{loc:Translate Result}"
                          FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource AccentBrush}" />
-            </Grid>
+                         Foreground="{DynamicResource TextPrimaryBrush}"/>
+            </StackPanel>
 
-            <!-- Weight Loss -->
-            <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Grid.Column="0"
-                         Text="{loc:Translate WeightLoss}"
-                         FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
-                         Text="{Binding WeightLossDisplay}"
-                         FontSize="14" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </Grid>
+            <!-- Primary Result Highlight (TDEE) -->
+            <Border Background="{DynamicResource WarningBrush}"
+                    CornerRadius="12"
+                    Padding="16,12">
+              <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="{loc:Translate Tdee}"
+                           FontSize="12" Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding TdeeDisplay}"
+                           FontSize="28" FontWeight="Bold" Foreground="White"
+                           HorizontalAlignment="Center" />
+              </StackPanel>
+            </Border>
 
-            <!-- Weight Gain -->
-            <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Grid.Column="0"
-                         Text="{loc:Translate WeightGain}"
-                         FontSize="14"
-                         Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
-                         Text="{Binding WeightGainDisplay}"
-                         FontSize="14" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </Grid>
+            <!-- Secondary Results -->
+            <StackPanel Spacing="8" Margin="4,0">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{loc:Translate Bmr}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding BmrDisplay}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+              </Grid>
+              <Border Height="1" Background="{DynamicResource BorderSubtleBrush}" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{loc:Translate WeightLoss}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding WeightLossDisplay}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+              </Grid>
+              <Border Height="1" Background="{DynamicResource BorderSubtleBrush}" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{loc:Translate WeightGain}"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding WeightGainDisplay}"
+                           FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+              </Grid>
+            </StackPanel>
 
             <!-- Set as Calorie Goal -->
             <Button Classes="Secondary"
                     Command="{Binding SetAsCalorieGoalCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Margin="0,8,0,0">
+                    Margin="0,4,0,0">
               <StackPanel Orientation="Horizontal" Spacing="6">
                 <mi:MaterialIcon Kind="Target" Width="18" Height="18" />
                 <TextBlock Text="{loc:Translate SetCalorieGoal}"
@@ -178,42 +198,26 @@
           </StackPanel>
         </Border>
 
+        <Border Height="16" />
+
       </StackPanel>
     </ScrollViewer>
 
-    <!-- ============================================ -->
-    <!-- Row 2: Action Buttons                        -->
-    <!-- ============================================ -->
-    <Border Grid.Row="2"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,1,0,0"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="16,12">
-      <Grid ColumnDefinitions="*,8,*">
-        <!-- Reset -->
-        <Button Grid.Column="0"
-                Classes="Outlined"
-                Command="{Binding ResetCommand}"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
-                             Foreground="{DynamicResource TextSecondaryBrush}" />
-            <TextBlock Text="{loc:Translate Reset}"
-                       VerticalAlignment="Center" />
+    <!-- ═══════ Action Buttons ═══════ -->
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+      <Grid ColumnDefinitions="*,12,*">
+        <Button Command="{Binding ResetCommand}" Classes="Outlined"
+                HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
+            <TextBlock Text="{loc:Translate Reset}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
-
-        <!-- Calculate -->
-        <Button Grid.Column="2"
-                Classes="Primary"
-                Command="{Binding CalculateCommand}"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="6">
-            <mi:MaterialIcon Kind="Calculator" Width="18" Height="18" />
-            <TextBlock Text="{loc:Translate Calculate}"
-                       VerticalAlignment="Center" />
+        <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+                HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />
+            <TextBlock Text="{loc:Translate Calculate}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
       </Grid>

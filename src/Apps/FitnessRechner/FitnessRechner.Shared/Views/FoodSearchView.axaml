@@ -55,7 +55,7 @@
     <!-- ============================================ -->
     <!-- Row 1: Search Bar                            -->
     <!-- ============================================ -->
-    <Border Grid.Row="1" Classes="Card" Margin="16,12,16,0" Padding="12">
+    <Border Grid.Row="1" Classes="Card StatsCard" Margin="16,12,16,0" Padding="12">
       <Grid ColumnDefinitions="Auto,*">
         <mi:MaterialIcon Kind="Magnify" Width="20" Height="20"
                          Foreground="{DynamicResource TextMutedBrush}"
@@ -166,7 +166,7 @@
         </StackPanel>
 
         <!-- Quick-Add Panel -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card StatsCard" Padding="16"
                 IsVisible="{Binding ShowQuickAddPanel}">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -230,7 +230,7 @@
         </Border>
 
         <!-- Add Food Panel (when food is selected) -->
-        <Border Classes="Card" Padding="16"
+        <Border Classes="Card StatsCard" Padding="16"
                 Background="{DynamicResource PrimaryBrush}"
                 IsVisible="{Binding ShowAddPanel}">
           <StackPanel Spacing="12">
@@ -408,7 +408,7 @@
         </StackPanel>
 
         <!-- Extended Database Hint (wenig lokale Ergebnisse) -->
-        <Border Classes="Card" Padding="12" Margin="0,4"
+        <Border Classes="Card StatsCard" Padding="12" Margin="0,4"
                 IsVisible="{Binding ShowExtendedDbHint}">
           <Button Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding RequestExtendedDbCommand}"

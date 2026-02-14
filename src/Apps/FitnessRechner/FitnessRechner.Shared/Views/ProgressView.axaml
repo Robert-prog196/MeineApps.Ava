@@ -274,47 +274,55 @@
             </StackPanel>
           </Border>
 
-          <!-- Chart-Zeitraum Auswahl -->
-          <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="7">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
-                <TextBlock Text="{loc:Translate Days7}" FontSize="12"
-                           Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="30">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
-                <TextBlock Text="{loc:Translate Days30}" FontSize="12"
-                           Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="90">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
-                <TextBlock Text="{loc:Translate Days90}" FontSize="12"
-                           Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-          </StackPanel>
+          <!-- Chart-Zeitraum Auswahl (Pill-Chips) -->
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="16" Padding="3" Margin="0,4,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="7">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                  <TextBlock Text="{loc:Translate Days7}" FontSize="12"
+                             Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="30">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                  <TextBlock Text="{loc:Translate Days30}" FontSize="12"
+                             Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="90">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.WeightTab}}">
+                  <TextBlock Text="{loc:Translate Days90}" FontSize="12"
+                             Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+            </StackPanel>
+          </Border>
 
           <!-- Chart Card -->
-          <Border Classes="Card" Padding="16">
+          <Border Classes="StatsCard">
             <StackPanel Spacing="8">
-              <TextBlock Text="{loc:Translate Trend}"
-                         FontSize="16" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Background="#208B5CF6" Width="28" Height="28" CornerRadius="8">
+                  <mi:MaterialIcon Kind="ChartLine" Width="16" Height="16"
+                                   Foreground="#8B5CF6" />
+                </Border>
+                <TextBlock Text="{loc:Translate Trend}"
+                           Classes="SectionTitle"
+                           VerticalAlignment="Center" />
+              </StackPanel>
               <lvc:CartesianChart Height="220"
                                   Series="{Binding WeightChartSeries}"
                                   XAxes="{Binding XAxes}"
                                   YAxes="{Binding YAxesWeight}"
                                   Sections="{Binding WeightMilestoneSections}"
                                   DrawMarginFrame="{Binding ChartFrame}"
-                                  Background="{DynamicResource CardBrush}"
+                                  Background="Transparent"
                                   ZoomMode="None"
                                   AnimationsSpeed="0:0:0.3" />
             </StackPanel>
@@ -356,16 +364,25 @@
 
           <!-- Weight Entries List -->
           <StackPanel Spacing="8" IsVisible="{Binding !ShowAddForm}">
-            <TextBlock Text="{loc:Translate WeightEntries}"
-                       FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Border Background="#208B5CF6" Width="28" Height="28" CornerRadius="8">
+                <mi:MaterialIcon Kind="FormatListBulleted" Width="16" Height="16"
+                                 Foreground="#8B5CF6" />
+              </Border>
+              <TextBlock Text="{loc:Translate WeightEntries}"
+                         Classes="SectionTitle"
+                         VerticalAlignment="Center" />
+            </StackPanel>
 
             <!-- Empty State -->
             <StackPanel IsVisible="{Binding !WeightEntries.Count}"
                         HorizontalAlignment="Center" Spacing="8" Margin="0,24">
-              <mi:MaterialIcon Kind="ScaleBathroom" Width="40" Height="40"
-                               Foreground="{DynamicResource TextMutedBrush}"
-                               HorizontalAlignment="Center" />
+              <Border Classes="EmptyPulse" Width="64" Height="64" CornerRadius="32"
+                      Background="{DynamicResource SurfaceBrush}"
+                      HorizontalAlignment="Center">
+                <mi:MaterialIcon Kind="ScaleBathroom" Width="32" Height="32"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+              </Border>
               <TextBlock Text="{loc:Translate NoEntriesYet}" FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
@@ -439,33 +456,35 @@
             </Button>
           </Grid>
 
-          <!-- Chart-Zeitraum Auswahl -->
-          <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="7">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
-                <TextBlock Text="{loc:Translate Days7}" FontSize="12"
-                           Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="30">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
-                <TextBlock Text="{loc:Translate Days30}" FontSize="12"
-                           Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-            <Button Classes="Text" Padding="0" Height="NaN"
-                    Command="{Binding SetChartRangeCommand}" CommandParameter="90">
-              <Border CornerRadius="10" Padding="12,6" Cursor="Hand"
-                      Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
-                <TextBlock Text="{loc:Translate Days90}" FontSize="12"
-                           Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
-              </Border>
-            </Button>
-          </StackPanel>
+          <!-- Chart-Zeitraum Auswahl (Pill-Chips) -->
+          <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="16" Padding="3">
+            <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="7">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                  <TextBlock Text="{loc:Translate Days7}" FontSize="12"
+                             Foreground="{Binding IsChart7Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="30">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                  <TextBlock Text="{loc:Translate Days30}" FontSize="12"
+                             Foreground="{Binding IsChart30Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+              <Button Classes="Text" Padding="0" Height="NaN"
+                      Command="{Binding SetChartRangeCommand}" CommandParameter="90">
+                <Border CornerRadius="12" Padding="14,6" Cursor="Hand"
+                        Background="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.BodyTab}}">
+                  <TextBlock Text="{loc:Translate Days90}" FontSize="12"
+                             Foreground="{Binding IsChart90Days, Converter={x:Static conv:TabColorConverters.ActiveText}}" />
+                </Border>
+              </Button>
+            </StackPanel>
+          </Border>
 
           <!-- BMI Content -->
           <StackPanel Spacing="16" IsVisible="{Binding IsBmiSelected}">
@@ -528,15 +547,24 @@
             </Border>
 
             <!-- BMI Chart -->
-            <Border Classes="Card" Padding="16">
+            <Border Classes="StatsCard">
               <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Background="#203B82F6" Width="28" Height="28" CornerRadius="8">
+                    <mi:MaterialIcon Kind="ChartLine" Width="16" Height="16"
+                                     Foreground="#3B82F6" />
+                  </Border>
+                  <TextBlock Text="BMI Trend"
+                             Classes="SectionTitle"
+                             VerticalAlignment="Center" />
+                </StackPanel>
                 <lvc:CartesianChart Height="220"
                                     Series="{Binding BmiChartSeries}"
                                     XAxes="{Binding XAxes}"
                                     YAxes="{Binding YAxesBmi}"
                                     Sections="{Binding BmiSections}"
                                     DrawMarginFrame="{Binding ChartFrame}"
-                                    Background="{DynamicResource CardBrush}"
+                                    Background="Transparent"
                                     ZoomMode="None"
                                   AnimationsSpeed="0:0:0.3" />
                 <TextBlock Text="{loc:Translate HealthyBmiRange}" Classes="Caption"
@@ -546,14 +574,23 @@
 
             <!-- BMI Entries -->
             <StackPanel Spacing="8">
-              <TextBlock Text="{loc:Translate BmiEntries}"
-                         FontSize="16" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Background="#203B82F6" Width="28" Height="28" CornerRadius="8">
+                  <mi:MaterialIcon Kind="FormatListBulleted" Width="16" Height="16"
+                                   Foreground="#3B82F6" />
+                </Border>
+                <TextBlock Text="{loc:Translate BmiEntries}"
+                           Classes="SectionTitle"
+                           VerticalAlignment="Center" />
+              </StackPanel>
               <StackPanel IsVisible="{Binding !HasBmiEntries}"
                           HorizontalAlignment="Center" Spacing="6" Margin="0,20">
-                <mi:MaterialIcon Kind="ScaleBalance" Width="36" Height="36"
-                                 Foreground="{DynamicResource TextMutedBrush}"
-                                 HorizontalAlignment="Center" />
+                <Border Classes="EmptyPulse" Width="56" Height="56" CornerRadius="28"
+                        Background="{DynamicResource SurfaceBrush}"
+                        HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="ScaleBalance" Width="28" Height="28"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                </Border>
                 <TextBlock Text="{loc:Translate EmptyBmiHint}" Classes="Caption"
                            HorizontalAlignment="Center" TextAlignment="Center"
                            MaxWidth="250" TextWrapping="Wrap" />
@@ -656,27 +693,47 @@
             </Border>
 
             <!-- Body Fat Chart -->
-            <Border Classes="Card" Padding="16">
-              <lvc:CartesianChart Height="220"
-                                  Series="{Binding BodyFatChartSeries}"
-                                  XAxes="{Binding XAxes}"
-                                  YAxes="{Binding YAxesBodyFat}"
-                                  DrawMarginFrame="{Binding ChartFrame}"
-                                  Background="{DynamicResource CardBrush}"
-                                  ZoomMode="None"
-                                  AnimationsSpeed="0:0:0.3" />
+            <Border Classes="StatsCard">
+              <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Background="#20F59E0B" Width="28" Height="28" CornerRadius="8">
+                    <mi:MaterialIcon Kind="ChartLine" Width="16" Height="16"
+                                     Foreground="#F59E0B" />
+                  </Border>
+                  <TextBlock Text="{loc:Translate BodyFat}"
+                             Classes="SectionTitle"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+                <lvc:CartesianChart Height="220"
+                                    Series="{Binding BodyFatChartSeries}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxesBodyFat}"
+                                    DrawMarginFrame="{Binding ChartFrame}"
+                                    Background="Transparent"
+                                    ZoomMode="None"
+                                    AnimationsSpeed="0:0:0.3" />
+              </StackPanel>
             </Border>
 
             <!-- Body Fat Entries -->
             <StackPanel Spacing="8">
-              <TextBlock Text="{loc:Translate BodyFatEntries}"
-                         FontSize="16" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Background="#20F59E0B" Width="28" Height="28" CornerRadius="8">
+                  <mi:MaterialIcon Kind="FormatListBulleted" Width="16" Height="16"
+                                   Foreground="#F59E0B" />
+                </Border>
+                <TextBlock Text="{loc:Translate BodyFatEntries}"
+                           Classes="SectionTitle"
+                           VerticalAlignment="Center" />
+              </StackPanel>
               <StackPanel IsVisible="{Binding !HasBodyFatEntries}"
                           HorizontalAlignment="Center" Spacing="6" Margin="0,20">
-                <mi:MaterialIcon Kind="PercentCircle" Width="36" Height="36"
-                                 Foreground="{DynamicResource TextMutedBrush}"
-                                 HorizontalAlignment="Center" />
+                <Border Classes="EmptyPulse" Width="56" Height="56" CornerRadius="28"
+                        Background="{DynamicResource SurfaceBrush}"
+                        HorizontalAlignment="Center">
+                  <mi:MaterialIcon Kind="PercentCircle" Width="28" Height="28"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                </Border>
                 <TextBlock Text="{loc:Translate EmptyBodyFatHint}" Classes="Caption"
                            HorizontalAlignment="Center" TextAlignment="Center"
                            MaxWidth="250" TextWrapping="Wrap" />
@@ -798,9 +855,15 @@
           </Border>
 
           <!-- Quick-Add Buttons -->
-          <TextBlock Text="{loc:Translate QuickAdd}"
-                     FontSize="16" FontWeight="SemiBold"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Border Background="#2006B6D4" Width="28" Height="28" CornerRadius="8">
+              <mi:MaterialIcon Kind="Plus" Width="16" Height="16"
+                               Foreground="#06B6D4" />
+            </Border>
+            <TextBlock Text="{loc:Translate QuickAdd}"
+                       Classes="SectionTitle"
+                       VerticalAlignment="Center" />
+          </StackPanel>
           <Grid ColumnDefinitions="*,8,*,8,*">
             <Button Grid.Column="0" Classes="Secondary"
                     Command="{Binding QuickAddWaterCommand}"
@@ -907,12 +970,18 @@
           </Border>
 
           <!-- Macro Progress Card -->
-          <Border Classes="Card" Padding="16"
+          <Border Classes="StatsCard"
                   IsVisible="{Binding HasMacroGoals}">
             <StackPanel Spacing="8">
-              <TextBlock Text="{loc:Translate Macros}"
-                         FontSize="16" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Background="#2022C55E" Width="28" Height="28" CornerRadius="8">
+                  <mi:MaterialIcon Kind="FoodApple" Width="16" Height="16"
+                                   Foreground="#22C55E" />
+                </Border>
+                <TextBlock Text="{loc:Translate Macros}"
+                           Classes="SectionTitle"
+                           VerticalAlignment="Center" />
+              </StackPanel>
 
               <!-- Protein -->
               <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
@@ -963,10 +1032,15 @@
 
           <!-- Kopier-Button + Überschrift -->
           <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{loc:Translate TodayMeals}"
-                       FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <Border Background="#20EF4444" Width="28" Height="28" CornerRadius="8">
+                <mi:MaterialIcon Kind="Silverware" Width="16" Height="16"
+                                 Foreground="#EF4444" />
+              </Border>
+              <TextBlock Text="{loc:Translate TodayMeals}"
+                         Classes="SectionTitle"
+                         VerticalAlignment="Center" />
+            </StackPanel>
             <Button Grid.Column="1" Classes="Text Small"
                     Command="{Binding CopyYesterdayMealsCommand}"
                     ToolTip.Tip="{loc:Translate CopyYesterday}">
@@ -983,9 +1057,12 @@
           <!-- Motivierender Empty State -->
           <StackPanel IsVisible="{Binding !HasMeals}"
                       HorizontalAlignment="Center" Spacing="8" Margin="0,24">
-            <mi:MaterialIcon Kind="FoodApple" Width="40" Height="40"
-                             Foreground="{DynamicResource TextMutedBrush}"
-                             HorizontalAlignment="Center" />
+            <Border Classes="EmptyPulse" Width="64" Height="64" CornerRadius="32"
+                    Background="{DynamicResource SurfaceBrush}"
+                    HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="FoodApple" Width="32" Height="32"
+                               Foreground="{DynamicResource TextMutedBrush}" />
+            </Border>
             <TextBlock Text="{loc:Translate NoMealsYet}" FontSize="14" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
@@ -1063,21 +1140,23 @@
           </StackPanel>
 
           <!-- Wochen-Kalorien Chart -->
-          <Border Classes="Card" Padding="16" IsVisible="{Binding HasWeeklyData}">
+          <Border Classes="StatsCard" IsVisible="{Binding HasWeeklyData}">
             <StackPanel Spacing="8">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <mi:MaterialIcon Kind="ChartBar" Width="18" Height="18"
-                                 Foreground="#F59E0B" />
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Background="#20F59E0B" Width="28" Height="28" CornerRadius="8">
+                  <mi:MaterialIcon Kind="ChartBar" Width="16" Height="16"
+                                   Foreground="#F59E0B" />
+                </Border>
                 <TextBlock Text="{loc:Translate WeeklyCalories}"
-                           FontSize="14" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Classes="SectionTitle"
+                           VerticalAlignment="Center" />
               </StackPanel>
               <lvc:CartesianChart Height="160"
                                   Series="{Binding WeeklyCaloriesSeries}"
                                   XAxes="{Binding WeeklyXAxes}"
                                   YAxes="{Binding WeeklyYAxes}"
                                   DrawMarginFrame="{Binding ChartFrame}"
-                                  Background="{DynamicResource CardBrush}"
+                                  Background="Transparent"
                                   ZoomMode="None"
                                   AnimationsSpeed="0:0:0.3" />
             </StackPanel>

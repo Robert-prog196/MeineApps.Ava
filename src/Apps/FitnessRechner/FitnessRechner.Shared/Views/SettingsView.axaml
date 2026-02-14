@@ -6,71 +6,45 @@
              x:Class="FitnessRechner.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
-  <Grid RowDefinitions="Auto,*" Margin="12">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="12" Margin="16">
 
-    <!-- Header -->
-    <TextBlock Grid.Row="0"
-               Text="{loc:Translate SettingsTitle}"
-               Classes="PageTitle"
-               Margin="0,8,0,16" />
+      <!-- Header -->
+      <TextBlock Text="{loc:Translate SettingsTitle}"
+                 FontSize="22" FontWeight="Bold"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 Margin="0,4,0,4" />
 
-    <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-      <StackPanel Spacing="16" Margin="0,0,0,80">
+      <!-- ==================== Theme Selection Card ==================== -->
+      <Border Classes="SettingsCard">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Palette" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate SettingsChooseDesign}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
 
-        <!-- ==================== Theme Selection Card ==================== -->
-        <Border Classes="Card">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <mi:MaterialIcon Kind="Palette" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate SettingsChooseDesign}"
-                         FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-            </StackPanel>
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-
-              <!-- Midnight Theme -->
-              <Panel Grid.Row="0" Grid.Column="0">
-                <Button IsVisible="{Binding IsMidnightSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Midnight"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#1E293B"
-                          BorderThickness="2" BorderBrush="#6366F1">
-                    <Grid>
-                      <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
-                                       Foreground="#6366F1"
-                                       HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
-                      <StackPanel Spacing="6">
-                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                          <Ellipse Width="20" Height="20" Fill="#6366F1" />
-                          <Ellipse Width="20" Height="20" Fill="#0F172A" StrokeThickness="1" Stroke="#334155" />
-                          <Ellipse Width="20" Height="20" Fill="#22D3EE" />
-                        </StackPanel>
-                        <TextBlock Text="Midnight" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
-                        <TextBlock Text="{loc:Translate ThemeGlassDarkDesc}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#94A3B8" />
-                      </StackPanel>
-                    </Grid>
-                  </Border>
-                </Button>
-                <Button IsVisible="{Binding !IsMidnightSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Midnight"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#1E293B"
-                          BorderThickness="2" BorderBrush="#334155">
+            <!-- Midnight Theme -->
+            <Panel Grid.Row="0" Grid.Column="0">
+              <Button IsVisible="{Binding IsMidnightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Midnight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#1E293B"
+                        BorderThickness="2" BorderBrush="#6366F1">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#6366F1"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
                     <StackPanel Spacing="6">
                       <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                         <Ellipse Width="20" Height="20" Fill="#6366F1" />
@@ -82,49 +56,49 @@
                       <TextBlock Text="{loc:Translate ThemeGlassDarkDesc}" HorizontalAlignment="Center"
                                  FontSize="11" Foreground="#94A3B8" />
                     </StackPanel>
-                  </Border>
-                </Button>
-              </Panel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsMidnightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Midnight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#1E293B"
+                        BorderThickness="2" BorderBrush="#334155">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#6366F1" />
+                      <Ellipse Width="20" Height="20" Fill="#0F172A" StrokeThickness="1" Stroke="#334155" />
+                      <Ellipse Width="20" Height="20" Fill="#22D3EE" />
+                    </StackPanel>
+                    <TextBlock Text="Midnight" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                    <TextBlock Text="{loc:Translate ThemeGlassDarkDesc}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#94A3B8" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
 
-              <!-- Aurora Theme -->
-              <Panel Grid.Row="0" Grid.Column="1">
-                <Button IsVisible="{Binding IsAuroraSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Aurora"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#18181B"
-                          BorderThickness="2" BorderBrush="#EC4899">
-                    <Grid>
-                      <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
-                                       Foreground="#EC4899"
-                                       HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
-                      <StackPanel Spacing="6">
-                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                          <Ellipse Width="20" Height="20" Fill="#EC4899" />
-                          <Ellipse Width="20" Height="20" Fill="#18181B" StrokeThickness="1" Stroke="#3F3F46" />
-                          <Ellipse Width="20" Height="20" Fill="#06B6D4" />
-                        </StackPanel>
-                        <TextBlock Text="Aurora" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
-                        <TextBlock Text="{loc:Translate ThemeVividDesc}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#A1A1AA" />
-                      </StackPanel>
-                    </Grid>
-                  </Border>
-                </Button>
-                <Button IsVisible="{Binding !IsAuroraSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Aurora"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#18181B"
-                          BorderThickness="2" BorderBrush="#3F3F46">
+            <!-- Aurora Theme -->
+            <Panel Grid.Row="0" Grid.Column="1">
+              <Button IsVisible="{Binding IsAuroraSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Aurora"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#18181B"
+                        BorderThickness="2" BorderBrush="#EC4899">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#EC4899"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
                     <StackPanel Spacing="6">
                       <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                         <Ellipse Width="20" Height="20" Fill="#EC4899" />
@@ -136,49 +110,49 @@
                       <TextBlock Text="{loc:Translate ThemeVividDesc}" HorizontalAlignment="Center"
                                  FontSize="11" Foreground="#A1A1AA" />
                     </StackPanel>
-                  </Border>
-                </Button>
-              </Panel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsAuroraSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Aurora"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#18181B"
+                        BorderThickness="2" BorderBrush="#3F3F46">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#EC4899" />
+                      <Ellipse Width="20" Height="20" Fill="#18181B" StrokeThickness="1" Stroke="#3F3F46" />
+                      <Ellipse Width="20" Height="20" Fill="#06B6D4" />
+                    </StackPanel>
+                    <TextBlock Text="Aurora" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                    <TextBlock Text="{loc:Translate ThemeVividDesc}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#A1A1AA" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
 
-              <!-- Daylight Theme -->
-              <Panel Grid.Row="1" Grid.Column="0">
-                <Button IsVisible="{Binding IsDaylightSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Daylight"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#E2E8F0"
-                          BorderThickness="2" BorderBrush="#2563EB">
-                    <Grid>
-                      <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
-                                       Foreground="#2563EB"
-                                       HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
-                      <StackPanel Spacing="6">
-                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                          <Ellipse Width="20" Height="20" Fill="#2563EB" />
-                          <Ellipse Width="20" Height="20" Fill="#F8FAFC" StrokeThickness="1" Stroke="#CBD5E1" />
-                          <Ellipse Width="20" Height="20" Fill="#0891B2" />
-                        </StackPanel>
-                        <TextBlock Text="Daylight" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
-                        <TextBlock Text="{loc:Translate ThemeClassicDesc}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#64748B" />
-                      </StackPanel>
-                    </Grid>
-                  </Border>
-                </Button>
-                <Button IsVisible="{Binding !IsDaylightSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Daylight"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#E2E8F0"
-                          BorderThickness="2" BorderBrush="#CBD5E1">
+            <!-- Daylight Theme -->
+            <Panel Grid.Row="1" Grid.Column="0">
+              <Button IsVisible="{Binding IsDaylightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Daylight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#2563EB">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#2563EB"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
                     <StackPanel Spacing="6">
                       <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                         <Ellipse Width="20" Height="20" Fill="#2563EB" />
@@ -190,49 +164,49 @@
                       <TextBlock Text="{loc:Translate ThemeClassicDesc}" HorizontalAlignment="Center"
                                  FontSize="11" Foreground="#64748B" />
                     </StackPanel>
-                  </Border>
-                </Button>
-              </Panel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsDaylightSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Daylight"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#E2E8F0"
+                        BorderThickness="2" BorderBrush="#CBD5E1">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#2563EB" />
+                      <Ellipse Width="20" Height="20" Fill="#F8FAFC" StrokeThickness="1" Stroke="#CBD5E1" />
+                      <Ellipse Width="20" Height="20" Fill="#0891B2" />
+                    </StackPanel>
+                    <TextBlock Text="Daylight" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                    <TextBlock Text="{loc:Translate ThemeClassicDesc}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#64748B" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
 
-              <!-- Forest Theme -->
-              <Panel Grid.Row="1" Grid.Column="1">
-                <Button IsVisible="{Binding IsForestSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Forest"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#022C22"
-                          BorderThickness="2" BorderBrush="#10B981">
-                    <Grid>
-                      <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
-                                       Foreground="#10B981"
-                                       HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
-                      <StackPanel Spacing="6">
-                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
-                          <Ellipse Width="20" Height="20" Fill="#10B981" />
-                          <Ellipse Width="20" Height="20" Fill="#022C22" StrokeThickness="1" Stroke="#065F46" />
-                          <Ellipse Width="20" Height="20" Fill="#F59E0B" />
-                        </StackPanel>
-                        <TextBlock Text="Forest" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
-                        <TextBlock Text="{loc:Translate ThemeSoftLightDesc}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#6EE7B7" />
-                      </StackPanel>
-                    </Grid>
-                  </Border>
-                </Button>
-                <Button IsVisible="{Binding !IsForestSelected}"
-                        Command="{Binding SelectThemeCommand}"
-                        CommandParameter="Forest"
-                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                        Padding="0" CornerRadius="10" Height="NaN"
-                        Background="Transparent" BorderThickness="0">
-                  <Border CornerRadius="10" Padding="12"
-                          Background="#022C22"
-                          BorderThickness="2" BorderBrush="#065F46">
+            <!-- Forest Theme -->
+            <Panel Grid.Row="1" Grid.Column="1">
+              <Button IsVisible="{Binding IsForestSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Forest"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#022C22"
+                        BorderThickness="2" BorderBrush="#10B981">
+                  <Grid>
+                    <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                                     Foreground="#10B981"
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Margin="0,-2,-2,0" />
                     <StackPanel Spacing="6">
                       <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                         <Ellipse Width="20" Height="20" Fill="#10B981" />
@@ -244,245 +218,266 @@
                       <TextBlock Text="{loc:Translate ThemeSoftLightDesc}" HorizontalAlignment="Center"
                                  FontSize="11" Foreground="#6EE7B7" />
                     </StackPanel>
-                  </Border>
-                </Button>
-              </Panel>
+                  </Grid>
+                </Border>
+              </Button>
+              <Button IsVisible="{Binding !IsForestSelected}"
+                      Command="{Binding SelectThemeCommand}"
+                      CommandParameter="Forest"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Padding="0" CornerRadius="10" Height="NaN"
+                      Background="Transparent" BorderThickness="0">
+                <Border CornerRadius="10" Padding="12"
+                        Background="#022C22"
+                        BorderThickness="2" BorderBrush="#065F46">
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                      <Ellipse Width="20" Height="20" Fill="#10B981" />
+                      <Ellipse Width="20" Height="20" Fill="#022C22" StrokeThickness="1" Stroke="#065F46" />
+                      <Ellipse Width="20" Height="20" Fill="#F59E0B" />
+                    </StackPanel>
+                    <TextBlock Text="Forest" HorizontalAlignment="Center"
+                               FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                    <TextBlock Text="{loc:Translate ThemeSoftLightDesc}" HorizontalAlignment="Center"
+                               FontSize="11" Foreground="#6EE7B7" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Panel>
 
-            </Grid>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== Language Selection Card ==================== -->
+      <Border Classes="SettingsCard">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Translate" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate SettingsLanguage}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Border>
 
-        <!-- ==================== Language Selection Card ==================== -->
-        <Border Classes="Card">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <mi:MaterialIcon Kind="Translate" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate SettingsLanguage}"
-                         FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-            </StackPanel>
+          <WrapPanel Orientation="Horizontal">
+            <!-- Deutsch -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Deutsch"
+                      IsVisible="{Binding IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Deutsch"
+                      IsVisible="{Binding !IsGermanSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="de"
+                      Margin="0,0,8,8" />
+            </Panel>
 
-            <WrapPanel Orientation="Horizontal">
-              <!-- Deutsch -->
-              <Panel>
-                <Button Classes="Primary Small" Content="Deutsch"
-                        IsVisible="{Binding IsGermanSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="de"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="Deutsch"
-                        IsVisible="{Binding !IsGermanSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="de"
-                        Margin="0,0,8,8" />
-              </Panel>
+            <!-- English -->
+            <Panel>
+              <Button Classes="Primary Small" Content="English"
+                      IsVisible="{Binding IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="English"
+                      IsVisible="{Binding !IsEnglishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="en"
+                      Margin="0,0,8,8" />
+            </Panel>
 
-              <!-- English -->
-              <Panel>
-                <Button Classes="Primary Small" Content="English"
-                        IsVisible="{Binding IsEnglishSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="en"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="English"
-                        IsVisible="{Binding !IsEnglishSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="en"
-                        Margin="0,0,8,8" />
-              </Panel>
+            <!-- Espanol -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Espa&#241;ol"
+                      IsVisible="{Binding IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Espa&#241;ol"
+                      IsVisible="{Binding !IsSpanishSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="es"
+                      Margin="0,0,8,8" />
+            </Panel>
 
-              <!-- Espanol -->
-              <Panel>
-                <Button Classes="Primary Small" Content="Espa&#241;ol"
-                        IsVisible="{Binding IsSpanishSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="es"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="Espa&#241;ol"
-                        IsVisible="{Binding !IsSpanishSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="es"
-                        Margin="0,0,8,8" />
-              </Panel>
+            <!-- Francais -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Fran&#231;ais"
+                      IsVisible="{Binding IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Fran&#231;ais"
+                      IsVisible="{Binding !IsFrenchSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
+                      Margin="0,0,8,8" />
+            </Panel>
 
-              <!-- Francais -->
-              <Panel>
-                <Button Classes="Primary Small" Content="Fran&#231;ais"
-                        IsVisible="{Binding IsFrenchSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="Fran&#231;ais"
-                        IsVisible="{Binding !IsFrenchSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
-                        Margin="0,0,8,8" />
-              </Panel>
+            <!-- Italiano -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Italiano"
+                      IsVisible="{Binding IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Italiano"
+                      IsVisible="{Binding !IsItalianSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="it"
+                      Margin="0,0,8,8" />
+            </Panel>
 
-              <!-- Italiano -->
-              <Panel>
-                <Button Classes="Primary Small" Content="Italiano"
-                        IsVisible="{Binding IsItalianSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="it"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="Italiano"
-                        IsVisible="{Binding !IsItalianSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="it"
-                        Margin="0,0,8,8" />
-              </Panel>
+            <!-- Portugues -->
+            <Panel>
+              <Button Classes="Primary Small" Content="Portugu&#234;s"
+                      IsVisible="{Binding IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+              <Button Classes="Outlined Small" Content="Portugu&#234;s"
+                      IsVisible="{Binding !IsPortugueseSelected}"
+                      Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
+                      Margin="0,0,8,8" />
+            </Panel>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
 
-              <!-- Portugues -->
-              <Panel>
-                <Button Classes="Primary Small" Content="Portugu&#234;s"
-                        IsVisible="{Binding IsPortugueseSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
-                        Margin="0,0,8,8" />
-                <Button Classes="Outlined Small" Content="Portugu&#234;s"
-                        IsVisible="{Binding !IsPortugueseSelected}"
-                        Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
-                        Margin="0,0,8,8" />
-              </Panel>
-            </WrapPanel>
+      <!-- ==================== Premium Section ==================== -->
+      <Border Classes="SettingsCard"
+              IsVisible="{Binding IsNotPremium}">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate Premium}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Border>
+          <TextBlock Text="{loc:Translate PremiumDescription}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextWrapping="Wrap" />
 
-        <!-- ==================== Premium Section ==================== -->
-        <Border Classes="Card"
-                IsVisible="{Binding IsNotPremium}">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate Premium}"
-                         FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-            </StackPanel>
-            <TextBlock Text="{loc:Translate PremiumDescription}"
-                       FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}"
-                       TextWrapping="Wrap" />
+          <Button Content="{loc:Translate PurchasePremium}"
+                  Command="{Binding PurchasePremiumCommand}"
+                  Classes="Primary"
+                  CornerRadius="8" />
 
-            <Button Content="{loc:Translate PurchasePremium}"
-                    Command="{Binding PurchasePremiumCommand}"
-                    Classes="Primary"
-                    CornerRadius="8" />
+          <Button Content="{loc:Translate RestorePurchases}"
+                  Command="{Binding RestorePurchasesCommand}"
+                  Classes="Secondary"
+                  CornerRadius="8" />
+        </StackPanel>
+      </Border>
 
-            <Button Content="{loc:Translate RestorePurchases}"
-                    Command="{Binding RestorePurchasesCommand}"
-                    Classes="Secondary"
-                    CornerRadius="8" />
+      <!-- ==================== Feedback & Notifications Section ==================== -->
+      <Border Classes="SettingsCard">
+        <StackPanel Spacing="16">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="BellOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate SettingsNotifications}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Border>
 
-        <!-- ==================== Feedback & Notifications Section ==================== -->
-        <Border Classes="Card">
-          <StackPanel Spacing="16">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <mi:MaterialIcon Kind="BellOutline" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate SettingsNotifications}"
-                         FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-            </StackPanel>
+          <!-- Haptic Feedback Toggle -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Grid.Column="0" Kind="Vibrate" Width="20" Height="20"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Grid.Column="1" Text="{loc:Translate HapticFeedback}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsHapticEnabled}"
+                          OnContent="" OffContent=""
+                          VerticalAlignment="Center" />
+          </Grid>
 
-            <!-- Haptic Feedback Toggle -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <mi:MaterialIcon Grid.Column="0" Kind="Vibrate" Width="20" Height="20"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{loc:Translate HapticFeedback}"
-                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsHapticEnabled}"
-                            OnContent="" OffContent=""
-                            VerticalAlignment="Center" />
-            </Grid>
+          <!-- Sound Toggle -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Grid.Column="0" Kind="VolumeHigh" Width="20" Height="20"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Grid.Column="1" Text="{loc:Translate SoundEffects}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsSoundEnabled}"
+                          OnContent="" OffContent=""
+                          VerticalAlignment="Center" />
+          </Grid>
 
-            <!-- Sound Toggle -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <mi:MaterialIcon Grid.Column="0" Kind="VolumeHigh" Width="20" Height="20"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{loc:Translate SoundEffects}"
-                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsSoundEnabled}"
-                            OnContent="" OffContent=""
-                            VerticalAlignment="Center" />
-            </Grid>
+          <Border Height="1" Background="{DynamicResource BorderSubtleBrush}" Margin="0,4" />
 
-            <Border Height="1" Background="{DynamicResource BorderSubtleBrush}" Margin="0,4" />
+          <!-- Wasser-Erinnerung Toggle -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Grid.Column="0" Kind="WaterOutline" Width="20" Height="20"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Grid.Column="1" Text="{loc:Translate WaterReminder}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWaterReminderEnabled}"
+                          OnContent="" OffContent=""
+                          VerticalAlignment="Center" />
+          </Grid>
 
-            <!-- Wasser-Erinnerung Toggle -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <mi:MaterialIcon Grid.Column="0" Kind="WaterOutline" Width="20" Height="20"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{loc:Translate WaterReminder}"
-                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWaterReminderEnabled}"
-                            OnContent="" OffContent=""
-                            VerticalAlignment="Center" />
-            </Grid>
+          <!-- Gewicht-Erinnerung Toggle -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Grid.Column="0" Kind="ScaleBathroom" Width="20" Height="20"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Grid.Column="1" Text="{loc:Translate WeightReminder}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWeightReminderEnabled}"
+                          OnContent="" OffContent=""
+                          VerticalAlignment="Center" />
+          </Grid>
 
-            <!-- Gewicht-Erinnerung Toggle -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <mi:MaterialIcon Grid.Column="0" Kind="ScaleBathroom" Width="20" Height="20"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{loc:Translate WeightReminder}"
-                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWeightReminderEnabled}"
-                            OnContent="" OffContent=""
-                            VerticalAlignment="Center" />
-            </Grid>
+          <!-- Abend-Zusammenfassung Toggle -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <mi:MaterialIcon Grid.Column="0" Kind="WeatherNight" Width="20" Height="20"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center" Margin="0,0,12,0" />
+            <TextBlock Grid.Column="1" Text="{loc:Translate EveningReminder}"
+                       FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
+            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsEveningSummaryEnabled}"
+                          OnContent="" OffContent=""
+                          VerticalAlignment="Center" />
+          </Grid>
+        </StackPanel>
+      </Border>
 
-            <!-- Abend-Zusammenfassung Toggle -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <mi:MaterialIcon Grid.Column="0" Kind="WeatherNight" Width="20" Height="20"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{loc:Translate EveningReminder}"
-                         FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsEveningSummaryEnabled}"
-                            OnContent="" OffContent=""
-                            VerticalAlignment="Center" />
-            </Grid>
+      <!-- ==================== About Section ==================== -->
+      <Border Classes="SettingsCard">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="12">
+            <mi:MaterialIcon Kind="InformationOutline" Width="24" Height="24"
+                             Foreground="{DynamicResource PrimaryBrush}" />
+            <TextBlock Text="{loc:Translate SettingsAboutApp}"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Border>
 
-        <!-- ==================== About Section ==================== -->
-        <Border Classes="Card">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <mi:MaterialIcon Kind="InformationOutline" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate SettingsAboutApp}"
-                         FontSize="16" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         VerticalAlignment="Center" />
-            </StackPanel>
+          <TextBlock Text="FitnessRechner" FontSize="16" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding AppVersion}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
 
-            <TextBlock Text="FitnessRechner" FontSize="16" FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
-            <TextBlock Text="{Binding AppVersion}"
-                       FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
+          <Button Content="{loc:Translate FeedbackButton}"
+                  Command="{Binding SendFeedbackCommand}"
+                  Classes="Outlined"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  CornerRadius="8" />
+        </StackPanel>
+      </Border>
 
-            <Button Content="{loc:Translate FeedbackButton}"
-                    Command="{Binding SendFeedbackCommand}"
-                    Classes="Outlined"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    CornerRadius="8" />
-          </StackPanel>
-        </Border>
+      <!-- Bottom Spacer (60dp fuer Ad-Banner Overlay) -->
+      <Border Height="60" />
 
-        <!-- Bottom Spacer (60dp fuer Ad-Banner Overlay) -->
-        <Border Height="60" />
-
-      </StackPanel>
-    </ScrollViewer>
-
-  </Grid>
+    </StackPanel>
+  </ScrollViewer>
 
 </UserControl>
