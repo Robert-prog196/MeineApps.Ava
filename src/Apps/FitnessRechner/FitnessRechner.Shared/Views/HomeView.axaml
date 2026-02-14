@@ -35,8 +35,8 @@
     </Style>
   </UserControl.Styles>
 
-  <ScrollViewer Padding="0,0,0,100">
-    <StackPanel Spacing="0">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="0" Margin="0,0,0,60">
 
       <!-- ========== Hero-Header (Green/Teal Gradient) ========== -->
       <Border CornerRadius="0,0,16,16" Padding="20,20,20,16">

@@ -33,8 +33,8 @@
     </Border>
 
     <!-- Row 1: Scrollable Content -->
-    <ScrollViewer Grid.Row="1" Padding="16,16,16,200">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Sub-Rechner Auswahl -->
         <Border Classes="Card" Padding="16" CornerRadius="12">

@@ -60,8 +60,8 @@
     <!-- ================================================================= -->
     <!-- CONTENT                                                           -->
     <!-- ================================================================= -->
-    <ScrollViewer Grid.Row="1" Padding="16">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16">
 
         <!-- Overall Progress -->
         <Border Classes="CardElevated" Padding="16">

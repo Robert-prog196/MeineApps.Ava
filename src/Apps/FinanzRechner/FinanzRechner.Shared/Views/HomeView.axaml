@@ -9,8 +9,8 @@
              x:DataType="vm:MainViewModel">
 
   <Panel>
-  <ScrollViewer Padding="0,0,0,120">
-    <StackPanel Spacing="0">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Spacing="0" Margin="0,0,0,120">
 
       <!-- ========== A) Hero-Header (Gradient passend zum Bilanz-Status) ========== -->
       <Border CornerRadius="0,0,16,16" Padding="20,20,20,16"

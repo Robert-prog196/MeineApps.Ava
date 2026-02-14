@@ -37,8 +37,8 @@
     <!-- ============================================ -->
     <!-- Row 1: Scrollable Content                    -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="1" Padding="12,12,12,80">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="12,12,12,80">
 
         <!-- Input Section -->
         <Border Classes="Card" Padding="16" CornerRadius="12">
@@ -54,6 +54,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Weight}"
                        Watermark="kg"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
 
@@ -64,6 +65,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Height}"
                        Watermark="cm"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
 
@@ -74,6 +76,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Age}"
                        Watermark="{loc:Translate Years}"
+                       TextInputOptions.ContentType="Digits"
                        Classes="Outlined" />
             </StackPanel>
 

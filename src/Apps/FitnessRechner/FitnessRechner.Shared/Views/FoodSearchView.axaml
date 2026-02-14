@@ -73,8 +73,8 @@
     <!-- ============================================ -->
     <!-- Row 2: Content Area (Scrollable)             -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="2" Padding="12,12,12,80">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="12,12,12,80">
 
         <!-- Favorites Section -->
         <StackPanel IsVisible="{Binding HasFavorites}" Spacing="8">

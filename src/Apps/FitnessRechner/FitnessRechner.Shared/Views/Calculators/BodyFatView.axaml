@@ -39,8 +39,8 @@
     <!-- ============================================ -->
     <!-- Row 1: Scrollable Content                    -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="1" Padding="12,12,12,80">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="12,12,12,80">
 
         <!-- Input Section -->
         <Border Classes="Card" Padding="16" CornerRadius="12">
@@ -71,6 +71,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Height}"
                        Watermark="cm"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
 
@@ -81,6 +82,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Neck}"
                        Watermark="cm"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
 
@@ -91,6 +93,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Waist}"
                        Watermark="cm"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
 
@@ -102,6 +105,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding Hip}"
                        Watermark="cm"
+                       TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
             </StackPanel>
           </StackPanel>

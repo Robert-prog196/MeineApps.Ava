@@ -34,8 +34,8 @@
     <!-- ================================================================= -->
     <!-- CONTENT                                                           -->
     <!-- ================================================================= -->
-    <ScrollViewer Grid.Row="1" Padding="16">
-      <StackPanel Spacing="16">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16">
 
         <!-- ============================================================= -->
         <!-- WORKER INFO CARD                                              -->
@@ -366,18 +366,17 @@
               </StackPanel>
             </Button>
 
-            <!-- Transfer -->
+            <!-- Transfer: Workshop-Auswahl + Versetzen-Button -->
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8"
-                  IsVisible="{Binding AvailableWorkshops.Count}">
+                  IsVisible="{Binding HasAvailableWorkshops}">
               <ComboBox ItemsSource="{Binding AvailableWorkshops}"
+                        SelectedItem="{Binding SelectedTransferWorkshop}"
                         DisplayMemberBinding="{Binding Name}"
-                        x:Name="TransferComboBox"
                         HorizontalAlignment="Stretch"
                         MinHeight="40" />
               <Button Grid.Column="1"
                       Classes="Secondary"
                       Command="{Binding TransferWorkerCommand}"
-                      CommandParameter="{Binding #TransferComboBox.((vm:WorkshopTransferItem)SelectedItem).Type}"
                       Padding="12,10">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                   <mi:MaterialIcon Kind="SwapHorizontal" Width="18" Height="18" />

@@ -207,8 +207,8 @@
       </Border>
 
       <!-- Branch Description -->
-      <ScrollViewer Grid.Row="1" Padding="16,12">
-        <StackPanel Spacing="8">
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="8" Margin="16,12">
 
           <!-- Branch Description -->
           <TextBlock Text="{Binding SelectedBranchDescription}"
