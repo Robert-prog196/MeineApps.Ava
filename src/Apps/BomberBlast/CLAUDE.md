@@ -7,7 +7,7 @@
 Bomberman-Klon mit SkiaSharp Rendering, AI Pathfinding und mehreren Input-Methoden.
 Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/Cyberpunk.
 
-**Version:** 2.0.0 | **Package-ID:** org.rsdigital.bomberblast | **Status:** Geschlossener Test
+**Version:** 2.0.4 (VersionCode 13) | **Package-ID:** org.rsdigital.bomberblast | **Status:** Geschlossener Test
 
 ## Haupt-Features
 
@@ -88,7 +88,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 | IGameStyleService | Visual Style Persistenz (Classic/Neon) |
 | ICoinService | Coin-Balance, AddCoins, TrySpendCoins |
 | IShopService | PlayerUpgrades Persistenz, Preise, Kauf-Logik |
-| ITutorialService | 5-Schritte Tutorial fuer Level 1 (Move, Bomb, Hide, PowerUp, Exit) |
+| ITutorialService | 6-Schritte Tutorial fuer Level 1 (Move, Bomb, Hide, PowerUp, DefeatEnemies, Exit) |
 | IDailyRewardService | 7-Tage Daily Login Bonus (500-5000 Coins, Tag 5 Extra-Leben) |
 | ICustomizationService | Spieler/Gegner-Skins (Default, Gold, Neon, Cyber, Retro) |
 | IReviewService | In-App Review nach Level 3-5, 14-Tage Cooldown |
@@ -153,11 +153,14 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Tutorial-System (Phase 5)
 
-- 5 interaktive Schritte: Move → PlaceBomb → Warning(Hide) → CollectPowerUp → FindExit
+- 6 interaktive Schritte: Move → PlaceBomb → Warning(Hide) → CollectPowerUp → DefeatEnemies → FindExit
 - Automatischer Start bei Level 1 wenn kein Fortschritt
-- SkiaSharp Overlay (`Graphics/TutorialOverlay.cs`) mit Highlight-Box, Pfeil, Text-Bubble
+- SkiaSharp Overlay (`Graphics/TutorialOverlay.cs`) mit 4-Rechteck-Dimming (Alpha 100), halbtransparenter Text-Bubble (Alpha 128), Highlight-Box
+- Highlight-Bereiche: InputControl, BombButton, GameField (40% Mitte), PowerUp/Exit (ganzes Spielfeld ohne HUD)
+- HUD-Overlap vermieden: `gameAreaRight = screenWidth - 120f` (HUD_LOGICAL_WIDTH)
 - Skip-Button in jedem Schritt, Warning-Schritt mit 3s Auto-Advance
-- RESX-Keys fuer 6 Sprachen (TutorialMove/Bomb/Hide/PowerUp/Exit/Skip)
+- DefeatEnemies-Schritt: Wird getriggert wenn letzter Gegner getötet wird (GameEngine.Collision.cs)
+- RESX-Keys fuer 6 Sprachen (TutorialMove/Bomb/Hide/PowerUp/DefeatEnemies/Exit/Skip)
 
 ## Daily Reward & Monetarisierung (Phase 6)
 
@@ -278,6 +281,8 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **14.02.2026 (14)**: LevelSelect Redesign (WorldGroups mit farbigen Sektionen, UniformGrid 10-Spalten, Lock-Overlay), Tutorial-Overlay Fix (4-Rechteck-Dimming statt SaveLayer+Clear, reduziertes Alpha, DefeatEnemies-Schritt hinzugefügt, HUD-Overlap-Fix), ScrollViewer-Fix in 6 Views (Padding→Margin auf Kind-Element + VerticalScrollBarVisibility=Auto), Achievements-Button im MainMenu hinzugefügt.
+- **13.02.2026 (13)**: Scroll-Padding + Coin-Anzeige Fix: Bottom-Padding in allen 6 ScrollViewern von 60dp auf 80dp erhoeht (ShopView, LevelSelectView, HighScoresView, HelpView, AchievementsView, SettingsView) + Bottom-Spacer in HelpView/SettingsView auf 80dp. LevelSelectViewModel: BalanceChanged-Subscription hinzugefuegt → CoinsText aktualisiert sich live bei Coin-Aenderungen (z.B. Rewarded Ad). IDisposable implementiert fuer saubere Event-Unsubscription.
 - **13.02.2026 (12)**: Immersive-Mode-Fix: OnWindowFocusChanged Override hinzugefügt → EnableImmersiveMode() wird bei Fokus-Wechsel erneut aufgerufen (z.B. nach Ad-Anzeige, Alt-Tab). Vorher blieben Status-/Navigationsleiste nach Fokus-Verlust sichtbar. EnableImmersiveMode() refactored: Native WindowInsetsController (API 30+) + SystemUiFlags Fallback (< API 30).
 - **13.02.2026 (11)**: Fullscreen + Ad-Spacer + Bugfixes: Fullscreen/Immersive Mode in MainActivity (OnCreate+OnResume, WindowInsetsController SystemBars hide + TransientBarsBySwipe), Ad-Banner-Spacer (MainView Panel→Grid mit 50dp Spacer Row, IsAdBannerVisible im MainViewModel mit AdsStateChanged-Event, versteckt im Game-View), Input-Reset Bug gefixt (\_inputManager.Reset() in LoadLevelAsync → keine Geister-Bewegung im nächsten Level), MainMenu-Partikel canvas.Clear(Transparent) → keine Partikel-Spuren mehr. Rewarded-Ad-Timeout 30s→8s (RewardedAdHelper). CelebrationOverlay 2.5s→1.5s, FloatingTextOverlay 1.5s→1.2s (betrifft alle Apps).
 - **13.02.2026 (10)**: UI/UX-Overhaul (15 Punkte): Musik-Crossfade (ISoundService.SetMusicVolume, SoundManager.Update Fade-Logik), View-Transitions (CSS-Klassen PageView+Active mit Opacity DoubleTransition 200ms), 5 Welt-Farbpaletten (Forest/Industrial/Cavern/Sky/Inferno, WorldPalette in GameRenderer, Classic+Neon), Sterne-Animation bei Level-Complete (Scale-Bounce, gestaffelter Delay), PowerUp-Einsammel-Animation (Shrink+Spin+Fade 0.3s), Welt-/Wave-Ankündigungen (großer Text bei Story-Welt-Wechsel + Arcade-Wave-Meilensteine), Coin-Floating-Text über Exit, GameButton-Style mit Scale-Transition (alle Menü-Views), Shop-Kauf-Feedback (Confetti+FloatingText bei Erfolg, roter Text bei zu wenig Coins), Achievement-Toast (AchievementUnlocked Event → goldener FloatingText), Coin-Counter-Animation (GameOverView zählt hoch), MainMenu-Hintergrund-Partikel (SKCanvasView, 25 farbige Punkte ~30fps), LevelSelect Welt-basierte Button-Farben, Tutorial-Replay Button in HelpView. 1 RESX-Key (ReplayTutorial) in 6 Sprachen.
