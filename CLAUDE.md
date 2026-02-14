@@ -86,7 +86,7 @@ Alle 8 Apps im geschlossenen Test, warten auf 12 Tester fuer Produktion.
 | FitnessRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
 | WorkTimePro | v2.0.2 | Banner + Rewarded | 3,99/Mo oder 19,99 Lifetime |
 | HandwerkerImperium | v2.0.3 | Banner + Rewarded | 4,99 Premium |
-| BomberBlast | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
+| BomberBlast | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
 
 ---
 
@@ -182,6 +182,41 @@ _childVM.NavigationRequested += route => CurrentPage = route;
 - `".."` = zurueck zum Parent
 - `"../subpage"` = zum Parent, dann zu subpage
 
+### Android Back-Button Pattern (einheitlich, alle 8 Apps)
+
+```csharp
+// MainViewModel: Double-Back-to-Exit Logik
+public event Action<string>? ExitHintRequested;
+private DateTime _lastBackPress = DateTime.MinValue;
+private const int BackPressIntervalMs = 2000;
+
+public bool HandleBackPressed()
+{
+    // 1. App-spezifische Overlays/Dialoge schließen
+    // 2. Sub-Navigation zurueck
+    // 3. Double-Back-to-Exit
+    var now = DateTime.UtcNow;
+    if ((now - _lastBackPress).TotalMilliseconds < BackPressIntervalMs) return false;
+    _lastBackPress = now;
+    ExitHintRequested?.Invoke(_localization.GetString("PressBackAgainToExit") ?? "...");
+    return true;
+}
+```
+
+```csharp
+// MainActivity: VM holen, Event verdrahten, OnBackPressed delegieren
+_mainVm = App.Services.GetService<MainViewModel>();
+if (_mainVm != null)
+    _mainVm.ExitHintRequested += msg =>
+        RunOnUiThread(() => Toast.MakeText(this, msg, ToastLength.Short)?.Show());
+
+public override void OnBackPressed()
+{
+    if (_mainVm != null && _mainVm.HandleBackPressed()) return;
+    base.OnBackPressed();
+}
+```
+
 ### Error-Handling Pattern
 
 ```csharp
@@ -231,7 +266,7 @@ Dispatcher.UIThread.Post(() => { SomeProperty = newValue; });
 - **MainView Grid**: `RowDefinitions="*,Auto,Auto"` → Row 0 Content, Row 1 Ad-Spacer (64dp), Row 2 Tab-Bar
 - **Ad-Spacer 64dp**: Adaptive Banner (`GetCurrentOrientationAnchoredAdaptiveBannerAdSize`) können 50-60dp+ hoch sein → 64dp als sicherer Spacer
 - **Jeder MainViewModel**: Muss `_adService.ShowBanner()` explizit aufrufen (AdMobHelper verschluckt Fehler)
-- **ScrollViewer Bottom-Padding**: Mindestens 60dp in ALLEN scrollbaren Sub-Views
+- **ScrollViewer Bottom-Margin**: Mindestens 60dp Margin (NICHT Padding!) auf dem Kind-Element in ALLEN scrollbaren Sub-Views
 - **Tab-Bar Heights**: FinanzRechner/FitnessRechner/HandwerkerRechner/WorkTimePro=56, HandwerkerImperium=64, BomberBlast=0
 
 ## AdMob
@@ -303,6 +338,9 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | Enum-Werte englisch in UI | Direktes Binding an Enum-Property | Display-Property mit lokalisiertem Text verwenden, im ViewModel per `GetString()` setzen |
 | Daten erscheinen kurz, verschwinden | `_ = InitializeAsync()` mit `_list.Clear()` raced mit User-Aktionen | Task speichern: `_initTask = InitializeAsync()`, in Methoden `await _initTask` |
 | Sprache immer Englisch trotz Geräteeinstellung | Erkannte Sprache nicht in Preferences gespeichert | `_preferences.Set(key, lang)` nach Gerätesprach-Erkennung in `Initialize()` |
+| `IsAttachedToVisualTree` Kompilierfehler | Property in Avalonia 11.3 entfernt | `using Avalonia.VisualTree;` + `control.GetVisualRoot() != null` verwenden |
+| InsertAsync gibt falsche ID zurück | sqlite-net `InsertAsync()` gibt Zeilen-Count zurück (immer 1), NICHT Auto-Increment-ID. sqlite-net setzt ID direkt auf dem Objekt | Nach `await db.InsertAsync(entity)` NICHT `entity.Id = result` schreiben - `entity.Id` ist bereits korrekt gesetzt |
+| ScrollViewer scrollt nicht | `Padding` auf `ScrollViewer` verhindert Scrollen in Avalonia | `Padding` entfernen, stattdessen `Margin` auf das direkte Kind-Element setzen + `VerticalScrollBarVisibility="Auto"` |
 
 ---
 
