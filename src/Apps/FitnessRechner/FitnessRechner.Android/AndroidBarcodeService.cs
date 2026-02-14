@@ -29,18 +29,27 @@ public class AndroidBarcodeService : Services.IBarcodeService
         _tcs?.TrySetResult(null);
         _tcs = new TaskCompletionSource<string?>();
 
-        // Kamera-Permission pruefen
-        if (ContextCompat.CheckSelfPermission(_activity, Manifest.Permission.Camera)
-            != Permission.Granted)
+        try
         {
-            ActivityCompat.RequestPermissions(
-                _activity,
-                [Manifest.Permission.Camera],
-                CAMERA_PERMISSION_CODE);
+            // Kamera-Permission pruefen
+            if (ContextCompat.CheckSelfPermission(_activity, Manifest.Permission.Camera)
+                != Permission.Granted)
+            {
+                ActivityCompat.RequestPermissions(
+                    _activity,
+                    [Manifest.Permission.Camera],
+                    CAMERA_PERMISSION_CODE);
+            }
+            else
+            {
+                StartScannerActivity();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            StartScannerActivity();
+            // Fehler beim Permission-Check oder Activity-Start → sicher abbrechen
+            global::Android.Util.Log.Error("BarcodeService", $"ScanBarcodeAsync Fehler: {ex}");
+            _tcs.TrySetResult(null);
         }
 
         return _tcs.Task;
@@ -48,8 +57,17 @@ public class AndroidBarcodeService : Services.IBarcodeService
 
     private void StartScannerActivity()
     {
-        var intent = new Intent(_activity, typeof(BarcodeScannerActivity));
-        _activity.StartActivityForResult(intent, BarcodeScannerActivity.REQUEST_CODE);
+        try
+        {
+            var intent = new Intent(_activity, typeof(BarcodeScannerActivity));
+            _activity.StartActivityForResult(intent, BarcodeScannerActivity.REQUEST_CODE);
+        }
+        catch (Exception ex)
+        {
+            // Activity-Start fehlgeschlagen → null zurueckgeben
+            global::Android.Util.Log.Error("BarcodeService", $"StartScannerActivity Fehler: {ex}");
+            _tcs?.TrySetResult(null);
+        }
     }
 
     /// <summary>
@@ -71,7 +89,9 @@ public class AndroidBarcodeService : Services.IBarcodeService
     }
 
     /// <summary>
-    /// Wird von MainActivity.OnRequestPermissionsResult aufgerufen
+    /// Wird von MainActivity.OnRequestPermissionsResult aufgerufen.
+    /// Nach Permission-Grant wird die Scanner-Activity mit kurzem Delay gestartet,
+    /// um sicherzustellen dass das System die Permission vollstaendig verarbeitet hat.
     /// </summary>
     public void HandlePermissionResult(int requestCode, Permission[] grantResults)
     {
@@ -79,7 +99,28 @@ public class AndroidBarcodeService : Services.IBarcodeService
 
         if (grantResults.Length > 0 && grantResults[0] == Permission.Granted)
         {
-            StartScannerActivity();
+            // Delay nach Permission-Grant: Das System braucht einen Moment
+            // um die Kamera-Permission zu aktivieren. Ohne Delay kann CameraX crashen.
+            // 500ms statt 300ms - auf aelteren Geraeten braucht Permission-Aktivierung laenger.
+            _activity.Window?.DecorView?.PostDelayed(() =>
+            {
+                try
+                {
+                    // Prüfen ob Activity noch aktiv ist
+                    if (_activity.IsFinishing || _activity.IsDestroyed)
+                    {
+                        _tcs?.TrySetResult(null);
+                        return;
+                    }
+                    StartScannerActivity();
+                }
+                catch (Exception ex)
+                {
+                    global::Android.Util.Log.Error("BarcodeService",
+                        $"Scanner-Start nach Permission fehlgeschlagen: {ex}");
+                    _tcs?.TrySetResult(null);
+                }
+            }, 500);
         }
         else
         {

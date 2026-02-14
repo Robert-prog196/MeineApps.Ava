@@ -105,51 +105,79 @@ public class BarcodeScannerActivity : AndroidX.AppCompat.App.AppCompatActivity
 
     private void StartCamera()
     {
-        var cameraProviderFuture = ProcessCameraProvider.GetInstance(this);
-        cameraProviderFuture!.AddListener(new Java.Lang.Runnable(() =>
+        try
         {
-            try
+            // Kamera-Permission nochmal prüfen (kann nach Activity-Restart verloren gehen)
+            if (AndroidX.Core.Content.ContextCompat.CheckSelfPermission(this, global::Android.Manifest.Permission.Camera)
+                != global::Android.Content.PM.Permission.Granted)
             {
-                var cameraProvider = (ProcessCameraProvider)cameraProviderFuture.Get()!;
-                BindCameraUseCases(cameraProvider);
-            }
-            catch (Exception ex)
-            {
-                global::Android.Util.Log.Error("BarcodeScanner", $"Kamera-Start fehlgeschlagen: {ex}");
+                global::Android.Util.Log.Warn("BarcodeScanner", "Kamera-Permission fehlt beim Start");
                 SetResult(Result.Canceled);
                 Finish();
+                return;
             }
-        }), ContextCompat.GetMainExecutor(this)!);
+
+            var cameraProviderFuture = ProcessCameraProvider.GetInstance(this);
+            cameraProviderFuture!.AddListener(new Java.Lang.Runnable(() =>
+            {
+                try
+                {
+                    var cameraProvider = (ProcessCameraProvider)cameraProviderFuture.Get()!;
+                    BindCameraUseCases(cameraProvider);
+                }
+                catch (Exception ex)
+                {
+                    global::Android.Util.Log.Error("BarcodeScanner", $"Kamera-Start fehlgeschlagen: {ex}");
+                    SetResult(Result.Canceled);
+                    Finish();
+                }
+            }), ContextCompat.GetMainExecutor(this)!);
+        }
+        catch (Exception ex)
+        {
+            // CameraProvider-Initialisierung fehlgeschlagen
+            global::Android.Util.Log.Error("BarcodeScanner", $"CameraProvider Fehler: {ex}");
+            SetResult(Result.Canceled);
+            Finish();
+        }
     }
 
     private void BindCameraUseCases(ProcessCameraProvider cameraProvider)
     {
-        // Preview
-        var preview = new Preview.Builder()!
-            .Build()!;
-        var mainExecutor = ContextCompat.GetMainExecutor(this)!;
-        preview.SetSurfaceProvider(mainExecutor, _previewView!.SurfaceProvider);
-
-        // Image Analysis fuer Barcode-Erkennung
-        var imageAnalysis = new ImageAnalysis.Builder()!
-            .SetTargetResolution(new global::Android.Util.Size(1280, 720))!
-            .SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)!
-            .Build()!;
-
-        var executor = Executors.NewSingleThreadExecutor()!;
-        imageAnalysis.SetAnalyzer(executor, new BarcodeAnalyzer(OnBarcodeFound));
-
-        // Kamera binden
-        var cameraSelector = CameraSelector.DefaultBackCamera!;
-
         try
         {
+            // Preview - prüfen ob Surface noch verfügbar ist
+            if (_previewView == null || IsFinishing || IsDestroyed)
+            {
+                global::Android.Util.Log.Warn("BarcodeScanner", "Activity nicht mehr aktiv, Kamera-Binding abgebrochen");
+                return;
+            }
+
+            var preview = new Preview.Builder()!
+                .Build()!;
+            var mainExecutor = ContextCompat.GetMainExecutor(this)!;
+            preview.SetSurfaceProvider(mainExecutor, _previewView.SurfaceProvider);
+
+            // Image Analysis fuer Barcode-Erkennung
+            var imageAnalysis = new ImageAnalysis.Builder()!
+                .SetTargetResolution(new global::Android.Util.Size(1280, 720))!
+                .SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)!
+                .Build()!;
+
+            var executor = Executors.NewSingleThreadExecutor()!;
+            imageAnalysis.SetAnalyzer(executor, new BarcodeAnalyzer(OnBarcodeFound));
+
+            // Kamera binden
+            var cameraSelector = CameraSelector.DefaultBackCamera!;
             cameraProvider.UnbindAll();
             cameraProvider.BindToLifecycle(this, cameraSelector, preview, imageAnalysis);
         }
         catch (Exception ex)
         {
             global::Android.Util.Log.Error("BarcodeScanner", $"Kamera-Binding fehlgeschlagen: {ex}");
+            // Bei Binding-Fehler Activity sicher beenden statt halb-funktional zu bleiben
+            SetResult(Result.Canceled);
+            Finish();
         }
     }
 

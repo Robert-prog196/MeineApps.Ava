@@ -46,6 +46,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public event Action? CelebrationRequested;
 
+    /// <summary>Wird ausgelöst um einen Exit-Hinweis anzuzeigen (z.B. Toast "Nochmal drücken zum Beenden").</summary>
+    public event Action<string>? ExitHintRequested;
+
     public MainViewModel(
         IPurchaseService purchaseService,
         IAdService adService,
@@ -784,11 +787,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     #endregion
 
+    #region Back-Navigation (Double-Back-to-Exit)
+
+    private DateTime _lastBackPress = DateTime.MinValue;
+    private const int BackPressIntervalMs = 2000;
+
     /// <summary>
-    /// Versucht eine Ebene zurückzunavigieren (Overlays schließen, Sub-Views verlassen).
-    /// Gibt true zurück wenn etwas geschlossen wurde, false wenn bereits auf Root-Ebene.
+    /// Behandelt die Zurück-Taste. Gibt true zurück wenn konsumiert (App bleibt offen),
+    /// false wenn die App geschlossen werden darf (Double-Back).
+    /// Reihenfolge: Overlays → Calculator → ProgressVM Overlays → Tab zurück → Double-Back-to-Exit.
     /// </summary>
-    public bool TryGoBack()
+    public bool HandleBackPressed()
     {
         // 1. Achievements-Overlay offen → schließen
         if (ShowAchievements)
@@ -811,7 +820,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return true;
         }
 
-        // 2. ProgressVM Overlays prüfen
+        // 4. ProgressVM Overlays prüfen
         if (SelectedTab == 1)
         {
             var vm = ProgressViewModel;
@@ -823,16 +832,25 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (vm.ShowAddFoodPanel) { vm.ShowAddFoodPanel = false; return true; }
         }
 
-        // 3. Nicht auf Home-Tab → zum Home-Tab wechseln
+        // 5. Nicht auf Home-Tab → zum Home-Tab wechseln
         if (SelectedTab != 0)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() => SelectedTab = 0);
             return true;
         }
 
-        // 4. Auf Root-Ebene → false (App kann beendet werden)
-        return false;
+        // 6. Auf Startseite: Double-Back-to-Exit
+        var now = DateTime.UtcNow;
+        if ((now - _lastBackPress).TotalMilliseconds < BackPressIntervalMs)
+            return false; // App beenden lassen
+
+        _lastBackPress = now;
+        var msg = _localization.GetString("PressBackAgainToExit") ?? "Erneut drücken zum Beenden";
+        ExitHintRequested?.Invoke(msg);
+        return true; // Konsumiert
     }
+
+    #endregion
 
     [RelayCommand]
     private void OpenSettings() => SelectedTab = 3;

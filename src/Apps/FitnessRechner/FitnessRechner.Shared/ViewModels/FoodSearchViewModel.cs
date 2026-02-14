@@ -576,20 +576,28 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // Nativen Barcode-Scanner starten (Android: CameraX, Desktop: null)
-        var barcode = await _barcodeService.ScanBarcodeAsync();
-
-        _scanLimitService.UseOneScan();
-        UpdateRemainingScans();
-
-        if (!string.IsNullOrEmpty(barcode))
+        try
         {
-            // Barcode erkannt → direkt zur Scanner-Ergebnis-Seite mit Barcode
-            NavigationRequested?.Invoke($"BarcodeScannerPage?barcode={barcode}");
+            // Nativen Barcode-Scanner starten (Android: CameraX, Desktop: null)
+            var barcode = await _barcodeService.ScanBarcodeAsync();
+
+            _scanLimitService.UseOneScan();
+            UpdateRemainingScans();
+
+            if (!string.IsNullOrEmpty(barcode))
+            {
+                // Barcode erkannt → direkt zur Scanner-Ergebnis-Seite mit Barcode
+                NavigationRequested?.Invoke($"BarcodeScannerPage?barcode={barcode}");
+            }
+            else
+            {
+                // Kein Barcode (abgebrochen oder Desktop) → manuelle Eingabe
+                NavigationRequested?.Invoke("BarcodeScannerPage");
+            }
         }
-        else
+        catch (Exception)
         {
-            // Kein Barcode (abgebrochen oder Desktop) → manuelle Eingabe
+            // Kamera-Fehler (z.B. nach Permission-Dialog) → manuelle Eingabe als Fallback
             NavigationRequested?.Invoke("BarcodeScannerPage");
         }
     }
@@ -608,18 +616,26 @@ public partial class FoodSearchViewModel : ObservableObject, IDisposable
             _scanLimitService.AddScans(5);
             UpdateRemainingScans();
 
-            // Blockierten Scan jetzt ausfuehren
-            var barcode = await _barcodeService.ScanBarcodeAsync();
-
-            _scanLimitService.UseOneScan();
-            UpdateRemainingScans();
-
-            if (!string.IsNullOrEmpty(barcode))
+            try
             {
-                NavigationRequested?.Invoke($"BarcodeScannerPage?barcode={barcode}");
+                // Blockierten Scan jetzt ausfuehren
+                var barcode = await _barcodeService.ScanBarcodeAsync();
+
+                _scanLimitService.UseOneScan();
+                UpdateRemainingScans();
+
+                if (!string.IsNullOrEmpty(barcode))
+                {
+                    NavigationRequested?.Invoke($"BarcodeScannerPage?barcode={barcode}");
+                }
+                else
+                {
+                    NavigationRequested?.Invoke("BarcodeScannerPage");
+                }
             }
-            else
+            catch (Exception)
             {
+                // Kamera-Fehler → manuelle Eingabe als Fallback
                 NavigationRequested?.Invoke("BarcodeScannerPage");
             }
         }
