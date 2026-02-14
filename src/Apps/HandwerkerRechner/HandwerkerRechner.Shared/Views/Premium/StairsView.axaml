@@ -10,25 +10,28 @@
 
     <!-- Row 0: Header -->
     <Border Grid.Row="0"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,0,0,1"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="16,12">
+            Background="{DynamicResource AccentBrush}"
+            Padding="16,12,16,20"
+            CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Grid.Column="0"
-                Classes="Text"
-                Command="{Binding GoBackCommand}"
-                Padding="4"
-                VerticalAlignment="Center">
-          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        <Button Command="{Binding GoBackCommand}"
+                Background="#33FFFFFF"
+                CornerRadius="20"
+                Width="40" Height="40"
+                Padding="0">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
-        <TextBlock Grid.Column="1"
-                   Text="{loc:Translate CalcStairs}"
-                   FontSize="20" FontWeight="Bold"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
-                   VerticalAlignment="Center"
-                   Margin="12,0,0,0" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                    Margin="12,0,0,0" VerticalAlignment="Center">
+          <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+            <mi:MaterialIcon Kind="Stairs" Width="22" Height="22"
+                             Foreground="White"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <TextBlock Text="{loc:Translate StairsCalculator}"
+                     FontSize="20" FontWeight="Bold" Foreground="White"
+                     VerticalAlignment="Center" />
+        </StackPanel>
       </Grid>
     </Border>
 
@@ -37,7 +40,7 @@
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Eingabe: Geschosshöhe + Treppenbreite -->
-        <Border Classes="Card" Padding="16" CornerRadius="12">
+        <Border Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate StairsDimensions}"
                        FontSize="16" FontWeight="SemiBold"
@@ -61,7 +64,7 @@
         </Border>
 
         <!-- Kosten -->
-        <Border Classes="Card" Padding="16" CornerRadius="12">
+        <Border Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate CostCalculation}"
                        FontSize="16" FontWeight="SemiBold"
@@ -75,7 +78,7 @@
         </Border>
 
         <!-- Ergebnisse -->
-        <Border Classes="Card Elevated" Padding="16" CornerRadius="12"
+        <Border Classes="Card Elevated StatsCard"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate Result}"
@@ -211,11 +214,7 @@
     </ScrollViewer>
 
     <!-- Row 2: Action Buttons -->
-    <Border Grid.Row="2"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,1,0,0"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="16,12">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Classes="Outlined"

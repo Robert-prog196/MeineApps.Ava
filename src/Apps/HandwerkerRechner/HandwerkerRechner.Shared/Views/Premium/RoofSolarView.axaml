@@ -15,21 +15,28 @@
 
     <!-- Header -->
     <Border Grid.Row="0"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,0,0,1"
-            BorderBrush="{DynamicResource CardBorderBrush}"
-            Padding="16,12">
+            Background="{DynamicResource AccentBrush}"
+            Padding="16,12,16,20"
+            CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Grid.Column="0" Classes="Text"
-                Command="{Binding GoBackCommand}"
-                Padding="8">
-          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        <Button Command="{Binding GoBackCommand}"
+                Background="#33FFFFFF"
+                CornerRadius="20"
+                Width="40" Height="40"
+                Padding="0">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
-        <TextBlock Grid.Column="1" Text="{loc:Translate CategoryRoofSolar}"
-                   FontSize="20" FontWeight="Bold"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
-                   VerticalAlignment="Center" Margin="12,0,0,0" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                    Margin="12,0,0,0" VerticalAlignment="Center">
+          <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+            <mi:MaterialIcon Kind="SolarPanel" Width="22" Height="22"
+                             Foreground="White"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <TextBlock Text="{loc:Translate RoofSolarCalculator}"
+                     FontSize="20" FontWeight="Bold" Foreground="White"
+                     VerticalAlignment="Center" />
+        </StackPanel>
       </Grid>
     </Border>
 
@@ -38,7 +45,7 @@
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Calculator Selector -->
-        <Border Classes="Card" Padding="16">
+        <Border Classes="Card StatsCard">
           <ComboBox ItemsSource="{Binding Calculators}"
                     SelectedIndex="{Binding SelectedCalculator}"
                     HorizontalAlignment="Stretch" />
@@ -49,7 +56,7 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card" Padding="16">
+            <Border Classes="Card StatsCard">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate RoofPitch}"
                            FontSize="16" FontWeight="SemiBold"
@@ -72,7 +79,7 @@
             </Border>
 
             <!-- Results -->
-            <Border Classes="Card Elevated" Padding="16"
+            <Border Classes="Card Elevated StatsCard"
                     IsVisible="{Binding HasResult}">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
@@ -136,7 +143,7 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card" Padding="16">
+            <Border Classes="Card StatsCard">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate RoofTiles}"
                            FontSize="16" FontWeight="SemiBold"
@@ -167,7 +174,7 @@
             </Border>
 
             <!-- Results -->
-            <Border Classes="Card Elevated" Padding="16"
+            <Border Classes="Card Elevated StatsCard"
                     IsVisible="{Binding HasResult}">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
@@ -241,7 +248,7 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card" Padding="16">
+            <Border Classes="Card StatsCard">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate SolarYield}"
                            FontSize="16" FontWeight="SemiBold"
@@ -288,7 +295,7 @@
             </Border>
 
             <!-- Results -->
-            <Border Classes="Card Elevated" Padding="16"
+            <Border Classes="Card Elevated StatsCard"
                     IsVisible="{Binding HasResult}">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
@@ -380,10 +387,7 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12"
-            Background="{DynamicResource SurfaceBrush}"
-            BorderThickness="0,1,0,0"
-            BorderBrush="{DynamicResource CardBorderBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
