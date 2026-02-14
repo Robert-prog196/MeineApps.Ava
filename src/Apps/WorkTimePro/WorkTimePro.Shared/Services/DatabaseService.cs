@@ -24,9 +24,12 @@ public class DatabaseService : IDatabaseService
 
     private Task<SQLiteAsyncConnection> GetDatabaseAsync()
     {
-        // Alle Aufrufer warten auf denselben Task - keine Race-Condition möglich
+        // Alle Aufrufer warten auf denselben Task - keine Race-Condition möglich.
+        // Bei Fehler wird der Task zurückgesetzt, damit ein Retry möglich ist.
         lock (_initLock)
         {
+            if (_initTask != null && _initTask.IsFaulted)
+                _initTask = null;
             _initTask ??= InitializeDatabaseAsync();
         }
         return _initTask!;
@@ -50,12 +53,12 @@ public class DatabaseService : IDatabaseService
         await _database.CreateTableAsync<ShiftPattern>();
         await _database.CreateTableAsync<ShiftAssignment>();
 
-        // Indizes für häufig abgefragte FK-Spalten
-        await _database.ExecuteAsync("CREATE UNIQUE INDEX IF NOT EXISTS idx_workday_date ON WorkDay(Date)");
-        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_timeentry_workdayid ON TimeEntry(WorkDayId)");
-        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_pauseentry_workdayid ON PauseEntry(WorkDayId)");
-        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_vacation_year ON VacationEntry(Year)");
-        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_shiftassignment_date ON ShiftAssignment(Date)");
+        // Indizes für häufig abgefragte FK-Spalten (Tabellennamen müssen mit [Table]-Attribut übereinstimmen!)
+        await _database.ExecuteAsync("CREATE UNIQUE INDEX IF NOT EXISTS idx_workday_date ON WorkDays(Date)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_timeentry_workdayid ON TimeEntries(WorkDayId)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_pauseentry_workdayid ON PauseEntries(WorkDayId)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_vacation_year ON VacationEntries(Year)");
+        await _database.ExecuteAsync("CREATE INDEX IF NOT EXISTS idx_shiftassignment_date ON ShiftAssignments(Date)");
 
         return _database;
     }
