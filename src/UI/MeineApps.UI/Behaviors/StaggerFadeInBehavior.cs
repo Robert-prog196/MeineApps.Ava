@@ -4,6 +4,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 
 namespace MeineApps.UI.Behaviors;
@@ -56,6 +57,13 @@ public class StaggerFadeInBehavior : Behavior<Control>
 
         AssociatedObject.Opacity = 0;
         AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
+
+        // Fallback: Falls Control bereits im Visual Tree ist, wird AttachedToVisualTree
+        // nicht mehr gefeuert → Animation direkt starten
+        if (AssociatedObject.GetVisualRoot() != null)
+        {
+            _ = RunFadeInAsync();
+        }
     }
 
     protected override void OnDetaching()
@@ -64,9 +72,20 @@ public class StaggerFadeInBehavior : Behavior<Control>
 
         if (AssociatedObject == null) return;
         AssociatedObject.AttachedToVisualTree -= OnAttachedToVisualTree;
+
+        // Sicherstellen dass Element sichtbar bleibt wenn Behavior entfernt wird
+        AssociatedObject.Opacity = 1;
     }
 
     private async void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        await RunFadeInAsync();
+    }
+
+    /// <summary>
+    /// Führt die Fade-In-Animation aus und stellt sicher, dass Opacity am Ende IMMER 1 ist.
+    /// </summary>
+    private async Task RunFadeInAsync()
     {
         if (AssociatedObject == null) return;
 
@@ -111,6 +130,15 @@ public class StaggerFadeInBehavior : Behavior<Control>
             AssociatedObject.RenderTransform ??= new TranslateTransform();
 
             await animation.RunAsync(AssociatedObject);
+
+            // Sicherheits-Fallback: Opacity IMMER auf 1 setzen nach Animation
+            // (RunAsync kann ohne Exception enden aber Opacity nicht korrekt setzen)
+            if (AssociatedObject != null)
+            {
+                AssociatedObject.Opacity = 1;
+                if (AssociatedObject.RenderTransform is TranslateTransform tt)
+                    tt.Y = 0;
+            }
         }
         catch
         {

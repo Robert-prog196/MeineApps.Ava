@@ -3,6 +3,7 @@ using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 
 namespace MeineApps.Core.Ava.Behaviors;
@@ -68,6 +69,13 @@ public class FadeInBehavior : Behavior<Control>
 
         AssociatedObject.Opacity = 0;
         AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
+
+        // Fallback: Falls Control bereits im Visual Tree ist, wird AttachedToVisualTree
+        // nicht mehr gefeuert → Animation direkt starten
+        if (AssociatedObject.GetVisualRoot() != null)
+        {
+            _ = RunFadeInAsync();
+        }
     }
 
     protected override void OnDetaching()
@@ -77,9 +85,19 @@ public class FadeInBehavior : Behavior<Control>
         if (AssociatedObject == null) return;
 
         AssociatedObject.AttachedToVisualTree -= OnAttachedToVisualTree;
+        // Sicherstellen dass Element sichtbar bleibt
+        AssociatedObject.Opacity = 1;
     }
 
     private async void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        await RunFadeInAsync();
+    }
+
+    /// <summary>
+    /// Führt die Fade-In-Animation aus und stellt sicher, dass Opacity am Ende IMMER 1 ist.
+    /// </summary>
+    private async Task RunFadeInAsync()
     {
         if (AssociatedObject == null) return;
 
@@ -110,6 +128,10 @@ public class FadeInBehavior : Behavior<Control>
             };
 
             await animation.RunAsync(AssociatedObject);
+
+            // Sicherheits-Fallback: Opacity IMMER auf 1 setzen nach Animation
+            if (AssociatedObject != null)
+                AssociatedObject.Opacity = 1;
         }
         catch
         {
