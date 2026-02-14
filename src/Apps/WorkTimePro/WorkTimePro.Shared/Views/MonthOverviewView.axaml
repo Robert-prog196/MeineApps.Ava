@@ -31,7 +31,7 @@
       <StackPanel Spacing="12" Margin="16">
 
         <!-- ==================== Month Navigation ==================== -->
-        <Border Classes="CardElevated">
+        <Border Classes="CardElevated StatsCard">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
                     Command="{Binding PreviousMonthCommand}">
@@ -67,7 +67,7 @@
         </Border>
 
         <!-- ==================== Summary ==================== -->
-        <Border Classes="CardElevated">
+        <Border Classes="CardElevated StatsCard">
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
                 ColumnSpacing="16" RowSpacing="16">
 
@@ -133,7 +133,7 @@
         </Border>
 
         <!-- ==================== Absences ==================== -->
-        <Border Classes="Card">
+        <Border Classes="Card StatsCard">
           <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Center"
                       Spacing="32">
@@ -185,7 +185,7 @@
         </Border>
 
         <!-- ==================== Weeks ==================== -->
-        <Border Classes="Card">
+        <Border Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="CalendarWeek" Width="20" Height="20"

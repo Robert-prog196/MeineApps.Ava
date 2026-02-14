@@ -31,7 +31,7 @@
       <Grid RowDefinitions="Auto,Auto,*,Auto">
 
         <!-- ==================== Week Navigation ==================== -->
-        <Border Grid.Row="0" Classes="Card"
+        <Border Grid.Row="0" Classes="Card StatsCard"
                 Margin="16,8,16,0"
                 CornerRadius="0,0,12,12">
           <Grid ColumnDefinitions="Auto,*,Auto">
@@ -61,7 +61,7 @@
         </Border>
 
         <!-- ==================== Shift Pattern Selection ==================== -->
-        <Border Grid.Row="1" Classes="Card" Margin="16,8">
+        <Border Grid.Row="1" Classes="Card StatsCard" Margin="16,8">
           <StackPanel Spacing="8">
             <TextBlock Text="{loc:Translate SelectShiftPattern}"
                        FontSize="12"

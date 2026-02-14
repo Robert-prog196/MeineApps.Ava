@@ -56,7 +56,7 @@
                  HorizontalAlignment="Center" />
 
       <!-- ==================== Status Card ==================== -->
-      <Border Classes="CardElevated" Padding="24">
+      <Border Classes="CardElevated StatsCard" Padding="24">
         <StackPanel Spacing="20">
 
           <!-- Status Badge mit BrushTransition -->
@@ -167,7 +167,7 @@
       </Border>
 
       <!-- ==================== Time Metrics Card ==================== -->
-      <Border Classes="Card" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16">
         <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto"
               RowSpacing="12">
 
@@ -241,7 +241,7 @@
       </Border>
 
       <!-- ==================== Earnings Card (nur wenn Stundenlohn konfiguriert) ==================== -->
-      <Border Classes="Card" Padding="12"
+      <Border Classes="Card StatsCard" Padding="12"
               BorderBrush="{DynamicResource SuccessBrush}"
               BorderThickness="1"
               CornerRadius="12"

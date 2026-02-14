@@ -12,7 +12,7 @@
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Month Navigation ==================== -->
-        <Border Classes="CardElevated" Padding="16">
+        <Border Classes="CardElevated StatsCard" Padding="16">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
                     Command="{Binding PreviousMonthCommand}">
@@ -42,7 +42,7 @@
                 HorizontalAlignment="Center" />
 
         <!-- ==================== Month Summary ==================== -->
-        <Border Classes="Card" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16">
           <Grid ColumnDefinitions="*,*">
             <StackPanel Grid.Column="0" HorizontalAlignment="Center">
               <TextBlock Text="{loc:Translate WorkTime}"
@@ -69,7 +69,7 @@
         </Border>
 
         <!-- ==================== Calendar Grid ==================== -->
-        <Border Classes="Card" Padding="8">
+        <Border Classes="Card StatsCard" Padding="8">
           <StackPanel Spacing="4">
 
             <!-- Weekday Header -->
@@ -181,7 +181,7 @@
         </Border>
 
         <!-- ==================== Heatmap Legend ==================== -->
-        <Border Classes="Card" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16">
           <StackPanel Spacing="8">
             <TextBlock Text="{loc:Translate Legend}"
                        FontSize="16" FontWeight="Bold"

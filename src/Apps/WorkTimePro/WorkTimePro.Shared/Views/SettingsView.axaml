@@ -11,22 +11,26 @@
     <conv:RoundingDisplayConverter x:Key="RoundingDisplayConverter" />
   </UserControl.Resources>
 
-  <ScrollViewer>
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
     <StackPanel Spacing="12" Margin="16">
 
+      <!-- Header -->
+      <TextBlock Text="{loc:Translate Settings}"
+                 FontSize="22" FontWeight="Bold"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 Margin="0,4,0,4" />
+
       <!-- ==================== Premium Status ==================== -->
-      <Border Classes="CardElevated"
-              Background="{DynamicResource SecondaryBrush}">
+      <Border Classes="SettingsCard PremiumShimmer">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
                              Foreground="#FFD700" />
             <TextBlock Text="{loc:Translate PremiumStatus}"
-                       FontSize="18" FontWeight="Bold"
+                       FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <!-- Status Badge -->
           <Border Background="{Binding PremiumStatusColor}"
@@ -66,7 +70,7 @@
       </Border>
 
       <!-- ==================== Work Time Settings ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="ClockOutline" Width="20" Height="20"
@@ -76,7 +80,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <!-- Daily Hours -->
           <Grid ColumnDefinitions="*,120">
@@ -235,7 +238,7 @@
       </Border>
 
       <!-- ==================== Auto-Pause ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="Coffee" Width="20" Height="20"
@@ -250,7 +253,6 @@
                           IsChecked="{Binding AutoPauseEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <TextBlock Text="{loc:Translate AutoPauseDescription}"
                      FontSize="12"
@@ -279,7 +281,7 @@
       </Border>
 
       <!-- ==================== Reminders ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Bell" Width="20" Height="20"
@@ -289,7 +291,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <!-- Morning -->
           <Grid ColumnDefinitions="Auto,*,Auto">
@@ -333,7 +334,7 @@
       </Border>
 
       <!-- ==================== Vacation ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Beach" Width="20" Height="20"
@@ -343,7 +344,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <Grid ColumnDefinitions="*,100">
             <TextBlock Text="{loc:Translate VacationDaysPerYear}"
@@ -362,7 +362,7 @@
       </Border>
 
       <!-- ==================== Holidays ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="PartyPopper" Width="20" Height="20"
@@ -372,7 +372,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <TextBlock Text="{loc:Translate Region}"
                      FontSize="12"
@@ -385,7 +384,7 @@
       </Border>
 
       <!-- ==================== Legal Compliance ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="8">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="Shield" Width="20" Height="20"
@@ -400,7 +399,6 @@
                           IsChecked="{Binding LegalComplianceEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <TextBlock Text="{loc:Translate LegalComplianceDescription}"
                      FontSize="12"
@@ -409,7 +407,7 @@
       </Border>
 
       <!-- ==================== Overtime Warning ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="TrendingUp" Width="20" Height="20"
@@ -424,7 +422,6 @@
                           IsChecked="{Binding OvertimeWarningEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <Grid ColumnDefinitions="*,100" IsVisible="{Binding OvertimeWarningEnabled}">
             <TextBlock Text="{loc:Translate OvertimeWarningHours}"
@@ -439,7 +436,7 @@
       </Border>
 
       <!-- ==================== Theme Selection ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Palette" Width="20" Height="20"
@@ -449,7 +446,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
                 ColumnSpacing="8" RowSpacing="8">
@@ -667,7 +663,7 @@
       </Border>
 
       <!-- ==================== Language Selection ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Translate" Width="20" Height="20"
@@ -677,7 +673,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <WrapPanel Orientation="Horizontal">
             <Panel>
@@ -745,7 +740,7 @@
       </Border>
 
       <!-- ==================== Legal Sources ==================== -->
-      <Border Classes="Card">
+      <Border Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="BookOpen" Width="20" Height="20"
@@ -755,7 +750,6 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <Border Height="1" Background="{DynamicResource PrimaryBrush}" Opacity="0.3" Margin="0,4,0,8" />
 
           <TextBlock Text="{loc:Translate LegalSourcesDescription}"
                      FontSize="12"

@@ -43,7 +43,7 @@
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Quota Card ==================== -->
-        <Border Classes="CardElevated">
+        <Border Classes="CardElevated StatsCard">
           <Grid RowDefinitions="Auto,Auto,Auto"
                 ColumnDefinitions="*,Auto" RowSpacing="8">
             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -73,7 +73,7 @@
         </Border>
 
         <!-- ==================== Add New Vacation ==================== -->
-        <Border Classes="Card"
+        <Border Classes="Card StatsCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate AddNewVacation}"
@@ -140,7 +140,7 @@
         </Border>
 
         <!-- ==================== Premium Notice ==================== -->
-        <Border Classes="CardElevated"
+        <Border Classes="CardElevated StatsCard"
                 IsVisible="{Binding !IsPremium}">
           <StackPanel Spacing="8" HorizontalAlignment="Center">
             <mi:MaterialIcon Kind="Crown" Width="36" Height="36"

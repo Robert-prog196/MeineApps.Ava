@@ -277,3 +277,4 @@ WorkTimeTable
 Year
 YearOverview
 Yes
+AbsenceOverview

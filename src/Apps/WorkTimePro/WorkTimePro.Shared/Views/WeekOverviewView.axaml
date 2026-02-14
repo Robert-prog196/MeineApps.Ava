@@ -11,7 +11,7 @@
     <StackPanel Spacing="16" Margin="16">
 
       <!-- ==================== Week Navigation ==================== -->
-      <Border Classes="CardElevated" Padding="16">
+      <Border Classes="CardElevated StatsCard" Padding="16">
         <Grid ColumnDefinitions="Auto,*,Auto">
           <Button Grid.Column="0" Classes="Text"
                   Command="{Binding PreviousWeekCommand}">
@@ -47,7 +47,7 @@
               HorizontalAlignment="Center" />
 
       <!-- ==================== Week Summary ==================== -->
-      <Border Classes="Card" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16">
         <StackPanel Spacing="16">
 
           <!-- Progress Bar -->
@@ -144,7 +144,7 @@
       </Border>
 
       <!-- ==================== Days List ==================== -->
-      <Border Classes="Card" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16">
         <StackPanel Spacing="8">
           <TextBlock Text="{loc:Translate DaysThisWeek}"
                      FontSize="16" FontWeight="Bold"

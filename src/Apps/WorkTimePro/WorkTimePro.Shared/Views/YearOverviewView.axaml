@@ -51,7 +51,7 @@
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Year Summary Card ==================== -->
-        <Border Classes="CardElevated">
+        <Border Classes="CardElevated StatsCard">
           <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                 ColumnDefinitions="*,*"
                 RowSpacing="12">
@@ -149,7 +149,7 @@
         </Border>
 
         <!-- ==================== Chart: Monthly Work Hours ==================== -->
-        <Border Classes="Card"
+        <Border Classes="Card StatsCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel>
             <TextBlock Text="{loc:Translate WorkHoursPerMonth}"
@@ -164,7 +164,7 @@
         </Border>
 
         <!-- ==================== Chart: Cumulative Balance ==================== -->
-        <Border Classes="Card"
+        <Border Classes="Card StatsCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel>
             <TextBlock Text="{loc:Translate OvertimeDevelopment}"

@@ -20,7 +20,7 @@
               Opacity="1">
         <Border.Transitions>
           <Transitions>
-            <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut" />
           </Transitions>
         </Border.Transitions>
         <views:TodayView />
@@ -31,7 +31,7 @@
               Opacity="1">
         <Border.Transitions>
           <Transitions>
-            <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut" />
           </Transitions>
         </Border.Transitions>
         <views:WeekOverviewView DataContext="{Binding WeekVm}" />
@@ -42,7 +42,7 @@
               Opacity="1">
         <Border.Transitions>
           <Transitions>
-            <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut" />
           </Transitions>
         </Border.Transitions>
         <views:CalendarView DataContext="{Binding CalendarVm}" />
@@ -53,7 +53,7 @@
               Opacity="1">
         <Border.Transitions>
           <Transitions>
-            <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut" />
           </Transitions>
         </Border.Transitions>
         <views:StatisticsView DataContext="{Binding StatisticsVm}" />
@@ -64,7 +64,7 @@
               Opacity="1">
         <Border.Transitions>
           <Transitions>
-            <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+            <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="CubicEaseOut" />
           </Transitions>
         </Border.Transitions>
         <views:SettingsView DataContext="{Binding SettingsVm}" />

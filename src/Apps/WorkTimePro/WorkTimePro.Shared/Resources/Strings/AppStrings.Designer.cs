@@ -2562,5 +2562,12 @@ namespace WorkTimePro.Resources.Strings {
                 return ResourceManager.GetString("SettingsChangedWarning", resourceCulture);
             }
         }
+
+        internal static string AbsenceOverview {
+            get {
+                return ResourceManager.GetString("AbsenceOverview", resourceCulture);
+            }
+        }
     }
 }
+

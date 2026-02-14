@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -513,4 +513,5 @@
   <data name="PerHour" xml:space="preserve"><value>pro Stunde</value></data>
   <data name="SettingsChangedWarning" xml:space="preserve"><value>Hinweis: {0} bestehende Tage behalten ihre bisherigen Einstellungen. Neue Einstellungen gelten ab sofort für zukünftige Tage.</value></data>
 
+  <data name="AbsenceOverview" xml:space="preserve"><value>Abwesenheitsübersicht</value></data>
 </root>

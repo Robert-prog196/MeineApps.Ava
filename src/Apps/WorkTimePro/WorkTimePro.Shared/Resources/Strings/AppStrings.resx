@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -1160,4 +1160,7 @@
     <value>Note: {0} existing days keep their current settings. New settings apply to future days.</value>
   </data>
 
+  <data name="AbsenceOverview" xml:space="preserve">
+    <value>Absence Overview</value>
+  </data>
 </root>
