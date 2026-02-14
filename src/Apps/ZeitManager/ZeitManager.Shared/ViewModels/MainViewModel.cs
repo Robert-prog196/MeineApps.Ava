@@ -52,6 +52,9 @@ public partial class MainViewModel : ObservableObject
     public event Action<string, string>? FloatingTextRequested;
     public event Action? CelebrationRequested;
 
+    /// <summary>Wird ausgelöst um einen Exit-Hinweis anzuzeigen (z.B. Toast "Nochmal drücken zum Beenden").</summary>
+    public event Action<string>? ExitHintRequested;
+
     // Localized tab labels
     public string NavTimerText => _localization.GetString("Timer");
     public string NavStopwatchText => _localization.GetString("Stopwatch");
@@ -163,11 +166,17 @@ public partial class MainViewModel : ObservableObject
         PomodoroViewModel.UpdateLocalizedTexts();
     }
 
+    #region Back-Navigation (Double-Back-to-Exit)
+
+    private DateTime _lastBackPress = DateTime.MinValue;
+    private const int BackPressIntervalMs = 2000;
+
     /// <summary>
-    /// Versucht eine Ebene zurückzunavigieren (Overlays schließen, Sub-Views verlassen).
-    /// Gibt true zurück wenn etwas geschlossen wurde, false wenn bereits auf Root-Ebene.
+    /// Behandelt die Zurück-Taste. Gibt true zurück wenn konsumiert (App bleibt offen),
+    /// false wenn die App geschlossen werden darf (Double-Back).
+    /// Reihenfolge: Alarm-Overlay → Tab-Overlays → Tab zurück → Double-Back-to-Exit.
     /// </summary>
-    public bool TryGoBack()
+    public bool HandleBackPressed()
     {
         // 1. Alarm-Overlay hat höchste Priorität (blockiert alles andere)
         if (IsAlarmOverlayVisible)
@@ -241,9 +250,18 @@ public partial class MainViewModel : ObservableObject
             return true;
         }
 
-        // Nichts mehr zum Zurücknavigieren
-        return false;
+        // 4. Auf Startseite: Double-Back-to-Exit
+        var now = DateTime.UtcNow;
+        if ((now - _lastBackPress).TotalMilliseconds < BackPressIntervalMs)
+            return false; // App beenden lassen
+
+        _lastBackPress = now;
+        var msg = _localization.GetString("PressBackAgainToExit") ?? "Erneut drücken zum Beenden";
+        ExitHintRequested?.Invoke(msg);
+        return true; // Konsumiert
     }
+
+    #endregion
 
     [RelayCommand]
     private void NavigateToTimer() => SelectedTabIndex = 0;
