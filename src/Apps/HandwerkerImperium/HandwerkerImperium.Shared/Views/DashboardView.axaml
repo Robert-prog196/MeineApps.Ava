@@ -7,6 +7,7 @@
              xmlns:conv="using:HandwerkerImperium.Converters"
              xmlns:controls="using:MeineApps.UI.Controls"
              xmlns:skia="using:Avalonia.Labs.Controls"
+             xmlns:views="using:HandwerkerImperium.Views"
              x:Class="HandwerkerImperium.Views.DashboardView"
              x:DataType="vm:MainViewModel">
 
@@ -449,11 +450,14 @@
                       <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
                     </Transitions>
                   </Border.Transitions>
-                  <!-- Kein * Row mehr - alles Auto, damit nichts abgeschnitten wird -->
-                  <Grid RowDefinitions="Auto,Auto,Auto">
+                  <!-- Row 0: SkiaSharp-Illustration, Row 1: Header, Row 2: Body, Row 3: Upgrade -->
+                  <Grid RowDefinitions="Auto,Auto,Auto,Auto">
 
-                    <!-- Row 0: Kompakter Header mit Icon + Name + Level -->
-                    <Panel Grid.Row="0">
+                    <!-- Row 0: SkiaSharp Workshop-Illustration -->
+                    <views:WorkshopIllustrationView Grid.Row="0" />
+
+                    <!-- Row 1: Kompakter Header mit Icon + Name + Level -->
+                    <Panel Grid.Row="1">
                       <Border Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
                               Opacity="{Binding ColorIntensity}" />
                       <Grid Margin="8,8,8,6" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
@@ -506,8 +510,8 @@
                       </Grid>
                     </Panel>
 
-                    <!-- Row 1: Body -->
-                    <StackPanel Grid.Row="1" Margin="8,4,8,6" Spacing="4">
+                    <!-- Row 2: Body -->
+                    <StackPanel Grid.Row="2" Margin="8,4,8,6" Spacing="4">
 
                       <!-- Freigeschaltet: Workers + Income + Progress -->
                       <Grid ColumnDefinitions="*,Auto"
@@ -567,8 +571,8 @@
                                          HorizontalAlignment="Center"
                                          IsVisible="{Binding !CanBuyUnlock}" />
 
-                        <!-- Freischaltbar: Prominente Anzeige mit Kosten + offenes Schloss -->
-                        <StackPanel IsVisible="{Binding CanBuyUnlock}" Spacing="4"
+                        <!-- Freischaltbar + leistbar: Prominente Anzeige mit Kosten + offenes Schloss -->
+                        <StackPanel IsVisible="{Binding CanAffordUnlock}" Spacing="4"
                                     HorizontalAlignment="Center">
                           <mi:MaterialIcon Kind="LockOpenVariant" Width="24" Height="24"
                                            Foreground="{StaticResource CraftPrimaryBrush}"
@@ -582,12 +586,35 @@
                                      Foreground="{DynamicResource TextSecondaryBrush}"
                                      HorizontalAlignment="Center" />
                         </StackPanel>
+
+                        <!-- Freischaltbar aber zu teuer: Kosten in rot, Schloss halboffen -->
+                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                          <StackPanel.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                              <Binding Path="CanBuyUnlock" />
+                              <Binding Path="!CanAffordUnlock" />
+                            </MultiBinding>
+                          </StackPanel.IsVisible>
+                          <mi:MaterialIcon Kind="LockOpenVariant" Width="22" Height="22"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           Opacity="0.6"
+                                           HorizontalAlignment="Center" />
+                          <TextBlock Text="{Binding UnlockCostDisplay}"
+                                     FontSize="12" FontWeight="SemiBold"
+                                     Foreground="{DynamicResource ErrorBrush}"
+                                     Opacity="0.8"
+                                     HorizontalAlignment="Center" />
+                          <TextBlock Text="{loc:Translate TapToUnlock}"
+                                     FontSize="9"
+                                     Foreground="{DynamicResource TextMutedBrush}"
+                                     HorizontalAlignment="Center" />
+                        </StackPanel>
                       </StackPanel>
 
                     </StackPanel>
 
-                    <!-- Row 2: Upgrade-Button (volle Breite, abgerundete untere Ecken) -->
-                    <Button Grid.Row="2" Classes="Primary UpgradeBtn"
+                    <!-- Row 3: Upgrade-Button (volle Breite, abgerundete untere Ecken) -->
+                    <Button Grid.Row="3" Classes="Primary UpgradeBtn"
                             Padding="0,6" MinHeight="28"
                             CornerRadius="0,0,16,16"
                             Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
