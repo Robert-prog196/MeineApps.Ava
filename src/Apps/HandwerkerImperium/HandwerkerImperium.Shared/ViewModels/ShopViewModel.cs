@@ -113,7 +113,7 @@ public partial class ShopViewModel : ObservableObject, IDisposable
     // INITIALIZATION
     // ═══════════════════════════════════════════════════════════════════════
 
-    private void LoadShopData()
+    public void LoadShopData()
     {
         var state = _gameStateService.State;
         IsPremium = state.IsPremium;

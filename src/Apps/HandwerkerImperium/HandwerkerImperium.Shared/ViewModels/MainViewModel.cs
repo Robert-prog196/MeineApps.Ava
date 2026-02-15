@@ -1044,6 +1044,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             RequiredPrestige = type.GetRequiredPrestige(),
             UnlockCost = type.GetUnlockCost(),
             CanBuyUnlock = _gameStateService.CanPurchaseWorkshop(type),
+            CanAffordUnlock = _gameStateService.CanPurchaseWorkshop(type) && state.Money >= type.GetUnlockCost(),
             UnlockDisplay = type.GetRequiredPrestige() > 0
                 ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
                 : $"Lv. {type.GetUnlockLevel()}",
@@ -1106,6 +1107,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         model.IsUnlocked = isUnlocked;
         model.UnlockCost = type.GetUnlockCost();
         model.CanBuyUnlock = _gameStateService.CanPurchaseWorkshop(type);
+        model.CanAffordUnlock = model.CanBuyUnlock && state.Money >= type.GetUnlockCost();
         model.UnlockDisplay = type.GetRequiredPrestige() > 0
             ? $"{_localizationService.GetString("Prestige")} {type.GetRequiredPrestige()}"
             : $"Lv. {type.GetUnlockLevel()}";
@@ -1431,6 +1433,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         DeactivateAllTabs();
         IsShopActive = true;
+        // Geldpakete-Beträge aktualisieren (basieren auf aktuellem Einkommen)
+        ShopViewModel.LoadShopData();
         NotifyTabBarVisibility();
     }
 
@@ -2278,6 +2282,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         WorkerProfileViewModel.UpdateLocalizedTexts();
         BuildingsViewModel.UpdateLocalizedTexts();
         ResearchViewModel.UpdateLocalizedTexts();
+        ShopViewModel.LoadShopData();
         ShopViewModel.LoadTools();
     }
 
@@ -2554,6 +2559,11 @@ public partial class WorkshopDisplayModel : ObservableObject
     /// </summary>
     public bool CanBuyUnlock { get; set; }
     /// <summary>
+    /// Ob genug Geld für die Freischaltung vorhanden ist.
+    /// </summary>
+    [ObservableProperty]
+    private bool _canAffordUnlock;
+    /// <summary>
     /// Bulk-Buy Gesamtkosten (gesetzt von RefreshWorkshops basierend auf BulkBuyAmount).
     /// </summary>
     public decimal BulkUpgradeCost { get; set; }
@@ -2587,12 +2597,12 @@ public partial class WorkshopDisplayModel : ObservableObject
     // Max Level Gold-Glow
     public bool IsMaxLevel => Level >= Workshop.MaxLevel;
 
-    // Dynamischer BoxShadow: Max-Level Gold-Glow, Upgrade leistbar dezenter Glow, freischaltbar Craft-Glow, sonst keiner
+    // Dynamischer BoxShadow: Max-Level Gold-Glow, Upgrade leistbar dezenter Glow, freischaltbar+leistbar Craft-Glow, sonst keiner
     public string GlowShadow => IsMaxLevel
         ? "0 0 12 0 #60FFD700"
         : CanAffordUpgrade && IsUnlocked
             ? "0 0 8 0 #40D97706"
-            : CanBuyUnlock && !IsUnlocked
+            : CanAffordUnlock && !IsUnlocked
                 ? "0 0 10 0 #50E8A00E"
                 : "none";
 
@@ -2648,6 +2658,7 @@ public partial class WorkshopDisplayModel : ObservableObject
         OnPropertyChanged(nameof(UnlockCost));
         OnPropertyChanged(nameof(UnlockCostDisplay));
         OnPropertyChanged(nameof(CanBuyUnlock));
+        OnPropertyChanged(nameof(CanAffordUnlock));
         OnPropertyChanged(nameof(CanUpgrade));
         OnPropertyChanged(nameof(CanHireWorker));
         OnPropertyChanged(nameof(WorkerDisplay));
