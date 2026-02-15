@@ -1299,6 +1299,12 @@
   <data name="ResearchCostFormat" xml:space="preserve">
     <value>Esta pesquisa custa {0}.</value>
   </data>
+  <data name="ResearchConfirmCost" xml:space="preserve">
+    <value>Custo</value>
+  </data>
+  <data name="ResearchConfirmDuration" xml:space="preserve">
+    <value>Dura&#231;&#227;o</value>
+  </data>
   <data name="ResearchFailed" xml:space="preserve">
     <value>Pesquisa Falhou</value>
   </data>

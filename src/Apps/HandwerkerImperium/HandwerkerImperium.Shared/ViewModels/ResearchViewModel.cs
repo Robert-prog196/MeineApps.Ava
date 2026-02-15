@@ -38,6 +38,12 @@ public partial class ResearchViewModel : ObservableObject
     /// </summary>
     public event Func<string, string, string, string, Task<bool>>? ConfirmationRequested;
 
+    /// <summary>
+    /// Event für die Celebration-Animation bei abgeschlossener Forschung.
+    /// Parameters: branch, bonusText.
+    /// </summary>
+    public event EventHandler<(ResearchBranch Branch, string BonusText)>? CelebrationRequested;
+
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -256,7 +262,7 @@ public partial class ResearchViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void StartResearch(string? researchId)
+    private async Task StartResearchAsync(string? researchId)
     {
         if (string.IsNullOrEmpty(researchId)) return;
 
@@ -269,11 +275,12 @@ public partial class ResearchViewModel : ObservableObject
             return;
         }
 
-        // Kosten pruefen
+        // Forschung suchen
         var allResearch = _researchService.GetResearchTree();
         var target = allResearch.FirstOrDefault(r => r.Id == researchId);
         if (target == null) return;
 
+        // Kosten prüfen
         if (!_gameStateService.CanAfford(target.Cost))
         {
             AlertRequested?.Invoke(
@@ -282,6 +289,29 @@ public partial class ResearchViewModel : ObservableObject
                 "OK");
             return;
         }
+
+        // Bestätigungsdialog mit Details anzeigen
+        string name = _localizationService.GetString(target.NameKey);
+        string effectDesc = _localizationService.GetString(target.DescriptionKey);
+        string costText = MoneyFormatter.Format(target.Cost, 0);
+        string durationText = FormatDuration(target.Duration);
+
+        // Dialog-Body zusammenbauen
+        string body = $"{effectDesc}\n\n" +
+                       $"{_localizationService.GetString("ResearchConfirmCost")}: {costText}\n" +
+                       $"{_localizationService.GetString("ResearchConfirmDuration")}: {durationText}";
+
+        bool confirm = true;
+        if (ConfirmationRequested != null)
+        {
+            confirm = await ConfirmationRequested.Invoke(
+                name,
+                body,
+                _localizationService.GetString("StartResearch"),
+                _localizationService.GetString("Cancel"));
+        }
+
+        if (!confirm) return;
 
         bool success = _researchService.StartResearch(researchId);
         if (success)
@@ -442,6 +472,10 @@ public partial class ResearchViewModel : ObservableObject
     private void OnResearchCompleted(object? sender, Research research)
     {
         LoadResearchTree();
+
+        // Celebration-Animation triggern (Confetti + Glow + Bonus-Text)
+        string bonusText = _localizationService.GetString(research.NameKey);
+        CelebrationRequested?.Invoke(this, (research.Branch, bonusText));
 
         AlertRequested?.Invoke(
             _localizationService.GetString("ResearchComplete"),

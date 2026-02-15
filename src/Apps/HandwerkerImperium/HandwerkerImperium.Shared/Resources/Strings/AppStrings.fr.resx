@@ -1299,6 +1299,12 @@
   <data name="ResearchCostFormat" xml:space="preserve">
     <value>Cette recherche co&#251;te {0}.</value>
   </data>
+  <data name="ResearchConfirmCost" xml:space="preserve">
+    <value>Co&#251;t</value>
+  </data>
+  <data name="ResearchConfirmDuration" xml:space="preserve">
+    <value>Dur&#233;e</value>
+  </data>
   <data name="ResearchFailed" xml:space="preserve">
     <value>&#201;chec de la Recherche</value>
   </data>

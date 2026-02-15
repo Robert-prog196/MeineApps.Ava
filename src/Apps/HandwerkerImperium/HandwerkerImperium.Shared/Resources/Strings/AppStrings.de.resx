@@ -1310,6 +1310,12 @@
   <data name="ResearchCostFormat" xml:space="preserve">
     <value>Diese Forschung kostet {0}.</value>
   </data>
+  <data name="ResearchConfirmCost" xml:space="preserve">
+    <value>Kosten</value>
+  </data>
+  <data name="ResearchConfirmDuration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
   <data name="ResearchFailed" xml:space="preserve">
     <value>Forschung fehlgeschlagen</value>
   </data>
