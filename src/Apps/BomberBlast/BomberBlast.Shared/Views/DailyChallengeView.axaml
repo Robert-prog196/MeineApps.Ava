@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BomberBlast.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             x:Class="BomberBlast.Views.DailyChallengeView"
+             x:DataType="vm:DailyChallengeViewModel">
+
+  <Panel Background="{DynamicResource BackgroundBrush}">
+    <Border Background="{DynamicResource SurfaceBrush}" Opacity="0.3" />
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24,16,24,80">
+
+      <!-- Header: Titel + Zurück-Button -->
+      <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,16">
+        <Button Grid.Column="0" Classes="Secondary GameButton"
+                Command="{Binding BackCommand}"
+                Width="48" Height="48"
+                Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        </Button>
+
+        <TextBlock Grid.Column="1"
+                   Text="{Binding DailyChallengeTitle}"
+                   FontSize="28" FontWeight="Bold"
+                   Foreground="{DynamicResource AccentBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+      </Grid>
+
+      <!-- Mitte: Stats in 2-Spalten-Layout -->
+      <Grid Grid.Row="1"
+            ColumnDefinitions="*,*"
+            VerticalAlignment="Center"
+            Margin="0,0,0,0">
+
+        <!-- Linke Spalte: Haupt-Score + Streak-Info -->
+        <StackPanel Grid.Column="0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="16">
+
+          <!-- Best Score (groß, prominent) -->
+          <Border Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="16" Padding="20,16"
+                  HorizontalAlignment="Stretch"
+                  MinWidth="200">
+            <StackPanel Spacing="4" HorizontalAlignment="Center">
+              <TextBlock Text="{Binding BestScoreLabel}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding TodayBestScoreText}"
+                         FontSize="36" FontWeight="Bold"
+                         Foreground="#FFD700"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Streak-Bonus -->
+          <Border Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="12" Padding="16,10"
+                  HorizontalAlignment="Stretch"
+                  MinWidth="200">
+            <StackPanel Spacing="4" HorizontalAlignment="Center">
+              <TextBlock Text="{Binding StreakBonusLabel}"
+                         FontSize="13"
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding StreakBonusText}"
+                         FontSize="20" FontWeight="SemiBold"
+                         Foreground="{DynamicResource SuccessBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Heute bereits gespielt Hinweis -->
+          <Border Background="#40FF6B00"
+                  CornerRadius="8" Padding="12,8"
+                  IsVisible="{Binding IsCompletedToday}"
+                  HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                               Foreground="#FF6B00" />
+              <TextBlock Text="{Binding CompletedTodayText}"
+                         FontSize="13" FontWeight="SemiBold"
+                         Foreground="#FF6B00"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- Rechte Spalte: Stats-Karten -->
+        <Grid Grid.Column="1"
+              RowDefinitions="Auto,Auto,Auto"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              Margin="16,0,0,0">
+
+          <!-- Streak -->
+          <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="12" Padding="16,12"
+                  Margin="0,0,0,8" MinWidth="180">
+            <Grid ColumnDefinitions="Auto,*">
+              <mi:MaterialIcon Grid.Column="0" Kind="Fire" Width="28" Height="28"
+                               Foreground="#FF6B00" Margin="0,0,12,0" />
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{Binding StreakLabel}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding CurrentStreakText}"
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <!-- Längste Streak -->
+          <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="12" Padding="16,12"
+                  Margin="0,0,0,8" MinWidth="180">
+            <Grid ColumnDefinitions="Auto,*">
+              <mi:MaterialIcon Grid.Column="0" Kind="Trophy" Width="28" Height="28"
+                               Foreground="#FFD700" Margin="0,0,12,0" />
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{Binding LongestStreakLabel}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding LongestStreakText}"
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <!-- Gesamt abgeschlossen -->
+          <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}"
+                  CornerRadius="12" Padding="16,12"
+                  MinWidth="180">
+            <Grid ColumnDefinitions="Auto,*">
+              <mi:MaterialIcon Grid.Column="0" Kind="CalendarCheck" Width="28" Height="28"
+                               Foreground="{DynamicResource SecondaryBrush}" Margin="0,0,12,0" />
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="{Binding CompletedLabel}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextMutedBrush}" />
+                <TextBlock Text="{Binding TotalCompletedText}"
+                           FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </Grid>
+
+      <!-- Unten: Play-Button -->
+      <Button Grid.Row="2"
+              Classes="Primary GameButton"
+              Command="{Binding PlayChallengeCommand}"
+              HorizontalAlignment="Center"
+              HorizontalContentAlignment="Center"
+              Height="56" MinWidth="280"
+              Margin="0,16,0,0">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <mi:MaterialIcon Kind="Sword" Width="24" Height="24"
+                           Foreground="{DynamicResource TextOnPrimaryBrush}" />
+          <TextBlock Text="{Binding PlayButtonText}"
+                     FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextOnPrimaryBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+
+    </Grid>
+  </Panel>
+
+</UserControl>

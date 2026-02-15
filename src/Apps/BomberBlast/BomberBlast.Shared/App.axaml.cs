@@ -99,6 +99,7 @@ public partial class App : Application
         services.AddSingleton<IShopService, ShopService>();
         services.AddSingleton<ITutorialService, TutorialService>();
         services.AddSingleton<IDailyRewardService, DailyRewardService>();
+        services.AddSingleton<IDailyChallengeService, DailyChallengeService>();
         services.AddSingleton<ICustomizationService, CustomizationService>();
         services.AddSingleton<IReviewService, ReviewService>();
         services.AddSingleton<IAchievementService, AchievementService>();
@@ -120,5 +121,6 @@ public partial class App : Application
         services.AddTransient<HelpViewModel>();
         services.AddTransient<ShopViewModel>();
         services.AddTransient<AchievementsViewModel>();
+        services.AddTransient<DailyChallengeViewModel>();
     }
 }

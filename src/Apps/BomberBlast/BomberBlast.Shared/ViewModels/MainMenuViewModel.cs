@@ -193,6 +193,12 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
         NavigationRequested?.Invoke("Achievements");
     }
 
+    [RelayCommand]
+    private void DailyChallenge()
+    {
+        NavigationRequested?.Invoke("DailyChallenge");
+    }
+
     // ═══════════════════════════════════════════════════════════════════════
     // BALANCE CHANGED
     // ═══════════════════════════════════════════════════════════════════════

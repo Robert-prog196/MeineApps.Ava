@@ -73,6 +73,11 @@
       <Border Classes="PageView" x:Name="AchievementsBorder">
         <views:AchievementsView DataContext="{Binding AchievementsVm}" />
       </Border>
+
+      <!-- Daily Challenge -->
+      <Border Classes="PageView" x:Name="DailyChallengeBorder">
+        <views:DailyChallengeView DataContext="{Binding DailyChallengeVm}" />
+      </Border>
     </Panel>
 
     <!-- Row 1: Ad-Banner Spacer (64dp fuer adaptive Banner, sichtbar wenn aktiv und nicht im Spiel) -->

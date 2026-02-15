@@ -40,6 +40,7 @@ public partial class MainViewModel : ObservableObject
     public HelpViewModel HelpVm { get; }
     public ShopViewModel ShopVm { get; }
     public AchievementsViewModel AchievementsVm { get; }
+    public DailyChallengeViewModel DailyChallengeVm { get; }
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -71,6 +72,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isAchievementsActive;
+
+    [ObservableProperty]
+    private bool _isDailyChallengeActive;
 
     /// <summary>
     /// Ad-Banner-Spacer: sichtbar in Menü-Views, versteckt im Game-View
@@ -146,6 +150,7 @@ public partial class MainViewModel : ObservableObject
         HelpViewModel helpVm,
         ShopViewModel shopVm,
         AchievementsViewModel achievementsVm,
+        DailyChallengeViewModel dailyChallengeVm,
         ILocalizationService localization,
         IAdService adService,
         IPurchaseService purchaseService,
@@ -162,6 +167,7 @@ public partial class MainViewModel : ObservableObject
         HelpVm = helpVm;
         ShopVm = shopVm;
         AchievementsVm = achievementsVm;
+        DailyChallengeVm = dailyChallengeVm;
         _localizationService = localization;
         _adService = adService;
         _rewardedAdService = rewardedAdService;
@@ -218,6 +224,11 @@ public partial class MainViewModel : ObservableObject
         WireNavigation(helpVm);
         WireNavigation(shopVm);
         WireNavigation(achievementsVm);
+        WireNavigation(dailyChallengeVm);
+
+        // Daily Challenge Game Juice Events weiterleiten
+        DailyChallengeVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+        DailyChallengeVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
 
         // Wire up dialog events from SettingsVM + ShopVM
         settingsVm.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
@@ -389,6 +400,12 @@ public partial class MainViewModel : ObservableObject
                     GameOverVm.SetParameters(score, level, isHighScore, mode, coins, levelComplete, canContinue, fails,
                         enemyPts, timeBonus, effBonus, multiplier);
 
+                    // Daily Challenge: Score melden + Streak-Bonus vergeben
+                    if (mode == "daily" && score > 0)
+                    {
+                        DailyChallengeVm.SubmitScore(score);
+                    }
+
                     // Level Complete → Confetti + Floating Text
                     if (levelComplete)
                     {
@@ -415,6 +432,12 @@ public partial class MainViewModel : ObservableObject
                 IsAchievementsActive = true;
                 IsAdBannerVisible = _adService.BannerVisible;
                 AchievementsVm.OnAppearing();
+                break;
+
+            case "DailyChallenge":
+                IsDailyChallengeActive = true;
+                IsAdBannerVisible = _adService.BannerVisible;
+                DailyChallengeVm.OnAppearing();
                 break;
 
             case "..":
@@ -453,6 +476,7 @@ public partial class MainViewModel : ObservableObject
         IsHelpActive = false;
         IsShopActive = false;
         IsAchievementsActive = false;
+        IsDailyChallengeActive = false;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -518,7 +542,7 @@ public partial class MainViewModel : ObservableObject
 
         // 5. Alle anderen Sub-Views → zurück zum Hauptmenü
         if (IsGameOverActive || IsLevelSelectActive || IsHighScoresActive ||
-            IsHelpActive || IsShopActive || IsAchievementsActive)
+            IsHelpActive || IsShopActive || IsAchievementsActive || IsDailyChallengeActive)
         {
             HideAll();
             IsMainMenuActive = true;

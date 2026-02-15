@@ -69,18 +69,15 @@
                              Foreground="{DynamicResource TextPrimaryBrush}" />
                 </StackPanel>
 
-                <!-- Control Type Selection -->
-                <StackPanel Spacing="4">
-                  <RadioButton GroupName="Controls"
-                               IsChecked="{Binding IsJoystickSelected}"
-                               Content="{loc:Translate ControlFloatingJoystick}" />
-                  <RadioButton GroupName="Controls"
-                               IsChecked="{Binding IsSwipeSelected}"
-                               Content="{loc:Translate ControlSwipe}" />
-                  <RadioButton GroupName="Controls"
-                               IsChecked="{Binding IsDPadSelected}"
-                               Content="{loc:Translate ControlDPad}" />
-                </StackPanel>
+                <!-- Joystick-Modus: Schwebend oder Fixiert -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate JoystickModeFixed}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                IsChecked="{Binding JoystickFixed}" />
+                </Grid>
 
                 <!-- Joystick Size -->
                 <Grid ColumnDefinitions="Auto,*,36">

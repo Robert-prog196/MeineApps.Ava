@@ -95,8 +95,8 @@ public class DailyRewardService : IDailyRewardService
             var lastClaim = DateTime.Parse(_data.LastClaimDate, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
             var daysSinceLastClaim = (DateTime.UtcNow.Date - lastClaim.Date).Days;
 
-            // Mehr als 1 Tag verpasst → Streak zurücksetzen
-            if (daysSinceLastClaim > 1)
+            // Mehr als 3 Tage verpasst → Streak zurücksetzen (3 Tage Gnade statt sofortigem Reset)
+            if (daysSinceLastClaim > 3)
             {
                 _data.CurrentDay = 1;
                 _data.Streak = 0;

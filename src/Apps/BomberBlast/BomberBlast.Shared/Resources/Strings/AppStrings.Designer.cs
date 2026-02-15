@@ -947,15 +947,9 @@ namespace BomberBlast.Resources.Strings {
             }
         }
 
-        internal static string InputSwipeGestures {
+        internal static string JoystickModeFixed {
             get {
-                return ResourceManager.GetString("InputSwipeGestures", resourceCulture);
-            }
-        }
-
-        internal static string InputClassicDPad {
-            get {
-                return ResourceManager.GetString("InputClassicDPad", resourceCulture);
+                return ResourceManager.GetString("JoystickModeFixed", resourceCulture);
             }
         }
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -457,6 +457,30 @@
   <data name="PowerUp_Mystery_Desc" xml:space="preserve">
     <value>35 secondes d'invincibilité</value>
   </data>
+  <data name="PowerUp_Kick" xml:space="preserve">
+    <value>Coup de pied</value>
+  </data>
+  <data name="PowerUp_Kick_Desc" xml:space="preserve">
+    <value>Botter les bombes dans la direction de marche</value>
+  </data>
+  <data name="PowerUp_LineBomb" xml:space="preserve">
+    <value>Bombe en ligne</value>
+  </data>
+  <data name="PowerUp_LineBomb_Desc" xml:space="preserve">
+    <value>Place une rangée de bombes d'un coup</value>
+  </data>
+  <data name="PowerUp_PowerBomb" xml:space="preserve">
+    <value>Super bombe</value>
+  </data>
+  <data name="PowerUp_PowerBomb_Desc" xml:space="preserve">
+    <value>Méga-bombe avec portée maximale</value>
+  </data>
+  <data name="PowerUp_Skull" xml:space="preserve">
+    <value>Crâne</value>
+  </data>
+  <data name="PowerUp_Skull_Desc" xml:space="preserve">
+    <value>Effet de malédiction aléatoire (débuff)</value>
+  </data>
 
   <!-- Languages -->
   <data name="LanguageSection" xml:space="preserve">
@@ -881,4 +905,36 @@
     <value>Rejouer le Didacticiel</value>
   </data>
 
+  <data name="JoystickModeFixed" xml:space="preserve">
+    <value>Joystick fixe</value>
+  </data>
+
+  <!-- Daily Challenge -->
+  <data name="DailyChallengeTitle" xml:space="preserve">
+    <value>Défi Quotidien</value>
+  </data>
+  <data name="DailyChallengeBestScore" xml:space="preserve">
+    <value>Meilleur Score</value>
+  </data>
+  <data name="DailyChallengeStreak" xml:space="preserve">
+    <value>Série</value>
+  </data>
+  <data name="DailyChallengeLongestStreak" xml:space="preserve">
+    <value>Plus longue série</value>
+  </data>
+  <data name="DailyChallengeCompleted" xml:space="preserve">
+    <value>Terminés</value>
+  </data>
+  <data name="DailyChallengeStreakBonus" xml:space="preserve">
+    <value>Bonus de série</value>
+  </data>
+  <data name="DailyChallengeCompletedToday" xml:space="preserve">
+    <value>Déjà joué aujourd'hui !</value>
+  </data>
+  <data name="DailyChallengePlay" xml:space="preserve">
+    <value>Lancer le Défi !</value>
+  </data>
+  <data name="DailyChallengeRetry" xml:space="preserve">
+    <value>Rejouer</value>
+  </data>
 </root>

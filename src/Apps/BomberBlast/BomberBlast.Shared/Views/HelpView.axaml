@@ -3,6 +3,7 @@
              xmlns:vm="using:BomberBlast.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="BomberBlast.Views.HelpView"
              x:DataType="vm:HelpViewModel">
 
@@ -105,91 +106,171 @@
 
               <WrapPanel Orientation="Horizontal">
                 <!-- Bomb Up -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_BombUp}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_BombUp_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuBombUp" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_BombUp}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_BombUp_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Fire -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Fire}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Fire_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuFire" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Fire}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Fire_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Speed -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Speed}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Speed_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuSpeed" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Speed}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Speed_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Wall Pass -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Wallpass}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Wallpass_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuWallpass" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Wallpass}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Wallpass_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Detonator -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Detonator}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Detonator_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuDetonator" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Detonator}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Detonator_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Bomb Pass -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Bombpass}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Bombpass_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuBombpass" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Bombpass}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Bombpass_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Flame Pass -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Flamepass}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Flamepass_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuFlamepass" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Flamepass}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Flamepass_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
                 <!-- Mystery -->
-                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="120">
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{loc:Translate PowerUp_Mystery}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="{DynamicResource AccentBrush}" />
-                    <TextBlock Text="{loc:Translate PowerUp_Mystery_Desc}"
-                               FontSize="11" TextWrapping="Wrap"
-                               Foreground="{DynamicResource TextMutedBrush}" />
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuMystery" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Mystery}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Mystery_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <!-- Kick -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuKick" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Kick}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Kick_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <!-- Line Bomb -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuLineBomb" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_LineBomb}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_LineBomb_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <!-- Power Bomb -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuPowerBomb" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_PowerBomb}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource AccentBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_PowerBomb_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <!-- Skull -->
+                <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <skia:SKCanvasView x:Name="PuSkull" Width="32" Height="32" />
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{loc:Translate PowerUp_Skull}"
+                                 FontSize="13" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource ErrorBrush}" />
+                      <TextBlock Text="{loc:Translate PowerUp_Skull_Desc}"
+                                 FontSize="11" TextWrapping="Wrap"
+                                 Foreground="{DynamicResource TextMutedBrush}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
               </WrapPanel>
@@ -212,91 +293,115 @@
 
                 <WrapPanel Orientation="Horizontal">
                   <!-- Ballom -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Ballom}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Ballom_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnBallom" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Ballom}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Ballom_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Onil -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Onil}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Onil_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnOnil" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Onil}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Onil_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Doll -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Doll}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource WarningBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Doll_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnDoll" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Doll}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Doll_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Minvo -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Minvo}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ErrorBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Minvo_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnMinvo" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Minvo}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Minvo_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Kondoria -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Kondoria}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ErrorBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Kondoria_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnKondoria" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Kondoria}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Kondoria_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Ovapi -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Ovapi}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ErrorBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Ovapi_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnOvapi" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Ovapi}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Ovapi_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Pass -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Pass}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ErrorBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Pass_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnPass" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Pass}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Pass_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                   <!-- Pontan -->
-                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="140">
-                    <StackPanel Spacing="2">
-                      <TextBlock Text="{loc:Translate Enemy_Pontan}"
-                                 FontSize="13" FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ErrorBrush}" />
-                      <TextBlock Text="{loc:Translate Enemy_Pontan_Desc}"
-                                 FontSize="11" TextWrapping="Wrap"
-                                 Foreground="{DynamicResource TextMutedBrush}" />
+                  <Border Classes="CardElevated" Padding="8" Margin="0,0,8,8" CornerRadius="8" MinWidth="150">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <skia:SKCanvasView x:Name="EnPontan" Width="32" Height="32" />
+                      <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Translate Enemy_Pontan}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ErrorBrush}" />
+                        <TextBlock Text="{loc:Translate Enemy_Pontan_Desc}"
+                                   FontSize="11" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                      </StackPanel>
                     </StackPanel>
                   </Border>
                 </WrapPanel>
@@ -334,7 +439,7 @@
             </StackPanel>
           </Button>
 
-          <!-- Bottom Spacer (80dp fuer Ad-Banner + Navigation-Bar) -->
+          <!-- Bottom Spacer (80dp für Ad-Banner + Navigation-Bar) -->
           <Border Height="80" />
 
         </StackPanel>
