@@ -1316,6 +1316,12 @@
   <data name="ResearchConfirmDuration" xml:space="preserve">
     <value>Duration</value>
   </data>
+  <data name="ResearchLocked" xml:space="preserve">
+    <value>Research Locked</value>
+  </data>
+  <data name="ResearchLockedDesc" xml:space="preserve">
+    <value>Complete the prerequisite research first.</value>
+  </data>
   <data name="ResearchFailed" xml:space="preserve">
     <value>Research Failed</value>
   </data>

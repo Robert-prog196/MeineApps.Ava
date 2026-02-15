@@ -612,7 +612,21 @@ public class GameState
 
         // Initialize research tree
         if (old.Researches == null || old.Researches.Count == 0)
+        {
             old.Researches = ResearchTree.CreateAll();
+        }
+        else
+        {
+            // Prerequisites aus der aktuellen ResearchTree-Definition synchronisieren
+            // (damit Änderungen am Baum-Layout auch bei bestehenden Spielständen wirken)
+            var template = ResearchTree.CreateAll();
+            foreach (var tmpl in template)
+            {
+                var existing = old.Researches.FirstOrDefault(r => r.Id == tmpl.Id);
+                if (existing != null)
+                    existing.Prerequisites = tmpl.Prerequisites;
+            }
+        }
 
         return old;
     }

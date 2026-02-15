@@ -90,7 +90,11 @@ public partial class ResearchView : UserControl
             if (_treeCanvas != null)
             {
                 _treeCanvas.PaintSurface += OnTreePaintSurface;
-                _treeCanvas.PointerPressed += OnTreePointerPressed;
+                // Tunnel-Routing damit Touch VOR dem ScrollViewer ankommt
+                _treeCanvas.AddHandler(
+                    Avalonia.Input.InputElement.PointerPressedEvent,
+                    OnTreePointerPressed,
+                    Avalonia.Interactivity.RoutingStrategies.Tunnel);
             }
             if (_celebrationCanvas != null) _celebrationCanvas.PaintSurface += OnCelebrationPaintSurface;
 

@@ -280,6 +280,20 @@ public partial class ResearchViewModel : ObservableObject
         var target = allResearch.FirstOrDefault(r => r.Id == researchId);
         if (target == null) return;
 
+        // Bereits erforscht oder aktiv → ignorieren
+        if (target.IsResearched || target.IsActive) return;
+
+        // Voraussetzungen prüfen
+        bool prerequisitesMet = target.Prerequisites.All(p => _researchService.IsResearched(p));
+        if (!prerequisitesMet)
+        {
+            AlertRequested?.Invoke(
+                _localizationService.GetString("ResearchLocked"),
+                _localizationService.GetString("ResearchLockedDesc"),
+                "OK");
+            return;
+        }
+
         // Kosten prüfen
         if (!_gameStateService.CanAfford(target.Cost))
         {

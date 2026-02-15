@@ -496,7 +496,7 @@ public class ResearchTreeRenderer
 
     /// <summary>
     /// Prüft ob ein Tap auf einen Node trifft und gibt die Id des getroffenen Items zurück.
-    /// Nur Items mit CanStart=true sind antippbar.
+    /// Antippbar sind alle nicht-erforschten Nodes (auch gesperrte → ViewModel zeigt Feedback).
     /// </summary>
     public string? HitTest(float tapX, float tapY, List<ResearchDisplayItem> items, float centerX, float topY)
     {
@@ -505,13 +505,13 @@ public class ResearchTreeRenderer
         var positions = CalculateNodePositions(items, centerX, topY + TopPadding);
 
         // Erweiterte Trefferzone (größer als der Node selbst)
-        float hitRadius = NodeSize * 0.7f;
+        float hitRadius = NodeSize * 0.8f;
 
         for (int i = 0; i < items.Count && i < positions.Count; i++)
         {
             var item = items[i];
-            // Nur startbare Items sind antippbar
-            if (!item.CanStart) continue;
+            // Bereits erforschte Items ignorieren
+            if (item.IsResearched) continue;
 
             float dx = tapX - positions[i].X;
             float dy = tapY - positions[i].Y;
