@@ -31,6 +31,9 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
 
     public event Action<string>? NavigationRequested;
 
+    /// <summary>Wird nach Spielende mit Rating (0-3 Sterne) gefeuert.</summary>
+    public event EventHandler<int>? GameCompleted;
+
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -94,6 +97,15 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _adWatched;
+
+    [ObservableProperty]
+    private string _taskProgressDisplay = "";
+
+    [ObservableProperty]
+    private bool _isLastTask;
+
+    [ObservableProperty]
+    private string _continueButtonText = "";
 
     // Countdown vor Spielstart
     [ObservableProperty]
@@ -193,6 +205,22 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         if (activeOrder != null)
         {
             Difficulty = activeOrder.Difficulty;
+
+            int totalTasks = activeOrder.Tasks.Count;
+            int currentTaskNum = activeOrder.CurrentTaskIndex + 1;
+            TaskProgressDisplay = totalTasks > 1
+                ? string.Format(_localizationService.GetString("TaskProgress"), currentTaskNum, totalTasks)
+                : "";
+            IsLastTask = currentTaskNum >= totalTasks;
+            ContinueButtonText = IsLastTask
+                ? _localizationService.GetString("Continue")
+                : _localizationService.GetString("NextTask");
+        }
+        else
+        {
+            TaskProgressDisplay = "";
+            IsLastTask = true;
+            ContinueButtonText = _localizationService.GetString("Continue");
         }
 
         InitializeGame();
@@ -492,14 +520,15 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
 
         // Calculate rewards (Combo-Multiplikator anwenden)
         var order = _gameStateService.GetActiveOrder();
-        if (order != null)
+        if (order != null && IsLastTask)
         {
-            int taskCount = Math.Max(1, order.Tasks.Count);
-            decimal baseReward = order.BaseReward / taskCount;
-            RewardAmount = baseReward * Result.GetRewardPercentage() * ComboMultiplier;
-
-            int baseXp = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXp * Result.GetXpPercentage() * ComboMultiplier);
+            RewardAmount = order.FinalReward;
+            XpAmount = order.FinalXp;
+        }
+        else
+        {
+            RewardAmount = 0;
+            XpAmount = 0;
         }
 
         // Set result display
@@ -527,8 +556,11 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
         if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
         if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
 
+        // Visuelles Event fuer Result-Polish in der View
+        GameCompleted?.Invoke(this, starCount);
+
         AdWatched = false;
-        CanWatchAd = _rewardedAdService.IsAvailable;
+        CanWatchAd = IsLastTask && _rewardedAdService.IsAvailable;
     }
 
     [RelayCommand]

@@ -21,16 +21,19 @@ public class WorkerAvatarRenderer
         new SKColor(0x6E, 0x40, 0x20)  // Dark
     ];
 
-    // Tier -> Helm/Hut-Farbe
+    // Tier -> Helm/Hut-Farbe (alle 10 Tiers)
     private static readonly Dictionary<WorkerTier, SKColor> TierHatColors = new()
     {
-        { WorkerTier.F, new SKColor(0x9E, 0x9E, 0x9E) },  // Grey
-        { WorkerTier.E, new SKColor(0x4C, 0xAF, 0x50) },  // Green
-        { WorkerTier.D, new SKColor(0x21, 0x96, 0xF3) },  // Blue
-        { WorkerTier.C, new SKColor(0x9C, 0x27, 0xB0) },  // Purple
-        { WorkerTier.B, new SKColor(0xFF, 0xC1, 0x07) },  // Gold
-        { WorkerTier.A, new SKColor(0xF4, 0x43, 0x36) },  // Red
-        { WorkerTier.S, new SKColor(0xFF, 0x98, 0x00) }   // Orange
+        { WorkerTier.F, new SKColor(0x9E, 0x9E, 0x9E) },          // Grey
+        { WorkerTier.E, new SKColor(0x4C, 0xAF, 0x50) },          // Green
+        { WorkerTier.D, new SKColor(0x21, 0x96, 0xF3) },          // Blue
+        { WorkerTier.C, new SKColor(0x9C, 0x27, 0xB0) },          // Purple
+        { WorkerTier.B, new SKColor(0xFF, 0xC1, 0x07) },          // Gold
+        { WorkerTier.A, new SKColor(0xF4, 0x43, 0x36) },          // Red
+        { WorkerTier.S, new SKColor(0xFF, 0x98, 0x00) },          // Orange
+        { WorkerTier.SS, new SKColor(0xE0, 0x40, 0xFB) },         // Pink
+        { WorkerTier.SSS, new SKColor(0x7C, 0x4D, 0xFF) },        // DeepPurple
+        { WorkerTier.Legendary, new SKColor(0xFF, 0xD7, 0x00) }   // Gold (glaenzend)
     };
 
     private enum MoodBucket { High, Mid, Low }
@@ -38,6 +41,17 @@ public class WorkerAvatarRenderer
     // Cache: "id|tier|moodBucket" -> weak reference (bitmap kann GC'd werden)
     private static readonly Dictionary<string, WeakReference<SKBitmap>> _cache = new();
     private static readonly object _cacheLock = new();
+
+    // Haarfarben fuer weibliche/maennliche Worker
+    private static readonly SKColor[] HairColors =
+    [
+        new SKColor(0x3E, 0x27, 0x23), // Dunkelbraun
+        new SKColor(0x5D, 0x40, 0x37), // Mittelbraun
+        new SKColor(0x79, 0x55, 0x48), // Hellbraun
+        new SKColor(0x21, 0x21, 0x21), // Schwarz
+        new SKColor(0xBF, 0x36, 0x0C), // Rot
+        new SKColor(0xF9, 0xA8, 0x25)  // Blond
+    ];
 
     /// <summary>
     /// Renders a deterministic pixel-art avatar for the given worker parameters.
@@ -47,7 +61,8 @@ public class WorkerAvatarRenderer
     /// <param name="tier">Worker tier (determines hat color).</param>
     /// <param name="mood">Worker mood (0-100, determines expression).</param>
     /// <param name="size">Output size in pixels (32, 64, or 128).</param>
-    public static SKBitmap RenderAvatar(string idSeed, WorkerTier tier, decimal mood, int size)
+    /// <param name="isFemale">Geschlecht: true = weiblich (laengere Haare, Lippen), false = maennlich (breiterer Kiefer).</param>
+    public static SKBitmap RenderAvatar(string idSeed, WorkerTier tier, decimal mood, int size, bool isFemale = false)
     {
         // Groesse auf erlaubte Werte begrenzen
         size = size switch
@@ -58,7 +73,7 @@ public class WorkerAvatarRenderer
         };
 
         var moodBucket = GetMoodBucket(mood);
-        string cacheKey = $"{idSeed}|{tier}|{moodBucket}|{size}";
+        string cacheKey = $"{idSeed}|{tier}|{moodBucket}|{size}|{(isFemale ? "f" : "m")}";
 
         // Cache pruefen
         lock (_cacheLock)
@@ -80,10 +95,11 @@ public class WorkerAvatarRenderer
             int hash = GetStableHash(idSeed);
             float scale = size / 32f;
 
-            DrawHead(canvas, hash, scale);
+            DrawHead(canvas, hash, scale, isFemale);
+            DrawHair(canvas, hash, scale, isFemale);
             DrawHat(canvas, tier, scale);
             DrawEyes(canvas, hash, moodBucket, scale);
-            DrawMouth(canvas, moodBucket, scale);
+            DrawMouth(canvas, moodBucket, scale, isFemale);
         }
 
         // Im Cache speichern (als weak reference)
@@ -102,7 +118,7 @@ public class WorkerAvatarRenderer
         return bitmap.Copy();
     }
 
-    private static void DrawHead(SKCanvas canvas, int hash, float scale)
+    private static void DrawHead(SKCanvas canvas, int hash, float scale, bool isFemale)
     {
         // Hautton aus Hash ableiten
         int skinIndex = Math.Abs(hash) % SkinTones.Length;
@@ -114,6 +130,16 @@ public class WorkerAvatarRenderer
             float cy = 18 * scale;
             float radius = 10 * scale;
             canvas.DrawCircle(cx, cy, radius, headPaint);
+
+            // Maennlich: Breiterer Kiefer (1 Pixel mehr an den Seiten unten)
+            if (!isFemale)
+            {
+                float jawWidth = 1 * scale;
+                float jawTop = 20 * scale;
+                float jawHeight = 5 * scale;
+                canvas.DrawRect(cx - radius - jawWidth, jawTop, jawWidth, jawHeight, headPaint);
+                canvas.DrawRect(cx + radius, jawTop, jawWidth, jawHeight, headPaint);
+            }
         }
 
         // Ohren
@@ -122,6 +148,45 @@ public class WorkerAvatarRenderer
             float earRadius = 2.5f * scale;
             canvas.DrawCircle(5 * scale, 18 * scale, earRadius, earPaint);
             canvas.DrawCircle(27 * scale, 18 * scale, earRadius, earPaint);
+        }
+    }
+
+    /// <summary>
+    /// Zeichnet geschlechtsspezifische Haare.
+    /// Weiblich: Laengere Straehnen links und rechts (2-3 Pixel unter dem Helm).
+    /// Maennlich: Kurzhaar (dezente Pixel oben am Kopf unter dem Helm).
+    /// </summary>
+    private static void DrawHair(SKCanvas canvas, int hash, float scale, bool isFemale)
+    {
+        int hairIndex = Math.Abs(hash / 7) % HairColors.Length;
+        var hairColor = HairColors[hairIndex];
+
+        using var hairPaint = new SKPaint { Color = hairColor, IsAntialias = false };
+
+        if (isFemale)
+        {
+            // Laengere Haar-Straehnen links und rechts vom Kopf
+            float strandWidth = 2 * scale;
+            float strandHeight = 8 * scale;
+            float topY = 14 * scale;
+
+            // Linke Straehne
+            canvas.DrawRect(5 * scale, topY, strandWidth, strandHeight, hairPaint);
+            canvas.DrawRect(3 * scale, topY + 1 * scale, strandWidth, strandHeight - 2 * scale, hairPaint);
+
+            // Rechte Straehne
+            canvas.DrawRect(25 * scale, topY, strandWidth, strandHeight, hairPaint);
+            canvas.DrawRect(27 * scale, topY + 1 * scale, strandWidth, strandHeight - 2 * scale, hairPaint);
+        }
+        else
+        {
+            // Kurzhaar: Dezente Pixel oben am Kopf (unter dem Helm sichtbar)
+            float hairTop = 13 * scale;
+            float hairHeight = 2 * scale;
+
+            // Links und rechts kurze Haar-Ansaetze
+            canvas.DrawRect(7 * scale, hairTop, 3 * scale, hairHeight, hairPaint);
+            canvas.DrawRect(22 * scale, hairTop, 3 * scale, hairHeight, hairPaint);
         }
     }
 
@@ -146,8 +211,8 @@ public class WorkerAvatarRenderer
             }
         }
 
-        // S-Tier: Stern-Markierung auf dem Helm
-        if (tier == WorkerTier.S)
+        // S+ Tiers: Stern-Markierung auf dem Helm
+        if (tier >= WorkerTier.S)
         {
             using (var starPaint = new SKPaint { Color = SKColors.White, IsAntialias = false })
             {
@@ -155,6 +220,18 @@ public class WorkerAvatarRenderer
                 float sy = 9 * scale;
                 float starSize = 2 * scale;
                 canvas.DrawRect(sx - starSize / 2, sy - starSize / 2, starSize, starSize, starPaint);
+
+                // SS+: Zweiter Stern rechts daneben
+                if (tier >= WorkerTier.SS)
+                {
+                    canvas.DrawRect(sx + 2 * scale, sy - starSize / 2, starSize, starSize, starPaint);
+                }
+
+                // Legendary: Dritter Stern links
+                if (tier == WorkerTier.Legendary)
+                {
+                    canvas.DrawRect(sx - 4 * scale, sy - starSize / 2, starSize, starSize, starPaint);
+                }
             }
         }
     }
@@ -207,16 +284,21 @@ public class WorkerAvatarRenderer
         canvas.DrawPath(path, paint);
     }
 
-    private static void DrawMouth(SKCanvas canvas, MoodBucket mood, float scale)
+    private static void DrawMouth(SKCanvas canvas, MoodBucket mood, float scale, bool isFemale = false)
     {
         float mouthY = 22 * scale;
         float cx = 16 * scale;
 
+        // Weiblich: Dezent rosafarbene Lippen
+        var mouthColor = isFemale
+            ? new SKColor(0xE0, 0x6B, 0x7A)   // Rosa
+            : new SKColor(0x5D, 0x40, 0x37);   // Braun (Standard)
+
         using var mouthPaint = new SKPaint
         {
-            Color = new SKColor(0x5D, 0x40, 0x37),
+            Color = mouthColor,
             IsAntialias = false,
-            StrokeWidth = Math.Max(1, scale),
+            StrokeWidth = Math.Max(1, scale * (isFemale ? 1.2f : 1f)),
             Style = SKPaintStyle.Stroke
         };
 

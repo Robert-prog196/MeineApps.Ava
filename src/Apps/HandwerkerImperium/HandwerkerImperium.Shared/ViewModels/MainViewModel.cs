@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -51,6 +52,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IDailyChallengeService _dailyChallengeService;
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IEventService _eventService;
+    private readonly IStoryService? _storyService;
     private bool _disposed;
     private decimal _pendingOfflineEarnings;
     private QuickJob? _activeQuickJob;
@@ -282,6 +284,31 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _achievementDescription = "";
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // STORY-DIALOG (Meister Hans NPC)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isStoryDialogVisible;
+
+    [ObservableProperty]
+    private string _storyTitle = "";
+
+    [ObservableProperty]
+    private string _storyText = "";
+
+    [ObservableProperty]
+    private string _storyMood = "happy";
+
+    [ObservableProperty]
+    private string _storyRewardText = "";
+
+    [ObservableProperty]
+    private string _storyChapterId = "";
+
+    [ObservableProperty]
+    private bool _hasNewStory;
+
     // Generic Alert/Confirm Dialog
     [ObservableProperty]
     private bool _isAlertDialogVisible;
@@ -495,7 +522,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         WorkerMarketViewModel workerMarketViewModel,
         WorkerProfileViewModel workerProfileViewModel,
         BuildingsViewModel buildingsViewModel,
-        ResearchViewModel researchViewModel)
+        ResearchViewModel researchViewModel,
+        IStoryService? storyService = null)
     {
         _gameStateService = gameStateService;
         _gameLoopService = gameLoopService;
@@ -512,6 +540,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _dailyChallengeService = dailyChallengeService;
         _rewardedAdService = rewardedAdService;
         _eventService = eventService;
+        _storyService = storyService;
         _rewardedAdService.AdUnavailable += () => ShowAlertDialog(
             _localizationService.GetString("AdVideoNotAvailableTitle"),
             _localizationService.GetString("AdVideoNotAvailableMessage"),
@@ -677,6 +706,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Check for daily reward
         CheckDailyReward();
 
+        // Story-Kapitel prüfen (z.B. pending aus letzter Session oder Sofort-Freischaltung)
+        CheckForNewStoryChapter();
+
         // Start the game loop for idle earnings
         _gameLoopService.Start();
     }
@@ -724,6 +756,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _gameStateService.AddMoney(amount);
         _audioService.PlaySoundAsync(GameSound.MoneyEarned).FireAndForget();
+
+        // Muenz-Partikel Burst im Dashboard ausloesen
+        if (amount > 0)
+            FloatingTextRequested?.Invoke($"+{MoneyFormatter.FormatCompact(amount)}", "money");
+
         _pendingOfflineEarnings = 0;
     }
 
@@ -773,6 +810,77 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IsAchievementDialogVisible = false;
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // STORY-DIALOG COMMANDS (Meister Hans NPC)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void DismissStoryDialog()
+    {
+        if (!string.IsNullOrEmpty(StoryChapterId))
+        {
+            // Belohnungen werden im StoryService.MarkChapterViewed() vergeben
+            _storyService?.MarkChapterViewed(StoryChapterId);
+            HasNewStory = false;
+        }
+        IsStoryDialogVisible = false;
+
+        // FloatingText für Belohnungen
+        if (!string.IsNullOrEmpty(StoryRewardText))
+        {
+            FloatingTextRequested?.Invoke(StoryRewardText, "golden_screws");
+        }
+    }
+
+    /// <summary>
+    /// Prüft ob ein neues Story-Kapitel freigeschaltet wurde.
+    /// Wird nach Level-Up, Workshop-Upgrade und Auftragsabschluss aufgerufen.
+    /// </summary>
+    private void CheckForNewStoryChapter()
+    {
+        var chapter = _storyService?.CheckForNewChapter();
+        if (chapter != null)
+        {
+            HasNewStory = true;
+            // Dialog wird erst beim nächsten passenden Moment angezeigt
+            // (nicht sofort, damit Level-Up/Achievement-Dialoge nicht kollidieren)
+            Dispatcher.UIThread.Post(() =>
+            {
+                // Warte kurz damit andere Dialoge zuerst angezeigt werden
+                if (!IsLevelUpDialogVisible && !IsAchievementDialogVisible && !IsDailyRewardDialogVisible && !IsHoldingUpgrade)
+                {
+                    ShowStoryDialog(chapter);
+                }
+            }, DispatcherPriority.Background);
+        }
+    }
+
+    private void ShowStoryDialog(StoryChapter chapter)
+    {
+        var title = _localizationService.GetString(chapter.TitleKey);
+        var text = _localizationService.GetString(chapter.TextKey);
+
+        StoryTitle = string.IsNullOrEmpty(title) ? chapter.TitleFallback : title;
+        StoryText = string.IsNullOrEmpty(text) ? chapter.TextFallback : text;
+        StoryMood = chapter.Mood;
+        StoryChapterId = chapter.Id;
+
+        // Belohnungs-Text zusammenstellen
+        var rewards = new List<string>();
+        if (chapter.MoneyReward > 0)
+            rewards.Add($"+{MoneyFormatter.FormatCompact(chapter.MoneyReward)}");
+        if (chapter.GoldenScrewReward > 0)
+        {
+            var screwsLabel = _localizationService.GetString("GoldenScrews") ?? "Goldschrauben";
+            rewards.Add($"+{chapter.GoldenScrewReward} {screwsLabel}");
+        }
+        if (chapter.XpReward > 0)
+            rewards.Add($"+{chapter.XpReward} XP");
+        StoryRewardText = string.Join("  |  ", rewards);
+
+        IsStoryDialogVisible = true;
+    }
+
     [RelayCommand]
     private void DismissAlertDialog()
     {
@@ -784,6 +892,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         IsConfirmDialogVisible = false;
         _confirmDialogTcs?.TrySetResult(true);
+
+        // Ad-Banner wieder einblenden
+        if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+            _adService.ShowBanner();
     }
 
     [RelayCommand]
@@ -791,6 +903,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         IsConfirmDialogVisible = false;
         _confirmDialogTcs?.TrySetResult(false);
+
+        // Ad-Banner wieder einblenden
+        if (_adService.AdsEnabled && !_purchaseService.IsPremium)
+            _adService.ShowBanner();
     }
 
     private void ShowAlertDialog(string title, string message, string buttonText)
@@ -809,6 +925,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         ConfirmDialogCancelText = cancelText;
         _confirmDialogTcs = new TaskCompletionSource<bool>();
         IsConfirmDialogVisible = true;
+
+        // Ad-Banner ausblenden damit es nicht den Dialog verdeckt
+        _adService.HideBanner();
+
         return _confirmDialogTcs.Task;
     }
 
@@ -907,7 +1027,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
         bool isUnlocked = state.IsWorkshopUnlocked(type);
-        return new WorkshopDisplayModel
+        var model = new WorkshopDisplayModel
         {
             Type = type,
             Icon = type.GetIcon(),
@@ -932,6 +1052,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
             CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100),
             CanAffordWorker = state.Money >= (workshop?.HireWorkerCost ?? 50)
         };
+        // BulkBuy-Kosten berechnen
+        SetBulkUpgradeCost(model, workshop, state.Money);
+        return model;
+    }
+
+    /// <summary>
+    /// Setzt BulkUpgradeCost und BulkUpgradeLabel basierend auf aktuellem BulkBuyAmount.
+    /// </summary>
+    private void SetBulkUpgradeCost(WorkshopDisplayModel model, Workshop? workshop, decimal money)
+    {
+        if (workshop == null || !workshop.CanUpgrade)
+        {
+            model.BulkUpgradeCost = 0;
+            model.BulkUpgradeLabel = "";
+            return;
+        }
+
+        if (BulkBuyAmount == 0) // Max
+        {
+            var (count, cost) = workshop.GetMaxAffordableUpgrades(money);
+            model.BulkUpgradeCost = cost;
+            model.BulkUpgradeLabel = count > 0 ? $"Max ({count})" : "Max";
+            model.CanAffordUpgrade = count > 0;
+        }
+        else if (BulkBuyAmount == 1)
+        {
+            model.BulkUpgradeCost = workshop.UpgradeCost;
+            model.BulkUpgradeLabel = "";
+            model.CanAffordUpgrade = money >= workshop.UpgradeCost;
+        }
+        else
+        {
+            model.BulkUpgradeCost = workshop.GetBulkUpgradeCost(BulkBuyAmount);
+            model.BulkUpgradeLabel = $"x{BulkBuyAmount}";
+            model.CanAffordUpgrade = money >= model.BulkUpgradeCost;
+        }
     }
 
     private void UpdateWorkshopDisplay(WorkshopDisplayModel model, GameState state, WorkshopType type)
@@ -957,6 +1113,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         model.CanHireWorker = workshop?.CanHireWorker ?? false;
         model.CanAffordUpgrade = state.Money >= (workshop?.UpgradeCost ?? 100);
         model.CanAffordWorker = state.Money >= (workshop?.HireWorkerCost ?? 50);
+
+        // BulkBuy-Kosten aktualisieren
+        SetBulkUpgradeCost(model, workshop, state.Money);
 
         model.NotifyAllChanged();
     }
@@ -1135,6 +1294,43 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Flag: Hold-to-Upgrade aktiv → aufpoppende Dialoge unterdrücken.
+    /// </summary>
+    public bool IsHoldingUpgrade { get; set; }
+
+    /// <summary>
+    /// Stilles Upgrade ohne Sound/FloatingText - für Hold-to-Upgrade.
+    /// </summary>
+    public bool UpgradeWorkshopSilent(WorkshopType type)
+    {
+        return _gameStateService.TryUpgradeWorkshop(type);
+    }
+
+    /// <summary>
+    /// Spielt den Upgrade-Sound ab (für Hold-to-Upgrade Ende).
+    /// </summary>
+    public void PlayUpgradeSound()
+    {
+        _audioService.PlaySoundAsync(GameSound.Upgrade).FireAndForget();
+    }
+
+    /// <summary>
+    /// Aktualisiert eine einzelne Workshop-Anzeige (öffentlicher Zugang für Code-Behind).
+    /// </summary>
+    public void RefreshSingleWorkshopPublic(WorkshopType type)
+    {
+        RefreshSingleWorkshop(type);
+    }
+
+    /// <summary>
+    /// Gibt den aktuellen GameState für SkiaSharp-Rendering zurück (City-Skyline im Header).
+    /// </summary>
+    public GameState? GetGameStateForRendering()
+    {
+        return _gameStateService.State;
+    }
+
     [RelayCommand]
     private async Task HireWorkerAsync(WorkshopDisplayModel workshop)
     {
@@ -1292,6 +1488,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (IsLevelUpDialogVisible) { DismissLevelUpDialog(); return true; }
         if (IsOfflineEarningsDialogVisible) { CollectOfflineEarningsNormal(); return true; }
         if (IsDailyRewardDialogVisible) { IsDailyRewardDialogVisible = false; return true; }
+        if (IsStoryDialogVisible) { DismissStoryDialog(); return true; }
 
         // 2. MiniGame aktiv → zurück zum Dashboard
         if (IsSawingGameActive || IsPipePuzzleActive || IsWiringGameActive || IsPaintingGameActive ||
@@ -1385,6 +1582,63 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         IsQuickJobsExpanded = !IsQuickJobsExpanded;
         QuickJobsExpandIconKind = IsQuickJobsExpanded ? "ChevronUp" : "ChevronDown";
+    }
+
+    [RelayCommand]
+    private void ShowMasterToolsInfo()
+    {
+        var state = _gameStateService.State;
+        var allTools = MasterTool.GetAllDefinitions();
+        var collected = state.CollectedMasterTools;
+        var totalBonus = MasterTool.GetTotalIncomeBonus(collected);
+
+        // Info-Text zusammenbauen
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"{_localizationService.GetString("IncomeBonus") ?? "Einkommensbonus"}: +{totalBonus:P0}");
+        sb.AppendLine();
+
+        foreach (var tool in allTools)
+        {
+            bool isCollected = collected.Contains(tool.Id);
+            var name = _localizationService.GetString(tool.NameKey) ?? tool.Id;
+            var rarity = _localizationService.GetString(tool.Rarity.GetLocalizationKey()) ?? tool.Rarity.ToString();
+            var status = isCollected ? "\u2713" : "\u2717";
+            sb.AppendLine($"{status} {tool.Icon} {name}");
+            sb.AppendLine($"   [{rarity}] +{tool.IncomeBonus:P0}");
+
+            if (!isCollected)
+            {
+                var condition = GetMasterToolCondition(tool.Id);
+                sb.AppendLine($"   \u2192 {condition}");
+            }
+            sb.AppendLine();
+        }
+
+        var title = _localizationService.GetString("MasterTools") ?? "Meisterwerkzeuge";
+        ShowAlertDialog(title, sb.ToString().TrimEnd(), "OK");
+    }
+
+    /// <summary>
+    /// Gibt die lokalisierte Freischaltbedingung für ein Meisterwerkzeug zurück.
+    /// </summary>
+    private string GetMasterToolCondition(string toolId)
+    {
+        return toolId switch
+        {
+            "mt_golden_hammer" => $"Workshop Lv. 25",
+            "mt_diamond_saw" => $"Workshop Lv. 50",
+            "mt_titanium_pliers" => $"50 {_localizationService.GetString("Orders") ?? "Aufträge"}",
+            "mt_brass_level" => $"100 Mini-Games",
+            "mt_silver_wrench" => $"Workshop Lv. 100",
+            "mt_jade_brush" => $"25 {_localizationService.GetString("PerfectRating") ?? "Perfect"}",
+            "mt_crystal_chisel" => $"1x {_localizationService.GetString("PrestigeBronze") ?? "Bronze-Prestige"}",
+            "mt_obsidian_drill" => $"Workshop Lv. 250",
+            "mt_ruby_blade" => $"1x {_localizationService.GetString("PrestigeSilver") ?? "Silber-Prestige"}",
+            "mt_emerald_toolbox" => $"Workshop Lv. 500",
+            "mt_dragon_anvil" => $"1x {_localizationService.GetString("PrestigeGold") ?? "Gold-Prestige"}",
+            "mt_master_crown" => $"{_localizationService.GetString("AllToolsCollected") ?? "Alle anderen Werkzeuge"}",
+            _ => "?"
+        };
     }
 
     [RelayCommand]
@@ -1792,22 +2046,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
         }
 
-        // Level-Up-Dialog anzeigen
-        LevelUpNewLevel = e.NewLevel;
-        if (e.NewlyUnlockedWorkshops.Count > 0)
+        // Level-Up-Dialog anzeigen (nicht während Hold-to-Upgrade)
+        if (!IsHoldingUpgrade)
         {
-            var names = e.NewlyUnlockedWorkshops
-                .Select(w => _localizationService.GetString(w.GetLocalizationKey()));
-            LevelUpUnlockedText = string.Join(", ", names) + milestoneText;
-        }
-        else
-        {
-            LevelUpUnlockedText = milestoneText;
-        }
-        IsLevelUpDialogVisible = true;
-        CelebrationRequested?.Invoke();
+            LevelUpNewLevel = e.NewLevel;
+            if (e.NewlyUnlockedWorkshops.Count > 0)
+            {
+                var names = e.NewlyUnlockedWorkshops
+                    .Select(w => _localizationService.GetString(w.GetLocalizationKey()));
+                LevelUpUnlockedText = string.Join(", ", names) + milestoneText;
+            }
+            else
+            {
+                LevelUpUnlockedText = milestoneText;
+            }
+            IsLevelUpDialogVisible = true;
+            CelebrationRequested?.Invoke();
 
-        ShowLevelUp?.Invoke(this, e);
+            ShowLevelUp?.Invoke(this, e);
+        }
+
+        // Story-Kapitel prüfen
+        CheckForNewStoryChapter();
     }
 
     private void OnXpGained(object? sender, XpGainedEventArgs e)
@@ -1830,6 +2090,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
             _gameStateService.State.HasSeenTutorialHint = true;
             _gameStateService.MarkDirty();
         }
+
+        // Workshop-Level-Milestone prüfen (nicht während Hold-to-Upgrade)
+        if (!IsHoldingUpgrade)
+        {
+            int[] workshopMilestones = [10, 25, 50, 100, 250, 500, 1000];
+            if (workshopMilestones.Contains(e.NewLevel))
+            {
+                var workshopName = _localizationService.GetString(e.WorkshopType.GetLocalizationKey());
+                FloatingTextRequested?.Invoke($"{workshopName} Lv.{e.NewLevel}!", "level");
+                CelebrationRequested?.Invoke();
+                _audioService.PlaySoundAsync(GameSound.LevelUp).FireAndForget();
+            }
+
+            // Story-Kapitel prüfen
+            CheckForNewStoryChapter();
+        }
     }
 
     private void OnWorkerHired(object? sender, WorkerHiredEventArgs e)
@@ -1850,6 +2126,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         RefreshOrders();
+
+        // Story-Kapitel prüfen
+        CheckForNewStoryChapter();
     }
 
     /// <summary>
@@ -1967,6 +2246,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void OnAchievementUnlocked(object? sender, Achievement achievement)
     {
+        // Während Hold-to-Upgrade keine Dialoge anzeigen
+        if (IsHoldingUpgrade) return;
+
         _audioService.PlaySoundAsync(GameSound.LevelUp).FireAndForget();
 
         var title = _localizationService.GetString(achievement.TitleKey);
@@ -2271,30 +2553,82 @@ public partial class WorkshopDisplayModel : ObservableObject
     /// Ob das Level für die Freischaltung erreicht ist (aber noch nicht gekauft).
     /// </summary>
     public bool CanBuyUnlock { get; set; }
+    /// <summary>
+    /// Bulk-Buy Gesamtkosten (gesetzt von RefreshWorkshops basierend auf BulkBuyAmount).
+    /// </summary>
+    public decimal BulkUpgradeCost { get; set; }
+
+    /// <summary>
+    /// Beschriftung auf dem Upgrade-Button (z.B. "x10" oder "Max (47)").
+    /// </summary>
+    public string BulkUpgradeLabel { get; set; } = "";
+
     public string WorkerDisplay => $"👷×{WorkerCount}";
     public string IncomeDisplay => IncomePerSecond > 0 ? MoneyFormatter.FormatPerSecond(IncomePerSecond, 1) : "-";
-    public string UpgradeCostDisplay => MoneyFormatter.FormatCompact(UpgradeCost);
+    public string UpgradeCostDisplay => MoneyFormatter.FormatCompact(BulkUpgradeCost > 0 ? BulkUpgradeCost : UpgradeCost);
     public string HireCostDisplay => MoneyFormatter.FormatCompact(HireWorkerCost);
     public double LevelProgress => Level / (double)Workshop.MaxLevel;
 
     // Level-basierte Farb-Intensitaet fuer Workshop-Streifen
-    public double ColorIntensity => Level switch
-    {
-        >= 1000 => 1.00, // Max Level → voll leuchtend
-        >= 500 => 0.85,
-        >= 250 => 0.70,
-        >= 100 => 0.55,
-        >= 50 => 0.45,
-        >= 25 => 0.35,
-        _ => 0.20       // Basis
-    };
+    // Freischaltbare gesperrte Workshops bekommen etwas mehr Farbe
+    public double ColorIntensity => !IsUnlocked
+        ? (CanBuyUnlock ? 0.30 : 0.10)
+        : Level switch
+        {
+            >= 1000 => 1.00, // Max Level → voll leuchtend
+            >= 500 => 0.85,
+            >= 250 => 0.70,
+            >= 100 => 0.55,
+            >= 50 => 0.45,
+            >= 25 => 0.35,
+            _ => 0.20       // Basis
+        };
 
     // Max Level Gold-Glow
     public bool IsMaxLevel => Level >= Workshop.MaxLevel;
-    public string MaxLevelGlow => IsMaxLevel ? "0 0 12 0 #60FFD700" : "none";
+
+    // Dynamischer BoxShadow: Max-Level Gold-Glow, Upgrade leistbar dezenter Glow, freischaltbar Craft-Glow, sonst keiner
+    public string GlowShadow => IsMaxLevel
+        ? "0 0 12 0 #60FFD700"
+        : CanAffordUpgrade && IsUnlocked
+            ? "0 0 8 0 #40D97706"
+            : CanBuyUnlock && !IsUnlocked
+                ? "0 0 10 0 #50E8A00E"
+                : "none";
 
     // Phase 12.2: "Fast geschafft" Puls wenn >= 80% des Upgrade-Preises vorhanden
     public bool IsAlmostAffordable => !CanAffordUpgrade && IsUnlocked && UpgradeCost > 0;
+
+    // Milestone-System: Naechstes Milestone-Level und Fortschritt
+    private static readonly int[] Milestones = [10, 25, 50, 100, 250, 500, 1000];
+
+    public int NextMilestone
+    {
+        get
+        {
+            foreach (var m in Milestones)
+                if (Level < m) return m;
+            return 0; // Max erreicht
+        }
+    }
+
+    public double MilestoneProgress
+    {
+        get
+        {
+            int prev = 1;
+            foreach (var m in Milestones)
+            {
+                if (Level < m)
+                    return (Level - prev) / (double)(m - prev);
+                prev = m;
+            }
+            return 1.0;
+        }
+    }
+
+    public string MilestoneDisplay => NextMilestone > 0 ? $"\u2192 Lv.{NextMilestone}" : "";
+    public bool ShowMilestone => IsUnlocked && NextMilestone > 0;
 
     /// <summary>
     /// Benachrichtigt die UI ueber alle Property-Aenderungen nach einem In-Place-Update.
@@ -2323,7 +2657,13 @@ public partial class WorkshopDisplayModel : ObservableObject
         OnPropertyChanged(nameof(LevelProgress));
         OnPropertyChanged(nameof(ColorIntensity));
         OnPropertyChanged(nameof(IsMaxLevel));
-        OnPropertyChanged(nameof(MaxLevelGlow));
+        OnPropertyChanged(nameof(GlowShadow));
         OnPropertyChanged(nameof(IsAlmostAffordable));
+        OnPropertyChanged(nameof(NextMilestone));
+        OnPropertyChanged(nameof(MilestoneProgress));
+        OnPropertyChanged(nameof(MilestoneDisplay));
+        OnPropertyChanged(nameof(ShowMilestone));
+        OnPropertyChanged(nameof(BulkUpgradeCost));
+        OnPropertyChanged(nameof(BulkUpgradeLabel));
     }
 }

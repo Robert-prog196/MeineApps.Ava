@@ -57,6 +57,34 @@ public class AnimationManager
     }
 
     /// <summary>
+    /// Fügt einen Arbeits-Partikel mit konfigurierbarer Farbe hinzu (kleiner als Münzen).
+    /// </summary>
+    public void AddWorkParticle(float x, float y, SKColor color)
+    {
+        lock (_lock)
+        {
+            if (_particles.Count >= MaxParticles) return;
+
+            float vx = (_random.NextSingle() - 0.5f) * 40f;
+            float vy = -30f - _random.NextSingle() * 30f;
+
+            _particles.Add(new Particle
+            {
+                X = x,
+                Y = y,
+                VelocityX = vx,
+                VelocityY = vy,
+                Color = color,
+                Alpha = 1.0f,
+                Lifetime = 0.8f,
+                RemainingLife = 0.8f,
+                Size = 2f + _random.NextSingle() * 2f,
+                Type = ParticleType.Coin // Verhält sich wie Coin (leichte Gravity)
+            });
+        }
+    }
+
+    /// <summary>
     /// Adds a burst of colored confetti particles.
     /// </summary>
     /// <param name="cx">Center X position of the burst.</param>

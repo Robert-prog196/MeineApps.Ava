@@ -455,6 +455,9 @@
   <data name="TapToRotate" xml:space="preserve">
     <value>Tippe auf ein Rohr zum Drehen</value>
   </data>
+  <data name="TapToUnlock" xml:space="preserve">
+    <value>Tippe zum Freischalten</value>
+  </data>
   <data name="PipesConnected" xml:space="preserve">
     <value>Rohre verbunden!</value>
   </data>
@@ -1019,6 +1022,9 @@
   </data>
   <data name="RefreshMarket" xml:space="preserve">
     <value>Markt aktualisieren</value>
+  </data>
+  <data name="RefreshMarketFree" xml:space="preserve">
+    <value>Gratis-Refresh</value>
   </data>
   <data name="NextRotation" xml:space="preserve">
     <value>N&#228;chste Rotation</value>
@@ -2401,6 +2407,12 @@
   <data name="MasterTools" xml:space="preserve">
     <value>Meisterwerkzeuge</value>
   </data>
+  <data name="PerfectRating" xml:space="preserve">
+    <value>Perfekte Bewertungen</value>
+  </data>
+  <data name="AllToolsCollected" xml:space="preserve">
+    <value>Alle anderen Werkzeuge gesammelt</value>
+  </data>
   <data name="PrestigeRushBoost" xml:space="preserve">
     <value>Rush-Verstärker</value>
   </data>
@@ -2545,6 +2557,74 @@
   </data>
   <data name="StartInspection" xml:space="preserve">
     <value>Inspektion starten</value>
+  </data>
+
+  <!-- Story-Kapitel (Meister Hans) -->
+  <data name="Story_Ch01_Title" xml:space="preserve">
+    <value>Willkommen, Lehrling!</value>
+  </data>
+  <data name="Story_Ch01_Text" xml:space="preserve">
+    <value>Ich bin Meister Hans, der erfahrenste Handwerker der Stadt. Du hast Potenzial, das sehe ich! Zusammen bauen wir ein Handwerker-Imperium auf. Fang an, indem du deine Schreinerei aufrüstest!</value>
+  </data>
+  <data name="Story_Ch02_Title" xml:space="preserve">
+    <value>Gute Arbeit!</value>
+  </data>
+  <data name="Story_Ch02_Text" xml:space="preserve">
+    <value>Du hast deine erste Werkstatt aufgerüstet! So fängt jeder Meister an. Jetzt brauchst du einen Lehrling, der dir hilft. Ein guter Arbeiter ist Gold wert!</value>
+  </data>
+  <data name="Story_Ch03_Title" xml:space="preserve">
+    <value>Zeit für Expansion!</value>
+  </data>
+  <data name="Story_Ch03_Text" xml:space="preserve">
+    <value>Die Klempner-Zunft sucht Nachwuchs! Schalte die Klempnerei frei und verdopple dein Einkommen. Mehrere Standbeine sind das Geheimnis eines erfolgreichen Imperiums.</value>
+  </data>
+  <data name="Story_Ch04_Title" xml:space="preserve">
+    <value>Dein erster Auftrag!</value>
+  </data>
+  <data name="Story_Ch04_Text" xml:space="preserve">
+    <value>Ein Kunde hat angerufen! Aufträge bringen Extra-Geld und Erfahrung. Zeig was du drauf hast - je besser deine Arbeit, desto höher die Belohnung!</value>
+  </data>
+  <data name="Story_Ch05_Title" xml:space="preserve">
+    <value>Wachsendes Geschäft</value>
+  </data>
+  <data name="Story_Ch05_Text" xml:space="preserve">
+    <value>Drei Werkstätten! Du wirst langsam zum echten Unternehmer. Denk daran: Jede Werkstatt hat eigene Stärken. Investiere klug und halte die Kosten im Blick!</value>
+  </data>
+  <data name="Story_Ch06_Title" xml:space="preserve">
+    <value>Meisterwerkzeuge</value>
+  </data>
+  <data name="Story_Ch06_Text" xml:space="preserve">
+    <value>Ich habe gehört, du sammelst Meisterwerkzeuge! Jedes Werkzeug hat besondere Kräfte. Sammle sie alle und du wirst unaufhaltbar!</value>
+  </data>
+  <data name="Story_Ch07_Title" xml:space="preserve">
+    <value>Der Imperium-Erbauer</value>
+  </data>
+  <data name="Story_Ch07_Text" xml:space="preserve">
+    <value>Fünf Werkstätten und ein florierendes Geschäft! Du bist auf dem besten Weg, das größte Handwerker-Imperium der Stadt aufzubauen. Weiter so!</value>
+  </data>
+  <data name="Story_Ch08_Title" xml:space="preserve">
+    <value>Neuanfang mit Erfahrung</value>
+  </data>
+  <data name="Story_Ch08_Text" xml:space="preserve">
+    <value>Manchmal muss man einen Schritt zurück machen, um zwei vorwärts zu gehen. Prestige gibt dir permanente Boni für deinen nächsten Durchlauf. Trau dich!</value>
+  </data>
+  <data name="Story_Ch09_Title" xml:space="preserve">
+    <value>Die Legende</value>
+  </data>
+  <data name="Story_Ch09_Text" xml:space="preserve">
+    <value>Du hast es geschafft! Alle Werkstätten, zahllose Aufträge, und dein Name ist in der ganzen Stadt bekannt. Ich bin stolz auf dich, Meister!</value>
+  </data>
+  <data name="Story_Ch10_Title" xml:space="preserve">
+    <value>Großmeister</value>
+  </data>
+  <data name="Story_Ch10_Text" xml:space="preserve">
+    <value>Level 100! Du bist jetzt der Großmeister der Handwerker-Gilde. Dein Imperium ist ein Vorbild für alle. Aber vergiss nicht: Ein wahrer Meister hört nie auf zu lernen!</value>
+  </data>
+  <data name="TaskProgress" xml:space="preserve">
+    <value>Aufgabe {0}/{1}</value>
+  </data>
+  <data name="NextTask" xml:space="preserve">
+    <value>Nächste Aufgabe</value>
   </data>
 
 </root>

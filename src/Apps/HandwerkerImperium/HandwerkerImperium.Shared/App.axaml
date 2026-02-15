@@ -95,6 +95,36 @@
     <Style Selector="Button.Text">
       <Setter Property="Foreground" Value="{StaticResource CraftPrimaryLightBrush}" />
     </Style>
+
+    <!-- Mini-Game Result: Rating-Farben -->
+    <Style Selector="TextBlock.RatingPerfect">
+      <Setter Property="Foreground" Value="#FFD700" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.RatingGood">
+      <Setter Property="Foreground" Value="#22C55E" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.RatingOk">
+      <Setter Property="Foreground" Value="#F59E0B" />
+    </Style>
+    <Style Selector="TextBlock.RatingMiss">
+      <Setter Property="Foreground" Value="#EF4444" />
+    </Style>
+
+    <!-- Workshop-Karte: Subtiler Opacity-Puls wenn Upgrade leistbar -->
+    <Style Selector="Border.WorkshopCard.CanAfford">
+      <Style.Animations>
+        <Animation Duration="0:0:2" IterationCount="INFINITE" PlaybackDirection="Alternate">
+          <KeyFrame Cue="0">
+            <Setter Property="Opacity" Value="1.0" />
+          </KeyFrame>
+          <KeyFrame Cue="1">
+            <Setter Property="Opacity" Value="0.85" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
   </Application.Styles>
 
 </Application>

@@ -24,13 +24,22 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
 
     // Game configuration
     private const double TICK_INTERVAL_MS = 16; // ~60 FPS
-    private const double MARKER_SPEED = 0.022;  // Units per tick (0.0 - 1.0 range), increased for harder gameplay
+    private const double MARKER_SPEED = 0.017;  // Units pro Tick (0.0-1.0), reduziert für bessere Spielbarkeit
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
     // ═══════════════════════════════════════════════════════════════════════
 
     public event Action<string>? NavigationRequested;
+
+    /// <summary>Wird beim Spielstart nach Countdown gefeuert.</summary>
+    public event EventHandler? GameStarted;
+
+    /// <summary>Wird nach Spielende mit Rating (0-3 Sterne) gefeuert.</summary>
+    public event EventHandler<int>? GameCompleted;
+
+    /// <summary>Wird bei Zonen-Treffer gefeuert (Zone-Name: "Perfect", "Good", "Ok", "Miss").</summary>
+    public event EventHandler<string>? ZoneHit;
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -104,6 +113,18 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _canWatchAd;
+
+    /// <summary>Fortschritts-Anzeige z.B. "Aufgabe 2/3" (leer bei QuickJobs/Einzelaufgaben).</summary>
+    [ObservableProperty]
+    private string _taskProgressDisplay = "";
+
+    /// <summary>Ob dies die letzte Aufgabe des Auftrags ist (bestimmt ob Belohnungen angezeigt werden).</summary>
+    [ObservableProperty]
+    private bool _isLastTask;
+
+    /// <summary>Text für den Continue-Button ("Nächste Aufgabe" oder "Weiter").</summary>
+    [ObservableProperty]
+    private string _continueButtonText = "";
 
     // ═══════════════════════════════════════════════════════════════════════
     // COMPUTED PROPERTIES FOR VIEW BINDING
@@ -232,6 +253,25 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
         {
             Difficulty = activeOrder.Difficulty;
 
+            // Fortschritts-Anzeige: "Aufgabe X/Y"
+            int totalTasks = activeOrder.Tasks.Count;
+            int currentTaskNum = activeOrder.CurrentTaskIndex + 1;
+            if (totalTasks > 1)
+            {
+                var taskLabel = _localizationService.GetString("TaskProgress");
+                TaskProgressDisplay = string.Format(taskLabel, currentTaskNum, totalTasks);
+            }
+            else
+            {
+                TaskProgressDisplay = "";
+            }
+
+            // Letzte Aufgabe? (nach RecordTaskResult wird IsCompleted true)
+            IsLastTask = currentTaskNum >= totalTasks;
+            ContinueButtonText = IsLastTask
+                ? _localizationService.GetString("Continue")
+                : _localizationService.GetString("NextTask");
+
             // Get current task's game type
             var currentTask = activeOrder.CurrentTask;
             if (currentTask != null)
@@ -239,6 +279,13 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
                 GameType = currentTask.GameType;
                 UpdateGameTypeVisuals();
             }
+        }
+        else
+        {
+            // QuickJob: Immer letzte (einzige) Aufgabe
+            TaskProgressDisplay = "";
+            IsLastTask = true;
+            ContinueButtonText = _localizationService.GetString("Continue");
         }
 
         // Initialize zones based on difficulty
@@ -315,6 +362,7 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
         IsCountdownActive = false;
 
         // Spiel starten
+        GameStarted?.Invoke(this, EventArgs.Empty);
         IsPlaying = true;
         _timer = new DispatcherTimer
         {
@@ -356,6 +404,9 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
         // Calculate result based on marker position
         Result = CalculateRating(MarkerPosition);
 
+        // Zonen-Treffer Event feuern
+        ZoneHit?.Invoke(this, Result.GetLocalizationKey());
+
         // Record result in game state
         _gameStateService.RecordMiniGameResult(Result);
 
@@ -369,16 +420,18 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
         };
         await _audioService.PlaySoundAsync(sound);
 
-        // Calculate rewards preview
+        // Belohnungen nur bei letzter Aufgabe berechnen und anzeigen (Gesamt-Ergebnis)
         var order = _gameStateService.GetActiveOrder();
-        if (order != null)
+        if (order != null && IsLastTask)
         {
-            int taskCount = Math.Max(1, order.Tasks.Count);
-            decimal baseReward = order.BaseReward / taskCount;
-            RewardAmount = baseReward * Result.GetRewardPercentage();
-
-            int baseXp = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXp * Result.GetXpPercentage());
+            // Gesamt-Belohnung aus allen bisherigen Ratings + aktuellem Ergebnis
+            RewardAmount = order.FinalReward;
+            XpAmount = order.FinalXp;
+        }
+        else
+        {
+            RewardAmount = 0;
+            XpAmount = 0;
         }
 
         // Set result display
@@ -406,8 +459,11 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
         if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
         if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
 
+        // Game-Completed Event mit Stern-Anzahl feuern
+        GameCompleted?.Invoke(this, starCount);
+
         AdWatched = false;
-        CanWatchAd = _rewardedAdService.IsAvailable;
+        CanWatchAd = IsLastTask && _rewardedAdService.IsAvailable;
     }
 
     [RelayCommand]

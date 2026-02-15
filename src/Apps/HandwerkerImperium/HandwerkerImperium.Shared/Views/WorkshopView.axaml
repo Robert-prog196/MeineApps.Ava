@@ -3,10 +3,11 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.WorkshopView"
              x:DataType="vm:WorkshopViewModel">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,Auto,*">
 
     <!-- ================================================================= -->
     <!-- HEADER                                                            -->
@@ -59,9 +60,17 @@
     </Border>
 
     <!-- ================================================================= -->
+    <!-- WORKSHOP INTERIOR (SkiaSharp Animated Scene)                      -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="1" Height="180" ClipToBounds="True" Margin="0,0,0,0"
+            CornerRadius="0" Background="{DynamicResource CardBrush}">
+      <skia:SKCanvasView x:Name="WorkshopCanvas" />
+    </Border>
+
+    <!-- ================================================================= -->
     <!-- CONTENT                                                           -->
     <!-- ================================================================= -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="20" Margin="16">
 
         <!-- Level Progress Card -->

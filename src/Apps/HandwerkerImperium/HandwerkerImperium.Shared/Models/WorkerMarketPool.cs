@@ -27,6 +27,13 @@ public class WorkerMarketPool
     public DateTime LastRotation { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Ob der Gratis-Refresh für die aktuelle Rotation bereits verwendet wurde.
+    /// Wird bei jeder Rotation zurückgesetzt.
+    /// </summary>
+    [JsonPropertyName("freeRefreshUsedThisRotation")]
+    public bool FreeRefreshUsedThisRotation { get; set; }
+
+    /// <summary>
     /// Time remaining until next rotation.
     /// </summary>
     [JsonIgnore]
@@ -53,6 +60,7 @@ public class WorkerMarketPool
         AvailableWorkers.Clear();
         LastRotation = DateTime.UtcNow;
         NextRotation = DateTime.UtcNow.AddHours(4);
+        FreeRefreshUsedThisRotation = false;
 
         int poolSize = hasHeadhunter ? 8 : 5;
         var availableTiers = Worker.GetAvailableTiers(playerLevel, prestigeLevel);

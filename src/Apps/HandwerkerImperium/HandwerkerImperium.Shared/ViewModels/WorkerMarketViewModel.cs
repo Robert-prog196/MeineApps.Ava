@@ -61,6 +61,12 @@ public partial class WorkerMarketViewModel : ObservableObject
     [ObservableProperty]
     private string _refreshButtonText = string.Empty;
 
+    /// <summary>
+    /// Ob der Gratis-Refresh noch verfügbar ist (1x pro Rotation).
+    /// </summary>
+    [ObservableProperty]
+    private bool _hasFreeRefresh;
+
     [ObservableProperty]
     private string _nextRotationLabel = string.Empty;
 
@@ -171,6 +177,7 @@ public partial class WorkerMarketViewModel : ObservableObject
         }
 
         UpdateTimer();
+        UpdateFreeRefreshState();
         UpdateCanHire();
         OnPropertyChanged(nameof(HasFullWorkshops));
         OnPropertyChanged(nameof(ShowExtraSlotButton));
@@ -201,10 +208,10 @@ public partial class WorkerMarketViewModel : ObservableObject
     {
         Title = _localizationService.GetString("WorkerMarket");
         HireButtonText = _localizationService.GetString("HireWorker");
-        RefreshButtonText = _localizationService.GetString("RefreshMarket");
         NextRotationLabel = _localizationService.GetString("NextRotation");
         SelectWorkshopTitle = _localizationService.GetString("SelectWorkshop");
         CancelText = _localizationService.GetString("Cancel");
+        UpdateFreeRefreshState();
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -214,15 +221,22 @@ public partial class WorkerMarketViewModel : ObservableObject
     [RelayCommand]
     private async Task RefreshWithAdAsync()
     {
-        // Video-Werbung anzeigen (simuliert auf Desktop)
+        var market = _workerService.GetWorkerMarket();
+
+        // Gratis-Refresh verfügbar? Direkt aktualisieren ohne Ad
+        if (!market.FreeRefreshUsedThisRotation)
+        {
+            market.FreeRefreshUsedThisRotation = true;
+            _gameStateService.MarkDirty();
+            DoRefreshMarket();
+            return;
+        }
+
+        // Sonst: Video-Werbung anzeigen
         var adWatched = await _rewardedAdService.ShowAdAsync("market_refresh");
         if (adWatched)
         {
-            var market = _workerService.RefreshMarket();
-            AvailableWorkers = market.AvailableWorkers.ToList();
-            UpdateTimer();
-            SelectedWorker = null;
-            UpdateCanHire();
+            DoRefreshMarket();
         }
         else
         {
@@ -231,6 +245,19 @@ public partial class WorkerMarketViewModel : ObservableObject
                 _localizationService.GetString("WatchAdToRefresh"),
                 "OK");
         }
+    }
+
+    /// <summary>
+    /// Führt den Markt-Refresh durch und aktualisiert alle UI-Properties.
+    /// </summary>
+    private void DoRefreshMarket()
+    {
+        var market = _workerService.RefreshMarket();
+        AvailableWorkers = market.AvailableWorkers.ToList();
+        UpdateTimer();
+        UpdateFreeRefreshState();
+        SelectedWorker = null;
+        UpdateCanHire();
     }
 
     [RelayCommand]
@@ -391,6 +418,18 @@ public partial class WorkerMarketViewModel : ObservableObject
 
         var cost = SelectedWorker.Tier.GetHiringCost();
         CanHire = _gameStateService.CanAfford(cost) && HasAvailableSlots;
+    }
+
+    /// <summary>
+    /// Aktualisiert den Gratis-Refresh-Status und den Button-Text/Icon.
+    /// </summary>
+    private void UpdateFreeRefreshState()
+    {
+        var market = _workerService.GetWorkerMarket();
+        HasFreeRefresh = !market.FreeRefreshUsedThisRotation;
+        RefreshButtonText = HasFreeRefresh
+            ? _localizationService.GetString("RefreshMarketFree")
+            : _localizationService.GetString("RefreshMarket");
     }
 }
 

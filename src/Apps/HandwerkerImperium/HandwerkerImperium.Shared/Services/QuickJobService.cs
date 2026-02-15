@@ -34,6 +34,22 @@ public class QuickJobService : IQuickJobService
         "QuickMeasure", "QuickInstall", "QuickPaint", "QuickCheck"
     ];
 
+    /// <summary>
+    /// Belohnungs-Multiplikatoren pro Auftragstyp.
+    /// Express-Aufträge sind deutlich lukrativer (Aufschlag für Schnelligkeit).
+    /// </summary>
+    private static readonly Dictionary<string, decimal> TitleRewardMultipliers = new()
+    {
+        ["QuickRepair"]     = 0.90m,
+        ["QuickFix"]        = 0.85m,
+        ["ExpressService"]  = 1.40m,  // Express = teurer
+        ["SmallOrder"]      = 0.80m,
+        ["QuickMeasure"]    = 0.75m,
+        ["QuickInstall"]    = 1.10m,
+        ["QuickPaint"]      = 0.95m,
+        ["QuickCheck"]      = 1.30m,  // "Express-Prüfung" = teurer
+    };
+
     public event EventHandler<QuickJob>? QuickJobCompleted;
 
     public QuickJobService(IGameStateService gameStateService, ILocalizationService localizationService)
@@ -68,11 +84,11 @@ public class QuickJobService : IQuickJobService
     }
 
     /// <summary>
-    /// Berechnet Belohnungen eines QuickJobs neu basierend auf aktuellem Einkommen.
+    /// Berechnet Belohnungen eines QuickJobs neu basierend auf aktuellem Einkommen und Auftragstyp.
     /// </summary>
     private void RecalculateRewards(QuickJob job, int level)
     {
-        var (reward, xpReward) = CalculateQuickJobRewards(level);
+        var (reward, xpReward) = CalculateQuickJobRewards(level, job.TitleKey);
         job.Reward = reward;
         job.XpReward = xpReward;
     }
@@ -94,8 +110,8 @@ public class QuickJobService : IQuickJobService
             var miniGameType = AvailableMiniGames[Random.Shared.Next(AvailableMiniGames.Length)];
             var titleKey = TitleKeys[Random.Shared.Next(TitleKeys.Length)];
 
-            // Belohnung skaliert mit Level und aktuellem Einkommen
-            var (reward, xpReward) = CalculateQuickJobRewards(level);
+            // Belohnung skaliert mit Level, Einkommen und Auftragstyp
+            var (reward, xpReward) = CalculateQuickJobRewards(level, titleKey);
 
             state.QuickJobs.Add(new QuickJob
             {
@@ -142,7 +158,7 @@ public class QuickJobService : IQuickJobService
                 var workshopType = unlockedTypes[Random.Shared.Next(unlockedTypes.Count)];
                 var miniGameType = AvailableMiniGames[Random.Shared.Next(AvailableMiniGames.Length)];
                 var titleKey = TitleKeys[Random.Shared.Next(TitleKeys.Length)];
-                var (reward, xpReward) = CalculateQuickJobRewards(level);
+                var (reward, xpReward) = CalculateQuickJobRewards(level, titleKey);
 
                 state.QuickJobs.Add(new QuickJob
                 {
@@ -161,17 +177,25 @@ public class QuickJobService : IQuickJobService
     }
 
     /// <summary>
-    /// Berechnet QuickJob-Belohnungen basierend auf Level und aktuellem Netto-Einkommen.
-    /// Gibt ~5 Minuten Netto-Einkommen als Basis, mindestens Level-skaliert.
+    /// Berechnet QuickJob-Belohnungen basierend auf Level, aktuellem Netto-Einkommen und Auftragstyp.
+    /// Express-Aufträge haben höhere Belohnungen (Aufschlag), kleine Aufträge weniger.
     /// </summary>
-    private (decimal reward, int xpReward) CalculateQuickJobRewards(int level)
+    private (decimal reward, int xpReward) CalculateQuickJobRewards(int level, string titleKey = "")
     {
         // Basis: ~5 Min Netto-Einkommen (Mindestens Level * 50)
         var fiveMinIncome = Math.Max(0m, _gameStateService.State.NetIncomePerSecond) * 300m;
-        var reward = Math.Max(20m + level * 50m, fiveMinIncome);
+        var baseReward = Math.Max(20m + level * 50m, fiveMinIncome);
 
-        // XP skaliert mit Level (kein starres Cap)
+        // Typ-Multiplikator anwenden (Express = teurer, kleine Aufträge = günstiger)
+        var multiplier = 1.0m;
+        if (!string.IsNullOrEmpty(titleKey) && TitleRewardMultipliers.TryGetValue(titleKey, out var m))
+            multiplier = m;
+        var reward = baseReward * multiplier;
+
+        // XP skaliert mit Level + Bonus für Express-Aufträge
         var xpReward = 5 + level * 3;
+        if (multiplier > 1.0m)
+            xpReward = (int)(xpReward * multiplier);
 
         return (Math.Round(reward, 0), xpReward);
     }

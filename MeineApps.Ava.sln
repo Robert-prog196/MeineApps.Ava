@@ -81,6 +81,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BomberBlast.Desktop", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BomberBlast.Android", "src\Apps\BomberBlast\BomberBlast.Android\BomberBlast.Android.csproj", "{FB13B34D-A682-48BE-8CA3-77FDBE431602}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E-EAC7-C090-1BA3-A61EC2A24D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialPostGenerator", "tools\SocialPostGenerator\SocialPostGenerator.csproj", "{47CED905-C254-4DC0-8A81-FA741F87945F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -443,6 +447,18 @@ Global
 		{FB13B34D-A682-48BE-8CA3-77FDBE431602}.Release|x64.Build.0 = Release|Any CPU
 		{FB13B34D-A682-48BE-8CA3-77FDBE431602}.Release|x86.ActiveCfg = Release|Any CPU
 		{FB13B34D-A682-48BE-8CA3-77FDBE431602}.Release|x86.Build.0 = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|x64.Build.0 = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Debug|x86.Build.0 = Debug|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|x64.ActiveCfg = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|x64.Build.0 = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|x86.ActiveCfg = Release|Any CPU
+		{47CED905-C254-4DC0-8A81-FA741F87945F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -484,6 +500,7 @@ Global
 		{40C43126-E202-42E3-B7E3-932DBB669728} = {3BF06301-3239-54F7-30C7-AC05575DA22E}
 		{970C2D9D-297C-446F-BE93-31C8190773F2} = {3BF06301-3239-54F7-30C7-AC05575DA22E}
 		{FB13B34D-A682-48BE-8CA3-77FDBE431602} = {3BF06301-3239-54F7-30C7-AC05575DA22E}
+		{47CED905-C254-4DC0-8A81-FA741F87945F} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAAEA93B-578B-49A5-AAF0-F6B6A6D6CD31}

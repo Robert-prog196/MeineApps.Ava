@@ -186,6 +186,14 @@ public partial class WorkshopViewModel : ObservableObject, IDisposable
 
     partial void OnIncomePerSecondChanged(decimal value) => OnPropertyChanged(nameof(CanWatchSpeedupAd));
 
+    /// <summary>
+    /// Gibt den aktuellen Workshop fuer SkiaSharp-Rendering zurueck.
+    /// </summary>
+    public Workshop? GetWorkshopForRendering()
+    {
+        return _gameStateService.State.Workshops.FirstOrDefault(w => w.Type == WorkshopType);
+    }
+
     public WorkshopViewModel(
         IGameStateService gameStateService,
         IAudioService audioService,

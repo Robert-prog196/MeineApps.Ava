@@ -3,13 +3,14 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.MiniGames.BlueprintGameView"
              x:DataType="vm:BlueprintGameViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="10,20,10,20">
 
     <!-- ================================================================= -->
-    <!-- HEADER                                                            -->
+    <!-- HEADER (Row 0)                                                    -->
     <!-- ================================================================= -->
     <Border Grid.Row="0"
             Classes="CardElevated"
@@ -35,6 +36,11 @@
                      HorizontalAlignment="Center"
                      FontSize="12"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
+          <TextBlock Text="{Binding TaskProgressDisplay}"
+                     HorizontalAlignment="Center"
+                     FontSize="11" FontWeight="SemiBold"
+                     Foreground="{StaticResource CraftPrimaryBrush}"
+                     IsVisible="{Binding TaskProgressDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
 
         <!-- Timer -->
@@ -53,205 +59,164 @@
     </Border>
 
     <!-- ================================================================= -->
-    <!-- SPIELBEREICH                                                      -->
+    <!-- STATS (Row 1) - Anweisungen + Fortschritt/Fehler/Naechster       -->
     <!-- ================================================================= -->
-    <Grid Grid.Row="1" VerticalAlignment="Center" Margin="0,20">
-      <StackPanel Spacing="20">
+    <StackPanel Grid.Row="1" Spacing="8" Margin="0,8">
 
-        <!-- Anweisungen: Vor dem Spiel -->
-        <TextBlock Text="{loc:Translate BlueprintInstructionBefore}"
-                   FontSize="12"
-                   Foreground="{DynamicResource TextSecondaryBrush}"
-                   HorizontalAlignment="Center"
-                   TextWrapping="Wrap"
-                   TextAlignment="Center"
-                   IsVisible="{Binding !IsPlaying}">
-          <TextBlock.IsVisible>
-            <MultiBinding Converter="{x:Static BoolConverters.And}">
-              <Binding Path="!IsPlaying" />
-              <Binding Path="!IsMemorizing" />
-              <Binding Path="!IsResultShown" />
-            </MultiBinding>
-          </TextBlock.IsVisible>
-        </TextBlock>
+      <!-- Anweisungen: Vor dem Spiel -->
+      <TextBlock Text="{loc:Translate BlueprintInstructionBefore}"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 HorizontalAlignment="Center"
+                 TextWrapping="Wrap"
+                 TextAlignment="Center">
+        <TextBlock.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsPlaying" />
+            <Binding Path="!IsMemorizing" />
+            <Binding Path="!IsResultShown" />
+          </MultiBinding>
+        </TextBlock.IsVisible>
+      </TextBlock>
 
-        <!-- Anweisungen: Während Memorisierung -->
-        <TextBlock Text="{loc:Translate BlueprintInstructionMemorize}"
-                   FontSize="14" FontWeight="SemiBold"
-                   Foreground="{StaticResource CraftPrimaryBrush}"
-                   HorizontalAlignment="Center"
-                   TextWrapping="Wrap"
-                   TextAlignment="Center"
-                   IsVisible="{Binding IsMemorizing}" />
+      <!-- Anweisungen: Waehrend Memorisierung -->
+      <TextBlock Text="{loc:Translate BlueprintInstructionMemorize}"
+                 FontSize="14" FontWeight="SemiBold"
+                 Foreground="{StaticResource CraftPrimaryBrush}"
+                 HorizontalAlignment="Center"
+                 TextWrapping="Wrap"
+                 TextAlignment="Center"
+                 IsVisible="{Binding IsMemorizing}" />
 
-        <!-- Anweisungen: Während Spiel -->
-        <TextBlock Text="{loc:Translate BlueprintInstructionPlay}"
-                   FontSize="12"
-                   Foreground="{DynamicResource TextSecondaryBrush}"
-                   HorizontalAlignment="Center"
-                   TextWrapping="Wrap"
-                   TextAlignment="Center"
-                   IsVisible="{Binding IsPlaying}" />
+      <!-- Anweisungen: Waehrend Spiel -->
+      <TextBlock Text="{loc:Translate BlueprintInstructionPlay}"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 HorizontalAlignment="Center"
+                 TextWrapping="Wrap"
+                 TextAlignment="Center"
+                 IsVisible="{Binding IsPlaying}" />
 
-        <!-- Fortschritt + Fehler -->
-        <Grid ColumnDefinitions="*,Auto,*"
-              IsVisible="{Binding IsPlaying}">
+      <!-- Fortschritt + Fehler + Naechster Schritt -->
+      <Grid ColumnDefinitions="*,Auto,*"
+            IsVisible="{Binding IsPlaying}">
 
-          <!-- Fortschritt links -->
-          <StackPanel Orientation="Horizontal" Spacing="4"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center">
-            <mi:MaterialIcon Kind="CheckCircle" Width="16" Height="16"
+        <!-- Fortschritt links -->
+        <StackPanel Orientation="Horizontal" Spacing="4"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+          <mi:MaterialIcon Kind="CheckCircle" Width="16" Height="16"
+                           Foreground="{DynamicResource SuccessBrush}" />
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}">
+            <Run Text="{Binding CompletedSteps}" />
+            <Run Text="/" />
+            <Run Text="{Binding TotalSteps}" />
+          </TextBlock>
+        </StackPanel>
+
+        <!-- Naechster Schritt mittig -->
+        <Border Grid.Column="1"
+                Background="{StaticResource CraftPrimaryBrush}"
+                CornerRadius="12"
+                Padding="12,4">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="ArrowRight" Width="16" Height="16"
+                             Foreground="White" />
+            <TextBlock FontSize="14" FontWeight="Bold"
+                       Foreground="White">
+              <Run Text="#" />
+              <Run Text="{Binding NextExpectedStep}" />
+            </TextBlock>
+          </StackPanel>
+        </Border>
+
+        <!-- Fehler rechts -->
+        <StackPanel Grid.Column="2"
+                    Orientation="Horizontal" Spacing="4"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+          <mi:MaterialIcon Kind="Close" Width="16" Height="16"
+                           Foreground="{DynamicResource ErrorBrush}" />
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource TextSecondaryBrush}">
+            <Run Text="{loc:Translate MistakesLabel}" />
+            <Run Text=" " />
+            <Run Text="{Binding MistakeCount}" />
+          </TextBlock>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+
+    <!-- ================================================================= -->
+    <!-- SKIA GAME AREA (Row 2) - Blaupausen-Grid                         -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="2" Background="{DynamicResource CardBrush}" CornerRadius="8" Margin="0,8" ClipToBounds="True">
+      <skia:SKCanvasView x:Name="GameCanvas" MinHeight="200" />
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- RESULT DISPLAY (Row 3)                                            -->
+    <!-- ================================================================= -->
+    <Border x:Name="ResultBorder" Grid.Row="3"
+            Classes="Card StatsCard"
+            IsVisible="{Binding IsResultShown}"
+            Padding="24">
+      <StackPanel Spacing="16" HorizontalAlignment="Center">
+        <!-- Emoji -->
+        <TextBlock Text="{Binding ResultEmoji}"
+                   FontSize="48"
+                   HorizontalAlignment="Center" />
+
+        <!-- Sterne-Bewertung (staggered via Code-Behind) -->
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+          <mi:MaterialIcon x:Name="Star1Panel" Kind="Star" Width="32" Height="32"
+                           Foreground="#FFD700"
+                           Opacity="{Binding Star1Opacity}" />
+          <mi:MaterialIcon x:Name="Star2Panel" Kind="Star" Width="32" Height="32"
+                           Foreground="#FFD700"
+                           Opacity="{Binding Star2Opacity}" />
+          <mi:MaterialIcon x:Name="Star3Panel" Kind="Star" Width="32" Height="32"
+                           Foreground="#FFD700"
+                           Opacity="{Binding Star3Opacity}" />
+        </StackPanel>
+
+        <!-- Rating Text (Farbe wird per Code-Behind gesetzt) -->
+        <TextBlock x:Name="RatingText"
+                   Text="{Binding ResultText}"
+                   FontSize="24" FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   HorizontalAlignment="Center" />
+
+        <!-- Belohnungen (nur bei letzter Aufgabe) -->
+        <StackPanel Orientation="Horizontal" Spacing="20"
+                    HorizontalAlignment="Center"
+                    IsVisible="{Binding IsLastTask}">
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
                              Foreground="{DynamicResource SuccessBrush}" />
-            <TextBlock FontSize="12"
-                       Foreground="{DynamicResource TextSecondaryBrush}">
-              <Run Text="{Binding CompletedSteps}" />
-              <Run Text="/" />
-              <Run Text="{Binding TotalSteps}" />
-            </TextBlock>
+            <TextBlock x:Name="RewardMoneyText"
+                       Text="{Binding RewardAmount, StringFormat='+{0:N0} &#x20AC;'}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="{DynamicResource SuccessBrush}"
+                       VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- Nächster Schritt mittig -->
-          <Border Grid.Column="1"
-                  Background="{StaticResource CraftPrimaryBrush}"
-                  CornerRadius="12"
-                  Padding="12,4">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <mi:MaterialIcon Kind="ArrowRight" Width="16" Height="16"
-                               Foreground="White" />
-              <TextBlock FontSize="14" FontWeight="Bold"
-                         Foreground="White">
-                <Run Text="#" />
-                <Run Text="{Binding NextExpectedStep}" />
-              </TextBlock>
-            </StackPanel>
-          </Border>
-
-          <!-- Fehler rechts -->
-          <StackPanel Grid.Column="2"
-                      Orientation="Horizontal" Spacing="4"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center">
-            <mi:MaterialIcon Kind="Close" Width="16" Height="16"
-                             Foreground="{DynamicResource ErrorBrush}" />
-            <TextBlock FontSize="12"
-                       Foreground="{DynamicResource TextSecondaryBrush}">
-              <Run Text="{loc:Translate MistakesLabel}" />
-              <Run Text=" " />
-              <Run Text="{Binding MistakeCount}" />
-            </TextBlock>
+          <StackPanel Orientation="Horizontal" Spacing="4">
+            <mi:MaterialIcon Kind="Star" Width="20" Height="20"
+                             Foreground="Gold" />
+            <TextBlock x:Name="RewardXpText"
+                       Text="{Binding XpAmount, StringFormat='+{0} XP'}"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="Gold"
+                       VerticalAlignment="Center" />
           </StackPanel>
-        </Grid>
-
-        <!-- Bauplan-Grid -->
-        <Border Classes="Card StatsCard" Padding="16"
-                HorizontalAlignment="Center">
-          <ItemsControl ItemsSource="{Binding Steps}"
-                        Width="{Binding GridWidth}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate x:DataType="vm:BlueprintStep">
-                <Button Classes="Text" Padding="0" Margin="3"
-                        Command="{Binding $parent[ItemsControl].((vm:BlueprintGameViewModel)DataContext).SelectStepCommand}"
-                        CommandParameter="{Binding .}">
-                  <Border Width="68" Height="68"
-                          CornerRadius="8"
-                          BorderThickness="2"
-                          BorderBrush="#40FFFFFF"
-                          Background="{Binding BackgroundColor}">
-                    <Panel>
-                      <!-- Icon (immer sichtbar) -->
-                      <TextBlock Text="{Binding Icon}"
-                                 FontSize="24"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="0,6,0,0" />
-
-                      <!-- Nummer oder Fragezeichen -->
-                      <TextBlock Text="{Binding DisplayNumber}"
-                                 FontSize="18" FontWeight="Bold"
-                                 Foreground="White"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Bottom"
-                                 Margin="0,0,0,6" />
-
-                      <!-- Häkchen bei Erledigung -->
-                      <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
-                                       Foreground="White"
-                                       HorizontalAlignment="Right"
-                                       VerticalAlignment="Top"
-                                       Margin="0,2,2,0"
-                                       IsVisible="{Binding IsCompleted}" />
-                    </Panel>
-                  </Border>
-                </Button>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </Border>
-
-        <!-- Ergebnis-Anzeige -->
-        <Border Classes="Card StatsCard"
-                IsVisible="{Binding IsResultShown}"
-                Padding="24">
-          <StackPanel Spacing="16" HorizontalAlignment="Center">
-            <!-- Emoji -->
-            <TextBlock Text="{Binding ResultEmoji}"
-                       FontSize="48"
-                       HorizontalAlignment="Center" />
-
-            <!-- Sterne-Bewertung (staggered) -->
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-              <mi:MaterialIcon Kind="Star" Width="32" Height="32"
-                               Foreground="#FFD700"
-                               Opacity="{Binding Star1Opacity}" />
-              <mi:MaterialIcon Kind="Star" Width="32" Height="32"
-                               Foreground="#FFD700"
-                               Opacity="{Binding Star2Opacity}" />
-              <mi:MaterialIcon Kind="Star" Width="32" Height="32"
-                               Foreground="#FFD700"
-                               Opacity="{Binding Star3Opacity}" />
-            </StackPanel>
-
-            <!-- Bewertungstext -->
-            <TextBlock Text="{Binding ResultText}"
-                       FontSize="24" FontWeight="Bold"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       HorizontalAlignment="Center" />
-
-            <!-- Belohnungen -->
-            <StackPanel Orientation="Horizontal" Spacing="20"
-                        HorizontalAlignment="Center">
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
-                                 Foreground="{DynamicResource SuccessBrush}" />
-                <TextBlock Text="{Binding RewardAmount, StringFormat='+{0:N0} \u20AC'}"
-                           FontSize="14" FontWeight="Bold"
-                           Foreground="{DynamicResource SuccessBrush}"
-                           VerticalAlignment="Center" />
-              </StackPanel>
-
-              <StackPanel Orientation="Horizontal" Spacing="4">
-                <mi:MaterialIcon Kind="Star" Width="20" Height="20"
-                                 Foreground="Gold" />
-                <TextBlock Text="{Binding XpAmount, StringFormat='+{0} XP'}"
-                           FontSize="14" FontWeight="Bold"
-                           Foreground="Gold"
-                           VerticalAlignment="Center" />
-              </StackPanel>
-            </StackPanel>
-          </StackPanel>
-        </Border>
-
+        </StackPanel>
       </StackPanel>
-    </Grid>
+    </Border>
 
     <!-- Countdown Overlay (3, 2, 1, Los!) -->
-    <Border Grid.RowSpan="3" Background="#CC000000"
+    <Border Grid.RowSpan="5" Background="#CC000000"
             IsVisible="{Binding IsCountdownActive}">
       <TextBlock Text="{Binding CountdownText}"
                  FontSize="72" FontWeight="Bold"
@@ -260,11 +225,11 @@
     </Border>
 
     <!-- ================================================================= -->
-    <!-- ACTION BUTTONS                                                    -->
+    <!-- ACTION BUTTONS (Row 4)                                            -->
     <!-- ================================================================= -->
-    <StackPanel Grid.Row="2" Spacing="16">
+    <StackPanel Grid.Row="4" Spacing="16">
 
-      <!-- Start Button (versteckt während Spiel, Memorisierung und nach Ergebnis) -->
+      <!-- Start Button (versteckt waehrend Spiel, Memorisierung und nach Ergebnis) -->
       <Panel>
         <Panel.IsVisible>
           <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -280,12 +245,16 @@
                 MinWidth="200" />
       </Panel>
 
-      <!-- Continue Buttons (nach Ergebnis) -->
+      <!-- Letzte Aufgabe: Ad + Weiter -->
       <Grid ColumnDefinitions="*,*"
-            ColumnSpacing="12"
-            IsVisible="{Binding IsResultShown}">
+            ColumnSpacing="12">
+        <Grid.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="IsResultShown" />
+            <Binding Path="IsLastTask" />
+          </MultiBinding>
+        </Grid.IsVisible>
 
-        <!-- Ad für 2x Belohnung -->
         <Button Content="{loc:Translate WatchAdForDouble}"
                 Classes="Secondary"
                 IsEnabled="{Binding CanWatchAd}"
@@ -293,14 +262,27 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center" />
 
-        <!-- Weiter -->
         <Button Grid.Column="1"
-                Content="{loc:Translate Continue}"
+                Content="{Binding ContinueButtonText}"
                 Classes="Primary"
                 Command="{Binding ContinueCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center" />
       </Grid>
+
+      <!-- Zwischen-Aufgabe: Nur Weiter-Button -->
+      <Button Content="{Binding ContinueButtonText}"
+              Classes="Primary"
+              Command="{Binding ContinueCommand}"
+              HorizontalAlignment="Center"
+              MinWidth="200">
+        <Button.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="IsResultShown" />
+            <Binding Path="!IsLastTask" />
+          </MultiBinding>
+        </Button.IsVisible>
+      </Button>
 
     </StackPanel>
 

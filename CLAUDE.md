@@ -30,6 +30,11 @@ dotnet run --project tools/AppChecker {App}
 # StoreAssetGenerator - Alle / Gefiltert
 dotnet run --project tools/StoreAssetGenerator
 dotnet run --project tools/StoreAssetGenerator {Filter}
+
+# SocialPostGenerator - Posts + Promo-Bilder
+dotnet run --project tools/SocialPostGenerator
+dotnet run --project tools/SocialPostGenerator post {App} <x|reddit>
+dotnet run --project tools/SocialPostGenerator image <{App}|portfolio>
 ```
 
 ---
@@ -66,7 +71,8 @@ F:\Meine_Apps_Ava\
 │
 ├── tools/
 │   ├── AppChecker/              # 10 Check-Kategorien, 100+ Pruefungen
-│   └── StoreAssetGenerator/     # Play Store Assets (SkiaSharp)
+│   ├── StoreAssetGenerator/     # Play Store Assets (SkiaSharp)
+│   └── SocialPostGenerator/     # Social-Media Posts + Promo-Bilder
 │
 └── tests/
 ```

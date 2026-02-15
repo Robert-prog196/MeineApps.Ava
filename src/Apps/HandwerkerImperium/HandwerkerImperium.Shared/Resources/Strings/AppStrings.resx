@@ -455,6 +455,9 @@
   <data name="TapToRotate" xml:space="preserve">
     <value>Tap a pipe to rotate</value>
   </data>
+  <data name="TapToUnlock" xml:space="preserve">
+    <value>Tap to unlock</value>
+  </data>
   <data name="PipesConnected" xml:space="preserve">
     <value>Pipes connected!</value>
   </data>
@@ -1019,6 +1022,9 @@
   </data>
   <data name="RefreshMarket" xml:space="preserve">
     <value>Refresh Market</value>
+  </data>
+  <data name="RefreshMarketFree" xml:space="preserve">
+    <value>Free Refresh</value>
   </data>
   <data name="NextRotation" xml:space="preserve">
     <value>Next Rotation</value>
@@ -2403,6 +2409,12 @@
   <data name="MasterTools" xml:space="preserve">
     <value>Master Tools</value>
   </data>
+  <data name="PerfectRating" xml:space="preserve">
+    <value>Perfect Ratings</value>
+  </data>
+  <data name="AllToolsCollected" xml:space="preserve">
+    <value>All other tools collected</value>
+  </data>
   <!-- Prestige-Shop neue Items -->
   <data name="PrestigeRushBoost" xml:space="preserve">
     <value>Rush Enhancer</value>
@@ -2549,6 +2561,74 @@
   </data>
   <data name="StartInspection" xml:space="preserve">
     <value>Start Inspection</value>
+  </data>
+
+  <!-- Story-Kapitel (Meister Hans) -->
+  <data name="Story_Ch01_Title" xml:space="preserve">
+    <value>Welcome, Apprentice!</value>
+  </data>
+  <data name="Story_Ch01_Text" xml:space="preserve">
+    <value>I am Master Hans, the most experienced craftsman in town. You have potential, I can see that! Together we will build a craftsman empire. Start by upgrading your carpentry!</value>
+  </data>
+  <data name="Story_Ch02_Title" xml:space="preserve">
+    <value>Good Work!</value>
+  </data>
+  <data name="Story_Ch02_Text" xml:space="preserve">
+    <value>You upgraded your first workshop! That's how every master starts. Now you need an apprentice to help you. A good worker is worth their weight in gold!</value>
+  </data>
+  <data name="Story_Ch03_Title" xml:space="preserve">
+    <value>Time for Expansion!</value>
+  </data>
+  <data name="Story_Ch03_Text" xml:space="preserve">
+    <value>The plumber's guild is looking for new talent! Unlock the plumbing workshop and double your income. Multiple business lines are the secret of a successful empire.</value>
+  </data>
+  <data name="Story_Ch04_Title" xml:space="preserve">
+    <value>Your First Order!</value>
+  </data>
+  <data name="Story_Ch04_Text" xml:space="preserve">
+    <value>A customer called! Orders bring extra money and experience. Show what you've got - the better your work, the higher the reward!</value>
+  </data>
+  <data name="Story_Ch05_Title" xml:space="preserve">
+    <value>Growing Business</value>
+  </data>
+  <data name="Story_Ch05_Text" xml:space="preserve">
+    <value>Three workshops! You're becoming a real entrepreneur. Remember: each workshop has its own strengths. Invest wisely and keep an eye on costs!</value>
+  </data>
+  <data name="Story_Ch06_Title" xml:space="preserve">
+    <value>Master Tools</value>
+  </data>
+  <data name="Story_Ch06_Text" xml:space="preserve">
+    <value>I heard you're collecting master tools! Each tool has special powers. Collect them all and you'll be unstoppable!</value>
+  </data>
+  <data name="Story_Ch07_Title" xml:space="preserve">
+    <value>The Empire Builder</value>
+  </data>
+  <data name="Story_Ch07_Text" xml:space="preserve">
+    <value>Five workshops and a thriving business! You're well on your way to building the biggest craftsman empire in town. Keep it up!</value>
+  </data>
+  <data name="Story_Ch08_Title" xml:space="preserve">
+    <value>A Fresh Start with Experience</value>
+  </data>
+  <data name="Story_Ch08_Text" xml:space="preserve">
+    <value>Sometimes you have to take a step back to take two steps forward. Prestige gives you permanent bonuses for your next run. Go for it!</value>
+  </data>
+  <data name="Story_Ch09_Title" xml:space="preserve">
+    <value>The Legend</value>
+  </data>
+  <data name="Story_Ch09_Text" xml:space="preserve">
+    <value>You made it! All workshops, countless orders, and your name is known throughout the city. I'm proud of you, Master!</value>
+  </data>
+  <data name="Story_Ch10_Title" xml:space="preserve">
+    <value>Grand Master</value>
+  </data>
+  <data name="Story_Ch10_Text" xml:space="preserve">
+    <value>Level 100! You are now the Grand Master of the Craftsman's Guild. Your empire is a role model for everyone. But remember: a true master never stops learning!</value>
+  </data>
+  <data name="TaskProgress" xml:space="preserve">
+    <value>Task {0}/{1}</value>
+  </data>
+  <data name="NextTask" xml:space="preserve">
+    <value>Next Task</value>
   </data>
 
 </root>

@@ -357,6 +357,22 @@ public class GameState
     public int TutorialStep { get; set; }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // STORY-SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// IDs der bereits freigeschalteten und gesehenen Story-Kapitel.
+    /// </summary>
+    [JsonPropertyName("viewedStoryIds")]
+    public List<string> ViewedStoryIds { get; set; } = [];
+
+    /// <summary>
+    /// ID des nächsten ungesehenen Story-Kapitels (für Badge-Anzeige).
+    /// </summary>
+    [JsonPropertyName("pendingStoryId")]
+    public string? PendingStoryId { get; set; }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // UI/UX STATE
     // ═══════════════════════════════════════════════════════════════════════
 

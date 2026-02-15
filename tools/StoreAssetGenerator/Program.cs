@@ -26,6 +26,15 @@ class Program
         // Filter per CLI args
         var filter = args.Length > 0 ? args : null;
 
+        // X-Profil-Assets generieren (mit "XProfile" oder "x" als Filter)
+        if (filter != null && filter.Any(f => f.Equals("XProfile", StringComparison.OrdinalIgnoreCase)
+                                            || f.Equals("x", StringComparison.OrdinalIgnoreCase)))
+        {
+            var xOutputDir = Path.Combine(_baseDir, "Releases", "RS-Digital");
+            XProfileGenerator.Generate(xOutputDir);
+            return;
+        }
+
         foreach (var app in apps)
         {
             if (filter != null && !filter.Any(f => app.Name.Contains(f, StringComparison.OrdinalIgnoreCase)))

@@ -3,6 +3,7 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:controls="using:HandwerkerImperium.Controls"
              x:Class="HandwerkerImperium.Views.WorkerProfileView"
              x:DataType="vm:WorkerProfileViewModel">
 
@@ -12,15 +13,25 @@
     <!-- HEADER                                                            -->
     <!-- ================================================================= -->
     <Border Grid.Row="0" Padding="16,4,16,12">
-      <Grid ColumnDefinitions="*,Auto">
-        <!-- Worker Name (zentriert) -->
-        <TextBlock Text="{Binding WorkerName}"
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+        <!-- Avatar -->
+        <controls:WorkerAvatarControl
+            IdSeed="{Binding Worker.Id}"
+            Tier="{Binding Worker.Tier}"
+            Mood="{Binding Worker.Mood}"
+            AvatarSize="64"
+            IsFemale="{Binding Worker.IsFemale}"
+            VerticalAlignment="Center" />
+
+        <!-- Worker Name -->
+        <TextBlock Grid.Column="1"
+                   Text="{Binding WorkerName}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
 
         <!-- Status Badge -->
-        <Border Grid.Column="1"
+        <Border Grid.Column="2"
                 Background="{DynamicResource SurfaceBrush}"
                 CornerRadius="8"
                 Padding="12,6">

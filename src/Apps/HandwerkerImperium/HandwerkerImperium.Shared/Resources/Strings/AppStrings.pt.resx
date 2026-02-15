@@ -1012,6 +1012,9 @@
   <data name="RefreshMarket" xml:space="preserve">
     <value>Atualizar Mercado</value>
   </data>
+  <data name="RefreshMarketFree" xml:space="preserve">
+    <value>Atualizar Gr&#225;tis</value>
+  </data>
   <data name="NextRotation" xml:space="preserve">
     <value>Pr&#243;xima Rota&#231;&#227;o</value>
   </data>
@@ -2387,6 +2390,12 @@
   <data name="MasterTools" xml:space="preserve">
     <value>Ferramentas Mestre</value>
   </data>
+  <data name="PerfectRating" xml:space="preserve">
+    <value>Avaliações Perfeitas</value>
+  </data>
+  <data name="AllToolsCollected" xml:space="preserve">
+    <value>Todas as outras ferramentas coletadas</value>
+  </data>
   <data name="PrestigeRushBoost" xml:space="preserve">
     <value>Potenciador de Rush</value>
   </data>
@@ -2531,6 +2540,77 @@
   </data>
   <data name="StartInspection" xml:space="preserve">
     <value>Iniciar inspeção</value>
+  </data>
+
+  <!-- Capítulos da história (Mestre Hans) -->
+  <data name="Story_Ch01_Title" xml:space="preserve">
+    <value>Bem-vindo, aprendiz!</value>
+  </data>
+  <data name="Story_Ch01_Text" xml:space="preserve">
+    <value>Eu sou o Mestre Hans, o artesão mais experiente da cidade. Tens potencial, eu vejo isso! Juntos vamos construir um império artesanal. Começa por melhorar a tua carpintaria!</value>
+  </data>
+  <data name="Story_Ch02_Title" xml:space="preserve">
+    <value>Bom trabalho!</value>
+  </data>
+  <data name="Story_Ch02_Text" xml:space="preserve">
+    <value>Melhoraste a tua primeira oficina! É assim que todo mestre começa. Agora precisas de um aprendiz para te ajudar. Um bom trabalhador vale ouro!</value>
+  </data>
+  <data name="Story_Ch03_Title" xml:space="preserve">
+    <value>Hora de expandir!</value>
+  </data>
+  <data name="Story_Ch03_Text" xml:space="preserve">
+    <value>A guilda dos canalizadores procura novos talentos! Desbloqueia a oficina de canalização e duplica os teus rendimentos. Vários negócios são o segredo de um império de sucesso.</value>
+  </data>
+  <data name="Story_Ch04_Title" xml:space="preserve">
+    <value>A tua primeira encomenda!</value>
+  </data>
+  <data name="Story_Ch04_Text" xml:space="preserve">
+    <value>Um cliente ligou! As encomendas trazem dinheiro extra e experiência. Mostra o que sabes - quanto melhor o teu trabalho, maior a recompensa!</value>
+  </data>
+  <data name="Story_Ch05_Title" xml:space="preserve">
+    <value>Negócio em crescimento</value>
+  </data>
+  <data name="Story_Ch05_Text" xml:space="preserve">
+    <value>Três oficinas! Estás a tornar-te um verdadeiro empresário. Lembra-te: cada oficina tem os seus pontos fortes. Investe com sabedoria e controla os custos!</value>
+  </data>
+  <data name="Story_Ch06_Title" xml:space="preserve">
+    <value>Ferramentas de mestre</value>
+  </data>
+  <data name="Story_Ch06_Text" xml:space="preserve">
+    <value>Ouvi dizer que colecionas ferramentas de mestre! Cada ferramenta tem poderes especiais. Coleciona todas e serás imparável!</value>
+  </data>
+  <data name="Story_Ch07_Title" xml:space="preserve">
+    <value>O construtor de impérios</value>
+  </data>
+  <data name="Story_Ch07_Text" xml:space="preserve">
+    <value>Cinco oficinas e um negócio próspero! Estás no bom caminho para construir o maior império artesanal da cidade. Continua assim!</value>
+  </data>
+  <data name="Story_Ch08_Title" xml:space="preserve">
+    <value>Recomeço com experiência</value>
+  </data>
+  <data name="Story_Ch08_Text" xml:space="preserve">
+    <value>Às vezes é preciso dar um passo atrás para dar dois em frente. O prestígio dá-te bónus permanentes para a próxima jogada. Atreve-te!</value>
+  </data>
+  <data name="Story_Ch09_Title" xml:space="preserve">
+    <value>A lenda</value>
+  </data>
+  <data name="Story_Ch09_Text" xml:space="preserve">
+    <value>Conseguiste! Todas as oficinas, inúmeras encomendas, e o teu nome é conhecido em toda a cidade. Estou orgulhoso de ti, Mestre!</value>
+  </data>
+  <data name="Story_Ch10_Title" xml:space="preserve">
+    <value>Grão-Mestre</value>
+  </data>
+  <data name="Story_Ch10_Text" xml:space="preserve">
+    <value>Nível 100! Agora és o Grão-Mestre da Guilda dos Artesãos. O teu império é um exemplo para todos. Mas lembra-te: um verdadeiro mestre nunca para de aprender!</value>
+  </data>
+  <data name="TaskProgress" xml:space="preserve">
+    <value>Tarefa {0}/{1}</value>
+  </data>
+  <data name="NextTask" xml:space="preserve">
+    <value>Próxima tarefa</value>
+  </data>
+  <data name="TapToUnlock" xml:space="preserve">
+    <value>Toque para desbloquear</value>
   </data>
 
 </root>

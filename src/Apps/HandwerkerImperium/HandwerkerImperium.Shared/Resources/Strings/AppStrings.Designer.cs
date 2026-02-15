@@ -313,6 +313,8 @@ namespace HandwerkerImperium.Resources.Strings {
 
         public static string TapToRotate => ResourceManager.GetString("TapToRotate", resourceCulture) ?? "";
 
+        public static string TapToUnlock => ResourceManager.GetString("TapToUnlock", resourceCulture) ?? "";
+
         public static string PipesConnected => ResourceManager.GetString("PipesConnected", resourceCulture) ?? "";
 
         public static string TimeUp => ResourceManager.GetString("TimeUp", resourceCulture) ?? "";
@@ -1176,5 +1178,31 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string FalseAlarmsLabel => ResourceManager.GetString("FalseAlarmsLabel", resourceCulture) ?? "False alarms:";
 
         public static string StartInspection => ResourceManager.GetString("StartInspection", resourceCulture) ?? "Start Inspection";
+
+        // Story-Kapitel (Meister Hans)
+        public static string Story_Ch01_Title => ResourceManager.GetString("Story_Ch01_Title", resourceCulture) ?? "";
+        public static string Story_Ch01_Text => ResourceManager.GetString("Story_Ch01_Text", resourceCulture) ?? "";
+        public static string Story_Ch02_Title => ResourceManager.GetString("Story_Ch02_Title", resourceCulture) ?? "";
+        public static string Story_Ch02_Text => ResourceManager.GetString("Story_Ch02_Text", resourceCulture) ?? "";
+        public static string Story_Ch03_Title => ResourceManager.GetString("Story_Ch03_Title", resourceCulture) ?? "";
+        public static string Story_Ch03_Text => ResourceManager.GetString("Story_Ch03_Text", resourceCulture) ?? "";
+        public static string Story_Ch04_Title => ResourceManager.GetString("Story_Ch04_Title", resourceCulture) ?? "";
+        public static string Story_Ch04_Text => ResourceManager.GetString("Story_Ch04_Text", resourceCulture) ?? "";
+        public static string Story_Ch05_Title => ResourceManager.GetString("Story_Ch05_Title", resourceCulture) ?? "";
+        public static string Story_Ch05_Text => ResourceManager.GetString("Story_Ch05_Text", resourceCulture) ?? "";
+        public static string Story_Ch06_Title => ResourceManager.GetString("Story_Ch06_Title", resourceCulture) ?? "";
+        public static string Story_Ch06_Text => ResourceManager.GetString("Story_Ch06_Text", resourceCulture) ?? "";
+        public static string Story_Ch07_Title => ResourceManager.GetString("Story_Ch07_Title", resourceCulture) ?? "";
+        public static string Story_Ch07_Text => ResourceManager.GetString("Story_Ch07_Text", resourceCulture) ?? "";
+        public static string Story_Ch08_Title => ResourceManager.GetString("Story_Ch08_Title", resourceCulture) ?? "";
+        public static string Story_Ch08_Text => ResourceManager.GetString("Story_Ch08_Text", resourceCulture) ?? "";
+        public static string Story_Ch09_Title => ResourceManager.GetString("Story_Ch09_Title", resourceCulture) ?? "";
+        public static string Story_Ch09_Text => ResourceManager.GetString("Story_Ch09_Text", resourceCulture) ?? "";
+        public static string Story_Ch10_Title => ResourceManager.GetString("Story_Ch10_Title", resourceCulture) ?? "";
+        public static string Story_Ch10_Text => ResourceManager.GetString("Story_Ch10_Text", resourceCulture) ?? "";
+
+        public static string TaskProgress => ResourceManager.GetString("TaskProgress", resourceCulture) ?? "";
+
+        public static string NextTask => ResourceManager.GetString("NextTask", resourceCulture) ?? "";
     }
 }

@@ -1012,6 +1012,9 @@
   <data name="RefreshMarket" xml:space="preserve">
     <value>Aggiorna Mercato</value>
   </data>
+  <data name="RefreshMarketFree" xml:space="preserve">
+    <value>Aggiorna Gratis</value>
+  </data>
   <data name="NextRotation" xml:space="preserve">
     <value>Prossima Rotazione</value>
   </data>
@@ -2387,6 +2390,12 @@
   <data name="MasterTools" xml:space="preserve">
     <value>Strumenti Maestri</value>
   </data>
+  <data name="PerfectRating" xml:space="preserve">
+    <value>Valutazioni Perfette</value>
+  </data>
+  <data name="AllToolsCollected" xml:space="preserve">
+    <value>Tutti gli altri strumenti raccolti</value>
+  </data>
   <data name="PrestigeRushBoost" xml:space="preserve">
     <value>Potenziatore Rush</value>
   </data>
@@ -2531,6 +2540,77 @@
   </data>
   <data name="StartInspection" xml:space="preserve">
     <value>Avvia ispezione</value>
+  </data>
+
+  <!-- Capitoli della storia (Maestro Hans) -->
+  <data name="Story_Ch01_Title" xml:space="preserve">
+    <value>Benvenuto, apprendista!</value>
+  </data>
+  <data name="Story_Ch01_Text" xml:space="preserve">
+    <value>Sono il Maestro Hans, l'artigiano più esperto della città. Hai potenziale, lo vedo! Insieme costruiremo un impero artigianale. Inizia migliorando la tua falegnameria!</value>
+  </data>
+  <data name="Story_Ch02_Title" xml:space="preserve">
+    <value>Buon lavoro!</value>
+  </data>
+  <data name="Story_Ch02_Text" xml:space="preserve">
+    <value>Hai migliorato il tuo primo laboratorio! Così inizia ogni maestro. Ora hai bisogno di un apprendista che ti aiuti. Un buon lavoratore vale il suo peso in oro!</value>
+  </data>
+  <data name="Story_Ch03_Title" xml:space="preserve">
+    <value>È ora di espandersi!</value>
+  </data>
+  <data name="Story_Ch03_Text" xml:space="preserve">
+    <value>La corporazione degli idraulici cerca nuovi talenti! Sblocca l'officina idraulica e raddoppia le tue entrate. Più attività sono il segreto di un impero di successo.</value>
+  </data>
+  <data name="Story_Ch04_Title" xml:space="preserve">
+    <value>Il tuo primo ordine!</value>
+  </data>
+  <data name="Story_Ch04_Text" xml:space="preserve">
+    <value>Un cliente ha chiamato! Gli ordini portano soldi extra e esperienza. Mostra quello che sai fare - migliore è il tuo lavoro, maggiore è la ricompensa!</value>
+  </data>
+  <data name="Story_Ch05_Title" xml:space="preserve">
+    <value>Affari in crescita</value>
+  </data>
+  <data name="Story_Ch05_Text" xml:space="preserve">
+    <value>Tre laboratori! Stai diventando un vero imprenditore. Ricorda: ogni laboratorio ha i suoi punti di forza. Investi saggiamente e tieni d'occhio i costi!</value>
+  </data>
+  <data name="Story_Ch06_Title" xml:space="preserve">
+    <value>Strumenti del maestro</value>
+  </data>
+  <data name="Story_Ch06_Text" xml:space="preserve">
+    <value>Ho sentito che collezioni strumenti del maestro! Ogni strumento ha poteri speciali. Collezionali tutti e sarai inarrestabile!</value>
+  </data>
+  <data name="Story_Ch07_Title" xml:space="preserve">
+    <value>Il costruttore di imperi</value>
+  </data>
+  <data name="Story_Ch07_Text" xml:space="preserve">
+    <value>Cinque laboratori e un'attività fiorente! Sei sulla buona strada per costruire il più grande impero artigianale della città. Continua così!</value>
+  </data>
+  <data name="Story_Ch08_Title" xml:space="preserve">
+    <value>Un nuovo inizio con esperienza</value>
+  </data>
+  <data name="Story_Ch08_Text" xml:space="preserve">
+    <value>A volte bisogna fare un passo indietro per farne due avanti. Il prestigio ti dà bonus permanenti per la prossima partita. Provaci!</value>
+  </data>
+  <data name="Story_Ch09_Title" xml:space="preserve">
+    <value>La leggenda</value>
+  </data>
+  <data name="Story_Ch09_Text" xml:space="preserve">
+    <value>Ce l'hai fatta! Tutti i laboratori, innumerevoli ordini, e il tuo nome è conosciuto in tutta la città. Sono orgoglioso di te, Maestro!</value>
+  </data>
+  <data name="Story_Ch10_Title" xml:space="preserve">
+    <value>Gran Maestro</value>
+  </data>
+  <data name="Story_Ch10_Text" xml:space="preserve">
+    <value>Livello 100! Ora sei il Gran Maestro della Gilda degli Artigiani. Il tuo impero è un esempio per tutti. Ma ricorda: un vero maestro non smette mai di imparare!</value>
+  </data>
+  <data name="TaskProgress" xml:space="preserve">
+    <value>Compito {0}/{1}</value>
+  </data>
+  <data name="NextTask" xml:space="preserve">
+    <value>Prossimo compito</value>
+  </data>
+  <data name="TapToUnlock" xml:space="preserve">
+    <value>Tocca per sbloccare</value>
   </data>
 
 </root>

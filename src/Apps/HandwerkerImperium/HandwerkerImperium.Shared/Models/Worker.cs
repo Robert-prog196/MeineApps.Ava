@@ -123,6 +123,12 @@ public class Worker
     [JsonPropertyName("ordersCompleted")]
     public int OrdersCompleted { get; set; }
 
+    /// <summary>
+    /// Geschlecht des Workers (deterministisch aus Id abgeleitet).
+    /// </summary>
+    [JsonPropertyName("isFemale")]
+    public bool IsFemale { get; set; }
+
     [JsonPropertyName("hiredAt")]
     public DateTime HiredAt { get; set; }
 
@@ -361,9 +367,11 @@ public class Worker
         var maxEff = tier.GetMaxEfficiency();
         var efficiency = minEff + (maxEff - minEff) * (decimal)random.NextDouble();
 
+        var id = Guid.NewGuid().ToString();
+
         var worker = new Worker
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = id,
             Name = GenerateRandomName(),
             Tier = tier,
             Talent = talent,
@@ -376,7 +384,8 @@ public class Worker
             WagePerHour = tier.GetWagePerHour(),
             Efficiency = Math.Round(efficiency, 3),
             SkillLevel = 1,
-            HiredAt = DateTime.UtcNow
+            HiredAt = DateTime.UtcNow,
+            IsFemale = (id.GetHashCode() % 2 == 0)
         };
 
         return worker;

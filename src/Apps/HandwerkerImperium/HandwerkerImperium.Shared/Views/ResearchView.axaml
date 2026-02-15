@@ -3,65 +3,74 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.ResearchView"
              x:DataType="vm:ResearchViewModel">
 
   <Grid RowDefinitions="Auto,Auto,*">
 
     <!-- ================================================================= -->
-    <!-- HEADER                                                            -->
+    <!-- HEADER mit SkiaSharp Forschungslabor-Hintergrund                  -->
     <!-- ================================================================= -->
     <Border Grid.Row="0"
-            Padding="16,12"
-            CornerRadius="0,0,12,12">
-      <Border.Background>
-        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-          <GradientStop Color="#92400E" Offset="0" />
-          <GradientStop Color="#451A03" Offset="1" />
-        </LinearGradientBrush>
-      </Border.Background>
-      <Grid ColumnDefinitions="Auto,*,Auto">
-        <!-- Back Button -->
-        <Button Classes="Text"
-                Command="{Binding GoBackCommand}">
-          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
-                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
-        </Button>
+            CornerRadius="0,0,12,12"
+            ClipToBounds="True">
+      <Panel>
+        <!-- Forschungslabor SkiaSharp Layer (unterste Schicht) -->
+        <skia:SKCanvasView x:Name="ResearchCanvas" MinHeight="140" />
 
-        <!-- Title (centered) -->
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="8">
-          <mi:MaterialIcon Kind="FlaskOutline" Width="28" Height="28"
-                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
-          <TextBlock Text="{Binding Title}"
-                     FontSize="20" FontWeight="Bold"
-                     Foreground="{StaticResource CraftPrimaryLightBrush}" />
-        </StackPanel>
+        <!-- Gradient-Overlay (semi-transparent, damit Labor durchscheint) -->
+        <Border Padding="16,12">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#B092400E" Offset="0" />
+              <GradientStop Color="#A0451A03" Offset="1" />
+            </LinearGradientBrush>
+          </Border.Background>
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <!-- Back Button -->
+            <Button Classes="Text"
+                    Command="{Binding GoBackCommand}">
+              <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}" />
+            </Button>
 
-        <!-- Balance Badges -->
-        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
-                    VerticalAlignment="Center">
-          <!-- Goldschrauben-Badge -->
-          <Border Background="{DynamicResource SurfaceBrush}"
-                  CornerRadius="12" Padding="8,4">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <mi:MaterialIcon Kind="ScrewFlatTop" Width="16" Height="16" Foreground="#FFD700" />
-              <TextBlock Text="{Binding GoldenScrewsDisplay}" FontSize="14" FontWeight="Bold"
-                         Foreground="#FFD700" />
+            <!-- Title (centered) -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+              <mi:MaterialIcon Kind="FlaskOutline" Width="28" Height="28"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}" />
+              <TextBlock Text="{Binding Title}"
+                         FontSize="20" FontWeight="Bold"
+                         Foreground="{StaticResource CraftPrimaryLightBrush}" />
             </StackPanel>
-          </Border>
-          <!-- Euro-Badge -->
-          <Border Background="{DynamicResource SurfaceBrush}"
-                  CornerRadius="12" Padding="8,4">
-            <TextBlock Text="{Binding CurrentBalance}"
-                       FontSize="14" FontWeight="Bold"
-                       Foreground="{DynamicResource SuccessBrush}" />
-          </Border>
-        </StackPanel>
-      </Grid>
+
+            <!-- Balance Badges -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                        VerticalAlignment="Center">
+              <!-- Goldschrauben-Badge -->
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="12" Padding="8,4">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="ScrewFlatTop" Width="16" Height="16" Foreground="#FFD700" />
+                  <TextBlock Text="{Binding GoldenScrewsDisplay}" FontSize="14" FontWeight="Bold"
+                             Foreground="#FFD700" />
+                </StackPanel>
+              </Border>
+              <!-- Euro-Badge -->
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="12" Padding="8,4">
+                <TextBlock Text="{Binding CurrentBalance}"
+                           FontSize="14" FontWeight="Bold"
+                           Foreground="{DynamicResource SuccessBrush}" />
+              </Border>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Panel>
     </Border>
 
     <!-- ================================================================= -->

@@ -148,6 +148,42 @@ public class Workshop
     }
 
     /// <summary>
+    /// Berechnet die Gesamtkosten fuer N Upgrades ab dem aktuellen Level.
+    /// Beruecksichtigt die exponentielle Kostensteigerung pro Level.
+    /// </summary>
+    public decimal GetBulkUpgradeCost(int count)
+    {
+        if (count <= 0 || Level >= MaxLevel) return 0;
+        decimal total = 0;
+        int maxUpgrades = Math.Min(count, MaxLevel - Level);
+        for (int i = 0; i < maxUpgrades; i++)
+        {
+            int lvl = Level + i;
+            total += lvl == 1 ? 100m : 200m * (decimal)Math.Pow(1.035, lvl - 1);
+        }
+        return total;
+    }
+
+    /// <summary>
+    /// Berechnet wie viele Upgrades mit dem gegebenen Budget moeglich sind.
+    /// </summary>
+    public (int count, decimal cost) GetMaxAffordableUpgrades(decimal budget)
+    {
+        if (budget <= 0 || Level >= MaxLevel) return (0, 0);
+        decimal total = 0;
+        int count = 0;
+        for (int i = 0; i < MaxLevel - Level; i++)
+        {
+            int lvl = Level + i;
+            decimal lvlCost = lvl == 1 ? 100m : 200m * (decimal)Math.Pow(1.035, lvl - 1);
+            if (total + lvlCost > budget) break;
+            total += lvlCost;
+            count++;
+        }
+        return (count, total);
+    }
+
+    /// <summary>
     /// Cost to unlock this workshop (one-time).
     /// </summary>
     [JsonIgnore]

@@ -515,6 +515,77 @@
       </Border>
     </Border>
 
+    <!-- ================================================================= -->
+    <!-- STORY DIALOG (Meister Hans NPC)                                   -->
+    <!-- ================================================================= -->
+    <Border Grid.RowSpan="3"
+            Classes="SheetBackdrop"
+            Classes.Open="{Binding IsStoryDialogVisible}"
+            IsVisible="{Binding IsStoryDialogVisible}"
+            Background="#AA000000"
+            IsHitTestVisible="{Binding IsStoryDialogVisible}">
+      <Border Classes="BottomSheet"
+              Classes.Open="{Binding IsStoryDialogVisible}"
+              VerticalAlignment="Center" HorizontalAlignment="Center"
+              MaxWidth="380"
+              Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="24"
+              Padding="24"
+              BoxShadow="0 0 40 0 #40D97706"
+              Margin="20">
+        <StackPanel Spacing="16">
+
+          <!-- Meister Hans Portrait -->
+          <Border Width="80" Height="80"
+                  CornerRadius="40"
+                  Background="#20D97706"
+                  HorizontalAlignment="Center"
+                  BoxShadow="0 0 20 0 #30D97706">
+            <mi:MaterialIcon Kind="AccountHardHat" Width="48" Height="48"
+                             Foreground="#D97706"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+
+          <!-- Kapitel-Titel -->
+          <TextBlock Text="{Binding StoryTitle}"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     HorizontalAlignment="Center"
+                     TextAlignment="Center" />
+
+          <!-- Dialog-Text -->
+          <TextBlock Text="{Binding StoryText}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center"
+                     LineHeight="22" />
+
+          <!-- Belohnungen -->
+          <Border Background="#15FFD700"
+                  CornerRadius="12"
+                  Padding="12,8"
+                  IsVisible="{Binding StoryRewardText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="Gift" Width="18" Height="18" Foreground="Gold" />
+              <TextBlock Text="{Binding StoryRewardText}"
+                         FontSize="13" FontWeight="SemiBold"
+                         Foreground="Gold" />
+            </StackPanel>
+          </Border>
+
+          <!-- Weiter-Button -->
+          <Button Content="{loc:Translate Continue}"
+                  Classes="Primary"
+                  Command="{Binding DismissStoryDialogCommand}"
+                  HorizontalAlignment="Center"
+                  MinWidth="160"
+                  Margin="0,8,0,0" />
+
+        </StackPanel>
+      </Border>
+    </Border>
+
     <!-- Generic Alert Dialog -->
     <Border Grid.RowSpan="3" Background="#AA000000"
             IsVisible="{Binding IsAlertDialogVisible}"
