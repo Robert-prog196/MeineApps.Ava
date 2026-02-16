@@ -2,11 +2,9 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Services;
+using MeineApps.UI.SkiaSharp;
 using SkiaSharp;
 using WorkTimePro.Models;
 using WorkTimePro.Helpers;
@@ -16,8 +14,8 @@ using WorkTimePro.Services;
 namespace WorkTimePro.ViewModels;
 
 /// <summary>
-/// ViewModel for statistics page with extended charts (Premium)
-/// Phase 7: Extended charts and statistics
+/// ViewModel für die Statistik-Seite. Stellt Daten-Arrays für SkiaSharp-Renderer bereit.
+/// Phase 7: LiveCharts durch SkiaSharp-Visualisierungen ersetzt.
 /// </summary>
 public partial class StatisticsViewModel : ObservableObject
 {
@@ -40,7 +38,7 @@ public partial class StatisticsViewModel : ObservableObject
     /// <summary>Aufgeschobene Aktion nach erfolgreicher Ad-Wiedergabe</summary>
     private Func<Task>? _pendingAction;
 
-    // Color palette for charts
+    // Farb-Palette für Charts
     private static readonly string[] ChartColors = new[]
     {
         "#1565C0", "#2E7D32", "#F57C00", "#C62828", "#6A1B9A",
@@ -76,7 +74,7 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private StatisticsPeriod _selectedPeriod = StatisticsPeriod.Month;
 
-    // Period selection booleans
+    // Perioden-Auswahl Booleans
     public bool IsWeekSelected => SelectedPeriod == StatisticsPeriod.Week;
     public bool IsMonthSelected => SelectedPeriod == StatisticsPeriod.Month;
     public bool IsQuarterSelected => SelectedPeriod == StatisticsPeriod.Quarter;
@@ -126,7 +124,7 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private int _holidayDays;
 
-    // Pause statistics
+    // Pausen-Statistik
     [ObservableProperty]
     private string _totalManualPauseDisplay = "0:00";
 
@@ -136,42 +134,49 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private string _averagePauseDisplay = "0:00";
 
-    // Charts
+    // === SkiaSharp Chart-Daten (ersetzen LiveCharts ISeries/Axis) ===
+
+    // Wöchentliche Arbeitszeit
     [ObservableProperty]
-    private ISeries[] _weeklyChart = Array.Empty<ISeries>();
+    private string[] _weeklyLabels = Array.Empty<string>();
 
     [ObservableProperty]
-    private Axis[] _weeklyXAxes = Array.Empty<Axis>();
+    private float[] _weeklyHoursData = Array.Empty<float>();
 
     [ObservableProperty]
-    private Axis[] _weeklyYAxes = Array.Empty<Axis>();
+    private float _weeklyTargetHours;
+
+    // Überstunden-Trend
+    [ObservableProperty]
+    private float[] _overtimeDailyBalance = Array.Empty<float>();
 
     [ObservableProperty]
-    private ISeries[] _overtimeChart = Array.Empty<ISeries>();
+    private float[] _overtimeCumulativeBalance = Array.Empty<float>();
 
     [ObservableProperty]
-    private Axis[] _overtimeXAxes = Array.Empty<Axis>();
+    private string[] _overtimeDateLabels = Array.Empty<string>();
+
+    // Wochentag-Durchschnitt
+    [ObservableProperty]
+    private string[] _weekdayLabels = Array.Empty<string>();
 
     [ObservableProperty]
-    private Axis[] _overtimeYAxes = Array.Empty<Axis>();
+    private float[] _weekdayAvgHours = Array.Empty<float>();
 
     [ObservableProperty]
-    private ISeries[] _projectChart = Array.Empty<ISeries>();
+    private float _weekdayTargetPerDay;
 
+    // Pausen-Donut
     [ObservableProperty]
-    private ISeries[] _employerChart = Array.Empty<ISeries>();
+    private DonutChartVisualization.Segment[] _pauseSegments = Array.Empty<DonutChartVisualization.Segment>();
 
+    // Projekt-Donut
     [ObservableProperty]
-    private ISeries[] _weekdayChart = Array.Empty<ISeries>();
+    private DonutChartVisualization.Segment[] _projectSegments = Array.Empty<DonutChartVisualization.Segment>();
 
+    // Arbeitgeber-Donut
     [ObservableProperty]
-    private Axis[] _weekdayXAxes = Array.Empty<Axis>();
-
-    [ObservableProperty]
-    private Axis[] _weekdayYAxes = Array.Empty<Axis>();
-
-    [ObservableProperty]
-    private ISeries[] _pauseChart = Array.Empty<ISeries>();
+    private DonutChartVisualization.Segment[] _employerSegments = Array.Empty<DonutChartVisualization.Segment>();
 
     [ObservableProperty]
     private bool _hasProjects;
@@ -188,18 +193,21 @@ public partial class StatisticsViewModel : ObservableObject
     [ObservableProperty]
     private bool _showAds = true;
 
-    // Table view (default: show table)
+    // Tabellen-Ansicht (Standard: Tabelle anzeigen)
     [ObservableProperty]
     private bool _showTable = true;
 
     [ObservableProperty]
     private ObservableCollection<WorkDayTableItem> _tableDays = new();
 
-    // Derived properties
-    public bool HasPauseChartData => PauseChart.Length > 0;
+    // Abgeleitete Properties
+    public bool HasPauseChartData => PauseSegments.Length > 0;
+    public bool HasOvertimeData => OvertimeDailyBalance.Length > 0;
+    public bool HasWeeklyData => WeeklyHoursData.Length > 0;
+    public bool HasWeekdayData => WeekdayAvgHours.Length > 0;
     public bool HasNoTableData => TableDays.Count == 0;
 
-    // Localized title texts
+    // Lokalisierte Titel
     public string ChartsButtonText => $"{Icons.ChartBar} {AppStrings.Charts}";
     public string TableButtonText => $"{Icons.FileDocument} {AppStrings.Table}";
     public string PauseStatsTitle => $"{Icons.Coffee} {AppStrings.PauseStats}";
@@ -220,32 +228,35 @@ public partial class StatisticsViewModel : ObservableObject
         {
             IsLoading = true;
 
-            // Calculate period
+            // Zeitraum berechnen
             CalculatePeriod();
 
-            // Load data
+            // Daten laden
             var workDays = await _database.GetWorkDaysAsync(StartDate, EndDate);
 
-            // Calculate statistics
+            // Statistiken berechnen
             CalculateStatistics(workDays);
 
-            // Fill table data
+            // Tabellendaten füllen
             FillTableData(workDays);
 
-            // Create charts (parallel)
+            // Charts erstellen (parallel)
             await Task.WhenAll(
-                CreateWeeklyChartAsync(workDays),
-                CreateOvertimeChartAsync(workDays),
-                CreateProjectChartAsync(),
-                CreateEmployerChartAsync(),
-                CreateWeekdayChartAsync(workDays),
-                CreatePauseChartAsync(workDays)
+                CreateWeeklyChartDataAsync(workDays),
+                CreateOvertimeChartData(workDays),
+                CreateProjectChartDataAsync(),
+                CreateEmployerChartDataAsync(),
+                CreateWeekdayChartData(workDays),
+                CreatePauseChartData(workDays)
             );
 
-            // Premium status
+            // Premium-Status
             ShowAds = !_purchaseService.IsPremium && !_trialService.IsTrialActive;
 
             OnPropertyChanged(nameof(HasPauseChartData));
+            OnPropertyChanged(nameof(HasOvertimeData));
+            OnPropertyChanged(nameof(HasWeeklyData));
+            OnPropertyChanged(nameof(HasWeekdayData));
             OnPropertyChanged(nameof(HasNoTableData));
         }
         catch (Exception ex)
@@ -271,7 +282,6 @@ public partial class StatisticsViewModel : ObservableObject
         {
             _pendingAction = async () =>
             {
-                // 24h Zugang gewaehren
                 GrantExtendedStatsAccess();
                 SelectedPeriod = period;
                 await LoadDataAsync();
@@ -284,7 +294,7 @@ public partial class StatisticsViewModel : ObservableObject
         await LoadDataAsync();
     }
 
-    /// <summary>Prueft ob der Nutzer erweiterten Statistik-Zugang hat (24h nach Video)</summary>
+    /// <summary>Prüft ob der Nutzer erweiterten Statistik-Zugang hat (24h nach Video)</summary>
     private bool HasExtendedStatsAccess()
     {
         var expiryStr = _preferences.Get<string>(ExtendedStatsExpiryKey, "");
@@ -297,7 +307,7 @@ public partial class StatisticsViewModel : ObservableObject
         return false;
     }
 
-    /// <summary>Gewaehrt 24h Zugang zu erweiterten Statistik-Zeitraeumen</summary>
+    /// <summary>Gewährt 24h Zugang zu erweiterten Statistik-Zeiträumen</summary>
     private void GrantExtendedStatsAccess()
     {
         var expiry = DateTime.UtcNow.AddHours(24);
@@ -315,7 +325,6 @@ public partial class StatisticsViewModel : ObservableObject
     {
         if (!skipPremiumCheck && !_purchaseService.IsPremium && !_trialService.IsTrialActive)
         {
-            // Soft-Paywall: Ad-Overlay anzeigen statt hart blockieren
             _pendingAction = () => ExportAsync(skipPremiumCheck: true);
             ShowRewardedAdOverlay = true;
             return;
@@ -323,7 +332,6 @@ public partial class StatisticsViewModel : ObservableObject
 
         try
         {
-            // Standard-Export als PDF in Avalonia
             IsLoading = true;
             string? filePath = await _exportService.ExportRangeToPdfAsync(StartDate, EndDate);
 
@@ -342,7 +350,6 @@ public partial class StatisticsViewModel : ObservableObject
         }
     }
 
-    // Lokalisierter Export-Button-Text
     public string ExportButtonText => $"{Icons.Export} {AppStrings.Export}";
 
     // === Rewarded Ad Commands ===
@@ -366,7 +373,7 @@ public partial class StatisticsViewModel : ObservableObject
         _pendingAction = null;
     }
 
-    // === Calculations ===
+    // === Berechnungen ===
 
     private void CalculateStatistics(List<WorkDay> workDays)
     {
@@ -393,7 +400,7 @@ public partial class StatisticsViewModel : ObservableObject
             AverageDailyDisplay = "0:00";
         }
 
-        // Pause statistics
+        // Pausen-Statistik
         var totalManualPause = workDays.Sum(w => w.ManualPauseMinutes);
         var totalAutoPause = workDays.Sum(w => w.AutoPauseMinutes);
         var totalPause = totalManualPause + totalAutoPause;
@@ -437,9 +444,9 @@ public partial class StatisticsViewModel : ObservableObject
         }
     }
 
-    // === Chart creation ===
+    // === Chart-Daten erstellen (SkiaSharp-Daten statt LiveCharts) ===
 
-    private async Task CreateWeeklyChartAsync(List<WorkDay> workDays)
+    private async Task CreateWeeklyChartDataAsync(List<WorkDay> workDays)
     {
         var settings = await _database.GetSettingsAsync();
         var weeklyTarget = settings.WeeklyHours;
@@ -451,57 +458,12 @@ public partial class StatisticsViewModel : ObservableObject
             .Take(12)
             .ToList();
 
-        var weekLabels = weeks.Select(g => $"KW {g.Key}").ToArray();
-        var weekValues = weeks.Select(g => g.Sum(w => w.ActualWorkMinutes) / 60.0).ToArray();
-        var targetValues = weeks.Select(g => weeklyTarget).ToArray();
-
-        WeeklyChart = new ISeries[]
-        {
-            new ColumnSeries<double>
-            {
-                Values = weekValues,
-                Name = AppStrings.ChartActualHours,
-                Fill = new SolidColorPaint(SKColor.Parse("#1565C0")),
-                MaxBarWidth = 25
-            },
-            new LineSeries<double>
-            {
-                Values = targetValues,
-                Name = string.Format(AppStrings.ChartTargetFormat, weeklyTarget),
-                Stroke = new SolidColorPaint(SKColor.Parse("#FF9800"), 2),
-                Fill = null,
-                GeometrySize = 0,
-                LineSmoothness = 0
-            }
-        };
-
-        WeeklyXAxes = new Axis[]
-        {
-            new Axis
-            {
-                Labels = weekLabels,
-                LabelsRotation = 45,
-                TextSize = 10,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575"))
-            }
-        };
-
-        WeeklyYAxes = new Axis[]
-        {
-            new Axis
-            {
-                Name = AppStrings.ChartHours,
-                NameTextSize = 11,
-                TextSize = 10,
-                MinLimit = 0,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575")),
-                NamePaint = new SolidColorPaint(SKColor.Parse("#757575"))
-            }
-        };
-
+        WeeklyLabels = weeks.Select(g => $"KW {g.Key}").ToArray();
+        WeeklyHoursData = weeks.Select(g => (float)(g.Sum(w => w.ActualWorkMinutes) / 60.0)).ToArray();
+        WeeklyTargetHours = (float)weeklyTarget;
     }
 
-    private Task CreateOvertimeChartAsync(List<WorkDay> workDays)
+    private Task CreateOvertimeChartData(List<WorkDay> workDays)
     {
         var orderedDays = workDays
             .Where(w => w.Status == DayStatus.WorkDay || w.Status == DayStatus.HomeOffice)
@@ -510,73 +472,29 @@ public partial class StatisticsViewModel : ObservableObject
 
         if (orderedDays.Count == 0)
         {
-            OvertimeChart = Array.Empty<ISeries>();
+            OvertimeDailyBalance = Array.Empty<float>();
+            OvertimeCumulativeBalance = Array.Empty<float>();
+            OvertimeDateLabels = Array.Empty<string>();
             return Task.CompletedTask;
         }
 
-        // Daily overtime
-        var dailyBalance = orderedDays.Select(w => w.BalanceMinutes / 60.0).ToArray();
+        OvertimeDailyBalance = orderedDays.Select(w => (float)(w.BalanceMinutes / 60.0)).ToArray();
+        OvertimeDateLabels = orderedDays.Select(w => w.Date.ToString("dd.MM")).ToArray();
 
-        // Cumulative overtime
-        var cumulativeBalance = new List<double>();
-        double cumulative = 0;
-        foreach (var balance in dailyBalance)
+        // Kumulativ berechnen
+        var cumulative = new float[orderedDays.Count];
+        float cum = 0f;
+        for (int i = 0; i < orderedDays.Count; i++)
         {
-            cumulative += balance;
-            cumulativeBalance.Add(cumulative);
+            cum += OvertimeDailyBalance[i];
+            cumulative[i] = cum;
         }
-
-        // Date labels
-        var dateLabels = orderedDays.Select(w => w.Date.ToString("dd.MM")).ToArray();
-
-        OvertimeChart = new ISeries[]
-        {
-            new ColumnSeries<double>
-            {
-                Values = dailyBalance,
-                Name = AppStrings.ChartDaily,
-                Fill = new SolidColorPaint(SKColor.Parse("#90CAF9")),
-                MaxBarWidth = 8
-            },
-            new LineSeries<double>
-            {
-                Values = cumulativeBalance,
-                Name = AppStrings.ChartCumulative,
-                Stroke = new SolidColorPaint(SKColor.Parse("#FF9800"), 3),
-                Fill = null,
-                GeometrySize = 4,
-                GeometryStroke = new SolidColorPaint(SKColor.Parse("#FF9800"), 2)
-            }
-        };
-
-        OvertimeXAxes = new Axis[]
-        {
-            new Axis
-            {
-                Labels = dateLabels,
-                LabelsRotation = 45,
-                TextSize = 9,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575")),
-                ShowSeparatorLines = false
-            }
-        };
-
-        OvertimeYAxes = new Axis[]
-        {
-            new Axis
-            {
-                Name = AppStrings.ChartHours,
-                NameTextSize = 11,
-                TextSize = 10,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575")),
-                NamePaint = new SolidColorPaint(SKColor.Parse("#757575"))
-            }
-        };
+        OvertimeCumulativeBalance = cumulative;
 
         return Task.CompletedTask;
     }
 
-    private async Task CreateProjectChartAsync()
+    private async Task CreateProjectChartDataAsync()
     {
         try
         {
@@ -585,47 +503,44 @@ public partial class StatisticsViewModel : ObservableObject
 
             if (!HasProjects)
             {
-                ProjectChart = Array.Empty<ISeries>();
+                ProjectSegments = Array.Empty<DonutChartVisualization.Segment>();
                 return;
             }
 
-            var pieSeries = new List<ISeries>();
+            var segments = new List<DonutChartVisualization.Segment>();
             int colorIndex = 0;
 
             foreach (var kvp in projectHours.OrderByDescending(x => x.Value))
             {
                 var project = kvp.Key;
                 var hours = kvp.Value;
-
                 if (hours <= 0) continue;
 
-                var color = !string.IsNullOrEmpty(project.Color)
+                var colorStr = !string.IsNullOrEmpty(project.Color)
                     ? project.Color
                     : ChartColors[colorIndex % ChartColors.Length];
 
-                pieSeries.Add(new PieSeries<double>
+                segments.Add(new DonutChartVisualization.Segment
                 {
-                    Values = new[] { hours },
-                    Name = project.Name,
-                    Fill = new SolidColorPaint(SKColor.Parse(color)),
-                    DataLabelsSize = 11,
-                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                    DataLabelsFormatter = point => $"{hours:F1}h"
+                    Value = (float)hours,
+                    Color = SKColor.Parse(colorStr),
+                    Label = project.Name,
+                    ValueText = $"{hours:F1}h"
                 });
 
                 colorIndex++;
             }
 
-            ProjectChart = pieSeries.ToArray();
+            ProjectSegments = segments.ToArray();
         }
         catch (Exception ex)
         {
             MessageRequested?.Invoke(AppStrings.Error, string.Format(AppStrings.ErrorGeneric, ex.Message));
-            ProjectChart = Array.Empty<ISeries>();
+            ProjectSegments = Array.Empty<DonutChartVisualization.Segment>();
         }
     }
 
-    private async Task CreateEmployerChartAsync()
+    private async Task CreateEmployerChartDataAsync()
     {
         try
         {
@@ -634,143 +549,111 @@ public partial class StatisticsViewModel : ObservableObject
 
             if (!HasEmployers)
             {
-                EmployerChart = Array.Empty<ISeries>();
+                EmployerSegments = Array.Empty<DonutChartVisualization.Segment>();
                 return;
             }
 
-            var pieSeries = new List<ISeries>();
+            var segments = new List<DonutChartVisualization.Segment>();
             int colorIndex = 0;
 
             foreach (var kvp in employerHours.OrderByDescending(x => x.Value))
             {
                 var employer = kvp.Key;
                 var hours = kvp.Value;
-
                 if (hours <= 0) continue;
 
-                var color = !string.IsNullOrEmpty(employer.Color)
+                var colorStr = !string.IsNullOrEmpty(employer.Color)
                     ? employer.Color
                     : ChartColors[colorIndex % ChartColors.Length];
 
-                pieSeries.Add(new PieSeries<double>
+                segments.Add(new DonutChartVisualization.Segment
                 {
-                    Values = new[] { hours },
-                    Name = employer.Name,
-                    Fill = new SolidColorPaint(SKColor.Parse(color)),
-                    DataLabelsSize = 11,
-                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                    DataLabelsFormatter = point => $"{hours:F1}h"
+                    Value = (float)hours,
+                    Color = SKColor.Parse(colorStr),
+                    Label = employer.Name,
+                    ValueText = $"{hours:F1}h"
                 });
 
                 colorIndex++;
             }
 
-            EmployerChart = pieSeries.ToArray();
+            EmployerSegments = segments.ToArray();
         }
         catch (Exception ex)
         {
             MessageRequested?.Invoke(AppStrings.Error, string.Format(AppStrings.ErrorGeneric, ex.Message));
-            EmployerChart = Array.Empty<ISeries>();
+            EmployerSegments = Array.Empty<DonutChartVisualization.Segment>();
         }
     }
 
-    private Task CreateWeekdayChartAsync(List<WorkDay> workDays)
+    private Task CreateWeekdayChartData(List<WorkDay> workDays)
     {
-        var weekdayNames = new[] { AppStrings.Mon, AppStrings.Tue, AppStrings.Wed, AppStrings.Thu, AppStrings.Fri, AppStrings.Sat, AppStrings.Sun };
+        WeekdayLabels = new[] { AppStrings.Mon, AppStrings.Tue, AppStrings.Wed, AppStrings.Thu, AppStrings.Fri, AppStrings.Sat, AppStrings.Sun };
         var weekdayHours = new double[7];
         var weekdayCounts = new int[7];
 
         foreach (var day in workDays.Where(w => w.ActualWorkMinutes > 0))
         {
-            // DayOfWeek: Sunday=0, Monday=1, ... -> Convert to Mo=0, Di=1, ...
             var index = ((int)day.Date.DayOfWeek + 6) % 7;
             weekdayHours[index] += day.ActualWorkMinutes / 60.0;
             weekdayCounts[index]++;
         }
 
-        // Calculate average
-        var avgHours = new double[7];
+        var avgHours = new float[7];
         for (int i = 0; i < 7; i++)
-        {
-            avgHours[i] = weekdayCounts[i] > 0 ? weekdayHours[i] / weekdayCounts[i] : 0;
-        }
+            avgHours[i] = weekdayCounts[i] > 0 ? (float)(weekdayHours[i] / weekdayCounts[i]) : 0f;
 
-        WeekdayChart = new ISeries[]
-        {
-            new ColumnSeries<double>
-            {
-                Values = avgHours,
-                Name = AppStrings.ChartAvgHours,
-                Fill = new SolidColorPaint(SKColor.Parse("#1565C0")),
-                MaxBarWidth = 35
-            }
-        };
+        WeekdayAvgHours = avgHours;
 
-        WeekdayXAxes = new Axis[]
-        {
-            new Axis
-            {
-                Labels = weekdayNames,
-                LabelsRotation = 0,
-                TextSize = 12,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575"))
-            }
-        };
-
-        WeekdayYAxes = new Axis[]
-        {
-            new Axis
-            {
-                Name = AppStrings.ChartAvgHours,
-                NameTextSize = 11,
-                TextSize = 10,
-                MinLimit = 0,
-                MaxLimit = 12,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#757575")),
-                NamePaint = new SolidColorPaint(SKColor.Parse("#757575"))
-            }
-        };
+        // Tägliches Soll berechnen (Wochensoll / Anzahl Arbeitstage)
+        // Vereinfachung: Wenn 5-Tage-Woche, dann Wochensoll/5
+        int workingDayCount = weekdayCounts.Count(c => c > 0);
+        WeekdayTargetPerDay = workingDayCount > 0 ? WeeklyTargetHours / Math.Max(workingDayCount, 5) : 8f;
 
         return Task.CompletedTask;
     }
 
-    private Task CreatePauseChartAsync(List<WorkDay> workDays)
+    private Task CreatePauseChartData(List<WorkDay> workDays)
     {
-        var totalManual = workDays.Sum(w => w.ManualPauseMinutes) / 60.0;
-        var totalAuto = workDays.Sum(w => w.AutoPauseMinutes) / 60.0;
+        var totalManual = (float)(workDays.Sum(w => w.ManualPauseMinutes) / 60.0);
+        var totalAuto = (float)(workDays.Sum(w => w.AutoPauseMinutes) / 60.0);
 
         if (totalManual <= 0 && totalAuto <= 0)
         {
-            PauseChart = Array.Empty<ISeries>();
+            PauseSegments = Array.Empty<DonutChartVisualization.Segment>();
             return Task.CompletedTask;
         }
 
-        PauseChart = new ISeries[]
+        var segments = new List<DonutChartVisualization.Segment>();
+
+        if (totalManual > 0)
         {
-            new PieSeries<double>
+            segments.Add(new DonutChartVisualization.Segment
             {
-                Values = new[] { totalManual },
-                Name = AppStrings.Manual,
-                Fill = new SolidColorPaint(SKColor.Parse("#4CAF50")),
-                DataLabelsSize = 11,
-                DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                DataLabelsFormatter = point => $"{totalManual:F1}h"
-            },
-            new PieSeries<double>
+                Value = totalManual,
+                Color = SkiaThemeHelper.Success,
+                Label = AppStrings.Manual,
+                ValueText = $"{totalManual:F1}h"
+            });
+        }
+
+        if (totalAuto > 0)
+        {
+            segments.Add(new DonutChartVisualization.Segment
             {
-                Values = new[] { totalAuto },
-                Name = $"Auto {Icons.Lightning}",
-                Fill = new SolidColorPaint(SKColor.Parse("#FF9800")),
-                DataLabelsSize = 11,
-                DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                DataLabelsFormatter = point => $"{totalAuto:F1}h"
-            }
-        };
+                Value = totalAuto,
+                Color = SkiaThemeHelper.Warning,
+                Label = $"Auto",
+                ValueText = $"{totalAuto:F1}h"
+            });
+        }
+
+        PauseSegments = segments.ToArray();
 
         return Task.CompletedTask;
     }
 
-    // === Table data ===
+    // === Tabellendaten ===
 
     private void FillTableData(List<WorkDay> workDays)
     {
@@ -797,7 +680,6 @@ public partial class StatisticsViewModel : ObservableObject
         TableDays = new ObservableCollection<WorkDayTableItem>(items);
     }
 
-
     private static string GetStatusIcon(DayStatus status)
     {
         return status switch
@@ -811,11 +693,10 @@ public partial class StatisticsViewModel : ObservableObject
             _ => ""
         };
     }
-
 }
 
 /// <summary>
-/// Table item for work time overview
+/// Tabellen-Element für die Arbeitszeitübersicht
 /// </summary>
 public class WorkDayTableItem
 {
@@ -831,5 +712,5 @@ public class WorkDayTableItem
     public string Balance { get; set; } = "+0:00";
     public string BalanceColor { get; set; } = "#4CAF50";
     public bool HasAutoBreak { get; set; }
-    public bool IsSpecialDay { get; set; } // Vacation, Sick, Holiday
+    public bool IsSpecialDay { get; set; }
 }

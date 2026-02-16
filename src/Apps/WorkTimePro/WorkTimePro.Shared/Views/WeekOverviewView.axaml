@@ -4,6 +4,7 @@
              xmlns:models="using:WorkTimePro.Models"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="WorkTimePro.Views.WeekOverviewView"
              x:DataType="vm:WeekOverviewViewModel">
 
@@ -62,10 +63,9 @@
                          FontSize="14" FontWeight="Bold"
                          Foreground="{DynamicResource AccentBrush}" />
             </Grid>
-            <ProgressBar Value="{Binding ProgressPercent}"
-                         Maximum="100"
-                         Foreground="{DynamicResource AccentBrush}"
-                         Height="12" CornerRadius="6" />
+            <skia:SKCanvasView x:Name="WeekProgressCanvas"
+                                   PaintSurface="OnPaintWeekProgress"
+                                   Height="16" />
           </StackPanel>
 
           <!-- Time Metrics -->
@@ -141,6 +141,11 @@
           </StackPanel>
 
         </StackPanel>
+      </Border>
+
+      <!-- ==================== SkiaSharp Wochen-Balkendiagramm ==================== -->
+      <Border Classes="Card StatsCard" Padding="8" Height="200">
+        <skia:SKCanvasView x:Name="WeekBarCanvas" PaintSurface="OnPaintWeekBars" />
       </Border>
 
       <!-- ==================== Days List ==================== -->

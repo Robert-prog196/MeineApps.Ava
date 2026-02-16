@@ -1,11 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using MeineApps.Core.Premium.Ava.Services;
-using SkiaSharp;
 using WorkTimePro.Helpers;
 using WorkTimePro.Models;
 using WorkTimePro.Resources.Strings;
@@ -81,18 +77,18 @@ public partial class YearOverviewViewModel : ObservableObject
     public string VacationDaysTakenDisplay => VacationDaysTaken.ToString();
     public string SickDaysDisplay => SickDays.ToString();
 
-    // Charts
+    // SkiaSharp Chart-Daten (ersetzen LiveCharts)
     [ObservableProperty]
-    private ISeries[] _monthlyChart = Array.Empty<ISeries>();
+    private string[] _monthLabels = Array.Empty<string>();
 
     [ObservableProperty]
-    private ISeries[] _balanceChart = Array.Empty<ISeries>();
+    private float[] _monthlyWorkHoursData = Array.Empty<float>();
 
     [ObservableProperty]
-    private Axis[] _xAxes = Array.Empty<Axis>();
+    private float[] _monthlyTargetHoursData = Array.Empty<float>();
 
     [ObservableProperty]
-    private Axis[] _yAxes = Array.Empty<Axis>();
+    private float[] _cumulativeBalanceData = Array.Empty<float>();
 
     public YearOverviewViewModel(
         IDatabaseService database,
@@ -112,32 +108,6 @@ public partial class YearOverviewViewModel : ObservableObject
         _rewardedAdService = rewardedAdService;
 
         SelectedYear = DateTime.Today.Year;
-        InitializeAxes();
-    }
-
-    private void InitializeAxes()
-    {
-        // Use culture-aware abbreviated month names
-        var monthNames = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthNames
-            .Take(12).ToArray();
-
-        XAxes = new Axis[]
-        {
-            new Axis
-            {
-                Labels = monthNames,
-                TextSize = 10
-            }
-        };
-
-        YAxes = new Axis[]
-        {
-            new Axis
-            {
-                Name = AppStrings.ChartHours,
-                TextSize = 10
-            }
-        };
     }
 
     partial void OnSelectedYearChanged(int value)
@@ -157,9 +127,6 @@ public partial class YearOverviewViewModel : ObservableObject
             IsLoading = true;
             IsPremium = _purchaseService.IsPremium || _trialService.IsTrialActive;
             ShowAds = !IsPremium;
-
-            // Achsen bei jedem Laden aktualisieren (Sprachwechsel-Reaktivität)
-            InitializeAxes();
 
             var monthSummaries = new List<MonthSummary>();
             var monthlyWorkHours = new List<double>();
@@ -227,8 +194,8 @@ public partial class YearOverviewViewModel : ObservableObject
             OnPropertyChanged(nameof(VacationDaysTakenDisplay));
             OnPropertyChanged(nameof(SickDaysDisplay));
 
-            // Charts
-            UpdateCharts(monthlyWorkHours, cumulativeBalance);
+            // SkiaSharp Chart-Daten
+            UpdateChartData(monthlyWorkHours, cumulativeBalance, monthSummaries);
         }
         catch (Exception ex)
         {
@@ -240,35 +207,15 @@ public partial class YearOverviewViewModel : ObservableObject
         }
     }
 
-    private void UpdateCharts(List<double> monthlyHours, List<double> cumulativeBalance)
+    private void UpdateChartData(List<double> monthlyHours, List<double> cumulativeBalance, List<MonthSummary> summaries)
     {
-        // Monthly work hours
-        MonthlyChart = new ISeries[]
-        {
-            new ColumnSeries<double>
-            {
-                Values = monthlyHours,
-                Name = AppStrings.ChartWorkHours,
-                Fill = new SolidColorPaint(SKColor.Parse("#1565C0")),
-                Stroke = null,
-                MaxBarWidth = 30
-            }
-        };
+        // Monatsnamen als Labels
+        MonthLabels = summaries.Select(s =>
+            System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(s.Month)).ToArray();
 
-        // Cumulative balance
-        BalanceChart = new ISeries[]
-        {
-            new LineSeries<double>
-            {
-                Values = cumulativeBalance,
-                Name = AppStrings.ChartCumulativeBalance,
-                Stroke = new SolidColorPaint(SKColor.Parse("#FF9800"), 3),
-                Fill = new SolidColorPaint(SKColor.Parse("#FF9800").WithAlpha(50)),
-                GeometrySize = 8,
-                GeometryFill = new SolidColorPaint(SKColor.Parse("#FF9800")),
-                GeometryStroke = new SolidColorPaint(SKColors.White, 2)
-            }
-        };
+        MonthlyWorkHoursData = monthlyHours.Select(h => (float)h).ToArray();
+        MonthlyTargetHoursData = summaries.Select(s => (float)(s.TargetMinutes / 60.0)).ToArray();
+        CumulativeBalanceData = cumulativeBalance.Select(b => (float)b).ToArray();
     }
 
     [RelayCommand]

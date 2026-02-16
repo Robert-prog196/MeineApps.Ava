@@ -3,23 +3,13 @@
              xmlns:vm="using:WorkTimePro.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
-             xmlns:ctrl="using:WorkTimePro.Controls"
+             xmlns:skia="using:Avalonia.Labs.Controls"
+             xmlns:skiaControls="using:MeineApps.UI.SkiaSharp"
              x:Class="WorkTimePro.Views.TodayView"
              x:DataType="vm:MainViewModel">
 
   <!-- Styles fuer Animationen und Effekte -->
   <UserControl.Styles>
-    <!-- Pulsierender Glow-Ring wenn Tracking aktiv -->
-    <Style Selector="ctrl|CircularProgressControl[IsPulsing=True]">
-      <Style.Animations>
-        <Animation Duration="0:0:2" IterationCount="INFINITE">
-          <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.75" /></KeyFrame>
-          <KeyFrame Cue="50%"><Setter Property="Opacity" Value="1.0" /></KeyFrame>
-          <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.75" /></KeyFrame>
-        </Animation>
-      </Style.Animations>
-    </Style>
-
     <!-- Big Action Button: Basis-Transition -->
     <Style Selector="Button.BigAction">
       <Style.Setters>
@@ -80,15 +70,18 @@
             </StackPanel>
           </Border>
 
-          <!-- Big Start/Stop Button mit Fortschrittsring -->
+          <!-- Big Start/Stop Button mit SkiaSharp-Fortschrittsring -->
           <Panel HorizontalAlignment="Center" Width="140" Height="140">
-            <!-- Fortschrittsring (hinter dem Button) mit Puls-Animation -->
-            <ctrl:CircularProgressControl
-                Progress="{Binding DayProgress}"
+            <!-- SkiaSharp Gradient-Ring mit Glow + Pulsation -->
+            <skiaControls:SkiaGradientRing
+                Value="{Binding DayProgressFraction}"
                 IsPulsing="{Binding IsWorking}"
-                TrackBrush="{DynamicResource CardBorderBrush}"
-                ProgressBrush="{DynamicResource SuccessBrush}"
+                GlowEnabled="{Binding IsWorking}"
+                StartColor="#22C55E"
+                EndColor="#4ADE80"
                 StrokeWidth="6"
+                ShowTickMarks="True"
+                TickMarkCount="24"
                 Width="140" Height="140" />
             <!-- Button zentriert im Ring -->
             <Button Command="{Binding ToggleTrackingCommand}"
@@ -282,6 +275,14 @@
                        Foreground="{DynamicResource WarningBrush}" />
           </StackPanel>
         </StackPanel>
+      </Border>
+
+      <!-- SkiaSharp Tages-Timeline (Arbeitsblöcke + Pausen) -->
+      <Border Classes="Card StatsCard" Padding="8"
+              IsVisible="{Binding HasCheckedIn}">
+        <Border Height="56" ClipToBounds="True">
+          <skia:SKCanvasView x:Name="TimelineCanvas" PaintSurface="OnPaintTimeline" />
+        </Border>
       </Border>
 
       <!-- Day Details Button -->

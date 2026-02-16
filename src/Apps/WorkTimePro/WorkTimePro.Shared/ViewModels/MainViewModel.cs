@@ -328,7 +328,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     // Tages-Fortschritt als Prozent-Text
     public string DayProgressPercent => $"{DayProgress:F0}%";
 
-    partial void OnDayProgressChanged(double value) => OnPropertyChanged(nameof(DayProgressPercent));
+    /// <summary>Fortschritt als Fraktion (0.0-1.0) für SkiaGradientRing.</summary>
+    public double DayProgressFraction => Math.Clamp(DayProgress / 100.0, 0.0, 1.0);
+
+    partial void OnDayProgressChanged(double value)
+    {
+        OnPropertyChanged(nameof(DayProgressPercent));
+        OnPropertyChanged(nameof(DayProgressFraction));
+    }
 
     [ObservableProperty]
     private double _weekProgress;

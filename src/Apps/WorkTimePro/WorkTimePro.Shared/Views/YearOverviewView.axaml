@@ -3,7 +3,7 @@
              xmlns:vm="using:WorkTimePro.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
-             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="WorkTimePro.Views.YearOverviewView"
              x:DataType="vm:YearOverviewViewModel"
              Background="{DynamicResource BackgroundBrush}">
@@ -156,10 +156,9 @@
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8" />
-            <lvc:CartesianChart Series="{Binding MonthlyChart}"
-                                XAxes="{Binding XAxes}"
-                                YAxes="{Binding YAxes}"
-                                Height="200" />
+            <skia:SKCanvasView x:Name="MonthlyChartCanvas"
+                                   PaintSurface="OnPaintMonthlyChart"
+                                   Height="200" />
           </StackPanel>
         </Border>
 
@@ -171,9 +170,9 @@
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8" />
-            <lvc:CartesianChart Series="{Binding BalanceChart}"
-                                XAxes="{Binding XAxes}"
-                                Height="180" />
+            <skia:SKCanvasView x:Name="BalanceChartCanvas"
+                                   PaintSurface="OnPaintBalanceChart"
+                                   Height="180" />
           </StackPanel>
         </Border>
 
