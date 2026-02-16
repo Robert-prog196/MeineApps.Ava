@@ -6,6 +6,7 @@
              xmlns:behaviors="using:MeineApps.Core.Ava.Behaviors"
              xmlns:uiBehaviors="using:MeineApps.UI.Behaviors"
              xmlns:uiControls="using:MeineApps.UI.Controls"
+             xmlns:skiaControls="using:MeineApps.UI.SkiaSharp"
              xmlns:models="using:FitnessRechner.Models"
              xmlns:conv="using:FitnessRechner.Converters"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
@@ -82,13 +83,14 @@
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="0" StaggerDelay="80" BaseDuration="400" />
           </i:Interaction.Behaviors>
           <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-            <!-- Score-Ring -->
+            <!-- Score-Ring (SkiaGradientRing) -->
             <Panel Width="80" Height="80">
-              <uiControls:CircularProgress Width="80" Height="80"
+              <skiaControls:SkiaGradientRing Width="80" Height="80"
                   Value="{Binding DailyScoreFraction}"
                   StrokeWidth="6"
-                  StrokeBrush="{DynamicResource PrimaryBrush}"
-                  TrackBrush="{DynamicResource BorderSubtleBrush}" />
+                  StartColor="#22C55E"
+                  EndColor="{DynamicResource AccentColor}"
+                  GlowEnabled="True" />
               <!-- Score-Text in der Mitte -->
               <TextBlock Text="{Binding DailyScoreDisplay}"
                          FontSize="20" FontWeight="Bold"
@@ -247,16 +249,14 @@
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                   </StackPanel>
-                  <!-- Wasser CircularProgress Ring -->
-                  <uiControls:CircularProgress Grid.Column="1" Width="44" Height="44"
+                  <!-- Wasser SkiaGradientRing -->
+                  <skiaControls:SkiaGradientRing Grid.Column="1" Width="44" Height="44"
                       Value="{Binding WaterProgressFraction}"
                       StrokeWidth="4"
-                      TrackBrush="{DynamicResource BorderSubtleBrush}"
-                      VerticalAlignment="Center">
-                    <uiControls:CircularProgress.StrokeBrush>
-                      <SolidColorBrush Color="#22C55E" />
-                    </uiControls:CircularProgress.StrokeBrush>
-                  </uiControls:CircularProgress>
+                      StartColor="#22C55E"
+                      EndColor="#16A34A"
+                      GlowEnabled="True"
+                      VerticalAlignment="Center" />
                 </Grid>
               </Border>
 
@@ -286,16 +286,14 @@
                                  VerticalAlignment="Bottom" Margin="0,0,0,2" />
                     </StackPanel>
                   </StackPanel>
-                  <!-- Kalorien CircularProgress Ring -->
-                  <uiControls:CircularProgress Grid.Column="1" Width="44" Height="44"
+                  <!-- Kalorien SkiaGradientRing -->
+                  <skiaControls:SkiaGradientRing Grid.Column="1" Width="44" Height="44"
                       Value="{Binding CalorieProgressFraction}"
                       StrokeWidth="4"
-                      TrackBrush="{DynamicResource BorderSubtleBrush}"
-                      VerticalAlignment="Center">
-                    <uiControls:CircularProgress.StrokeBrush>
-                      <SolidColorBrush Color="#F59E0B" />
-                    </uiControls:CircularProgress.StrokeBrush>
-                  </uiControls:CircularProgress>
+                      StartColor="#F59E0B"
+                      EndColor="#D97706"
+                      GlowEnabled="True"
+                      VerticalAlignment="Center" />
                 </Grid>
               </Border>
 

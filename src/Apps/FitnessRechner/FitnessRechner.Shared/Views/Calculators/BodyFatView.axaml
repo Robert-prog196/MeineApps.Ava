@@ -5,6 +5,7 @@
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
              xmlns:uiBehaviors="using:MeineApps.UI.Behaviors"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="FitnessRechner.Views.Calculators.BodyFatView"
              x:DataType="vm:BodyFatViewModel">
 
@@ -160,6 +161,12 @@
                   </i:Interaction.Behaviors>
                 </TextBlock>
               </StackPanel>
+            </Border>
+
+            <!-- Körperfett-Visualisierung -->
+            <Border Height="160" Margin="0,4,0,0" ClipToBounds="True" CornerRadius="8"
+                    Background="{DynamicResource SurfaceBrush}">
+              <skia:SKCanvasView PaintSurface="OnPaintBodyFat" />
             </Border>
 
             <!-- Secondary Results -->

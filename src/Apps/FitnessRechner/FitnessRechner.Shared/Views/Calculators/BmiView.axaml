@@ -5,6 +5,7 @@
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
              xmlns:uiBehaviors="using:MeineApps.UI.Behaviors"
              xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="FitnessRechner.Views.Calculators.BmiView"
              x:DataType="vm:BmiViewModel">
 
@@ -108,6 +109,12 @@
                   </i:Interaction.Behaviors>
                 </TextBlock>
               </StackPanel>
+            </Border>
+
+            <!-- BMI-Gauge Visualisierung -->
+            <Border Height="130" Margin="0,4,0,0" ClipToBounds="True" CornerRadius="8"
+                    Background="{DynamicResource SurfaceBrush}">
+              <skia:SKCanvasView PaintSurface="OnPaintBmiGauge" />
             </Border>
 
             <!-- Secondary Results -->

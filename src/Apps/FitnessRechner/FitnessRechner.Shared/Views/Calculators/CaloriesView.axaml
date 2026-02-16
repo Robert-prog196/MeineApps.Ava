@@ -3,6 +3,7 @@
              xmlns:vm="using:FitnessRechner.ViewModels.Calculators"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="FitnessRechner.Views.Calculators.CaloriesView"
              x:DataType="vm:CaloriesViewModel">
 
@@ -151,6 +152,12 @@
                            FontSize="28" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center" />
               </StackPanel>
+            </Border>
+
+            <!-- Kalorien-Ring Visualisierung -->
+            <Border Height="180" Margin="0,4,0,0" ClipToBounds="True" CornerRadius="8"
+                    Background="{DynamicResource SurfaceBrush}">
+              <skia:SKCanvasView PaintSurface="OnPaintCalorieRings" />
             </Border>
 
             <!-- Secondary Results -->

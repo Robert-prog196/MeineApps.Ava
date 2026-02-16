@@ -25,6 +25,10 @@
 
     <!-- Charts -->
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+
+    <!-- SkiaSharp Visualisierungen -->
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="Avalonia.Labs.Controls" />
   </ItemGroup>
 
   <ItemGroup>
