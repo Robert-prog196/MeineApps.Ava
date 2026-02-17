@@ -453,6 +453,7 @@
   <data name="ActivityCalendar" xml:space="preserve"><value>Activity</value></data>
   <data name="LessActive" xml:space="preserve"><value>Less</value></data>
   <data name="MoreActive" xml:space="preserve"><value>More</value></data>
+  <data name="HeatmapHint" xml:space="preserve"><value>Keep tracking to fill your activity calendar!</value></data>
   <data name="Milestones" xml:space="preserve"><value>Milestones</value></data>
 
   <!-- Achievement Titles -->

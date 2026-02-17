@@ -146,6 +146,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(ThisWeekLabel));
         OnPropertyChanged(nameof(LastWeekLabel));
         OnPropertyChanged(nameof(EveningSummaryLabel));
+        OnPropertyChanged(nameof(HeatmapHintText));
         OnPropertyChanged(nameof(LevelLabel));
         OnPropertyChanged(nameof(ChallengeTitleText));
         OnPropertyChanged(nameof(ChallengeDescText));
@@ -174,7 +175,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(IsSettingsActive));
 
         // Daten für ausgewählten Tab laden
-        if (value == 1)
+        if (value == 0)
+            _ = OnAppearingAsync(); // Dashboard-Daten neu laden (Wasser, Kalorien etc. könnten sich geändert haben)
+        else if (value == 1)
             _ = ProgressViewModel.OnAppearingAsync();
         else if (value == 2)
             FoodSearchViewModel.OnAppearing();
@@ -314,6 +317,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _hasHeatmapData;
+
+    // Hinweistext wenn wenige Aktivitätstage (< 7)
+    [ObservableProperty]
+    private bool _showHeatmapHint;
+
+    public string HeatmapHintText => _localization.GetString("HeatmapHint") ?? "Keep tracking to fill your activity calendar!";
 
     // Empty-State: Wird angezeigt wenn keine Tracking-Daten vorhanden sind
     [ObservableProperty]
@@ -1095,6 +1104,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             HeatmapData = data;
             HasHeatmapData = data.Count > 0;
+            ShowHeatmapHint = data.Count > 0 && data.Count < 7;
         }
         catch
         {

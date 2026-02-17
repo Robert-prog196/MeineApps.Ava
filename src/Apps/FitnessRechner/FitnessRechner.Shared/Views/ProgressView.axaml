@@ -4,8 +4,8 @@
              xmlns:models="using:FitnessRechner.Models"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
-             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              xmlns:conv="using:FitnessRechner.Converters"
+             xmlns:labs="using:Avalonia.Labs.Controls"
              x:Class="FitnessRechner.Views.ProgressView"
              x:DataType="vm:ProgressViewModel">
 
@@ -244,14 +244,7 @@
                            Foreground="{DynamicResource TextMutedBrush}"
                            VerticalAlignment="Center" />
               </Grid>
-              <ProgressBar Value="{Binding WeightGoalProgress}" Maximum="1"
-                           Foreground="#8B5CF6" Height="10">
-                <ProgressBar.Transitions>
-                  <Transitions>
-                    <DoubleTransition Property="Value" Duration="0:0:0.5" Easing="CubicEaseOut" />
-                  </Transitions>
-                </ProgressBar.Transitions>
-              </ProgressBar>
+              <labs:SKCanvasView Height="18" PaintSurface="OnPaintWeightGoalProgress" />
             </StackPanel>
           </Border>
 
@@ -316,15 +309,8 @@
                            Classes="SectionTitle"
                            VerticalAlignment="Center" />
               </StackPanel>
-              <lvc:CartesianChart Height="220"
-                                  Series="{Binding WeightChartSeries}"
-                                  XAxes="{Binding XAxes}"
-                                  YAxes="{Binding YAxesWeight}"
-                                  Sections="{Binding WeightMilestoneSections}"
-                                  DrawMarginFrame="{Binding ChartFrame}"
-                                  Background="Transparent"
-                                  ZoomMode="None"
-                                  AnimationsSpeed="0:0:0.3" />
+              <labs:SKCanvasView x:Name="WeightChartCanvas" Height="220"
+                                  PaintSurface="OnPaintWeightChart" />
             </StackPanel>
           </Border>
 
@@ -558,15 +544,8 @@
                              Classes="SectionTitle"
                              VerticalAlignment="Center" />
                 </StackPanel>
-                <lvc:CartesianChart Height="220"
-                                    Series="{Binding BmiChartSeries}"
-                                    XAxes="{Binding XAxes}"
-                                    YAxes="{Binding YAxesBmi}"
-                                    Sections="{Binding BmiSections}"
-                                    DrawMarginFrame="{Binding ChartFrame}"
-                                    Background="Transparent"
-                                    ZoomMode="None"
-                                  AnimationsSpeed="0:0:0.3" />
+                <labs:SKCanvasView x:Name="BmiChartCanvas" Height="220"
+                                    PaintSurface="OnPaintBmiChart" />
                 <TextBlock Text="{loc:Translate HealthyBmiRange}" Classes="Caption"
                            HorizontalAlignment="Center" />
               </StackPanel>
@@ -704,14 +683,8 @@
                              Classes="SectionTitle"
                              VerticalAlignment="Center" />
                 </StackPanel>
-                <lvc:CartesianChart Height="220"
-                                    Series="{Binding BodyFatChartSeries}"
-                                    XAxes="{Binding XAxes}"
-                                    YAxes="{Binding YAxesBodyFat}"
-                                    DrawMarginFrame="{Binding ChartFrame}"
-                                    Background="Transparent"
-                                    ZoomMode="None"
-                                    AnimationsSpeed="0:0:0.3" />
+                <labs:SKCanvasView x:Name="BodyFatChartCanvas" Height="220"
+                                    PaintSurface="OnPaintBodyFatChart" />
               </StackPanel>
             </Border>
 
@@ -834,16 +807,7 @@
               </Border>
               <StackPanel Spacing="10" Margin="16,14,16,16">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                  <ProgressBar Value="{Binding WaterProgress}"
-                               Maximum="1"
-                               Foreground="#06B6D4"
-                               Height="14">
-                    <ProgressBar.Transitions>
-                      <Transitions>
-                        <DoubleTransition Property="Value" Duration="0:0:0.5" Easing="CubicEaseOut" />
-                      </Transitions>
-                    </ProgressBar.Transitions>
-                  </ProgressBar>
+                  <labs:SKCanvasView Height="22" PaintSurface="OnPaintWaterProgress" />
                   <TextBlock Grid.Column="1"
                              Text="{Binding TodayWater, StringFormat='{}{0:F0} ml'}"
                              FontSize="18" FontWeight="Bold"
@@ -987,11 +951,8 @@
               <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
                 <TextBlock Text="{loc:Translate Protein}" FontSize="12"
                            Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1"
-                             Value="{Binding ProteinProgress}"
-                             Maximum="1"
-                             Foreground="{DynamicResource SuccessBrush}"
-                             Height="8" />
+                <labs:SKCanvasView Grid.Column="1" Height="16"
+                                   PaintSurface="OnPaintProteinProgress" />
                 <TextBlock Grid.Column="2"
                            Text="{Binding ProteinConsumed, StringFormat='{}{0:F0}g'}"
                            FontSize="12" Foreground="{DynamicResource SuccessBrush}"
@@ -1002,11 +963,8 @@
               <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
                 <TextBlock Text="{loc:Translate Carbs}" FontSize="12"
                            Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1"
-                             Value="{Binding CarbsProgress}"
-                             Maximum="1"
-                             Foreground="{DynamicResource WarningBrush}"
-                             Height="8" />
+                <labs:SKCanvasView Grid.Column="1" Height="16"
+                                   PaintSurface="OnPaintCarbsProgress" />
                 <TextBlock Grid.Column="2"
                            Text="{Binding CarbsConsumed, StringFormat='{}{0:F0}g'}"
                            FontSize="12" Foreground="{DynamicResource WarningBrush}"
@@ -1017,11 +975,8 @@
               <Grid ColumnDefinitions="60,*,40" ColumnSpacing="8">
                 <TextBlock Text="{loc:Translate Fat}" FontSize="12"
                            Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1"
-                             Value="{Binding FatProgress}"
-                             Maximum="1"
-                             Foreground="{DynamicResource ErrorBrush}"
-                             Height="8" />
+                <labs:SKCanvasView Grid.Column="1" Height="16"
+                                   PaintSurface="OnPaintFatProgress" />
                 <TextBlock Grid.Column="2"
                            Text="{Binding FatConsumed, StringFormat='{}{0:F0}g'}"
                            FontSize="12" Foreground="{DynamicResource ErrorBrush}"
@@ -1151,14 +1106,8 @@
                            Classes="SectionTitle"
                            VerticalAlignment="Center" />
               </StackPanel>
-              <lvc:CartesianChart Height="160"
-                                  Series="{Binding WeeklyCaloriesSeries}"
-                                  XAxes="{Binding WeeklyXAxes}"
-                                  YAxes="{Binding WeeklyYAxes}"
-                                  DrawMarginFrame="{Binding ChartFrame}"
-                                  Background="Transparent"
-                                  ZoomMode="None"
-                                  AnimationsSpeed="0:0:0.3" />
+              <labs:SKCanvasView x:Name="WeeklyCaloriesCanvas" Height="160"
+                                  PaintSurface="OnPaintWeeklyCalories" />
             </StackPanel>
           </Border>
 

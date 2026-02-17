@@ -54,7 +54,7 @@
               <Border.Background>
                 <SolidColorBrush Color="{DynamicResource CardColor}" />
               </Border.Background>
-              <StackPanel Spacing="8" HorizontalAlignment="Center">
+              <StackPanel Spacing="8">
                 <!-- Icon: Farbig wenn freigeschaltet, grau wenn gesperrt -->
                 <Panel HorizontalAlignment="Center">
                   <!-- Freigeschaltet: Gradient-Background -->
@@ -84,13 +84,11 @@
                 <TextBlock Text="{Binding TitleKey, Converter={StaticResource LocalizeKey}}"
                            FontSize="12" FontWeight="SemiBold"
                            TextAlignment="Center" TextWrapping="Wrap"
-                           MaxWidth="140"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
 
                 <!-- Beschreibung (lokalisiert) -->
                 <TextBlock Text="{Binding DescriptionKey, Converter={StaticResource LocalizeKey}}"
                            FontSize="10" TextAlignment="Center" TextWrapping="Wrap"
-                           MaxWidth="140"
                            Foreground="{DynamicResource TextMutedBrush}" />
 
                 <!-- Fortschritt oder Freigeschaltet -->
@@ -105,9 +103,11 @@
                   </StackPanel>
 
                   <!-- Fortschrittsbalken -->
-                  <StackPanel IsVisible="{Binding !IsUnlocked}" Spacing="4">
+                  <StackPanel IsVisible="{Binding !IsUnlocked}" Spacing="4"
+                              HorizontalAlignment="Stretch">
                     <ProgressBar Value="{Binding Progress}" Maximum="1.0"
                                  Height="4" CornerRadius="2"
+                                 HorizontalAlignment="Stretch"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  Background="{DynamicResource BorderSubtleBrush}" />
                     <TextBlock Text="{Binding CurrentValue, StringFormat='{}{0}'}"

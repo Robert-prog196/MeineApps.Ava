@@ -6,11 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using FitnessRechner.Models;
 using FitnessRechner.Resources.Strings;
 using FitnessRechner.Services;
-using LiveChartsCore;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.Measure;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
+using FitnessRechner.Graphics;
 using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Services;
 using SkiaSharp;
@@ -153,7 +149,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private TrackingStats? _weightStats;
 
     [ObservableProperty]
-    private IEnumerable<ISeries> _weightChartSeries = [];
+    private HealthTrendVisualization.DataPoint[] _weightChartData = [];
 
     [ObservableProperty]
     private double _weightGoal;
@@ -197,7 +193,7 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     // Meilenstein-Markierungen im Weight-Chart (vertikale Linien bei ganzen kg-Wechseln)
     [ObservableProperty]
-    private RectangularSection[] _weightMilestoneSections = [];
+    private HealthTrendVisualization.MilestoneLine[] _weightMilestoneLines = [];
 
     #endregion
 
@@ -226,10 +222,10 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     private TrackingStats? _bodyFatStats;
 
     [ObservableProperty]
-    private IEnumerable<ISeries> _bmiChartSeries = [];
+    private HealthTrendVisualization.DataPoint[] _bmiChartData = [];
 
     [ObservableProperty]
-    private IEnumerable<ISeries> _bodyFatChartSeries = [];
+    private HealthTrendVisualization.DataPoint[] _bodyFatChartData = [];
 
     public bool HasBmiEntries => BmiEntries.Count > 0;
     public bool HasBodyFatEntries => BodyFatEntries.Count > 0;
@@ -403,13 +399,10 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     #region Weekly Calories Chart
 
     [ObservableProperty]
-    private IEnumerable<ISeries> _weeklyCaloriesSeries = [];
+    private float[] _weeklyCaloriesValues = [];
 
     [ObservableProperty]
-    private Axis[] _weeklyXAxes = [];
-
-    [ObservableProperty]
-    private Axis[] _weeklyYAxes = [];
+    private string[] _weeklyDayLabels = [];
 
     [ObservableProperty]
     private bool _hasWeeklyData;
@@ -442,39 +435,6 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     #endregion
 
-    #region Chart Axes
-
-    [ObservableProperty]
-    private Axis[] _xAxes = [];
-
-    [ObservableProperty]
-    private Axis[] _yAxesWeight = [];
-
-    [ObservableProperty]
-    private Axis[] _yAxesBmi = [];
-
-    [ObservableProperty]
-    private Axis[] _yAxesBodyFat = [];
-
-    // Chart-Rahmen: subtiler Rand, Fill kommt vom AXAML-Background
-    public DrawMarginFrame ChartFrame { get; } = new()
-    {
-        Fill = new SolidColorPaint(SKColors.Transparent),
-        Stroke = new SolidColorPaint(new SKColor(128, 128, 128, 30)) { StrokeThickness = 1 }
-    };
-
-    // Gesunde BMI-Zone (18.5-25) als grüner Bereich im Chart
-    public RectangularSection[] BmiSections { get; } =
-    [
-        new RectangularSection
-        {
-            Yi = 18.5,
-            Yj = 25,
-            Fill = new SolidColorPaint(new SKColor(76, 175, 80, 30))
-        }
-    ];
-
-    #endregion
 
     #region Commands
 
@@ -1435,133 +1395,45 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
 
     private void UpdateWeightChart()
     {
-        InitializeXAxes();
-
         if (WeightEntries.Count > 0)
         {
-            var data = WeightEntries
+            WeightChartData = WeightEntries
                 .OrderBy(e => e.Date)
-                .Select(e => new DateTimePoint(e.Date, e.Value))
-                .ToList();
-
-            WeightChartSeries =
-            [
-                new LineSeries<DateTimePoint>
-                {
-                    Values = data,
-                    Fill = new LinearGradientPaint(
-                        [new SKColor(76, 175, 80, 150), new SKColor(76, 175, 80, 10)],
-                        new SKPoint(0.5f, 0f),
-                        new SKPoint(0.5f, 1f)),
-                    Stroke = new SolidColorPaint(new SKColor(76, 175, 80)) { StrokeThickness = 3 },
-                    GeometryFill = new SolidColorPaint(new SKColor(76, 175, 80)),
-                    GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 12,
-                    LineSmoothness = 0.5,
-                    Name = AppStrings.TrackingWeight
-                }
-            ];
-
-            var minVal = data.Min(d => d.Value) ?? 50;
-            var maxVal = data.Max(d => d.Value) ?? 100;
-
-            YAxesWeight =
-            [
-                new Axis
-                {
-                    MinLimit = Math.Floor(minVal - 5),
-                    MaxLimit = Math.Ceiling(maxVal + 5),
-                    LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
-                    TextSize = 12,
-                    Labeler = value => $"{value:F0}"
-                }
-            ];
+                .Select(e => new HealthTrendVisualization.DataPoint { Date = e.Date, Value = (float)e.Value })
+                .ToArray();
+        }
+        else
+        {
+            WeightChartData = [];
         }
     }
 
     private void UpdateBodyCharts()
     {
-        InitializeXAxes();
-
         // BMI Chart
         if (BmiEntries.Count > 0)
         {
-            var bmiData = BmiEntries
+            BmiChartData = BmiEntries
                 .OrderBy(e => e.Date)
-                .Select(e => new DateTimePoint(e.Date, e.Value))
-                .ToList();
-
-            BmiChartSeries =
-            [
-                new LineSeries<DateTimePoint>
-                {
-                    Values = bmiData,
-                    Fill = new LinearGradientPaint(
-                        [new SKColor(33, 150, 243, 150), new SKColor(33, 150, 243, 10)],
-                        new SKPoint(0.5f, 0f),
-                        new SKPoint(0.5f, 1f)),
-                    Stroke = new SolidColorPaint(new SKColor(33, 150, 243)) { StrokeThickness = 3 },
-                    GeometryFill = new SolidColorPaint(new SKColor(33, 150, 243)),
-                    GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 12,
-                    LineSmoothness = 0.5,
-                    Name = "BMI"
-                }
-            ];
-
-            YAxesBmi =
-            [
-                new Axis
-                {
-                    MinLimit = 15,
-                    MaxLimit = 40,
-                    LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
-                    TextSize = 12,
-                    Labeler = value => $"{value:F1}"
-                }
-            ];
+                .Select(e => new HealthTrendVisualization.DataPoint { Date = e.Date, Value = (float)e.Value })
+                .ToArray();
+        }
+        else
+        {
+            BmiChartData = [];
         }
 
         // BodyFat Chart
         if (BodyFatEntries.Count > 0)
         {
-            var bodyFatData = BodyFatEntries
+            BodyFatChartData = BodyFatEntries
                 .OrderBy(e => e.Date)
-                .Select(e => new DateTimePoint(e.Date, e.Value))
-                .ToList();
-
-            BodyFatChartSeries =
-            [
-                new LineSeries<DateTimePoint>
-                {
-                    Values = bodyFatData,
-                    Fill = new LinearGradientPaint(
-                        [new SKColor(255, 152, 0, 150), new SKColor(255, 152, 0, 10)],
-                        new SKPoint(0.5f, 0f),
-                        new SKPoint(0.5f, 1f)),
-                    Stroke = new SolidColorPaint(new SKColor(255, 152, 0)) { StrokeThickness = 3 },
-                    GeometryFill = new SolidColorPaint(new SKColor(255, 152, 0)),
-                    GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 12,
-                    LineSmoothness = 0.5,
-                    Name = AppStrings.BodyFat
-                }
-            ];
-
-            YAxesBodyFat =
-            [
-                new Axis
-                {
-                    MinLimit = 5,
-                    MaxLimit = 45,
-                    LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                    SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 40)) { StrokeThickness = 1 },
-                    TextSize = 12,
-                    Labeler = value => $"{value:F0}%"
-                }
-            ];
+                .Select(e => new HealthTrendVisualization.DataPoint { Date = e.Date, Value = (float)e.Value })
+                .ToArray();
+        }
+        else
+        {
+            BodyFatChartData = [];
         }
     }
 
@@ -1609,12 +1481,12 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
     {
         if (WeightEntries.Count < 2)
         {
-            WeightMilestoneSections = [];
+            WeightMilestoneLines = [];
             return;
         }
 
         var sorted = WeightEntries.OrderBy(e => e.Date).ToList();
-        var sections = new List<RectangularSection>();
+        var lines = new List<HealthTrendVisualization.MilestoneLine>();
         var markedKgs = new HashSet<int>();
 
         for (int i = 1; i < sorted.Count; i++)
@@ -1631,18 +1503,17 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
                 {
                     if (markedKgs.Add(kg))
                     {
-                        sections.Add(new RectangularSection
+                        lines.Add(new HealthTrendVisualization.MilestoneLine
                         {
-                            Xi = sorted[i].Date.Ticks,
-                            Xj = sorted[i].Date.Ticks,
-                            Stroke = new SolidColorPaint(new SKColor(139, 92, 246, 60)) { StrokeThickness = 1 }
+                            Date = sorted[i].Date,
+                            Color = new SKColor(139, 92, 246, 120)
                         });
                     }
                 }
             }
         }
 
-        WeightMilestoneSections = sections.ToArray();
+        WeightMilestoneLines = lines.ToArray();
     }
 
     private void GroupMealsByType(List<FoodLogEntry> meals)
@@ -1677,94 +1548,24 @@ public partial class ProgressViewModel : ObservableObject, IDisposable
         HasWeeklyData = summaries.Any(s => s.TotalCalories > 0);
         if (!HasWeeklyData) return;
 
-        var values = summaries.Select(s => s.TotalCalories).ToArray();
-        var labels = Enumerable.Range(0, 7)
+        WeeklyCaloriesValues = summaries.Select(s => (float)s.TotalCalories).ToArray();
+        WeeklyDayLabels = Enumerable.Range(0, 7)
             .Select(i => startDate.AddDays(i).ToString("ddd", CultureInfo.CurrentCulture))
             .ToArray();
-
-        WeeklyCaloriesSeries =
-        [
-            new ColumnSeries<double>
-            {
-                Values = values,
-                Fill = new LinearGradientPaint(
-                    [new SKColor(245, 158, 11, 200), new SKColor(239, 68, 68, 200)],
-                    new SKPoint(0f, 0f), new SKPoint(0f, 1f)),
-                Stroke = null,
-                MaxBarWidth = 24,
-                Rx = 4,
-                Ry = 4
-            }
-        ];
-
-        WeeklyXAxes =
-        [
-            new Axis
-            {
-                Labels = labels,
-                LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                TextSize = 11
-            }
-        ];
-
-        var maxVal = values.Max();
-        WeeklyYAxes =
-        [
-            new Axis
-            {
-                MinLimit = 0,
-                MaxLimit = maxVal > 0 ? maxVal * 1.2 : 2500,
-                LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                TextSize = 11,
-                Labeler = v => $"{v:F0}"
-            }
-        ];
     }
 
-    private void InitializeXAxes()
-    {
-        XAxes =
-        [
-            new Axis
-            {
-                Labeler = value =>
-                {
-                    try
-                    {
-                        var ticks = (long)value;
-                        if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
-                            return "";
-                        return new DateTime(ticks).ToString("d MMM", CultureInfo.CurrentCulture);
-                    }
-                    catch
-                    {
-                        return "";
-                    }
-                },
-                LabelsRotation = -45,
-                LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                SeparatorsPaint = new SolidColorPaint(new SKColor(128, 128, 128, 25)) { StrokeThickness = 1 },
-                TextSize = 10,
-                UnitWidth = TimeSpan.FromDays(1).Ticks
-            }
-        ];
-    }
 
     #endregion
 
-    // IDisposable instead of Finalizer to avoid GC-Thread access to native SkiaSharp resources
+    // IDisposable: Chart-Daten freigeben
     public void Dispose()
     {
         if (_disposed) return;
 
-        // Clear charts first to release SKPaint references before GC runs
-        WeightChartSeries = [];
-        BmiChartSeries = [];
-        BodyFatChartSeries = [];
-        XAxes = [];
-        YAxesWeight = [];
-        YAxesBmi = [];
-        YAxesBodyFat = [];
+        WeightChartData = [];
+        BmiChartData = [];
+        BodyFatChartData = [];
+        WeeklyCaloriesValues = [];
 
         _undoCancellation?.Cancel();
         _undoCancellation?.Dispose();

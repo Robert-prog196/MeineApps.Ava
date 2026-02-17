@@ -93,6 +93,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
               <ToggleSwitch Grid.Column="1"
+                            OnContent="" OffContent=""
                             IsChecked="{Binding IsHotWeather}" />
             </Grid>
           </StackPanel>

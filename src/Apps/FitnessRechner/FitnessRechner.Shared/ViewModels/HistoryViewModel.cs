@@ -4,13 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using FitnessRechner.Models;
 using FitnessRechner.Resources.Strings;
 using FitnessRechner.Services;
-using LiveChartsCore;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using System.Globalization;
 using MeineApps.Core.Premium.Ava.Services;
-using SkiaSharp;
+using FitnessRechner.Graphics;
 
 namespace FitnessRechner.ViewModels;
 
@@ -48,12 +44,9 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     // Ads
     [ObservableProperty] private bool _showAds;
 
-    // LiveCharts Series
-    [ObservableProperty] private IEnumerable<ISeries> _bmiChartSeries = [];
-    [ObservableProperty] private IEnumerable<ISeries> _bodyFatChartSeries = [];
-    [ObservableProperty] private Axis[] _xAxes = [];
-    [ObservableProperty] private Axis[] _yAxesBmi = [];
-    [ObservableProperty] private Axis[] _yAxesBodyFat = [];
+    // SkiaSharp Chart-Daten
+    [ObservableProperty] private HealthTrendVisualization.DataPoint[] _bmiChartData = [];
+    [ObservableProperty] private HealthTrendVisualization.DataPoint[] _bodyFatChartData = [];
 
     // Undo functionality
     [ObservableProperty] private bool _showUndoBanner;
@@ -129,102 +122,30 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
     private void UpdateCharts()
     {
-        // X axis configuration (date)
-        XAxes =
-        [
-            new Axis
-            {
-                Labeler = value =>
-                {
-                    try
-                    {
-                        var ticks = (long)value;
-                        if (ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks)
-                            return "";
-                        return new DateTime(ticks).ToString("d MMM", CultureInfo.CurrentCulture);
-                    }
-                    catch
-                    {
-                        return "";
-                    }
-                },
-                LabelsRotation = -45,
-                LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                TextSize = 10,
-                UnitWidth = TimeSpan.FromDays(1).Ticks
-            }
-        ];
-
-        // BMI Chart (Blue)
+        // BMI Chart-Daten
         if (BmiEntries.Count > 0)
         {
-            var bmiData = BmiEntries
+            BmiChartData = BmiEntries
                 .OrderBy(e => e.Date)
-                .Select(e => new DateTimePoint(e.Date, e.Value))
-                .ToList();
-
-            BmiChartSeries =
-            [
-                new LineSeries<DateTimePoint>
-                {
-                    Values = bmiData,
-                    Fill = new SolidColorPaint(new SKColor(33, 150, 243, 50)),
-                    Stroke = new SolidColorPaint(new SKColor(33, 150, 243)) { StrokeThickness = 3 },
-                    GeometryFill = new SolidColorPaint(new SKColor(33, 150, 243)),
-                    GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 10,
-                    LineSmoothness = 0.3,
-                    Name = "BMI"
-                }
-            ];
-
-            YAxesBmi =
-            [
-                new Axis
-                {
-                    MinLimit = 15,
-                    MaxLimit = 40,
-                    LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                    TextSize = 12,
-                    Labeler = value => $"{value:F1}"
-                }
-            ];
+                .Select(e => new HealthTrendVisualization.DataPoint { Date = e.Date, Value = (float)e.Value })
+                .ToArray();
+        }
+        else
+        {
+            BmiChartData = [];
         }
 
-        // BodyFat Chart (Orange)
+        // BodyFat Chart-Daten
         if (BodyFatEntries.Count > 0)
         {
-            var bodyFatData = BodyFatEntries
+            BodyFatChartData = BodyFatEntries
                 .OrderBy(e => e.Date)
-                .Select(e => new DateTimePoint(e.Date, e.Value))
-                .ToList();
-
-            BodyFatChartSeries =
-            [
-                new LineSeries<DateTimePoint>
-                {
-                    Values = bodyFatData,
-                    Fill = new SolidColorPaint(new SKColor(255, 152, 0, 50)),
-                    Stroke = new SolidColorPaint(new SKColor(255, 152, 0)) { StrokeThickness = 3 },
-                    GeometryFill = new SolidColorPaint(new SKColor(255, 152, 0)),
-                    GeometryStroke = new SolidColorPaint(SKColors.White) { StrokeThickness = 2 },
-                    GeometrySize = 10,
-                    LineSmoothness = 0.3,
-                    Name = AppStrings.BodyFat
-                }
-            ];
-
-            YAxesBodyFat =
-            [
-                new Axis
-                {
-                    MinLimit = 5,
-                    MaxLimit = 45,
-                    LabelsPaint = new SolidColorPaint(SKColors.Gray),
-                    TextSize = 12,
-                    Labeler = value => $"{value:F0}%"
-                }
-            ];
+                .Select(e => new HealthTrendVisualization.DataPoint { Date = e.Date, Value = (float)e.Value })
+                .ToArray();
+        }
+        else
+        {
+            BodyFatChartData = [];
         }
     }
 
@@ -387,16 +308,13 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
         ? (BodyFatStats.TrendValue > 0 ? $"+{BodyFatStats.TrendValue:F1}%" : $"{BodyFatStats.TrendValue:F1}%")
         : "-";
 
-    // IDisposable to clean up chart resources
+    // IDisposable für saubere Aufräumung
     public void Dispose()
     {
         if (_disposed) return;
 
-        BmiChartSeries = [];
-        BodyFatChartSeries = [];
-        XAxes = [];
-        YAxesBmi = [];
-        YAxesBodyFat = [];
+        BmiChartData = [];
+        BodyFatChartData = [];
 
         _undoCancellation?.Cancel();
         _undoCancellation?.Dispose();
