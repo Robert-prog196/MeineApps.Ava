@@ -501,9 +501,28 @@ Statische Helper-Klasse für technische Zeichnungen auf SKCanvas. Ideal für Bau
 - **Schraffuren**: Diagonale Linien für Flächen-Markierungen
 - **Auto-Skalierung**: Berechnet Scale/Offset damit Zeichnung in Canvas passt
 
+### LinearProgressVisualization.cs
+
+Wiederverwendbarer linearer Fortschrittsbalken mit Gradient, Glow und optionalem Prozent-Text. Ersetzt Avalonia ProgressBar.
+
+```csharp
+// Im PaintSurface-Handler:
+float progress = 0.75f; // 0.0-1.0 (kann >1.0 für Überschreitung)
+LinearProgressVisualization.Render(canvas, bounds, progress,
+    startColor: SKColor.Parse("#3B82F6"),
+    endColor: SKColor.Parse("#2563EB"),
+    showText: true, glowEnabled: true);
+```
+
+- **progress**: 0.0-1.0 (>1.0 zeigt Überschreitungs-Shimmer)
+- **startColor / endColor**: Gradient-Farben des Balkens
+- **showText**: Prozentwert rechts anzeigen (Default: true)
+- **glowEnabled**: Glow-Effekt am Ende (Default: true)
+- Track, abgerundete Ecken, Überschreitungs-Markierung
+
 ### DonutChartVisualization.cs
 
-Wiederverwendbarer Donut-Chart-Renderer für alle Apps. Segmente mit Farben, InnerRadius konfigurierbar, Labels, optionale Legende.
+Wiederverwendbarer Donut-Chart-Renderer für alle Apps. Premium-Optik mit Gradient-Segmenten, innerem Schatten, Glow-Effekten und 3D-Highlight.
 
 ```csharp
 // Segment-Definition
@@ -520,11 +539,16 @@ DonutChartVisualization.Render(canvas, bounds, segments,
 ```
 
 - **Segment** struct: `Value`, `Color`, `Label`, `ValueText`
-- **innerRadiusFraction**: 0.0 (Pie) bis 0.9 (dünner Ring)
+- **innerRadiusFraction**: 0.3 (dicker Ring) bis 0.85 (dünner Ring)
 - **centerText / centerSubText**: Optionaler Text in der Donut-Mitte
-- **showLabels**: Prozent-Labels auf Segmenten (bei genug Platz)
+- **showLabels**: Prozent-Labels auf Segmenten (bei genug Platz, mit Text-Schatten)
 - **showLegend**: Farbige Legende unter dem Chart
-- Arc-Path-Segmente mit Gradient, Gaps, Inner-Glow
+- **Rendering**: Gefüllte Arc-Paths pro Segment (Outer-ArcTo CW + Inner-ArcTo CCW + Close)
+- **Gradient**: Radiales Gradient pro Segment (Lighter→Color→Darker) für 3D-Tiefe
+- **Highlight**: Weiße Kante am äußeren Rand, Linear-Gradient Lichtreflex von oben
+- **Schatten**: Innerer radialer Schatten für Tiefe, äußerer Glow (Primary-Farbe)
+- **Innere Füllung**: Card-Farbe (SkiaThemeHelper.Card) für saubere Mitte
+- **Thread-safe**: Lokale Paint-Objekte (keine statischen), alle Shader/MaskFilter korrekt disposed
 
 ### SkiaGradientRing.cs (Avalonia Control)
 

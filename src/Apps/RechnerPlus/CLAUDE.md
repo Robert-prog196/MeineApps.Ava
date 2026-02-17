@@ -178,6 +178,7 @@ baseValue = value * ToBase + Offset
 |-------|-------------|
 | `VfdDisplayVisualization.cs` | 7-Segment VFD (Vacuum Fluorescent Display) mit Glow, Ghost-Segmenten, Flicker-Effekt |
 | `ResultBurstVisualization.cs` | Expandierender Lichtring + 8 Partikel-Strahlen bei "="-Berechnung |
+| `FunctionGraphVisualization.cs` | Mini-Funktionsgraph mit Glow-Kurve, Gradient-Füllung, Grid, aktueller Punkt-Markierung |
 
 ### VFD-Display
 - Ersetzt das TextBlock-basierte Display durch SkiaSharp-gerenderte 7-Segment-Ziffern
@@ -203,6 +204,16 @@ baseValue = value * ToBase + Offset
 - VFD-Flicker-Timer: DispatcherTimer 33ms, startet bei OnAttachedToVisualTree
 - Burst-Timer: DispatcherTimer 33ms, startet bei CalculationCompleted, stoppt nach 500ms
 - PropertyChanged-Handler invalidiert VFD bei Display/HasError-Änderung
+
+### FunctionGraph
+- Mini-Funktionsgraph (200px) für sin, cos, tan, sqrt, log, ln, x², x³, 1/x, abs
+- Smooth SKPath-Kurve mit Primary-Farbe + Glow-Effekt + Gradient-Füllung
+- Automatische X/Y-Achsen-Skalierung mit dezenten Grid-Linien
+- Aktueller Eingabewert als pulsierender Punkt auf der Kurve mit Tooltip "(x, y)"
+- Asymptoten-Handling: NaN/Infinity/große Werte → Pfad-Unterbrechung
+- Funktionsname als f(x)-Label oben links
+- `GetRange(functionName)` → vorkonfigurierte X-Bereiche pro Funktion
+- `Render(SKCanvas, SKRect, Func<float,float>, functionName, currentX, animTime)`
 
 ## App-spezifische Abhängigkeiten
 

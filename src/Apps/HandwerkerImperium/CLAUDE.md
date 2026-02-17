@@ -61,7 +61,7 @@ Jeder Typ hat: `BaseIncomeMultiplier`, `UnlockLevel`, `UnlockCost`, `RequiredPre
 
 ### Worker-System
 10 Tiers via Enum: `F` (0.5x), `E` (0.75x), `D` (1.0x), `C` (1.3x), `B` (1.7x), `A` (2.2x), `S` (3.0x), `SS` (4.5x), `SSS` (7.0x), `Legendary` (12.0x)
-`HireWorker()` → kostet Geld, erhoeht Workshop-Effizienz
+`HireWorker()` → kostet Geld (levelabhängig: Basis * (1 + (Level-1) * 0.02)), erhoeht Workshop-Effizienz. A+ Tiers kosten zusätzlich Goldschrauben.
 Tier-Farben: F=Grau, E=Gruen, D=#0E7490(Teal), C=#B45309(DarkOrange), B=Amber, A=Rot, S=Gold, SS=Lila, SSS=Cyan, Legendary=Rainbow-Gradient
 **3 Training-Typen**: Efficiency (XP→Level→+Effizienz), Endurance (senkt FatiguePerHour, max -50%), Morale (senkt MoodDecayPerHour, max -50%). TrainingType Enum + Worker.EnduranceBonus/MoraleBonus (persistiert). Training-Typ-Auswahl + Echtzeit-Fortschrittsbalken in WorkerProfileView.
 **Worker-Avatare**: WorkerAvatarControl (Controls/WorkerAvatarControl.cs) rendert Pixel-Art via WorkerAvatarRenderer (Graphics/). Worker.IsFemale (deterministisch aus Id) bestimmt Geschlecht (Haare/Lippen/Kiefer). Avatare in WorkerMarketView (40dp) und WorkerProfileView (64dp).
@@ -83,6 +83,8 @@ Kosten: Geld (500 bis 1B). Dauer: 10min bis 72h (Echtzeit). Effekte werden im Ga
 
 ### Mini-Games (alle SkiaSharp-basiert)
 Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spielfeld. Header, Result-Display, Countdown und Action-Buttons bleiben XAML. Jeder Renderer hat `Render()` + `HitTest()`, View hat 20fps Render-Loop (DispatcherTimer 50ms), Touch via `PointerPressed` + DPI-Skalierung.
+**Tutorial-System**: Beim ersten Spielstart jedes MiniGame-Typs wird ein Tutorial-Overlay angezeigt (Titel + Erklärungs-Text + "Verstanden"-Button). Tracking über `GameState.SeenMiniGameTutorials` (List<MiniGameType>). 8 Tutorial-Texte + TutorialGotIt in 6 Sprachen.
+**Belohnungsanzeige**: Belohnungen (Geld + XP) werden IMMER angezeigt, nicht nur bei der letzten Aufgabe. Bei Zwischen-Aufgaben wird eine Teilbelohnung berechnet (BaseReward/TaskCount * ResultPercentage). Button-Text mit TextTrimming="CharacterEllipsis" gegen Überlauf.
 
 - **Sawing** (SawingGameRenderer): Timing-Bar mit Zonen, animierte Säge, Sägemehl-Partikel
 - **Pipe Puzzle** (PipePuzzleRenderer): Metall-Rohre auf Beton, Wasser-Puls, Flansche/Nieten
@@ -110,14 +112,14 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 | `StoryService` | 10 Story-Kapitel von Meister Hans, fortschrittsbasierte Freischaltung + Belohnungen |
 | `AchievementService` | 33 Erfolge tracken + Goldschrauben-Rewards |
 | `OfflineProgressService` | Offline-Einnahmen (Brutto mit allen Modifikatoren - Kosten, * Saison-Multiplikator) |
-| `OrderGeneratorService` | Aufträge generieren (pro freigeschaltetem Workshop-Typ) |
+| `OrderGeneratorService` | Aufträge generieren (Belohnung einkommensbasiert skalierend, pro freigeschaltetem Workshop-Typ) |
 
 ## Game Juice
 
 | Feature | Implementierung |
 |---------|-----------------|
 | Workshop Cards | Farbiges BorderBrush nach Typ + SkiaSharp-Illustrationen (WorkshopCardRenderer) als Header auf jeder Dashboard-Karte (48dp, 8 thematische Szenen: Hobel+Holz, Rohre+Wasser, Kabel+Blitze, Farbroller+Palette, Dachziegel+Dachstuhl, Kran+Bauhelm, Zirkel+Bauplan, Gebäude+Krone). WorkshopIllustrationView (Custom SKCanvasView für DataTemplates) |
-| Worker Avatars | WorkerAvatarControl (SKCanvasView) mit SkiaSharp Pixel-Art: Hauttonfarbe (6), Haarfarbe (6), Tier-Helm (10 Farben + Sterne fuer S+), Mood-Gesichtsausdruck, Geschlecht (laengere Haare/Lippen vs. breiterer Kiefer). 40dp in WorkerMarketView, 64dp in WorkerProfileView |
+| Worker Avatars | WorkerAvatarControl (SKCanvasView) mit SkiaSharp Pixel-Art: 6 Hauttöne, 6 Haarfarben, 6 Kleidungsfarben, 3 Hut-Stile (Bauhelm/Mütze/Schutzhelm), Tier-Farbe+Sterne(S+), Mood-Gesichtsausdruck, Geschlecht (weiblich: schmalerer Kopf/langes Haar/Wimpern/vollere Lippen/Ohrringe/Wangenröte; männlich: kantiger Kiefer/Kurzhaar/Koteletten/Augenbrauen/Bart-Schatten). 5 Accessoire-Varianten (Brille/Schutzbrille/Pflaster/Bleistift/keine). Schulter-/Körperansatz mit Arbeitskleidung. 40dp in WorkerMarketView, 64dp in WorkerProfileView |
 | Golden Screw Icon | Gold-Shimmer Animation (CSS scale+rotate Loop) |
 | Level-Up | CelebrationOverlay mit Confetti (100 Partikel, 2s) |
 | Income | FloatingTextOverlay (gruen, +100px, 1.5s) |
@@ -234,6 +236,8 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 
 ## Changelog Highlights
 
+- **v2.0.3 (17.02.2026)**: MiniGame-Verbesserungen + Auftrags-Rebalancing: (1) Hauptauftrags-Belohnungen einkommensbasiert skalierend (wie QuickJobs): `perTaskReward = Max(100+Level*100, NetIncomePerSecond*300)` mit Task-Count-Multiplikator und 15% Bonus pro Extra-Aufgabe. (2) MiniGame-Belohnungen IMMER sichtbar (nicht nur letzte Aufgabe): Teilbelohnung pro Aufgabe berechnet (BaseReward/TaskCount * ResultPercentage). (3) MiniGame-Button-Text Überlauf behoben: TextBlock mit TextTrimming="CharacterEllipsis" statt direktem Content-Binding auf Button. (4) MiniGame-Tutorial-System: Tutorial-Overlay beim ersten Spielstart pro MiniGame-Typ (8 Tutorials in 6 Sprachen). GameState.SeenMiniGameTutorials (List<MiniGameType>). CheckAndShowTutorial() + DismissTutorial() in allen 8 ViewModels. 19 neue Lokalisierungs-Keys (TutorialXxxTitle/Text + TutorialGotIt) in 6 Sprachen.
+- **v2.0.3 (16.02.2026)**: SkiaSharp LinearProgress-Visualisierung: 14 ProgressBars in 8 Views durch SKCanvasView + LinearProgressVisualization ersetzt. DashboardView (4: XP-Level amber/gold mit Glow, DailyChallenge orange, Workshop-Level orange, Milestone gold), WorkshopView (1: LevelProgress), WorkerProfileView (4: Mood grün/Fatigue rot/XP orange/Training orange), OrderView (1: OrderProgress), AchievementsView (2: OverallProgress + Achievement-Fortschritt im DataTemplate), InspectionGameView (1: InspectionProgress), PaintingGameView (1: PaintProgress). Gradient-Balken mit Glow-Effekt, DataTemplate-Handler per Reflection.
 - **v2.0.3 (16.02.2026)**: Research UX-Verbesserungen: (1) Header verkleinert (MinHeight 140→90, Font 20→16, Icons 28→22/24→20, Badges 14→12, Padding 16,12→12,6). (2) TopPadding im ResearchTreeRenderer 10→30 (erste Forschung nicht mehr verdeckt). (3) Bestätigungsdialog beim Starten einer Forschung: Zeigt Name, Effekt-Beschreibung, Kosten und Dauer. StartResearch ist jetzt async mit ConfirmationRequested (Ad-Banner wird automatisch ausgeblendet). 2 neue Lokalisierungs-Keys (ResearchConfirmCost, ResearchConfirmDuration) in 6 Sprachen. (4) Tab-Selector Margin 12→8.
 - **v2.0.3 (16.02.2026)**: Research 2D-Baum + Workshop-Illustrationen: (1) Research-Tree komplett auf Top Heroes-Style 2D-Baumstruktur umgebaut: 6 neue Renderer (ResearchTreeRenderer, ResearchIconRenderer, ResearchActiveRenderer, ResearchBranchBannerRenderer, ResearchTabRenderer, ResearchCelebrationRenderer) + ResearchView.axaml.cs komplett neu geschrieben für 6 SKCanvasViews + CelebrationRequested Event in ResearchViewModel. (2) Workshop-Karten auf Dashboard mit SkiaSharp-Illustrationen als Header: WorkshopCardRenderer (8 thematische Szenen) + WorkshopIllustrationView (Custom SKCanvasView für DataTemplates). (3) Billing-Berechtigung (`com.android.vending.BILLING`) in allen 6 Premium-App AndroidManifest.xml ergänzt.
 - **v2.0.3 (15.02.2026)**: Workshop-Freischalten UX-Verbesserung: (1) Ad-Banner wird beim Confirm-Dialog ausgeblendet (HideBanner beim Öffnen, ShowBanner beim Schließen). (2) Freischaltbare Workshops (Level erreicht) visuell hervorgehoben: Craft-Orange Glow-Schatten auf der Karte, farbiges offenes Schloss-Icon statt grauem Lock, prominente Kostenanzeige mit "Tippe zum Freischalten"-Hinweis, erhöhte Header-Farbintensität (0.30 statt 0.10). Nicht-freischaltbare Workshops bleiben gedimmt mit grauem Schloss. 1 neuer Lokalisierungs-Key (TapToUnlock) in 6 Sprachen.

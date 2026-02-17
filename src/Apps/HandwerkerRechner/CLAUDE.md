@@ -54,21 +54,23 @@ Handwerker-App mit 11 Rechnern (5 Free Floor + 6 Premium), Projektverwaltung und
 
 ## SkiaSharp Visualisierungen (Graphics/)
 
-11 statische Renderer-Klassen in `HandwerkerRechner.Shared/Graphics/`, alle nutzen `SkiaBlueprintCanvas` + `SkiaThemeHelper` aus MeineApps.UI.
+13 statische Renderer-Klassen in `HandwerkerRechner.Shared/Graphics/`, alle nutzen `SkiaBlueprintCanvas` + `SkiaThemeHelper` aus MeineApps.UI.
 
 | Datei | Typ | Beschreibung |
 |-------|-----|--------------|
-| `TileVisualization.cs` | Floor | 2D-Grundriss mit Fliesengitter, Verschnitt-Fliesen rot schraffiert, Maßlinien |
-| `FlooringVisualization.cs` | Floor | Dielen-Verlegung mit 50%-Versatz, 3 Holzfarben abwechselnd, Maßlinien |
+| `TileVisualization.cs` | Floor | 2D-Grundriss mit Fliesengitter, Verschnitt-Fliesen rot schraffiert, Verschnitt-Info-Box (Prozent+Fliesengröße), Einzelfliesen-Bemaßung |
+| `FlooringVisualization.cs` | Floor | Dielen-Verlegung mit 50%-Versatz, 3 Holzfarben, Verschnitt-Zone rot schraffiert an Rändern, Gesamtflächenbedarf+Verschnitt als Formel |
 | `WallpaperVisualization.cs` | Floor | Wand-Abwicklung mit vertikalen Bahnen, Rapport-Versatz gestrichelt |
-| `PaintVisualization.cs` | Floor | Wand mit semi-transparenten Farbschichten pro Anstrich |
-| `ConcreteVisualization.cs` | Floor | 3 Sub-Typen: Platte (Isometrie), Fundament (Schnitt), Säule (Zylinder) |
+| `PaintVisualization.cs` | Floor | Wand mit Farbschichten + Kannen-Icons (2.5L Standard, max 10 Icons, ×N bei mehr) |
+| `ConcreteVisualization.cs` | Floor | 3 Sub-Typen + Mischverhältnis-Leiste (Zement:Sand:Kies farbige Segmente, Labels, konfigurierbar) |
 | `StairsVisualization.cs` | Premium | Seitenansicht Treppenprofil, Winkel-Arc, DIN-Farbcode (Grün/Gelb/Rot) |
 | `RoofSolarVisualization.cs` | Premium | 3 Sub-Typen: Dachdreieck+Winkel, Ziegelraster, Solar-Panel-Layout mit Kompass |
 | `DrywallVisualization.cs` | Premium | Wandschnitt mit CW/UW-Ständerwerk, Plattenaufteilung |
 | `ElectricalVisualization.cs` | Premium | 3 Sub-Typen: Spannungsabfall-Kurve, Kosten-Balken, Ohmsches Dreieck |
 | `MetalVisualization.cs` | Premium | 2 Sub-Typen: 6 Profil-Querschnitte, Gewindebohrung-Kreis |
-| `GardenVisualization.cs` | Premium | 3 Sub-Typen: Pflastermuster, Erdschichten-Profil, Teichfolie-Draufsicht |
+| `GardenVisualization.cs` | Premium | 3 Sub-Typen: Pflastermuster, Erdschichten-Profil (3 Schichten: Mutterboden+Sand+Kies, Grasnarbe, Wurzeln, Stein-Textur), Teichfolie-Draufsicht |
+| `CostBreakdownVisualization.cs` | Shared | Horizontale gestapelte Kostenbalken mit Segmenten, Prozent-Labels, Legende, Gesamtsumme. Wiederverwendbar für alle Rechner |
+| `MaterialStackVisualization.cs` | Shared | Material-Icon-Reihe (10 Typen: Eimer, Sack, Rolle, Paket, Box, Platte, Kabel, Stange) mit Mengenangaben |
 
 **Pattern**: Alle `public static void Render(SKCanvas, SKRect, ...)` mit gecachten `SKPaint` (static readonly). Views haben `OnPaintVisualization` Code-Behind Handler. Visualisierung in `<Border Classes="Card" Height="220" ClipToBounds="True">` mit `IsVisible="{Binding HasResult}"`.
 
@@ -94,6 +96,14 @@ Handwerker-App mit 11 Rechnern (5 Free Floor + 6 Premium), Projektverwaltung und
 
 ## Changelog (Highlights)
 
+- **16.02.2026**: Phase 12 SkiaSharp-Erweiterungen:
+  - NEU: CostBreakdownVisualization (horizontale gestapelte Kostenbalken, Legende, Gesamtsumme, wiederverwendbar)
+  - NEU: MaterialStackVisualization (10 Icon-Typen: Eimer, Sack, Rolle, Paket etc., Mengenangaben)
+  - TileVisualization: Verschnitt-Info-Box mit Prozent+Fliesengröße, Einzelfliesen-Bemaßung
+  - FlooringVisualization: Verschnitt-Zone rot schraffiert an Rändern, Gesamtflächenbedarf+Verschnitt als Formel, Dielen-Bemaßung
+  - PaintVisualization: Farbkannen-Icons (2.5L/Kanne, max 10 Icons, ×N Overflow, Größen-Info)
+  - ConcreteVisualization: Mischverhältnis-Leiste (Zement:Sand:Kies farbige Segmente mit Labels, konfigurierbar via Parameter)
+  - GardenVisualization Erdschichten: 3-Schichten-Profil (Mutterboden+Sand+Kies), Grasnarbe mit Halmen, Wurzel-Andeutungen, Stein-Textur im Kies, Schicht-Labels rechts
 - **13.02.2026**: Crash-Fix: Spinning-Animation (Export-Icon) nutzte `RenderTransform` in KeyFrame → "No animator registered" Crash beim App-Start. Fix: `RotateTransform.Angle` statt `RenderTransform` in KeyFrames + `RenderTransformOrigin="50%,50%"`. Avalonia KeyFrames unterstützen NUR double-Properties (Opacity, Angle, Width etc.), NICHT RenderTransform/TransformOperations.
 - **13.02.2026**: UI/UX Überarbeitung (Game Juice):
   - MainView: Hero-Header Gradient, Premium-Card mit Shimmer direkt unter Hero, PRO-Badges (GoldGlow) auf 6 Premium-Cards

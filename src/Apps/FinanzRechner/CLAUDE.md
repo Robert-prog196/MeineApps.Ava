@@ -15,7 +15,7 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 - **Budget Management**: Budget-Limits pro Kategorie, Fortschrittsanzeige, Alert-Levels
 - **Recurring Transactions**: Dauerauftraege mit Auto-Processing bei App-Start (verpasste Zeitraeume werden nachgeholt, max 365 Iterationen pro Dauerauftrag)
 - **6 Finanz-Rechner**: CompoundInterest, SavingsPlan, Loan, Amortization, Yield, Inflation
-- **Charts**: LiveCharts (Donut/Ring-Charts mit InnerRadius, LineSeries mit Fill, ProgressBar)
+- **Charts**: Komplett SkiaSharp-basiert (DonutChart, TrendLine, StackedArea, AmortizationBar, Sparkline, MiniRing, LinearProgress, BudgetGauge) - KEIN LiveCharts
 - **Export**: CSV + PDF (PdfSharpCore), plattformspezifisches File-Sharing
 
 ## App-spezifische Services
@@ -78,16 +78,29 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 - CancelRestoreCommand → Dialog schliessen, IsBackupInProgress zuruecksetzen
 - RESX-Keys: RestoreQuestion, RestoreMerge, RestoreReplace, RestoreMergeDesc, RestoreReplaceDesc, TotalBudget
 
-### SkiaSharp-Visualisierungen
+### SkiaSharp-Visualisierungen (LiveCharts komplett ersetzt)
 
 | Datei | Zweck |
 |-------|-------|
 | `Graphics/BudgetGaugeVisualization.cs` | Halbkreis-Tachometer (Grün→Gelb→Rot) für Gesamt-Budget |
-| `Graphics/SparklineVisualization.cs` | Mini-Sparkline mit Gradient-Füllung für Ausgaben-Trends |
+| `Graphics/SparklineVisualization.cs` | Mini-Sparkline mit Gradient-Füllung für 30-Tage-Ausgaben-Trend |
 | `Graphics/BudgetMiniRingVisualization.cs` | Kompakte Mini-Ringe für Budget-Kategorien-Übersicht |
+| `Graphics/TrendLineVisualization.cs` | 2 Spline-Kurven (Einnahmen/Ausgaben) mit Gradient-Füllung |
+| `Graphics/StackedAreaVisualization.cs` | 2 gestapelte Flächen (CompoundInterest, SavingsPlan, Inflation) |
+| `Graphics/AmortizationBarVisualization.cs` | Gestapelte Balken (Tilgung+Zinsen pro Jahr) |
 
-- **HomeView**: Budget-Gauge als Halbkreis-Tachometer (ersetzt ProgressBar)
-- **BudgetsView**: Budget-Gauge mit Spent/Limit-Anzeige (ersetzt ProgressBar)
+Shared-Renderer aus `MeineApps.UI.SkiaSharp`:
+- **DonutChartVisualization**: Donut-Charts für HomeView, StatisticsView, ExpenseTrackerView, LoanView, YieldView
+- **LinearProgressVisualization**: Budget-Fortschrittsbalken in BudgetsView (ersetzt ProgressBar)
+
+View-Zuordnung:
+- **HomeView**: Budget-Gauge + Sparkline (30-Tage-Trend) + MiniRing (Budget-Kategorien) + Expense-Donut
+- **StatisticsView**: 2x Donut (Einnahmen/Ausgaben) + TrendLine (6-Monats-Trend)
+- **ExpenseTrackerView**: Kategorie-Donut
+- **CompoundInterestView/SavingsPlanView/InflationView**: StackedArea-Chart
+- **AmortizationView**: Stacked-Bar-Chart
+- **LoanView/YieldView**: Donut-Chart
+- **BudgetsView**: Budget-Gauge + LinearProgress pro Kategorie
 
 ### Game Juice
 - **FloatingText**: Quick-Add (+/- Betrag, income=gruen, expense=rot)
@@ -110,8 +123,15 @@ Finanz-App mit Ausgaben-Tracking, Budget-Verwaltung, Dauerauftraegen und 6 Finan
 - **Overlay-Reihenfolge**: BudgetAnalysis → BudgetAd → QuickAdd → RestoreDialog (Settings) → AddExpense (Tracker) → SubPage-Dialoge (AddBudget/AddRecurring) → SubPage → Calculator → Tab→Home → Double-Back-Exit (2s)
 - **RESX-Key**: PressBackToExit (6 Sprachen)
 
+### Bekanntes Pattern: SKCanvasView in unsichtbaren Containern
+
+Calculator-Views (CompoundInterest, SavingsPlan, Loan, etc.) liegen in `Border IsVisible="{Binding IsXxxActive}"` im MainView. Wenn `InvalidateSurface()` auf einer unsichtbaren SKCanvasView aufgerufen wird, wird PaintSurface NICHT gefeuert. Deshalb: Die `OpenXxx()` Commands im MainViewModel rufen IMMER `CalculateCommand.Execute(null)` auf (ohne HasResult-Check), damit nach dem Sichtbar-Werden ein frisches PropertyChanged → InvalidateSurface() → PaintSurface ausgelöst wird.
+
 ## Changelog (Highlights)
 
+- **16.02.2026 (3)**: Fix: Calculator-Charts zeigten nur Umrandung aber kein Diagramm. Root Cause: Auto-Calculate (300ms Debounce) setzte Chart-Daten bevor die View sichtbar war, InvalidateSurface() auf unsichtbare SKCanvasView wird ignoriert, OpenXxx() Commands übersprangen Calculate() bei HasResult=true. Fix: HasResult-Check in allen 6 OpenXxx() Commands entfernt → CalculateCommand wird IMMER aufgerufen.
+- **16.02.2026 (2)**: DonutChart Premium-Optik (Gradient-Segmente, 3D-Highlight, innerer Schatten, Glow). ExpenseTrackerView als ganzseitige ScrollView umgebaut (Header+Filter+Chart+Monatsnavigation+Transaktionen in einer ScrollView, FAB+Dialog als Overlay).
+- **16.02.2026**: LiveCharts komplett durch SkiaSharp ersetzt (Phase 8): 3 neue Renderer (TrendLineVisualization, StackedAreaVisualization, AmortizationBarVisualization), 9 Views migriert (HomeView, StatisticsView, ExpenseTrackerView, CompoundInterestView, SavingsPlanView, InflationView, LoanView, YieldView, AmortizationView), bestehende Renderer aktiviert (Sparkline 30-Tage-Trend + MiniRing Budget-Kategorien in HomeView), BudgetsView ProgressBar→LinearProgressVisualization (shared in MeineApps.UI), LiveCharts-PackageReference entfernt
 - **13.02.2026 (11)**: Numerische Tastatur: `TextInputOptions.ContentType="Number"` (Dezimalzahlen: Beträge, Zinssätze) und `TextInputOptions.ContentType="Digits"` (Ganzzahlen: Jahre) auf alle 20 TextBox-Felder in allen 6 Rechner-Views (CompoundInterest, SavingsPlan, Loan, Amortization, Yield, Inflation). Android zeigt jetzt automatisch die Ziffern-Tastatur.
 - **13.02.2026 (10)**: UI/UX Verbesserungsplan (10 Batches A-J): (A) Globale Animation-Styles in MainView.axaml (DialogOverlay, BouncingFab, EmptyPulse, PremiumShimmer, SummaryCard, InputError, AnimatedValue, MonthFade, UndoTimer, ThemePreview), (B) Dialog Scale-Up Animation auf 4 Dialogen (QuickAdd, AddExpense, AddBudget, AddRecurring, Restore), (C) Farbige Kategorie-Chips in 3 Dialogen (QuickAdd, AddExpense, AddRecurring) mit CategoryToColorBrushConverter, (D) Gruppierte Transaktionsliste nach Datum mit Date-Headers + Tages-Summe + Notiz-Anzeige, (E) HomeView: EmptyPulse-Icon, SummaryCard-Hover auf Karten, PremiumShimmer auf Premium-Card, (F) Monats-Navigation Fade-Animation (MonthFade auf ScrollViewer), (G) Statistics: SummaryCard-Hover + aktive Period-Buttons mit Scale+Bold, (H) Recurring: Farbiger Seitenstreifen (Kategorie-Farbe), Countdown ("Heute/Morgen/In X Tagen fällig"), farbige Beträge (rot/grün), Inaktiv-Badge+Opacity+Strikethrough, Kategorie-Chips im Dialog, neue RESX-Keys (DaysUntilDue/DueToday/DueTomorrow in 6 Sprachen), RecurringDisplayItem-Wrapper, BoolToDoubleConverter, (I) Undo-Countdown-Balken in 3 Snackbars (5s Scale-Animation), (J) Settings: PremiumShimmer auf Premium-Card, ThemePreview-Hover (Scale 1.03) auf alle 8 Theme-Karten, DialogOverlay auf Restore-Dialog
 - **13.02.2026 (9)**: UI-Bugfixes: (1) \u20ac→€ in allen XAML StringFormats (XAML interpretiert C#-Unicode-Escapes nicht, 8 Stellen in 5 Views), (2) ToggleSwitch "On/Off"-Text entfernt (OnContent=""/OffContent=""), (3) Recurring-Dialog Toggle-Buttons mit Selected-State (rot/grün wie in ExpenseTracker, IsExpenseSelected/IsIncomeSelected Properties), (4) Kategoriefeld-Überschneidung behoben (SelectedCategory vor Categories-Notify setzen + IsExpenseSelected/IsIncomeSelected notifyen)

@@ -19,6 +19,21 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - GC-Optimierung: Gepoolte SKPaint/SKFont/SKPath (6 per-frame Allokationen eliminiert)
 - HUD: Side-Panel rechts (TIME, SCORE, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
 
+### SkiaSharp Zusatz-Visualisierungen (11 Renderer)
+| Renderer | Beschreibung |
+|----------|-------------|
+| GameRenderer | Haupt-Spiel-Rendering (Grid, Entities, Explosions, HUD) |
+| ParticleSystem | Struct-Pool (200 max), Block-/Kill-/PowerUp-Partikel |
+| ScreenShake | Explosions-Shake (3px) + Player-Death-Shake (5px) |
+| SpriteSheet | Sprite-Atlas Verwaltung |
+| GameFloatingTextSystem | Score-Popups, Combo-Text, PowerUp-Text (Struct-Pool 20 max) |
+| TutorialOverlay | 4-Rechteck-Dimming + Text-Bubble + Highlight |
+| HelpIconRenderer | Statische Enemy/PowerUp Icons für HelpView |
+| HudVisualization | Animierter Score-Counter (Ziffern rollen hoch) + pulsierender Timer (<30s) + PowerUp-Icons mit Glow |
+| LevelSelectVisualization | Level-Thumbnails mit Welt-Farben + Gold-Shimmer Sterne + Lock-Overlay |
+| AchievementIconRenderer | 5 Kategorie-Farben, Trophy bei freigeschaltet, Schloss+Fortschrittsring bei gesperrt |
+| GameOverVisualization | Großer Score mit Glow + Score-Breakdown Balken + Medaillen (Gold/Silber/Bronze) + Coin-Counter |
+
 ### Input-Handler (2x)
 - **FloatingJoystick**: Touch-basiert, zwei Modi: Floating (erscheint wo getippt, Standard) + Fixed (immer sichtbar unten links). Bomb-Button weiter in die Spielfläche gerückt (80px/60px Offset statt 30px/20px)
 - **Keyboard**: Arrow/WASD + Space (Bomb) + E (Detonate) + Escape (Pause) → Desktop Default
@@ -290,6 +305,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **16.02.2026**: 4 neue SkiaSharp-Visualisierungen: HudVisualization (animierter Score-Counter mit rollenden Ziffern + pulsierender Timer unter 30s mit Farbwechsel normal→warning→critical + PowerUp-Icons mit Glow-Aura), LevelSelectVisualization (Level-Thumbnails mit 5 Welt-Farbpaletten + Gold-Shimmer Sterne + Lock-Overlay), AchievementIconRenderer (5 Kategorie-Farben + Trophy-Symbol bei freigeschaltet + Schloss+Fortschrittsring bei gesperrt), GameOverVisualization (großer Score mit pulsierendem Glow + Score-Breakdown Balken + Gold/Silber/Bronze Medaillen mit Shimmer + Coin-Counter mit Münz-Icon).
 - **15.02.2026 (4)**: HelpView SkiaSharp-Icons: HelpIconRenderer.cs (statische DrawEnemy/DrawPowerUp Methoden, identische Render-Logik wie GameRenderer ohne Animationen), SKCanvasView (32x32) pro Gegner- und PowerUp-Karte in HelpView.axaml, 4 fehlende PowerUps ergänzt (Kick/LineBomb/PowerBomb/Skull), 8 RESX-Keys (Name+Desc) in 6 Sprachen, PaintSurface-Handler in HelpView.axaml.cs.
 - **15.02.2026 (3)**: Daily Challenge Feature: IDailyChallengeService (Streak-System, Score-Tracking, Coin-Bonus 200-3000 pro Streak-Tag), DailyChallengeView mit Stats-Karten (Best Score, Streak, Longest Streak, Total Completed, Streak-Bonus), LevelGenerator.GenerateDailyChallengeLevel(seed) deterministisch aus Datum, GameEngine.StartDailyChallengeModeAsync + _isDailyChallenge Flag (kein Continue, kein NextLevel), MainMenu-Button (orange, #FF6B00), 9 RESX-Keys in 6 Sprachen, DI-Registrierung (14 Services + 11 ViewModels).
 - **15.02.2026 (2)**: Welt-Mechaniken + Layout-Patterns + Balancing: 5 Welt-Mechaniken implementiert (Ice=40% Speed-Boost, Conveyor=40px/s Push, Teleporter=gepaarte Portale mit Cooldown, LavaCrack=periodischer Schaden 4s-Zyklus). 8 Layout-Patterns in GameGrid (Classic, Cross, Arena, Maze, TwoRooms, Spiral, Diagonal, BossArena). Boss-Ankündigung "BOSS FIGHT!" mit 2.5s Timer. SkiaSharp-Rendering für alle 4 neuen Zelltypen (Classic+Neon: Ice=blaue Reflexion+Shimmer, Conveyor=Metall+animierte Chevrons, Teleporter=rotierende Bogenringe farbcodiert, LavaCrack=Zickzack-Risse+pulsierendes Glühen). Shop-Balancing: ScoreMultiplier Gesamtkosten 55k→34k. Daily Reward: Streak-Reset Gnade 1→3 Tage. Grid-Align + Corner-Assist Bewegungsfix in Player.cs.

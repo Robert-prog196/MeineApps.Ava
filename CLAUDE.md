@@ -117,7 +117,7 @@ Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via
 | Material.Icons.Avalonia | 2.4.1 | 7000+ SVG Icons |
 | CommunityToolkit.Mvvm | 8.4.0 | MVVM |
 | Xaml.Behaviors.Avalonia | 11.3.9.3 | Behaviors |
-| LiveChartsCore.SkiaSharpView.Avalonia | 2.0.0-rc6.1 | Charts |
+| LiveChartsCore.SkiaSharpView.Avalonia | 2.0.0-rc6.1 | Charts (nur noch FitnessRechner, wird durch SkiaSharp ersetzt) |
 | SkiaSharp | 3.119.2 | 2D Graphics |
 | sqlite-net-pcl | 1.9.172 | Database |
 
@@ -326,6 +326,7 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | DateTime Timer falsch (1h) | UTC→Lokal Konvertierung | `DateTimeStyles.RoundtripKind` bei Parse |
 | Release-Build crasht (Debug OK) | Meist stale Build-Artefakte oder falsche Flags | obj/bin löschen, clean rebuild. SDK-Defaults (.NET 10) funktionieren - keine extra Flags nötig |
 | SKCanvasView updatet nicht | `InvalidateVisual()` verwendet | `InvalidateSurface()` verwenden |
+| SKCanvasView leer bei IsVisible-Toggle | `InvalidateSurface()` auf unsichtbare Canvas wird ignoriert | Nach Sichtbar-Werden erneut Daten setzen/Calculate() aufrufen, damit PropertyChanged → InvalidateSurface() feuert |
 | CSS translate() Exception | Fehlende px-Einheiten | `translate(0px, 400px)` statt `translate(0, 400)` |
 | AAPT2260 Fehler | grantUriPermissions ohne 's' | `android:grantUriPermissions="true"` (mit 's') |
 | ${applicationId} geht nicht | .NET Android kennt keine Gradle-Placeholder | Hardcodierte Package-Namen verwenden |
@@ -347,6 +348,7 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | `IsAttachedToVisualTree` Kompilierfehler | Property in Avalonia 11.3 entfernt | `using Avalonia.VisualTree;` + `control.GetVisualRoot() != null` verwenden |
 | InsertAsync gibt falsche ID zurück | sqlite-net `InsertAsync()` gibt Zeilen-Count zurück (immer 1), NICHT Auto-Increment-ID. sqlite-net setzt ID direkt auf dem Objekt | Nach `await db.InsertAsync(entity)` NICHT `entity.Id = result` schreiben - `entity.Id` ist bereits korrekt gesetzt |
 | ScrollViewer scrollt nicht | `Padding` auf `ScrollViewer` verhindert Scrollen in Avalonia | `Padding` entfernen, stattdessen `Margin` auf das direkte Kind-Element setzen + `VerticalScrollBarVisibility="Auto"` |
+| DonutChart-Segment unsichtbar bei 100% | SkiaSharp `ArcTo` bei 360° erzeugt leeren Path (Start=Ende) | Bei `sweepAngle >= 359°` in zwei 180°-Hälften aufteilen |
 
 ---
 

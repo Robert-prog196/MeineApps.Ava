@@ -13,11 +13,11 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 - **4 Tabs**: Home (Dashboard + Streak-Card + Tageszeit-Begrüßung), Progress (Tracking + 4 Sub-Tabs), Food Search (+ Quick-Add), Settings
 - **5 Rechner**: BMI, Calories, Water, IdealWeight, BodyFat
 - **Tracking**: Gewicht (+ Gewichtsziel mit ProgressBar), BMI, Koerperfett, Wasser, Kalorien (JSON-basiert, TrackingService)
-- **Charts**: LiveCharts (LineSeries fuer Gewicht/BMI/BodyFat, ColumnSeries fuer Wochen-Kalorien), Chart-Zeitraum wählbar (7T/30T/90T)
+- **Charts**: SkiaSharp (HealthTrendVisualization für Gewicht/BMI/BodyFat, WeeklyCaloriesBarVisualization für Wochen-Kalorien), Chart-Zeitraum wählbar (7T/30T/90T)
 - **Mahlzeiten**: Gruppiert nach Typ (Frühstück/Mittag/Abend/Snack mit Icons + Subtotals), "Gestern kopieren" Funktion
 - **Food Search**: Fuzzy Matching, Favorites, Recipes (FoodDatabase mit 114 Items + Aliase)
 - **Barcode Scanner**: Nativer CameraX + ML Kit Scanner (Android), manuelle Eingabe (Desktop), Open Food Facts API (BarcodeLookupService)
-- **SkiaSharp-Visualisierungen**: BMI-Gauge (BmiGaugeRenderer), Körperfett-Grafik (BodyFatRenderer), Kalorien-Ringe (CalorieRingRenderer), Wasserglas (inline in WaterView). HomeView nutzt SkiaGradientRing statt CircularProgress
+- **SkiaSharp-Visualisierungen**: BMI-Gauge (BmiGaugeRenderer), Körperfett-Grafik (BodyFatRenderer), Kalorien-Ringe (CalorieRingRenderer), Wasserglas (inline in WaterView), HealthTrendVisualization (Catmull-Rom Spline mit Gradient-Fill, Target-Zones, Milestones), WeeklyCaloriesBarVisualization (Gradient-Balken mit Target-Linie). HomeView nutzt SkiaGradientRing + LinearProgressVisualization (XP-Bar, Challenge-Bar)
 
 ## App-spezifische Services
 
@@ -46,7 +46,6 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 
 ### IDisposable Pattern
 - **TrackingViewModel**: IDisposable fuer CancellationTokenSource Cleanup (Dispose-Pattern mit `_disposed` Flag)
-- **LiveCharts Fix**: IDisposable statt Finalizer verhindert SIGSEGV (MAUI-Bug geloest)
 
 ### ProgressView Sub-Tabs
 - 4 Sub-Tabs: Weight, BMI, BodyFat, Water/Calories
@@ -103,9 +102,10 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 - **Settings-Toggles**: Haptic, Sound, 3 Reminder (Wasser/Gewicht/Abend) mit ToggleSwitch
 
 ### Dashboard Fortschrittsbalken
-- Kalorien + Wasser Cards haben ProgressBar (4px, farbig passend zur Card)
+- Kalorien + Wasser Cards haben SkiaGradientRing (statt ProgressBar)
 - `CalorieProgress` / `WaterProgress` (0-100) in MainViewModel berechnet
-- ProgressBars bei Value=0 ausgeblendet (`HasWaterProgress`/`HasCalorieProgress`)
+- Ringe bei Value=0 ausgeblendet (`HasWaterProgress`/`HasCalorieProgress`)
+- XP-Level + Challenge: LinearProgressVisualization (SkiaSharp) statt Avalonia ProgressBar
 
 ### Dashboard Quick-Add
 - 3 Gradient-Buttons zwischen Dashboard-Card und Streak-Card: +kg (lila), +250ml (grün), +kcal (orange)
@@ -115,6 +115,8 @@ Fitness-App mit 5 Rechnern (BMI, Kalorien, Wasser, Idealgewicht, Koerperfett), T
 
 ## Changelog (Highlights)
 
+- **16.02.2026 (3)**: 4 UI-Bugfixes: (1) Disclaimer-Text unten auf Hauptseite abgeschnitten → StackPanel Horizontal durch Grid ColumnDefinitions="Auto,*" ersetzt (TextWrapping funktioniert jetzt korrekt). (2) Dashboard-Daten (Wasser, Kalorien, Gewicht) nicht aktualisiert nach Tab-Wechsel zurück → OnSelectedTabChanged ruft jetzt OnAppearingAsync() bei Tab 0 auf. (3) Heatmap-Kalender leer bei wenig Daten → CellSize 11→13, Months 3→2, Motivations-Hinweis bei <7 Aktivitätstagen. (4) Achievement-Fortschrittsbalken abgeschnitten → StackPanel HorizontalAlignment Center entfernt, ProgressBar + Container explizit Stretch. 1 neuer RESX-Key (HeatmapHint) in 6 Sprachen.
+- **16.02.2026 (2)**: LiveCharts komplett durch SkiaSharp ersetzt. HealthTrendVisualization (Catmull-Rom Spline, Gradient-Fill, Target-Zones für BMI 18.5-25, Milestone-Lines) ersetzt LineSeries in ProgressView (Gewicht/BMI/Körperfett) und HistoryView. WeeklyCaloriesBarVisualization (Gradient-Balken, Target-Linie) ersetzt ColumnSeries. 5 ProgressBars in ProgressView + 2 in HomeView durch LinearProgressVisualization (SkiaSharp) ersetzt. LiveChartsCore.SkiaSharpView.Avalonia Package-Referenz entfernt.
 - **16.02.2026**: SkiaSharp-Visualisierungen in 4 Rechner-Views integriert: BmiView (BMI-Gauge via BmiGaugeRenderer), BodyFatView (Körperfett-Visualisierung via BodyFatRenderer), CaloriesView (Kalorien-Ring via CalorieRingRenderer), WaterView (Wasserglas mit Füllstand + Wellen inline gezeichnet). HomeView: 3 CircularProgress Controls durch SkiaGradientRing ersetzt (Score-Ring, Wasser-Ring, Kalorien-Ring) mit Gradient + Glow-Effekt. Renderer-Dateien in Graphics/ Ordner.
 - **13.02.2026 (12)**: 2 Bugfixes: (1) Dashboard-Leerraum: StaggerFadeInBehavior + FadeInBehavior (alle 3 Dateien) robuster gemacht - `IsAttachedToVisualTree`-Fallback falls AttachedToVisualTree nicht feuert, Opacity=1 nach RunAsync als Sicherheit, Opacity=1 bei OnDetaching. HomeView ScrollViewer Bottom-Padding 100→60. (2) Kamera-Crash nach Permission: AndroidBarcodeService try-catch um ScanBarcodeAsync/StartScannerActivity, 300ms Delay nach Permission-Grant bevor Scanner startet (System braucht Zeit um Permission zu aktivieren). BarcodeScannerActivity: Permission-Recheck in StartCamera(), IsFinishing/IsDestroyed Guard in BindCameraUseCases(), Fehler-Fallback auf Result.Canceled+Finish(). FoodSearchViewModel: try-catch um Barcode-Scan mit Fallback auf manuelle Eingabe.
 - **13.02.2026 (11)**: Crash-Fix: StaggerFadeInBehavior + FadeInBehavior (MeineApps.UI + MeineApps.Core.Ava) hatten `async void OnAttachedToVisualTree` ohne try-catch. Bei detached Control während Animation → unhandled Exception → App-Crash. Fix: try-catch + Fallback `Opacity=1` bei Fehler (Element bleibt sichtbar statt unsichtbar hängen). Behebt den "leeren Bereich" auf Dashboard (Elemente blieben bei Opacity=0 wenn Animation fehlschlug).
