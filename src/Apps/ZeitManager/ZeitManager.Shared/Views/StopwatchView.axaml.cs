@@ -66,8 +66,18 @@ public partial class StopwatchView : UserControl
         // ElapsedTimeFormatted parsen → Sekunden (Format: "mm:ss.cc")
         double elapsedSeconds = ParseElapsedTime(vm.ElapsedTimeFormatted);
 
+        // Rundenzeiten für Sektor-Darstellung sammeln
+        double[]? lapTimesSeconds = null;
+        if (vm.Laps.Count > 0)
+        {
+            lapTimesSeconds = new double[vm.Laps.Count];
+            for (int i = 0; i < vm.Laps.Count; i++)
+                lapTimesSeconds[i] = vm.Laps[i].LapTime.TotalSeconds;
+        }
+
         StopwatchVisualization.Render(canvas, bounds,
-            elapsedSeconds, vm.IsRunning, vm.Laps.Count, _animTime);
+            elapsedSeconds, vm.IsRunning, vm.Laps.Count, _animTime,
+            lapTimesSeconds);
     }
 
     /// <summary>

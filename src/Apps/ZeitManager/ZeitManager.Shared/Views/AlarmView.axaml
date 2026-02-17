@@ -151,6 +151,7 @@
 
                       <!-- Toggle -->
                       <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsEnabled}"
+                                    OnContent="" OffContent=""
                                     VerticalAlignment="Center" Margin="8,0"
                                     Command="{Binding $parent[ItemsControl].((vm:AlarmViewModel)DataContext).ToggleAlarmCommand}"
                                     CommandParameter="{Binding}" />
@@ -317,7 +318,8 @@
                                VerticalAlignment="Center" Margin="0,0,8,0" />
               <TextBlock Grid.Column="1" Text="{Binding VibrateText}" Classes="BodyMedium"
                          VerticalAlignment="Center" />
-              <ToggleSwitch Grid.Column="2" IsChecked="{Binding Vibrate, Mode=TwoWay}" />
+              <ToggleSwitch Grid.Column="2" IsChecked="{Binding Vibrate, Mode=TwoWay}"
+                            OnContent="" OffContent="" />
             </Grid>
 
             <!-- Dialog Buttons -->

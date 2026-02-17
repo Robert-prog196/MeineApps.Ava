@@ -96,7 +96,8 @@ public partial class PomodoroView : UserControl
             (float)vm.ProgressFraction, phase,
             vm.CurrentCycle, vm.CyclesBeforeLongBreak,
             vm.IsRunning, vm.RemainingFormatted ?? "25:00",
-            vm.PhaseText ?? "", _animTime);
+            vm.PhaseText ?? "", _animTime,
+            vm.TodaySessions);
     }
 
     /// <summary>Rendert das Wochen-Balkendiagramm mit SkiaSharp.</summary>

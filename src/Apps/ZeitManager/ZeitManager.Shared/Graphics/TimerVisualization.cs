@@ -4,8 +4,8 @@ using SkiaSharp;
 namespace ZeitManager.Graphics;
 
 /// <summary>
-/// SkiaSharp-Timer-Ring mit Flüssigkeits-Effekt: Ein sich entleerender Kreis,
-/// der die verbleibende Zeit als "Flüssigkeitsstand" innerhalb des Rings darstellt.
+/// SkiaSharp-Timer-Ring mit Flüssigkeits-Effekt, Tropfen-Partikel an der Ablaufkante,
+/// großen Countdown-Ziffern in den letzten 5 Sekunden und Ablauf-Burst bei Timer=0.
 /// </summary>
 public static class TimerVisualization
 {
@@ -15,9 +15,36 @@ public static class TimerVisualization
     private static readonly SKPaint _fillPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private static readonly SKPaint _textPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private static readonly SKPaint _wavePaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _dropPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _burstPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _countdownPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private static readonly SKFont _timeFont = new() { Size = 28f };
     private static readonly SKFont _nameFont = new() { Size = 11f };
+    private static readonly SKFont _countdownFont = new() { Size = 80f };
     private static readonly SKMaskFilter _glowFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4f);
+    private static readonly SKMaskFilter _countdownGlow = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 10f);
+
+    // Tropfen-Partikel System (einfaches Array, kein Heap-Alloc)
+    private const int MaxDrops = 8;
+    private static readonly float[] _dropX = new float[MaxDrops];
+    private static readonly float[] _dropY = new float[MaxDrops];
+    private static readonly float[] _dropVy = new float[MaxDrops];
+    private static readonly float[] _dropLife = new float[MaxDrops];
+    private static readonly float[] _dropSize = new float[MaxDrops];
+    private static float _lastDropSpawn;
+    private static readonly Random _rng = new();
+
+    // Ablauf-Burst Partikel
+    private const int MaxBurstParticles = 20;
+    private static readonly float[] _burstX = new float[MaxBurstParticles];
+    private static readonly float[] _burstY = new float[MaxBurstParticles];
+    private static readonly float[] _burstVx = new float[MaxBurstParticles];
+    private static readonly float[] _burstVy = new float[MaxBurstParticles];
+    private static readonly float[] _burstLife = new float[MaxBurstParticles];
+    private static readonly float[] _burstSize = new float[MaxBurstParticles];
+    private static readonly SKColor[] _burstColors = new SKColor[MaxBurstParticles];
+    private static bool _burstActive;
+    private static float _burstTime;
 
     /// <summary>
     /// Bestimmt die Akzent-Farbe basierend auf dem verbleibenden Fortschritt.
@@ -31,8 +58,7 @@ public static class TimerVisualization
     }
 
     /// <summary>
-    /// Rendert einen einzelnen Timer-Ring mit Flüssigkeits-Effekt.
-    /// Für die TimerView: Wird im Listenelement eines Timers verwendet.
+    /// Rendert einen einzelnen Timer-Ring mit Flüssigkeits-Effekt, Tropfen und Countdown.
     /// </summary>
     /// <param name="canvas">SkiaSharp Canvas</param>
     /// <param name="bounds">Zeichenbereich</param>
@@ -42,9 +68,11 @@ public static class TimerVisualization
     /// <param name="remainingFormatted">Formatierte verbleibende Zeit</param>
     /// <param name="timerName">Name des Timers (optional)</param>
     /// <param name="animTime">Laufender Animations-Timer</param>
+    /// <param name="remainingSeconds">Verbleibende Sekunden (für Countdown-Anzeige)</param>
     public static void Render(SKCanvas canvas, SKRect bounds,
         float progressFraction, bool isRunning, bool isFinished,
-        string remainingFormatted, string? timerName, float animTime)
+        string remainingFormatted, string? timerName, float animTime,
+        double remainingSeconds = -1)
     {
         float size = Math.Min(bounds.Width, bounds.Height);
         float cx = bounds.MidX;
@@ -104,21 +132,45 @@ public static class TimerVisualization
             DrawLiquidFill(canvas, cx, cy, innerR, progress, color, animTime, isRunning);
         }
 
-        // 4. Fertig-Häkchen oder Zeitanzeige
+        // 4. Tropfen-Partikel an der Flüssigkeits-Kante (Zeit "rinnt davon")
+        if (isRunning && progress > 0.02f && progress < 0.98f)
+        {
+            float innerR = radius - strokeW / 2f - 2f;
+            float fillTop = cy + innerR - (2f * innerR * progress);
+            UpdateAndDrawDrops(canvas, cx, cy, innerR, fillTop, color, animTime);
+        }
+
+        // 5. Ablauf-Burst bei Timer=0
+        if (isFinished)
+        {
+            if (!_burstActive)
+                TriggerBurst(cx, cy, radius);
+            UpdateAndDrawBurst(canvas, animTime);
+        }
+        else
+        {
+            _burstActive = false;
+        }
+
+        // 6. Countdown-Ziffern (letzte 5 Sekunden) oder Fertig-Häkchen
         if (isFinished)
         {
             DrawCheckmark(canvas, cx, cy, radius * 0.3f, color);
         }
+        else if (remainingSeconds >= 0 && remainingSeconds <= 5 && remainingSeconds > 0 && isRunning)
+        {
+            DrawCountdownDigit(canvas, cx, cy, radius, (int)Math.Ceiling(remainingSeconds), color, animTime);
+        }
         else
         {
-            // Zeitanzeige zentral
+            // Normale Zeitanzeige
             _textPaint.Color = SkiaThemeHelper.TextPrimary;
             _timeFont.Size = Math.Max(18f, radius * 0.32f);
             canvas.DrawText(remainingFormatted, cx, cy + _timeFont.Size * 0.15f,
                 SKTextAlign.Center, _timeFont, _textPaint);
         }
 
-        // 5. Timer-Name (unten im Ring)
+        // 7. Timer-Name (unten im Ring)
         if (!string.IsNullOrEmpty(timerName))
         {
             _textPaint.Color = SkiaThemeHelper.TextMuted;
@@ -129,8 +181,154 @@ public static class TimerVisualization
     }
 
     /// <summary>
+    /// Zeichnet eine große Countdown-Ziffer mit Scale-Bounce (1.5→1.0) in den letzten 5 Sekunden.
+    /// </summary>
+    private static void DrawCountdownDigit(SKCanvas canvas, float cx, float cy,
+        float radius, int secondsLeft, SKColor color, float animTime)
+    {
+        // Bounce-Effekt: Bei jedem neuen Sekundenwechsel Scale von 1.5 auf 1.0
+        float subSecond = animTime % 1f;
+        float bounceScale = 1f + 0.4f * MathF.Pow(Math.Max(0, 1f - subSecond * 3f), 2);
+
+        // Opacity-Fade innerhalb jeder Sekunde
+        float alpha = Math.Min(1f, 1.3f - subSecond);
+
+        string digit = secondsLeft.ToString();
+
+        // Glow-Schatten
+        _countdownPaint.Color = color.WithAlpha((byte)(40 * alpha));
+        _countdownPaint.MaskFilter = _countdownGlow;
+        _countdownFont.Size = radius * 0.7f * bounceScale;
+        canvas.DrawText(digit, cx, cy + _countdownFont.Size * 0.35f,
+            SKTextAlign.Center, _countdownFont, _countdownPaint);
+        _countdownPaint.MaskFilter = null;
+
+        // Hauptziffer
+        _countdownPaint.Color = color.WithAlpha((byte)(220 * alpha));
+        canvas.DrawText(digit, cx, cy + _countdownFont.Size * 0.35f,
+            SKTextAlign.Center, _countdownFont, _countdownPaint);
+    }
+
+    /// <summary>
+    /// Aktualisiert und zeichnet Tropfen-Partikel die von der Flüssigkeitsoberfläche fallen.
+    /// </summary>
+    private static void UpdateAndDrawDrops(SKCanvas canvas, float cx, float cy,
+        float innerR, float fillTop, SKColor color, float animTime)
+    {
+        float dt = 0.033f; // ~30fps
+
+        // Neue Tropfen spawnen (alle 0.3-0.6 Sekunden)
+        if (animTime - _lastDropSpawn > 0.3f + (float)_rng.NextDouble() * 0.3f)
+        {
+            _lastDropSpawn = animTime;
+
+            // Freien Slot finden
+            for (int i = 0; i < MaxDrops; i++)
+            {
+                if (_dropLife[i] <= 0)
+                {
+                    // Tropfen startet an der Flüssigkeitsoberfläche
+                    float halfW = MathF.Sqrt(innerR * innerR - (fillTop - cy) * (fillTop - cy));
+                    if (float.IsNaN(halfW)) halfW = innerR * 0.5f;
+
+                    _dropX[i] = cx + ((float)_rng.NextDouble() - 0.5f) * halfW * 1.5f;
+                    _dropY[i] = fillTop;
+                    _dropVy[i] = 30f + (float)_rng.NextDouble() * 40f; // Nach unten
+                    _dropLife[i] = 0.8f + (float)_rng.NextDouble() * 0.4f;
+                    _dropSize[i] = 1.5f + (float)_rng.NextDouble() * 2f;
+                    break;
+                }
+            }
+        }
+
+        // Tropfen updaten und zeichnen
+        for (int i = 0; i < MaxDrops; i++)
+        {
+            if (_dropLife[i] <= 0) continue;
+
+            _dropLife[i] -= dt;
+            _dropY[i] += _dropVy[i] * dt;
+            _dropVy[i] += 120f * dt; // Schwerkraft
+
+            // Nur innerhalb des Kreises zeichnen
+            float distFromCenter = MathF.Sqrt((_dropX[i] - cx) * (_dropX[i] - cx) + (_dropY[i] - cy) * (_dropY[i] - cy));
+            if (distFromCenter > innerR)
+            {
+                _dropLife[i] = 0;
+                continue;
+            }
+
+            float dropAlpha = Math.Clamp(_dropLife[i] * 2f, 0f, 1f);
+            _dropPaint.Color = color.WithAlpha((byte)(100 * dropAlpha));
+            canvas.DrawCircle(_dropX[i], _dropY[i], _dropSize[i], _dropPaint);
+        }
+    }
+
+    /// <summary>
+    /// Löst einen Partikel-Burst aus wenn der Timer abgelaufen ist.
+    /// </summary>
+    private static void TriggerBurst(float cx, float cy, float radius)
+    {
+        _burstActive = true;
+        _burstTime = 0;
+
+        SKColor[] colors = { SkiaThemeHelper.Success, SkiaThemeHelper.Warning,
+            new(0x22, 0xD3, 0xEE), new(0xFF, 0xD7, 0x00), new(0xA7, 0x8B, 0xFA) };
+
+        for (int i = 0; i < MaxBurstParticles; i++)
+        {
+            float angle = (float)_rng.NextDouble() * MathF.PI * 2f;
+            float speed = 80f + (float)_rng.NextDouble() * 120f;
+
+            _burstX[i] = cx;
+            _burstY[i] = cy;
+            _burstVx[i] = MathF.Cos(angle) * speed;
+            _burstVy[i] = MathF.Sin(angle) * speed;
+            _burstLife[i] = 0.6f + (float)_rng.NextDouble() * 0.6f;
+            _burstSize[i] = 2f + (float)_rng.NextDouble() * 4f;
+            _burstColors[i] = colors[_rng.Next(colors.Length)];
+        }
+    }
+
+    /// <summary>
+    /// Aktualisiert und zeichnet die Ablauf-Burst Partikel.
+    /// </summary>
+    private static void UpdateAndDrawBurst(SKCanvas canvas, float animTime)
+    {
+        if (!_burstActive) return;
+
+        float dt = 0.033f;
+        _burstTime += dt;
+
+        bool anyAlive = false;
+        for (int i = 0; i < MaxBurstParticles; i++)
+        {
+            if (_burstLife[i] <= 0) continue;
+
+            anyAlive = true;
+            _burstLife[i] -= dt;
+            _burstX[i] += _burstVx[i] * dt;
+            _burstY[i] += _burstVy[i] * dt;
+            _burstVy[i] += 150f * dt; // Schwerkraft
+
+            float alpha = Math.Clamp(_burstLife[i] * 1.5f, 0f, 1f);
+            _burstPaint.Color = _burstColors[i].WithAlpha((byte)(200 * alpha));
+
+            // Rotierende Rechtecke (Confetti-Stil)
+            canvas.Save();
+            canvas.Translate(_burstX[i], _burstY[i]);
+            canvas.RotateDegrees(_burstTime * 300f + i * 45f);
+            canvas.DrawRect(-_burstSize[i] / 2, -_burstSize[i] / 3,
+                _burstSize[i], _burstSize[i] * 0.66f, _burstPaint);
+            canvas.Restore();
+        }
+
+        if (!anyAlive)
+            _burstActive = false;
+    }
+
+    /// <summary>
     /// Zeichnet eine Wellen-Füllung innerhalb eines kreisförmigen Bereichs.
-    /// Die Höhe repräsentiert den verbleibenden Fortschritt.
     /// </summary>
     private static void DrawLiquidFill(SKCanvas canvas, float cx, float cy, float radius,
         float fraction, SKColor color, float animTime, bool isRunning)

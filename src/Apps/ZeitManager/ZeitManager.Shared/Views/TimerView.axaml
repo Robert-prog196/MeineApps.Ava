@@ -339,7 +339,8 @@
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Grid.Column="0" Text="{Binding AutoRepeatText}" Classes="BodyMedium"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="1" IsChecked="{Binding NewTimerAutoRepeat, Mode=TwoWay}" />
+            <ToggleSwitch Grid.Column="1" IsChecked="{Binding NewTimerAutoRepeat, Mode=TwoWay}"
+                          OnContent="" OffContent="" />
           </Grid>
 
           <!-- Dialog Buttons -->
