@@ -4,6 +4,7 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
              xmlns:controls="using:HandwerkerImperium.Controls"
+             xmlns:labs="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.WorkerProfileView"
              x:DataType="vm:WorkerProfileViewModel">
 
@@ -148,10 +149,8 @@
                            FontSize="13" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
               </Grid>
-              <ProgressBar Value="{Binding MoodPercent}"
-                           Maximum="100"
-                           Foreground="{DynamicResource SuccessBrush}"
-                           Height="6" />
+              <labs:SKCanvasView Height="10"
+                                   PaintSurface="OnPaintMoodProgress" />
             </StackPanel>
 
             <!-- Erschöpfung -->
@@ -169,10 +168,8 @@
                            FontSize="13" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
               </Grid>
-              <ProgressBar Value="{Binding FatiguePercent}"
-                           Maximum="100"
-                           Foreground="{DynamicResource ErrorBrush}"
-                           Height="6" />
+              <labs:SKCanvasView Height="10"
+                                   PaintSurface="OnPaintFatigueProgress" />
             </StackPanel>
 
             <!-- Erfahrung -->
@@ -190,10 +187,8 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </Grid>
-              <ProgressBar Value="{Binding XpPercent}"
-                           Maximum="100"
-                           Foreground="{StaticResource CraftPrimaryLightBrush}"
-                           Height="6" />
+              <labs:SKCanvasView Height="10"
+                                   PaintSurface="OnPaintXpProgress" />
             </StackPanel>
 
           </StackPanel>
@@ -208,59 +203,96 @@
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
-            <!-- Training-Typ-Auswahl (3 Buttons) -->
-            <StackPanel IsVisible="{Binding !IsTraining}" Spacing="6">
-              <TextBlock Text="{loc:Translate TrainingTypeEfficiency}"
-                         FontSize="13" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}"
-                         IsVisible="{Binding !IsTraining}" />
+            <!-- Training-Typ-Auswahl (3 Buttons mit Hervorhebung) -->
+            <StackPanel IsVisible="{Binding !IsTraining}" Spacing="8">
+              <TextBlock Text="{loc:Translate Efficiency}"
+                         FontSize="14" FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate SelectTrainingType}"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="0,-4,0,0" />
               <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6">
                 <!-- Effizienz -->
-                <Button Grid.Column="0" Classes="Secondary"
+                <Button Grid.Column="0"
                         Command="{Binding SelectTrainingTypeCommand}"
                         CommandParameter="Efficiency"
                         IsEnabled="{Binding CanTrainEfficiency}"
-                        HorizontalAlignment="Stretch" Padding="4,8">
-                  <StackPanel HorizontalAlignment="Center" Spacing="2">
-                    <mi:MaterialIcon Kind="Dumbbell" Width="20" Height="20"
-                                     HorizontalAlignment="Center" />
-                    <TextBlock Text="{loc:Translate TrainingTypeEfficiency}"
-                               FontSize="10" TextAlignment="Center"
-                               TextTrimming="CharacterEllipsis" />
-                  </StackPanel>
+                        HorizontalAlignment="Stretch" Padding="0"
+                        Background="Transparent" BorderThickness="0">
+                  <Border CornerRadius="10" Padding="6,10"
+                          BorderThickness="2"
+                          BorderBrush="{Binding IsEfficiencySelected, Converter={StaticResource TrainingTypeBorderConverter}}"
+                          Background="{Binding IsEfficiencySelected, Converter={StaticResource TrainingTypeBgConverter}}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                      <mi:MaterialIcon Kind="Dumbbell" Width="24" Height="24"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{Binding IsEfficiencySelected, Converter={StaticResource TrainingTypeIconConverter}}" />
+                      <TextBlock Text="{loc:Translate TrainingTypeEfficiency}"
+                                 FontSize="11" FontWeight="SemiBold" TextAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"
+                                 Foreground="{Binding IsEfficiencySelected, Converter={StaticResource TrainingTypeTextConverter}}" />
+                    </StackPanel>
+                  </Border>
                 </Button>
                 <!-- Ausdauer -->
-                <Button Grid.Column="1" Classes="Secondary"
+                <Button Grid.Column="1"
                         Command="{Binding SelectTrainingTypeCommand}"
                         CommandParameter="Endurance"
                         IsEnabled="{Binding CanTrainEndurance}"
-                        HorizontalAlignment="Stretch" Padding="4,8">
-                  <StackPanel HorizontalAlignment="Center" Spacing="2">
-                    <mi:MaterialIcon Kind="Run" Width="20" Height="20"
-                                     HorizontalAlignment="Center" />
-                    <TextBlock Text="{loc:Translate TrainingTypeEndurance}"
-                               FontSize="10" TextAlignment="Center"
-                               TextTrimming="CharacterEllipsis" />
-                  </StackPanel>
+                        HorizontalAlignment="Stretch" Padding="0"
+                        Background="Transparent" BorderThickness="0">
+                  <Border CornerRadius="10" Padding="6,10"
+                          BorderThickness="2"
+                          BorderBrush="{Binding IsEnduranceSelected, Converter={StaticResource TrainingTypeBorderConverter}}"
+                          Background="{Binding IsEnduranceSelected, Converter={StaticResource TrainingTypeBgConverter}}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                      <mi:MaterialIcon Kind="Run" Width="24" Height="24"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{Binding IsEnduranceSelected, Converter={StaticResource TrainingTypeIconConverter}}" />
+                      <TextBlock Text="{loc:Translate TrainingTypeEndurance}"
+                                 FontSize="11" FontWeight="SemiBold" TextAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"
+                                 Foreground="{Binding IsEnduranceSelected, Converter={StaticResource TrainingTypeTextConverter}}" />
+                    </StackPanel>
+                  </Border>
                 </Button>
                 <!-- Stimmung -->
-                <Button Grid.Column="2" Classes="Secondary"
+                <Button Grid.Column="2"
                         Command="{Binding SelectTrainingTypeCommand}"
                         CommandParameter="Morale"
                         IsEnabled="{Binding CanTrainMorale}"
-                        HorizontalAlignment="Stretch" Padding="4,8">
-                  <StackPanel HorizontalAlignment="Center" Spacing="2">
-                    <mi:MaterialIcon Kind="EmoticonHappy" Width="20" Height="20"
-                                     HorizontalAlignment="Center" />
-                    <TextBlock Text="{loc:Translate TrainingTypeMorale}"
-                               FontSize="10" TextAlignment="Center"
-                               TextTrimming="CharacterEllipsis" />
-                  </StackPanel>
+                        HorizontalAlignment="Stretch" Padding="0"
+                        Background="Transparent" BorderThickness="0">
+                  <Border CornerRadius="10" Padding="6,10"
+                          BorderThickness="2"
+                          BorderBrush="{Binding IsMoraleSelected, Converter={StaticResource TrainingTypeBorderConverter}}"
+                          Background="{Binding IsMoraleSelected, Converter={StaticResource TrainingTypeBgConverter}}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                      <mi:MaterialIcon Kind="EmoticonHappy" Width="24" Height="24"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{Binding IsMoraleSelected, Converter={StaticResource TrainingTypeIconConverter}}" />
+                      <TextBlock Text="{loc:Translate TrainingTypeMorale}"
+                                 FontSize="11" FontWeight="SemiBold" TextAlignment="Center"
+                                 TextTrimming="CharacterEllipsis"
+                                 Foreground="{Binding IsMoraleSelected, Converter={StaticResource TrainingTypeTextConverter}}" />
+                    </StackPanel>
+                  </Border>
                 </Button>
               </Grid>
 
+              <!-- Beschreibung des ausgewählten Training-Typs -->
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      CornerRadius="8" Padding="12,8">
+                <TextBlock Text="{Binding SelectedTrainingDescription}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center" />
+              </Border>
+
               <!-- Ausdauer + Stimmungs-Bonus-Anzeige -->
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,2,0,0">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                 <StackPanel Spacing="2">
                   <TextBlock Text="{loc:Translate TrainingTypeEnduranceDesc}"
                              FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -307,10 +339,8 @@
 
                 <!-- Training-Fortschritt (während Training aktiv) -->
                 <StackPanel IsVisible="{Binding IsTraining}" Margin="0,6,0,0" Spacing="4">
-                  <ProgressBar Value="{Binding TrainingProgressPercent}"
-                               Maximum="100"
-                               Foreground="{StaticResource CraftPrimaryLightBrush}"
-                               Height="6" />
+                  <labs:SKCanvasView Height="10"
+                                     PaintSurface="OnPaintTrainingProgress" />
                   <TextBlock Text="{Binding TrainingProgressText}"
                              FontSize="11"
                              Foreground="{DynamicResource TextSecondaryBrush}"

@@ -75,9 +75,9 @@ public static class WorkerTierExtensions
     };
 
     /// <summary>
-    /// Hiring cost for workers of this tier.
+    /// Basis-Anstellungskosten pro Tier (ohne Level-Skalierung).
     /// </summary>
-    public static decimal GetHiringCost(this WorkerTier tier) => tier switch
+    public static decimal GetBaseHiringCost(this WorkerTier tier) => tier switch
     {
         WorkerTier.F => 50m,
         WorkerTier.E => 200m,
@@ -91,6 +91,17 @@ public static class WorkerTierExtensions
         WorkerTier.Legendary => 50_000_000m,
         _ => 200m
     };
+
+    /// <summary>
+    /// Anstellungskosten mit Level-Skalierung.
+    /// Pro 10 Level +20% (Level 10 = 1.2x, Level 50 = 2.0x, Level 100 = 3.0x).
+    /// </summary>
+    public static decimal GetHiringCost(this WorkerTier tier, int playerLevel = 1)
+    {
+        var baseCost = tier.GetBaseHiringCost();
+        decimal levelMultiplier = 1.0m + Math.Max(0, playerLevel - 1) * 0.02m;
+        return Math.Round(baseCost * levelMultiplier);
+    }
 
     /// <summary>
     /// Player level required to unlock this tier in the worker market.

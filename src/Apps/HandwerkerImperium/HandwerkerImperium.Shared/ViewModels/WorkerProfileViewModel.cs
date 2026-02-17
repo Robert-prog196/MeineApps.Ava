@@ -158,6 +158,19 @@ public partial class WorkerProfileViewModel : ObservableObject
     [ObservableProperty]
     private bool _canTrainMorale;
 
+    // Visuelle Hervorhebung des ausgewählten Training-Typs
+    [ObservableProperty]
+    private bool _isEfficiencySelected = true;
+
+    [ObservableProperty]
+    private bool _isEnduranceSelected;
+
+    [ObservableProperty]
+    private bool _isMoraleSelected;
+
+    [ObservableProperty]
+    private string _selectedTrainingDescription = string.Empty;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -280,6 +293,9 @@ public partial class WorkerProfileViewModel : ObservableObject
         CanTrainEndurance = Worker.EnduranceBonus < 0.5m;
         CanTrainMorale = Worker.MoraleBonus < 0.5m;
 
+        // Auswahl-Hervorhebung aktualisieren
+        UpdateTrainingTypeSelection();
+
         // Bonus-Anzeige
         EnduranceBonusDisplay = Worker.EnduranceBonus > 0
             ? $"-{Worker.EnduranceBonus * 100m:F0}%"
@@ -383,7 +399,29 @@ public partial class WorkerProfileViewModel : ObservableObject
     private void SelectTrainingType(string typeStr)
     {
         if (Enum.TryParse<TrainingType>(typeStr, out var type))
+        {
             SelectedTrainingType = type;
+            UpdateTrainingTypeSelection();
+        }
+    }
+
+    /// <summary>
+    /// Aktualisiert die visuellen Hervorhebungs-Properties und Beschreibung
+    /// basierend auf dem ausgewählten Training-Typ.
+    /// </summary>
+    private void UpdateTrainingTypeSelection()
+    {
+        IsEfficiencySelected = SelectedTrainingType == TrainingType.Efficiency;
+        IsEnduranceSelected = SelectedTrainingType == TrainingType.Endurance;
+        IsMoraleSelected = SelectedTrainingType == TrainingType.Morale;
+
+        SelectedTrainingDescription = SelectedTrainingType switch
+        {
+            TrainingType.Efficiency => _localizationService.GetString("TrainingTypeEfficiencyDesc"),
+            TrainingType.Endurance => _localizationService.GetString("TrainingTypeEnduranceDesc"),
+            TrainingType.Morale => _localizationService.GetString("TrainingTypeMoraleDesc"),
+            _ => string.Empty
+        };
     }
 
     [RelayCommand]

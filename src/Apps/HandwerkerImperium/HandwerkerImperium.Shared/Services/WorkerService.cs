@@ -33,8 +33,8 @@ public class WorkerService : IWorkerService
             // Check if workshop can accept more workers
             if (ws.Workers.Count >= ws.MaxWorkers) return false;
 
-            // Check if player can afford the hiring cost (Euro + ggf. Goldschrauben)
-            var hiringCost = worker.Tier.GetHiringCost();
+            // Kosten: Level-skalierte Anstellungskosten vom Worker (bereits in LoadMarket berechnet)
+            var hiringCost = worker.HiringCost > 0 ? worker.HiringCost : worker.Tier.GetHiringCost(state.PlayerLevel);
             var hiringScrewCost = worker.Tier.GetHiringScrewCost();
             if (!_gameState.CanAfford(hiringCost)) return false;
             if (hiringScrewCost > 0 && !_gameState.CanAffordGoldenScrews(hiringScrewCost)) return false;
@@ -433,7 +433,11 @@ public class WorkerService : IWorkerService
         {
             var state = _gameState.State;
             state.WorkerMarket ??= new WorkerMarketPool();
+            // FreeRefreshUsed-Flag bewahren - GeneratePool setzt ihn zurück
+            // (nur bei Rotation soll er zurückgesetzt werden, nicht bei manuellem Refresh)
+            var freeRefreshUsed = state.WorkerMarket.FreeRefreshUsedThisRotation;
             state.WorkerMarket.GeneratePool(state.PlayerLevel, state.Prestige?.TotalPrestigeCount ?? 0);
+            state.WorkerMarket.FreeRefreshUsedThisRotation = freeRefreshUsed;
             return state.WorkerMarket;
         }
     }

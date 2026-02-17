@@ -138,6 +138,16 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _star3Opacity;
 
+    // Tutorial (beim ersten Spielstart anzeigen)
+    [ObservableProperty]
+    private bool _showTutorial;
+
+    [ObservableProperty]
+    private string _tutorialTitle = "";
+
+    [ObservableProperty]
+    private string _tutorialText = "";
+
     // ═══════════════════════════════════════════════════════════════════════
     // COMPUTED PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -216,6 +226,8 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         }
 
         InitializeGame();
+
+        CheckAndShowTutorial(MiniGameType.RoofTiling);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -511,8 +523,18 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         var order = _gameStateService.GetActiveOrder();
         if (order != null && IsLastTask)
         {
+            // Gesamt-Belohnung
             RewardAmount = order.FinalReward;
             XpAmount = order.FinalXp;
+        }
+        else if (order != null)
+        {
+            // Teilbelohnung für diese Aufgabe anzeigen
+            int taskCount = Math.Max(1, order.Tasks.Count);
+            decimal basePerTask = order.BaseReward / taskCount;
+            RewardAmount = basePerTask * Result.GetRewardPercentage();
+            int baseXpPerTask = order.BaseXp / taskCount;
+            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage());
         }
         else
         {
@@ -603,6 +625,19 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void DismissTutorial()
+    {
+        ShowTutorial = false;
+        // Als gesehen markieren und speichern
+        var state = _gameStateService.State;
+        if (!state.SeenMiniGameTutorials.Contains(MiniGameType.RoofTiling))
+        {
+            state.SeenMiniGameTutorials.Add(MiniGameType.RoofTiling);
+            _gameStateService.MarkDirty();
+        }
+    }
+
+    [RelayCommand]
     private void Cancel()
     {
         _timer?.Stop();
@@ -610,6 +645,21 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
 
         _gameStateService.CancelActiveOrder();
         NavigationRequested?.Invoke("../..");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void CheckAndShowTutorial(MiniGameType gameType)
+    {
+        var state = _gameStateService.State;
+        if (!state.SeenMiniGameTutorials.Contains(gameType))
+        {
+            TutorialTitle = _localizationService.GetString($"Tutorial{gameType}Title") ?? "";
+            TutorialText = _localizationService.GetString($"Tutorial{gameType}Text") ?? "";
+            ShowTutorial = true;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════

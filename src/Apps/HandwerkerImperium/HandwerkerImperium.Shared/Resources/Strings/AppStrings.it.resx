@@ -2453,6 +2453,9 @@
   <data name="TrainingTypeMoraleDesc" xml:space="preserve">
     <value>Riduce calo morale</value>
   </data>
+  <data name="SelectTrainingType" xml:space="preserve">
+    <value>Seleziona tipo di allenamento</value>
+  </data>
   <data name="NewRecord" xml:space="preserve">
     <value>Nuovo record!</value>
   </data>
@@ -2623,6 +2626,57 @@
   </data>
   <data name="TapToUnlock" xml:space="preserve">
     <value>Tocca per sbloccare</value>
+  </data>
+  <data name="TutorialSawingTitle" xml:space="preserve">
+    <value>Taglio</value>
+  </data>
+  <data name="TutorialSawingText" xml:space="preserve">
+    <value>Tocca lo schermo per fermare il marcatore nella zona verde! Più sei vicino al centro, migliore sarà la valutazione.</value>
+  </data>
+  <data name="TutorialPipePuzzleTitle" xml:space="preserve">
+    <value>Puzzle tubi</value>
+  </data>
+  <data name="TutorialPipePuzzleText" xml:space="preserve">
+    <value>Ruota i segmenti di tubo per collegare il flusso d'acqua dall'inizio alla fine. Tocca un tubo per ruotarlo.</value>
+  </data>
+  <data name="TutorialWiringGameTitle" xml:space="preserve">
+    <value>Cablaggio</value>
+  </data>
+  <data name="TutorialWiringGameText" xml:space="preserve">
+    <value>Collega i cavi toccando un cavo sinistro e poi il destro corrispondente. Collega tutti i colori per completare il compito.</value>
+  </data>
+  <data name="TutorialPaintingGameTitle" xml:space="preserve">
+    <value>Pittura</value>
+  </data>
+  <data name="TutorialPaintingGameText" xml:space="preserve">
+    <value>Scorri sulle aree di muro evidenziate per dipingerle. Evita di dipingere fuori dalle zone. Fai combo per punti bonus!</value>
+  </data>
+  <data name="TutorialRoofTilingTitle" xml:space="preserve">
+    <value>Tegole</value>
+  </data>
+  <data name="TutorialRoofTilingText" xml:space="preserve">
+    <value>Posiziona le tegole nel motivo di colori corretto. Seleziona un colore e tocca le posizioni vuote.</value>
+  </data>
+  <data name="TutorialBlueprintTitle" xml:space="preserve">
+    <value>Progetto</value>
+  </data>
+  <data name="TutorialBlueprintText" xml:space="preserve">
+    <value>Memorizza l'ordine delle fasi costruttive e poi toccale nella sequenza corretta. Osserva attentamente durante l'anteprima!</value>
+  </data>
+  <data name="TutorialDesignPuzzleTitle" xml:space="preserve">
+    <value>Puzzle di design</value>
+  </data>
+  <data name="TutorialDesignPuzzleText" xml:space="preserve">
+    <value>Posiziona le stanze nelle posizioni corrette sulla planimetria. Seleziona una carta e tocca il posto giusto.</value>
+  </data>
+  <data name="TutorialInspectionTitle" xml:space="preserve">
+    <value>Ispezione</value>
+  </data>
+  <data name="TutorialInspectionText" xml:space="preserve">
+    <value>Trova tutti i difetti nel cantiere! Tocca gli elementi sospetti per ispezionarli. Evita i falsi allarmi.</value>
+  </data>
+  <data name="TutorialGotIt" xml:space="preserve">
+    <value>Capito!</value>
   </data>
 
 </root>

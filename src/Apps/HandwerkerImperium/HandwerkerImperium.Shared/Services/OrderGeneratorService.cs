@@ -88,11 +88,19 @@ public class OrderGeneratorService : IOrderGeneratorService
         int playerLevel = _gameStateService.State.PlayerLevel;
         var difficulty = GetDifficultyForPlayerLevel(playerLevel);
 
-        // Basis-Belohnung (Difficulty wird nur in Order.FinalReward angewendet)
-        decimal baseReward = 300m * workshopLevel * workshopType.GetBaseIncomeMultiplier();
+        // Basis-Belohnung skaliert mit aktuellem Einkommen (wie QuickJobs)
+        // Formel: Max(Level-basiert, Einkommen-basiert) * Aufgaben-Anzahl
+        // → Hauptaufträge geben MEHR als QuickJobs wegen Aufgaben-Multiplikator
+        var netIncomePerSecond = Math.Max(0m, _gameStateService.State.NetIncomePerSecond);
+        var taskCount = template.GameTypes.Length;
+        // Pro Aufgabe ~5 Minuten Einkommen (300s), Mindestens Level*100 pro Aufgabe
+        var perTaskReward = Math.Max(100m + playerLevel * 100m, netIncomePerSecond * 300m);
+        // Aufgaben-Anzahl als Multiplikator (mit Bonus: mehr Tasks = überproportional mehr)
+        decimal taskMultiplier = taskCount * (1.0m + (taskCount - 1) * 0.15m);
+        decimal baseReward = perTaskReward * taskMultiplier * workshopType.GetBaseIncomeMultiplier();
 
-        // Calculate base XP
-        int baseXp = 25 * workshopLevel;
+        // Calculate base XP (skaliert mit Aufgaben-Anzahl)
+        int baseXp = 25 * workshopLevel * taskCount;
 
         // Create the order
         var order = new Order

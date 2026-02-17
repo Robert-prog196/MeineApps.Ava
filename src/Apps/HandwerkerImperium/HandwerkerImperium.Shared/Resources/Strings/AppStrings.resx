@@ -2474,6 +2474,9 @@
   <data name="TrainingTypeMoraleDesc" xml:space="preserve">
     <value>Reduces mood decay</value>
   </data>
+  <data name="SelectTrainingType" xml:space="preserve">
+    <value>Select training type</value>
+  </data>
   <data name="NewRecord" xml:space="preserve">
     <value>New Record!</value>
   </data>
@@ -2641,6 +2644,57 @@
   </data>
   <data name="NextTask" xml:space="preserve">
     <value>Next Task</value>
+  </data>
+  <data name="TutorialSawingTitle" xml:space="preserve">
+    <value>Sawing Game</value>
+  </data>
+  <data name="TutorialSawingText" xml:space="preserve">
+    <value>Tap the screen to stop the marker in the green zone! The closer to the center, the better your rating.</value>
+  </data>
+  <data name="TutorialPipePuzzleTitle" xml:space="preserve">
+    <value>Pipe Puzzle</value>
+  </data>
+  <data name="TutorialPipePuzzleText" xml:space="preserve">
+    <value>Rotate the pipe segments to connect the water flow from start to end. Tap a pipe to rotate it.</value>
+  </data>
+  <data name="TutorialWiringGameTitle" xml:space="preserve">
+    <value>Wiring Game</value>
+  </data>
+  <data name="TutorialWiringGameText" xml:space="preserve">
+    <value>Connect the wires by tapping a left wire, then the matching right wire. Match all wire colors to complete the task.</value>
+  </data>
+  <data name="TutorialPaintingGameTitle" xml:space="preserve">
+    <value>Painting Game</value>
+  </data>
+  <data name="TutorialPaintingGameText" xml:space="preserve">
+    <value>Swipe over the highlighted wall areas to paint them. Avoid painting outside the marked zones. Build combos for bonus points!</value>
+  </data>
+  <data name="TutorialRoofTilingTitle" xml:space="preserve">
+    <value>Roof Tiling</value>
+  </data>
+  <data name="TutorialRoofTilingText" xml:space="preserve">
+    <value>Place roof tiles in the correct color pattern. Select a color from the palette, then tap the empty tile positions.</value>
+  </data>
+  <data name="TutorialBlueprintTitle" xml:space="preserve">
+    <value>Blueprint</value>
+  </data>
+  <data name="TutorialBlueprintText" xml:space="preserve">
+    <value>Memorize the order of construction steps, then tap them in the correct sequence. Watch carefully during the preview phase!</value>
+  </data>
+  <data name="TutorialDesignPuzzleTitle" xml:space="preserve">
+    <value>Design Puzzle</value>
+  </data>
+  <data name="TutorialDesignPuzzleText" xml:space="preserve">
+    <value>Place the rooms in the correct positions on the floor plan. Select a room card, then tap the matching slot in the grid.</value>
+  </data>
+  <data name="TutorialInspectionTitle" xml:space="preserve">
+    <value>Inspection</value>
+  </data>
+  <data name="TutorialInspectionText" xml:space="preserve">
+    <value>Find all defects on the construction site! Tap on suspicious elements to inspect them. Avoid false alarms.</value>
+  </data>
+  <data name="TutorialGotIt" xml:space="preserve">
+    <value>Got it!</value>
   </data>
 
 </root>

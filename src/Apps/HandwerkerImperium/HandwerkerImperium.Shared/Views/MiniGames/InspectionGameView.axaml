@@ -84,12 +84,10 @@
             IsVisible="{Binding IsPlaying}"
             Margin="0,0,0,2">
         <mi:MaterialIcon Kind="MagnifyPlus" Width="20" Height="20" />
-        <ProgressBar Grid.Column="1"
-                     Value="{Binding InspectionProgress}"
-                     Maximum="1"
-                     Foreground="{StaticResource CraftPrimaryBrush}"
-                     Height="12"
-                     Margin="12,0" />
+        <skia:SKCanvasView Grid.Column="1"
+                           Height="16"
+                           Margin="12,0"
+                           PaintSurface="OnPaintInspectionProgress" />
         <TextBlock Grid.Column="2" FontSize="12"
                    Foreground="{DynamicResource TextSecondaryBrush}"
                    VerticalAlignment="Center">
@@ -154,10 +152,9 @@
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    HorizontalAlignment="Center" />
 
-        <!-- Belohnungen (nur bei letzter Aufgabe) -->
+        <!-- Belohnungen -->
         <StackPanel Orientation="Horizontal" Spacing="20"
-                    HorizontalAlignment="Center"
-                    IsVisible="{Binding IsLastTask}">
+                    HorizontalAlignment="Center">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="CashMultiple" Width="20" Height="20"
                              Foreground="{DynamicResource SuccessBrush}" />
@@ -193,6 +190,37 @@
                  HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Border>
 
+    <!-- Tutorial Overlay (beim ersten Spielstart) -->
+    <Border Grid.RowSpan="5" Background="#DD000000"
+            IsVisible="{Binding ShowTutorial}">
+      <Border Background="{DynamicResource CardBrush}"
+              CornerRadius="16"
+              Padding="24"
+              Margin="32"
+              MaxWidth="400"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="{Binding TutorialTitle}"
+                     FontSize="22" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding TutorialText}"
+                     FontSize="14"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextWrapping="Wrap"
+                     TextAlignment="Center"
+                     LineHeight="22" />
+          <Button Content="{loc:Translate TutorialGotIt}"
+                  Classes="Primary"
+                  Command="{Binding DismissTutorialCommand}"
+                  HorizontalAlignment="Center"
+                  MinWidth="160"
+                  Margin="0,8,0,0" />
+        </StackPanel>
+      </Border>
+    </Border>
+
     <!-- ================================================================= -->
     <!-- ROW 4: ACTION BUTTONS                                            -->
     <!-- ================================================================= -->
@@ -218,12 +246,14 @@
           </MultiBinding>
         </Grid.IsVisible>
 
-        <Button Content="{loc:Translate WatchAdForDouble}"
-                Classes="Secondary"
+        <Button Classes="Secondary"
                 IsEnabled="{Binding CanWatchAd}"
                 Command="{Binding WatchAdCommand}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center" />
+                HorizontalContentAlignment="Center">
+          <TextBlock Text="{loc:Translate WatchAdForDouble}"
+                     TextTrimming="CharacterEllipsis" />
+        </Button>
 
         <Button Grid.Column="1"
                 Content="{Binding ContinueButtonText}"

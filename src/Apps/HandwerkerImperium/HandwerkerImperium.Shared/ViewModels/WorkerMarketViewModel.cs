@@ -157,9 +157,13 @@ public partial class WorkerMarketViewModel : ObservableObject
             : 1m;
 
         // Markt IMMER anzeigen, unabhaengig von freien Plaetzen
+        var playerLevel = _gameStateService.State.PlayerLevel;
         var workers = market.AvailableWorkers.ToList();
         foreach (var worker in workers)
         {
+            // Level-skalierte Anstellungskosten
+            worker.HiringCost = worker.Tier.GetHiringCost(playerLevel);
+
             // Geschaetzter Ertrag basierend auf Durchschnitt aller Workshops
             worker.IncomeContribution = avgBaseIncome * worker.Efficiency;
 
@@ -249,15 +253,13 @@ public partial class WorkerMarketViewModel : ObservableObject
 
     /// <summary>
     /// Führt den Markt-Refresh durch und aktualisiert alle UI-Properties.
+    /// Ruft LoadMarket() auf, damit Worker-Daten (IncomeContribution, PersonalityDisplay etc.) korrekt gesetzt werden.
     /// </summary>
     private void DoRefreshMarket()
     {
-        var market = _workerService.RefreshMarket();
-        AvailableWorkers = market.AvailableWorkers.ToList();
-        UpdateTimer();
-        UpdateFreeRefreshState();
+        _workerService.RefreshMarket();
         SelectedWorker = null;
-        UpdateCanHire();
+        LoadMarket();
     }
 
     [RelayCommand]
@@ -289,7 +291,7 @@ public partial class WorkerMarketViewModel : ObservableObject
     {
         if (worker == null) return;
 
-        var hiringCost = worker.Tier.GetHiringCost();
+        var hiringCost = worker.HiringCost;
 
         if (!_gameStateService.CanAfford(hiringCost))
         {
@@ -416,8 +418,7 @@ public partial class WorkerMarketViewModel : ObservableObject
             return;
         }
 
-        var cost = SelectedWorker.Tier.GetHiringCost();
-        CanHire = _gameStateService.CanAfford(cost) && HasAvailableSlots;
+        CanHire = _gameStateService.CanAfford(SelectedWorker.HiringCost) && HasAvailableSlots;
     }
 
     /// <summary>

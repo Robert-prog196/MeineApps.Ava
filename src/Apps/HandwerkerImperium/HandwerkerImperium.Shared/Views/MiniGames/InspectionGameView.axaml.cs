@@ -7,6 +7,7 @@ using HandwerkerImperium.Helpers;
 using HandwerkerImperium.Models.Enums;
 using HandwerkerImperium.ViewModels;
 using Material.Icons.Avalonia;
+using MeineApps.UI.SkiaSharp;
 using SkiaSharp;
 
 namespace HandwerkerImperium.Views.MiniGames;
@@ -149,6 +150,25 @@ public partial class InspectionGameView : UserControl
                 _vm.InspectCellCommand.Execute(cell);
             }
         }
+    }
+
+    // ====================================================================
+    // SkiaSharp LinearProgress Handler
+    // ====================================================================
+
+    private void OnPaintInspectionProgress(object? sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        var bounds = canvas.LocalClipBounds;
+        canvas.Clear(SKColors.Transparent);
+
+        float progress = 0f;
+        if (_vm != null)
+            progress = (float)_vm.InspectionProgress;
+
+        LinearProgressVisualization.Render(canvas, bounds, progress,
+            new SKColor(0xD9, 0x77, 0x06), new SKColor(0x92, 0x40, 0x0E),
+            showText: false, glowEnabled: true);
     }
 
     /// <summary>

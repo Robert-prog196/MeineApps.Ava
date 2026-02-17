@@ -388,6 +388,12 @@ public class GameState
     [JsonPropertyName("hasSeenTutorialHint")]
     public bool HasSeenTutorialHint { get; set; }
 
+    /// <summary>
+    /// MiniGame-Typen, für die das Tutorial bereits angezeigt wurde.
+    /// </summary>
+    [JsonPropertyName("seenMiniGameTutorials")]
+    public List<MiniGameType> SeenMiniGameTutorials { get; set; } = [];
+
     // ═══════════════════════════════════════════════════════════════════════
     // OFFLINE
     // ═══════════════════════════════════════════════════════════════════════

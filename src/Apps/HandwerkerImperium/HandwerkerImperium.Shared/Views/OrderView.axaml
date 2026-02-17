@@ -3,6 +3,7 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:labs="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.OrderView"
              x:DataType="vm:OrderViewModel">
 
@@ -159,11 +160,9 @@
                 <Run Text="{Binding MiniGamesRequired}" />
               </TextBlock>
 
-              <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
-                           Value="{Binding Progress}"
-                           Maximum="1"
-                           Foreground="{StaticResource CraftPrimaryLightBrush}"
-                           Height="8" />
+              <labs:SKCanvasView Grid.Row="1" Grid.ColumnSpan="2"
+                                   Height="12"
+                                   PaintSurface="OnPaintOrderProgress" />
             </Grid>
           </StackPanel>
         </Border>

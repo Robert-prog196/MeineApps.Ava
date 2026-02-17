@@ -1101,6 +1101,8 @@ namespace HandwerkerImperium.Resources.Strings {
 
         public static string TrainingTypeMoraleDesc => ResourceManager.GetString("TrainingTypeMoraleDesc", resourceCulture) ?? "Reduces mood decay";
 
+        public static string SelectTrainingType => ResourceManager.GetString("SelectTrainingType", resourceCulture) ?? "Select training type";
+
         public static string NewRecord => ResourceManager.GetString("NewRecord", resourceCulture) ?? "New Record!";
 
         public static string NextMilestone => ResourceManager.GetString("NextMilestone", resourceCulture) ?? "Next Milestone";

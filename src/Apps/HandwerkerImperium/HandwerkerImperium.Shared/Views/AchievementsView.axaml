@@ -3,6 +3,7 @@
              xmlns:vm="using:HandwerkerImperium.ViewModels"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:labs="using:Avalonia.Labs.Controls"
              x:Class="HandwerkerImperium.Views.AchievementsView"
              x:DataType="vm:AchievementsViewModel">
 
@@ -69,10 +70,8 @@
             <TextBlock Text="{loc:Translate AchievementProgress}"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{StaticResource CraftPrimaryLightBrush}" />
-            <ProgressBar Value="{Binding OverallProgress}"
-                         Maximum="1"
-                         Foreground="{StaticResource CraftPrimaryLightBrush}"
-                         Height="8" />
+            <labs:SKCanvasView Height="12"
+                                 PaintSurface="OnPaintOverallProgress" />
             <TextBlock Text="{Binding ProgressText, StringFormat='{}{0} completed'}"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}"
@@ -135,11 +134,9 @@
                         ColumnDefinitions="*,Auto,Auto"
                         ColumnSpacing="8"
                         IsVisible="{Binding !IsUnlocked}">
-                    <ProgressBar Value="{Binding ProgressFraction}"
-                                 Maximum="1"
-                                 Foreground="{StaticResource CraftPrimaryLightBrush}"
-                                 Height="4"
-                                 VerticalAlignment="Center" />
+                    <labs:SKCanvasView Height="8"
+                                         VerticalAlignment="Center"
+                                         PaintSurface="OnPaintAchievementProgress" />
                     <TextBlock Grid.Column="1"
                                Text="{Binding ProgressText}"
                                FontSize="10"

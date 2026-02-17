@@ -352,4 +352,102 @@ public partial class DashboardView : UserControl
         _animationManager.Update(delta);
         _animationManager.Render(canvas);
     }
+
+    #region ProgressBar Paint-Handler
+
+    /// <summary>
+    /// Spieler XP-Level-Fortschritt (amber/gold Gradient).
+    /// </summary>
+    private void OnPaintLevelProgress(object? sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+        var bounds = canvas.LocalClipBounds;
+        if (_vm == null) return;
+
+        MeineApps.UI.SkiaSharp.LinearProgressVisualization.Render(canvas, bounds,
+            (float)_vm.LevelProgress,
+            new SKColor(0xF5, 0x9E, 0x0B), // Amber Start
+            new SKColor(0xFF, 0xD7, 0x00), // Gold End
+            showText: false, glowEnabled: true);
+    }
+
+    /// <summary>
+    /// Tages-Challenge Fortschritt (CraftPrimary orange).
+    /// DataContext ist DailyChallenge (aus DataTemplate).
+    /// </summary>
+    private void OnPaintChallengeProgress(object? sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+        var bounds = canvas.LocalClipBounds;
+
+        if (sender is not SKCanvasView canvasView) return;
+        var dc = canvasView.DataContext;
+        if (dc == null) return;
+
+        // Progress-Property per Reflection
+        var progressProp = dc.GetType().GetProperty("Progress");
+        if (progressProp == null) return;
+        var progress = (float)(double)(progressProp.GetValue(dc) ?? 0.0);
+
+        MeineApps.UI.SkiaSharp.LinearProgressVisualization.Render(canvas, bounds,
+            progress,
+            new SKColor(0xD9, 0x77, 0x06), // CraftPrimary
+            new SKColor(0xF5, 0x9E, 0x0B), // CraftPrimaryLight
+            showText: false, glowEnabled: false);
+    }
+
+    /// <summary>
+    /// Workshop-Level Fortschritt (Farbe abhängig vom Workshop-Typ).
+    /// DataContext ist WorkshopDisplayModel (aus DataTemplate).
+    /// </summary>
+    private void OnPaintWorkshopLevelProgress(object? sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+        var bounds = canvas.LocalClipBounds;
+
+        if (sender is not SKCanvasView canvasView) return;
+        var dc = canvasView.DataContext;
+        if (dc == null) return;
+
+        var progressProp = dc.GetType().GetProperty("LevelProgress");
+        if (progressProp == null) return;
+        var progress = (float)(double)(progressProp.GetValue(dc) ?? 0.0);
+
+        // Workshop-Farbe: CraftPrimary als Default
+        MeineApps.UI.SkiaSharp.LinearProgressVisualization.Render(canvas, bounds,
+            progress,
+            new SKColor(0xD9, 0x77, 0x06), // CraftPrimary dunkel
+            new SKColor(0xF5, 0x9E, 0x0B), // CraftPrimaryLight
+            showText: false, glowEnabled: false);
+    }
+
+    /// <summary>
+    /// Milestone-Fortschritt (Gold, dezent).
+    /// DataContext ist WorkshopDisplayModel (aus DataTemplate).
+    /// </summary>
+    private void OnPaintMilestoneProgress(object? sender, SKPaintSurfaceEventArgs e)
+    {
+        var canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+        var bounds = canvas.LocalClipBounds;
+
+        if (sender is not SKCanvasView canvasView) return;
+        var dc = canvasView.DataContext;
+        if (dc == null) return;
+
+        var progressProp = dc.GetType().GetProperty("MilestoneProgress");
+        if (progressProp == null) return;
+        var progress = (float)(double)(progressProp.GetValue(dc) ?? 0.0);
+
+        MeineApps.UI.SkiaSharp.LinearProgressVisualization.Render(canvas, bounds,
+            progress,
+            new SKColor(0xFF, 0xD7, 0x00), // Gold Start
+            new SKColor(0xFF, 0xB3, 0x00), // Gold End
+            showText: false, glowEnabled: false);
+    }
+
+    #endregion
 }

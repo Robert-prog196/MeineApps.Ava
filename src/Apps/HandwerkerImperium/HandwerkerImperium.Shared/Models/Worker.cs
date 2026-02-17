@@ -240,10 +240,11 @@ public class Worker
     public string PersonalityIcon => Personality.GetIcon();
 
     /// <summary>
-    /// Hiring cost for this worker's tier (avoids extension method in bindings).
+    /// Anstellungskosten (level-skaliert). Wird beim Laden des Markts gesetzt.
+    /// Fallback auf Basis-Kosten wenn nicht gesetzt.
     /// </summary>
     [JsonIgnore]
-    public decimal HiringCost => Tier.GetHiringCost();
+    public decimal HiringCost { get; set; }
 
     /// <summary>
     /// Zusaetzliche Goldschrauben-Kosten (nur Tier A und S).

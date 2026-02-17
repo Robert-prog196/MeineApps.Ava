@@ -132,6 +132,16 @@ public partial class DesignPuzzleGameViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _star3Opacity;
 
+    // Tutorial (beim ersten Spielstart anzeigen)
+    [ObservableProperty]
+    private bool _showTutorial;
+
+    [ObservableProperty]
+    private string _tutorialTitle = "";
+
+    [ObservableProperty]
+    private string _tutorialText = "";
+
     // ═══════════════════════════════════════════════════════════════════════
     // COMPUTED PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -220,6 +230,8 @@ public partial class DesignPuzzleGameViewModel : ObservableObject, IDisposable
         }
 
         InitializeGame();
+
+        CheckAndShowTutorial(MiniGameType.DesignPuzzle);
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -451,14 +463,25 @@ public partial class DesignPuzzleGameViewModel : ObservableObject, IDisposable
 
         // Belohnungen berechnen
         var order = _gameStateService.GetActiveOrder();
-        if (order != null)
+        if (order != null && IsLastTask)
         {
+            // Gesamt-Belohnung
+            RewardAmount = order.FinalReward;
+            XpAmount = order.FinalXp;
+        }
+        else if (order != null)
+        {
+            // Teilbelohnung für diese Aufgabe anzeigen
             int taskCount = Math.Max(1, order.Tasks.Count);
-            decimal baseReward = order.BaseReward / taskCount;
-            RewardAmount = baseReward * Result.GetRewardPercentage();
-
-            int baseXp = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXp * Result.GetXpPercentage());
+            decimal basePerTask = order.BaseReward / taskCount;
+            RewardAmount = basePerTask * Result.GetRewardPercentage();
+            int baseXpPerTask = order.BaseXp / taskCount;
+            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage());
+        }
+        else
+        {
+            RewardAmount = 0;
+            XpAmount = 0;
         }
 
         // Ergebnis-Anzeige setzen
@@ -544,6 +567,19 @@ public partial class DesignPuzzleGameViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void DismissTutorial()
+    {
+        ShowTutorial = false;
+        // Als gesehen markieren und speichern
+        var state = _gameStateService.State;
+        if (!state.SeenMiniGameTutorials.Contains(MiniGameType.DesignPuzzle))
+        {
+            state.SeenMiniGameTutorials.Add(MiniGameType.DesignPuzzle);
+            _gameStateService.MarkDirty();
+        }
+    }
+
+    [RelayCommand]
     private void Cancel()
     {
         _timer?.Stop();
@@ -551,6 +587,21 @@ public partial class DesignPuzzleGameViewModel : ObservableObject, IDisposable
 
         _gameStateService.CancelActiveOrder();
         NavigationRequested?.Invoke("../..");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void CheckAndShowTutorial(MiniGameType gameType)
+    {
+        var state = _gameStateService.State;
+        if (!state.SeenMiniGameTutorials.Contains(gameType))
+        {
+            TutorialTitle = _localizationService.GetString($"Tutorial{gameType}Title") ?? "";
+            TutorialText = _localizationService.GetString($"Tutorial{gameType}Text") ?? "";
+            ShowTutorial = true;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════

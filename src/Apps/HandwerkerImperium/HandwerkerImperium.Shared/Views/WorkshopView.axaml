@@ -81,10 +81,8 @@
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
             <Grid ColumnDefinitions="*,Auto">
-              <ProgressBar Value="{Binding LevelProgress}"
-                           Maximum="1"
-                           Foreground="{StaticResource CraftPrimaryLightBrush}"
-                           Height="12" />
+              <skia:SKCanvasView Height="16"
+                                 PaintSurface="OnPaintWorkshopMainLevelProgress" />
               <TextBlock Grid.Column="1"
                          Text="{Binding LevelDisplay}"
                          FontSize="12"
@@ -264,36 +262,40 @@
               </TextBlock>
             </Grid>
 
-            <!-- Worker-Chips (horizontal, kompakt) -->
+            <!-- Worker-Chips (2 Spalten, gleichmäßig) -->
             <ItemsControl ItemsSource="{Binding Workers}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
+                  <UniformGrid Columns="2" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <Button Classes="Text" Padding="0" Margin="4"
+                  <Button Classes="Text" Padding="0" Margin="3"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
                           Command="{Binding $parent[ItemsControl].((vm:WorkshopViewModel)DataContext).SelectWorkerCommand}"
                           CommandParameter="{Binding Id}">
                     <Border Background="{DynamicResource SurfaceBrush}"
-                            CornerRadius="20"
+                            CornerRadius="12"
                             Padding="10,6"
                             BorderThickness="1"
                             BorderBrush="{DynamicResource CardBorderBrush}">
-                      <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
                         <!-- Tier-Farb-Punkt -->
                         <Border Width="10" Height="10" CornerRadius="5"
-                                Background="{Binding TierColorHex}" />
-                        <TextBlock Text="{Binding Name}"
+                                Background="{Binding TierColorHex}"
+                                VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1" Text="{Binding Name}"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextPrimaryBrush}"
-                                   VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding EffectiveEfficiency, StringFormat='({0:P0})'}"
+                                   VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="2" Text="{Binding EffectiveEfficiency, StringFormat='({0:P0})'}"
                                    FontSize="11"
                                    Foreground="{DynamicResource TextSecondaryBrush}"
                                    VerticalAlignment="Center" />
-                      </StackPanel>
+                      </Grid>
                     </Border>
                   </Button>
                 </DataTemplate>
