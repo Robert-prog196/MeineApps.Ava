@@ -91,8 +91,8 @@ Alle 8 Apps im geschlossenen Test, warten auf 12 Tester fuer Produktion.
 | FinanzRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
 | FitnessRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
 | WorkTimePro | v2.0.2 | Banner + Rewarded | 3,99/Mo oder 19,99 Lifetime |
-| HandwerkerImperium | v2.0.3 | Banner + Rewarded | 4,99 Premium |
-| BomberBlast | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
+| HandwerkerImperium | v2.0.7 | Banner + Rewarded | 4,99 Premium |
+| BomberBlast | v2.0.6 | Banner + Rewarded | 3,99 remove_ads |
 
 ---
 
@@ -119,6 +119,7 @@ Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via
 | Xaml.Behaviors.Avalonia | 11.3.9.3 | Behaviors |
 | LiveChartsCore.SkiaSharpView.Avalonia | 2.0.0-rc6.1 | Charts (nur noch FitnessRechner, wird durch SkiaSharp ersetzt) |
 | SkiaSharp | 3.119.2 | 2D Graphics |
+| Xamarin.Android.Google.BillingClient | 8.3.0.1 | Google Play Billing |
 | sqlite-net-pcl | 1.9.172 | Database |
 
 ---
@@ -278,7 +279,7 @@ Dispatcher.UIThread.Post(() => { SomeProperty = newValue; });
 ## AdMob
 
 ### Linked-File-Pattern
-- `AdMobHelper.cs` + `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs` + `AndroidFileShareService.cs` in Premium-Library unter `Android/`
+- `AdMobHelper.cs` + `RewardedAdHelper.cs` + `AndroidRewardedAdService.cs` + `AndroidFileShareService.cs` + `AndroidPurchaseService.cs` in Premium-Library unter `Android/`
 - Per `<Compile Include="..." Link="..." />` in jedes Android-Projekt eingebunden
 - `<Compile Remove="Android\**" />` verhindert Kompilierung im net10.0 Library-Projekt
 - **UMP Namespace-Typo**: `Xamarin.Google.UserMesssagingPlatform` (DREIFACHES 's')
@@ -288,6 +289,13 @@ Dispatcher.UIThread.Post(() => { SomeProperty = newValue; });
 - `AdConfig.cs`: 28 Rewarded Ad-Unit-IDs (6 Apps)
 - `ShowAdAsync(string placement)` → placement-spezifische Ad-Unit-ID via AdConfig
 - Jede App hat `RewardedAdServiceFactory` Property in App.axaml.cs
+
+### Google Play Billing (In-App Purchases)
+- `AndroidPurchaseService.cs`: Erbt von `PurchaseService`, implementiert Google Play Billing Client v8
+- `Xamarin.Android.Google.BillingClient` 8.3.0.1 (in Directory.Packages.props)
+- Jede App hat `PurchaseServiceFactory` Property in App.axaml.cs (analog zu RewardedAdServiceFactory)
+- **Java-Callback-Pattern:** `IBillingClientStateListener` und `IPurchasesUpdatedListener` als innere Klassen (erben von `Java.Lang.Object`)
+- Unterstützt InApp (non-consumable + consumable), Subscriptions, Auto-Reconnect
 
 ### Publisher-Account
 - **ca-app-pub-2588160251469436** fuer alle 6 werbe-unterstuetzten Apps

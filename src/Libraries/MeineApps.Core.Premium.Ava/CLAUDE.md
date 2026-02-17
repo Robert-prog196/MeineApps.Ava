@@ -15,7 +15,8 @@ MeineApps.Core.Premium.Ava/
 ├── Android/
 │   ├── AdMobHelper.cs              # Native AdMob banner (linked file, NOT compiled here)
 │   ├── RewardedAdHelper.cs         # Rewarded Ad helper (linked file, NOT compiled here)
-│   └── AndroidRewardedAdService.cs # IRewardedAdService Android-Impl (linked file, NOT compiled here)
+│   ├── AndroidRewardedAdService.cs # IRewardedAdService Android-Impl (linked file, NOT compiled here)
+│   └── AndroidPurchaseService.cs   # Google Play Billing Client (linked file, NOT compiled here)
 ├── Services/
 │   ├── IAdService.cs          # Ad service interface
 │   ├── IPurchaseService.cs    # Purchase service interface
@@ -146,6 +147,29 @@ services.AddMeineAppsPremium<AndroidPurchaseService>();
 - `AddMeineAppsPremium()` registriert `IRewardedAdService` als Singleton (RewardedAdService)
 - Apps ueberschreiben via `RewardedAdServiceFactory` Property fuer Android-Implementierung
 
+### Google Play Billing Client (17.02.2026)
+
+#### AndroidPurchaseService.cs (Linked File Pattern)
+- Lebt in `Android/AndroidPurchaseService.cs`, wird per `<Compile Include>` in jedes Android-Projekt eingebunden
+- **Namespace:** `MeineApps.Core.Premium.Ava.Droid`
+- Erbt von `PurchaseService` (C#-Klasse) und überschreibt alle 5 virtuellen Kauf-Methoden
+- **Java-Callback-Pattern:** `IPurchasesUpdatedListener` und `IBillingClientStateListener` erben von `IJavaPeerable` → innere Klassen (`BillingStateListener`, `PurchaseUpdateListener`) die von `Java.Lang.Object` erben (gleich wie `RewardedAdHelper.LoadCallback`)
+- Constructor: `(Activity, IPreferencesService, IAdService)`
+- Auto-Reconnect mit exponentiellem Backoff (max 5 Versuche)
+- Unterstützt InApp (non-consumable + consumable) und Subscriptions
+- **NuGet:** `Xamarin.Android.Google.BillingClient` 8.3.0.1
+
+#### BillingClient v8 API-Besonderheiten
+- `EnablePendingPurchases(PendingPurchasesParams)` - parameterlose Variante entfernt in v8
+- `QueryPurchasesResult.Purchases` (nicht `PurchasesList`)
+- `Android.BillingClient.Api.PurchaseState.Purchased` (nicht `Purchase.PurchaseStateCode.Purchased`)
+
+#### DI-Integration (analog zu RewardedAdServiceFactory)
+- Jede App hat in `App.axaml.cs`: `static Func<IServiceProvider, IPurchaseService>? PurchaseServiceFactory`
+- Nach `services.AddMeineAppsPremium()` wird Factory als DI-Override registriert (wenn gesetzt)
+- `MainActivity.cs` setzt Factory VOR `base.OnCreate()`
+
 ### Changelog (Premium Library)
 
+- **17.02.2026**: AndroidPurchaseService mit Google Play Billing Client v8.3.0.1 integriert. Ersetzt AIDL-basierte Billing. Alle 6 Premium-Apps verwenden jetzt echte Google Play Billing Library.
 - **10.02.2026**: TrialService DateTime.Now → DateTime.UtcNow + TryParse mit CultureInfo.InvariantCulture + DateTimeStyles.RoundtripKind. AdMobHelper TestDeviceId nur noch in DEBUG-Builds registriert.
