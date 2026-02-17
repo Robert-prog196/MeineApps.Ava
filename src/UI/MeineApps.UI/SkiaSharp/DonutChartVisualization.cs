@@ -1,3 +1,4 @@
+using MeineApps.UI.SkiaSharp.Shaders;
 using SkiaSharp;
 
 namespace MeineApps.UI.SkiaSharp;
@@ -23,11 +24,12 @@ public static class DonutChartVisualization
     /// <summary>
     /// Rendert einen Donut-Chart mit Premium-Optik.
     /// </summary>
+    /// <param name="animationTime">Animationszeit für Shimmer-Effekt auf Segmenten (0 = kein Shimmer)</param>
     public static void Render(SKCanvas canvas, SKRect bounds,
         Segment[] segments, float innerRadiusFraction = 0.55f,
         string? centerText = null, string? centerSubText = null,
         bool showLabels = true, bool showLegend = true,
-        float startAngle = -90f)
+        float startAngle = -90f, float animationTime = 0f)
     {
         if (segments.Length == 0) return;
 
@@ -148,6 +150,26 @@ public static class DonutChartVisualization
             chartCenterX + midRadius, chartCenterY + midRadius);
         canvas.DrawArc(highlightRect, -150f, 120f, false, highlightPaint);
         highlightPaint.Shader?.Dispose();
+
+        // === Shimmer-Overlay auf dem Ring (animiert, optional) ===
+        if (animationTime > 0f)
+        {
+            canvas.Save();
+            // Clip auf Ring-Bereich (Donut-Form)
+            using var clipPath = new SKPath();
+            clipPath.AddCircle(chartCenterX, chartCenterY, outerRadius);
+            clipPath.AddCircle(chartCenterX, chartCenterY, innerRadius);
+            clipPath.FillType = SKPathFillType.EvenOdd;
+            canvas.ClipPath(clipPath);
+
+            var ringBounds = new SKRect(
+                chartCenterX - outerRadius, chartCenterY - outerRadius,
+                chartCenterX + outerRadius, chartCenterY + outerRadius);
+            SkiaShimmerEffect.DrawShimmerOverlay(canvas, ringBounds, animationTime,
+                shimmerColor: SKColors.White.WithAlpha(40),
+                stripWidth: 0.12f, speed: 0.3f);
+            canvas.Restore();
+        }
 
         // === Labels auf den Segmenten ===
         if (showLabels)

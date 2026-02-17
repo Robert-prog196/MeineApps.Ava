@@ -12,7 +12,9 @@
     <PackageReference Include="Xaml.Behaviors.Avalonia" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="SkiaSharp.Skottie" />
     <PackageReference Include="Avalonia.Labs.Controls" />
+    <PackageReference Include="Avalonia.Labs.Lottie" />
   </ItemGroup>
 
   <ItemGroup>

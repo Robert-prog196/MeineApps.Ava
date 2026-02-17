@@ -32,7 +32,9 @@ MeineApps.UI/
 │   ├── SplashOverlay.axaml.cs
 │   ├── CircularProgress.cs          # Kreisförmiger Fortschrittsring
 │   ├── FloatingTextOverlay.cs      # Floating text animation (Game Juice)
-│   ├── CelebrationOverlay.cs       # Confetti particle effect (Game Juice)
+│   ├── CelebrationOverlay.cs       # Legacy Confetti (Border-basiert)
+│   ├── SkiaCelebrationOverlay.cs   # Premium Confetti (SkiaSharp, Glow, Sterne)
+│   ├── LottieAnimationView.cs      # Lottie-Wrapper mit OneShot-Modus
 │   └── TooltipBubble.cs            # Onboarding tooltip with tap-to-dismiss
 ├── Behaviors/
 │   ├── TapScaleBehavior.cs         # Scale-Down Micro-Animation bei Tap
@@ -40,6 +42,21 @@ MeineApps.UI/
 │   ├── StaggerFadeInBehavior.cs    # Gestaffelter Fade-In fuer Listen
 │   ├── CountUpBehavior.cs          # Animiertes Hochzaehlen fuer TextBlocks
 │   └── SwipeToRevealBehavior.cs    # Swipe-to-Reveal (Delete-Aktion)
+├── SkiaSharp/
+│   ├── SkiaThemeHelper.cs           # Theme-Farben-Cache (SKColor)
+│   ├── SkiaParticleSystem.cs        # Struct-basiertes Partikelsystem
+│   ├── DonutChartVisualization.cs   # Premium-Donut-Chart
+│   ├── LinearProgressVisualization.cs # Gradient-Fortschrittsbalken
+│   ├── SkiaGradientRing.cs          # Gradient-Fortschrittsring
+│   ├── SkiaGauge.cs                 # Halbkreis-Tachometer
+│   ├── SkiaWaterGlass.cs            # Animiertes Wasserglas
+│   ├── SkiaBlueprintCanvas.cs       # Technische Zeichnungen
+│   ├── SkiaChartTooltip.cs          # Tooltip-System für Charts
+│   ├── InteractiveChartBase.cs      # Basis für Touch-Charts
+│   └── Shaders/
+│       ├── SkiaShimmerEffect.cs     # GPU-Shimmer (SkSL)
+│       ├── SkiaGlowEffect.cs        # GPU-Glow (SkSL)
+│       └── SkiaWaveEffect.cs        # GPU-Wellen (SkSL)
 └── Styles/
     ├── ButtonStyles.axaml
     ├── TextStyles.axaml
@@ -309,26 +326,30 @@ FloatingTextCanvas.ShowFloatingText("Gespeichert!", x, y, Color.Parse("#22C55E")
 - IsHitTestVisible=false, ClipToBounds=true
 - Kann mehrfach gleichzeitig aufgerufen werden (jeder Aufruf erstellt neuen TextBlock)
 
-## CelebrationOverlay (Game Juice)
+## SkiaCelebrationOverlay (Game Juice - Premium)
 
-Canvas-basiertes Confetti-Partikel-System mit Border-Controls (kein SkiaSharp noetig).
+SkiaSharp-basiertes Confetti-System mit Glow, Sternformen und Blitz-Flash. Ersetzt die alte CelebrationOverlay.
 
 ```axaml
-<controls:CelebrationOverlay x:Name="CelebrationCanvas"
-                              Grid.RowSpan="99" ZIndex="16"
-                              IsHitTestVisible="False" />
+<controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                  Grid.RowSpan="99" ZIndex="16"
+                                  IsHitTestVisible="False" />
 ```
 
 ```csharp
-// Im Code-Behind:
-CelebrationCanvas.ShowConfetti();
+CelebrationCanvas.ShowConfetti();  // Volles Confetti (80 Partikel)
+CelebrationCanvas.ShowSparkle();   // Subtiler Sparkle-Effekt (30 Partikel)
 ```
 
-- 50 Border-Partikel-Pool (keine GC-Allokationen pro Animation)
-- 5 Farben: Gold, Amber, Rot, Gruen, Blau
-- 1.5s Animation mit Schwerkraft, sin-Schwankung und Rotation
-- Fade-Out in letzten 30% der Animation
-- ~60fps via DispatcherTimer
+- 80 Partikel-Pool, 3 Formen (Rechteck, Kreis, Stern)
+- 8 Farben, 40% der Partikel mit Glow-Effekt
+- Initialer Blitz-Flash (weißer Screen-Flash)
+- 2s Animation mit Schwerkraft und Luftwiderstand
+- Fade-Out in letzten 30%, ~60fps via DispatcherTimer + InvalidateSurface()
+
+## CelebrationOverlay (Legacy)
+
+Alte Border-basierte Confetti-Implementierung. Wird nicht mehr in den Apps verwendet, bleibt als Fallback vorhanden.
 
 ## TapScaleBehavior
 
@@ -607,3 +628,105 @@ Animiertes Wasserglas mit Wellen-Animation, Tropfen-Effekt und Glas-Glanz.
 - **WaveEnabled**: Animierte Wellen-Oberfläche
 - **WaterColor**: Farbe des Wassers
 - **ShowDrops**: Tropfen-Partikel die ins Glas fallen
+
+### SkiaChartTooltip.cs
+
+Wiederverwendbares Tooltip-System für interaktive SkiaSharp-Charts. Zeichnet Tooltip-Popups mit Pfeil, automatischer Positionierung und Highlight-Dots.
+
+```csharp
+// Hervorgehobenen Datenpunkt zeichnen
+SkiaChartTooltip.DrawHighlightDot(canvas, x, y, SkiaThemeHelper.Primary);
+SkiaChartTooltip.DrawVerticalGuide(canvas, x, y, bounds.Bottom, SkiaThemeHelper.Primary);
+SkiaChartTooltip.DrawTooltip(canvas, x, y, "245,50 €", "15. Januar", SkiaThemeHelper.Primary, bounds);
+
+// Nächsten Datenpunkt finden
+int index = SkiaChartTooltip.FindNearestDataPoint(touchX, dataPointsX, maxDistance: 30f);
+```
+
+### InteractiveChartBase.cs (Abstrakte Basis-Klasse)
+
+Basis für Touch-interaktive Charts. Verarbeitet Touch/Maus-Events und verwaltet den aktiven Datenpunkt.
+
+```csharp
+public class MyInteractiveChart : InteractiveChartBase
+{
+    protected override void OnDrawChart(SKCanvas canvas, SKRect bounds) { /* Chart zeichnen */ }
+    protected override void OnDrawTooltip(SKCanvas canvas, SKRect bounds, int index) { /* Tooltip */ }
+    protected override int FindNearestPoint(float touchX, float touchY) { return /* index */; }
+}
+```
+
+- Automatisches Tooltip-Ausblenden nach 2s
+- Touch/Maus-Events mit Drag-Unterstützung
+- Koordinaten-Skalierung für DPI-Anpassung
+
+### LottieAnimationView.cs
+
+Wrapper-Control für Avalonia.Labs.Lottie mit OneShot-Modus und Event-basierter Steuerung.
+
+```axaml
+<controls:LottieAnimationView Path="/Assets/success.json"
+                               OneShot="True" DurationMs="1500"
+                               AutoPlay="True" />
+```
+
+- **Path**: Pfad zur Lottie-JSON-Datei (AvaloniaResource)
+- **RepeatCount**: Wiederholungen (-1 = unendlich)
+- **OneShot**: Nach einmaliger Wiedergabe automatisch ausblenden
+- **DurationMs**: Dauer für OneShot-Timer
+- **AnimationCompleted**: Event nach OneShot-Abschluss
+- Programmatische Steuerung: `Play()`, `Stop()`
+
+---
+
+## SkSL-Shader-Effekte
+
+GPU-beschleunigte Effekte via SkiaSharp Runtime Shaders (SkSL). In `SkiaSharp/Shaders/`.
+
+### SkiaShimmerEffect.cs
+
+Wandernder Glanzstreifen-Effekt für Premium-Badges, Gold-Elemente, Loading-Platzhalter.
+
+```csharp
+// Overlay-Shimmer auf bestehende Fläche
+SkiaShimmerEffect.DrawShimmerOverlay(canvas, bounds, time);
+
+// Gold-Shimmer-Preset
+SkiaShimmerEffect.DrawGoldShimmer(canvas, bounds, time);
+
+// Premium-Shimmer-Preset (Blau/Violett)
+SkiaShimmerEffect.DrawPremiumShimmer(canvas, bounds, time);
+
+// Eigenen Shimmer-Paint erstellen
+using var paint = SkiaShimmerEffect.CreateShimmerPaint(bounds, time, baseColor, shimmerColor,
+    stripWidth: 0.1f, speed: 0.4f, angleDegrees: 30f);
+```
+
+### SkiaGlowEffect.cs
+
+Pulsierender Glow-Effekt für aktive Timer, Premium-Buttons, Highlight-Effekte.
+
+```csharp
+// Pulsierender Rand-Glow
+SkiaGlowEffect.DrawEdgeGlow(canvas, bounds, time, glowColor);
+
+// Kreisförmiger Glow-Ring
+SkiaGlowEffect.DrawRadialGlow(canvas, bounds, time, glowColor);
+
+// Presets
+SkiaGlowEffect.DrawSuccessGlow(canvas, bounds, time);
+SkiaGlowEffect.DrawWarningGlow(canvas, bounds, time);
+SkiaGlowEffect.DrawPremiumGlow(canvas, bounds, time);
+```
+
+### SkiaWaveEffect.cs
+
+Animierte Wellen für Wasser-Effekte, Hintergründe, flüssige Übergänge.
+
+```csharp
+// Animierte Wasserfüllung mit Wellen und Caustics
+SkiaWaveEffect.DrawWaterFill(canvas, bounds, time, fillLevel: 0.65f);
+
+// Dekorative Hintergrundwellen
+SkiaWaveEffect.DrawBackgroundWaves(canvas, bounds, time, color1, color2);
+```

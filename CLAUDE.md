@@ -79,18 +79,18 @@ F:\Meine_Apps_Ava\
 
 ---
 
-## Status (09. Februar 2026)
+## Status (17. Februar 2026)
 
 Alle 8 Apps im geschlossenen Test, warten auf 12 Tester fuer Produktion.
 
 | App | Version | Ads | Premium |
 |-----|---------|-----|---------|
-| RechnerPlus | v2.0.2 | Nein | Nein |
-| ZeitManager | v2.0.2 | Nein | Nein |
-| HandwerkerRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
-| FinanzRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
-| FitnessRechner | v2.0.2 | Banner + Rewarded | 3,99 remove_ads |
-| WorkTimePro | v2.0.2 | Banner + Rewarded | 3,99/Mo oder 19,99 Lifetime |
+| RechnerPlus | v2.0.4 | Nein | Nein |
+| ZeitManager | v2.0.4 | Nein | Nein |
+| HandwerkerRechner | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
+| FinanzRechner | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
+| FitnessRechner | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
+| WorkTimePro | v2.0.4 | Banner + Rewarded | 3,99/Mo oder 19,99 Lifetime |
 | HandwerkerImperium | v2.0.7 | Banner + Rewarded | 4,99 Premium |
 | BomberBlast | v2.0.6 | Banner + Rewarded | 3,99 remove_ads |
 
@@ -117,8 +117,9 @@ Implementierung: `MeineApps.Core.Ava/Themes/` - ThemeService laedt dynamisch via
 | Material.Icons.Avalonia | 2.4.1 | 7000+ SVG Icons |
 | CommunityToolkit.Mvvm | 8.4.0 | MVVM |
 | Xaml.Behaviors.Avalonia | 11.3.9.3 | Behaviors |
-| LiveChartsCore.SkiaSharpView.Avalonia | 2.0.0-rc6.1 | Charts (nur noch FitnessRechner, wird durch SkiaSharp ersetzt) |
-| SkiaSharp | 3.119.2 | 2D Graphics |
+| SkiaSharp | 3.119.2 | 2D Graphics + SkSL GPU-Shader |
+| SkiaSharp.Skottie | 3.119.2 | Lottie-Animations-Backend |
+| Avalonia.Labs.Lottie | 11.3.1 | Lottie-Animationen (JSON) |
 | Xamarin.Android.Google.BillingClient | 8.3.0.1 | Google Play Billing |
 | sqlite-net-pcl | 1.9.172 | Database |
 

@@ -950,9 +950,9 @@
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
                                   Grid.RowSpan="3" ZIndex="15"
                                   IsHitTestVisible="False" />
-    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
-                                 Grid.RowSpan="3" ZIndex="16"
-                                 IsHitTestVisible="False" />
+    <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                     Grid.RowSpan="3" ZIndex="16"
+                                     IsHitTestVisible="False" />
 
   </Grid>
 

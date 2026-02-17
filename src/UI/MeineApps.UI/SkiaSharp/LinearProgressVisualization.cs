@@ -1,3 +1,4 @@
+using MeineApps.UI.SkiaSharp.Shaders;
 using SkiaSharp;
 
 namespace MeineApps.UI.SkiaSharp;
@@ -25,9 +26,10 @@ public static class LinearProgressVisualization
     /// <param name="endColor">Gradient End-Farbe</param>
     /// <param name="showText">Prozentwert anzeigen</param>
     /// <param name="glowEnabled">Glow-Effekt am Ende</param>
+    /// <param name="animationTime">Animationszeit für Shimmer-Effekt (0 = kein Shimmer)</param>
     public static void Render(SKCanvas canvas, SKRect bounds,
         float progress, SKColor startColor, SKColor endColor,
-        bool showText = true, bool glowEnabled = true)
+        bool showText = true, bool glowEnabled = true, float animationTime = 0f)
     {
         float barH = Math.Min(bounds.Height - 4f, 14f);
         float barTop = bounds.MidY - barH / 2f;
@@ -56,9 +58,20 @@ public static class LinearProgressVisualization
                 new[] { startColor, endColor },
                 null, SKShaderTileMode.Clamp);
 
-            canvas.DrawRoundRect(new SKRect(barLeft, barTop, fillRight, barTop + barH),
-                cornerR, cornerR, _fillPaint);
+            var fillRect = new SKRect(barLeft, barTop, fillRight, barTop + barH);
+            canvas.DrawRoundRect(fillRect, cornerR, cornerR, _fillPaint);
             _fillPaint.Shader = null;
+
+            // Shimmer-Overlay auf dem Füllbalken (animiert)
+            if (animationTime > 0f && fillW > 20f)
+            {
+                canvas.Save();
+                canvas.ClipRoundRect(new SKRoundRect(fillRect, cornerR));
+                SkiaShimmerEffect.DrawShimmerOverlay(canvas, fillRect, animationTime,
+                    shimmerColor: SKColors.White.WithAlpha(50),
+                    stripWidth: 0.15f, speed: 0.5f);
+                canvas.Restore();
+            }
 
             // Glow am Ende
             if (glowEnabled && fillW > 5f)
@@ -70,13 +83,25 @@ public static class LinearProgressVisualization
             }
         }
 
-        // Überschreitung markieren (> 100%)
+        // Überschreitung markieren (> 100%) mit Gold-Shimmer
         if (progress > 1f)
         {
-            // Shimmer-Streifen am oberen Rand
-            _fillPaint.Color = SkiaThemeHelper.WithAlpha(SKColors.White, 30);
-            canvas.DrawRoundRect(new SKRect(barLeft, barTop, barRight, barTop + barH / 3f),
-                cornerR, cornerR / 3f, _fillPaint);
+            var overRect = new SKRect(barLeft, barTop, barRight, barTop + barH);
+            if (animationTime > 0f)
+            {
+                // Gold-Shimmer bei Überschreitung
+                canvas.Save();
+                canvas.ClipRoundRect(new SKRoundRect(overRect, cornerR));
+                SkiaShimmerEffect.DrawGoldShimmer(canvas, overRect, animationTime);
+                canvas.Restore();
+            }
+            else
+            {
+                // Statischer Shimmer-Streifen als Fallback
+                _fillPaint.Color = SkiaThemeHelper.WithAlpha(SKColors.White, 30);
+                canvas.DrawRoundRect(new SKRect(barLeft, barTop, barRight, barTop + barH / 3f),
+                    cornerR, cornerR / 3f, _fillPaint);
+            }
         }
 
         // Prozent-Text

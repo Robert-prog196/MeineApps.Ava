@@ -266,10 +266,10 @@
                                    Grid.Row="0" Grid.RowSpan="2"
                                    ZIndex="10"
                                    IsHitTestVisible="False" />
-    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
-                                  Grid.Row="0" Grid.RowSpan="2"
-                                  ZIndex="20"
-                                  IsHitTestVisible="False" />
+    <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                      Grid.Row="0" Grid.RowSpan="2"
+                                      ZIndex="20"
+                                      IsHitTestVisible="False" />
 
     <!-- Onboarding Overlay -->
     <Panel x:Name="OnboardingOverlay" IsVisible="False" Grid.Row="0" Grid.RowSpan="2" ZIndex="25">

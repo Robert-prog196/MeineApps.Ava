@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.Labs.Controls;
+using MeineApps.UI.SkiaSharp.Shaders;
 using SkiaSharp;
 
 namespace MeineApps.UI.SkiaSharp;
@@ -233,7 +234,26 @@ public class SkiaGradientRing : Control
         canvas.DrawCircle(endX, endY, strokeW * 0.6f, _arcPaint);
         _arcPaint.Style = SKPaintStyle.Stroke;
 
-        // 6. Partikel am Endpunkt
+        // 6. Shimmer-Overlay auf dem Arc (bei > 80% Fortschritt)
+        if (value > 0.8f && _time > 0f)
+        {
+            canvas.Save();
+            // Clip auf den Arc-Streifen
+            using var shimmerClip = new SKPath();
+            shimmerClip.AddCircle(cx, cy, radius + strokeW / 2f);
+            shimmerClip.AddCircle(cx, cy, radius - strokeW / 2f);
+            shimmerClip.FillType = SKPathFillType.EvenOdd;
+            canvas.ClipPath(shimmerClip);
+
+            var shimmerRect = new SKRect(cx - radius - strokeW, cy - radius - strokeW,
+                cx + radius + strokeW, cy + radius + strokeW);
+            SkiaShimmerEffect.DrawShimmerOverlay(canvas, shimmerRect, _time,
+                shimmerColor: SKColors.White.WithAlpha((byte)(30 * pulseAlpha)),
+                stripWidth: 0.1f, speed: 0.25f);
+            canvas.Restore();
+        }
+
+        // 7. Partikel am Endpunkt
         if (ParticlesEnabled)
         {
             // Gelegentlich neue Partikel spawnen

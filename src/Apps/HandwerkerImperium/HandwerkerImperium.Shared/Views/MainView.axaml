@@ -681,10 +681,10 @@
     </Border>
 
     <!-- Confetti-Overlay (Level-Up, Achievement-Unlock) -->
-    <controls:CelebrationOverlay x:Name="CelebrationCanvas"
-                                 Grid.RowSpan="3"
-                                 ZIndex="100"
-                                 IsHitTestVisible="False" />
+    <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                     Grid.RowSpan="3"
+                                     ZIndex="100"
+                                     IsHitTestVisible="False" />
 
     <!-- Loading Overlay -->
     <Border Grid.RowSpan="3"
