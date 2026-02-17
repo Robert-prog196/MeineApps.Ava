@@ -489,7 +489,7 @@ public class GameRenderer : IDisposable
         }
     }
 
-    /// <summary>Nachglühen auf Zellen nach Explosionsende (warmer Schimmer)</summary>
+    /// <summary>Nachglühen auf Zellen nach Explosionsende (warmer Schimmer + Glut-Glow)</summary>
     private void RenderAfterglow(SKCanvas canvas, GameGrid grid)
     {
         int cs = GameGrid.CELL_SIZE;
@@ -502,10 +502,21 @@ public class GameRenderer : IDisposable
                     continue;
 
                 float intensity = cell.AfterglowTimer / Models.Entities.Explosion.AFTERGLOW_DURATION;
-                byte alpha = (byte)(60 * intensity);
+
+                // Basis-Glow (orange, weicher Rand)
+                byte alpha = (byte)(70 * intensity);
                 _fillPaint.Color = _palette.ExplosionOuter.WithAlpha(alpha);
+                _fillPaint.MaskFilter = _outerGlow;
+                canvas.DrawRect(x * cs - 1, y * cs - 1, cs + 2, cs + 2, _fillPaint);
                 _fillPaint.MaskFilter = null;
-                canvas.DrawRect(x * cs, y * cs, cs, cs, _fillPaint);
+
+                // Innerer heller Kern (verblasst schneller)
+                if (intensity > 0.4f)
+                {
+                    float coreAlpha = (intensity - 0.4f) / 0.6f;
+                    _fillPaint.Color = _palette.ExplosionInner.WithAlpha((byte)(40 * coreAlpha));
+                    canvas.DrawRect(x * cs + cs * 0.2f, y * cs + cs * 0.2f, cs * 0.6f, cs * 0.6f, _fillPaint);
+                }
             }
         }
     }
@@ -1046,14 +1057,14 @@ public class GameRenderer : IDisposable
         // Pulsation beschleunigt sich je näher die Explosion (4→12 Hz)
         float fuseProgress = 1f - (bomb.FuseTimer / Bomb.DEFAULT_FUSE_TIME);
         float pulseSpeed = 4f + fuseProgress * 8f;
-        float pulseAmount = 0.06f + fuseProgress * 0.04f; // Dezente Pulsation, stärker kurz vor Explosion
+        float pulseAmount = 0.06f + fuseProgress * 0.04f;
         float pulse = MathF.Sin(_globalTimer * pulseSpeed) * pulseAmount + (1f - pulseAmount);
         float drawSize = cs * pulse * birthScale;
 
         // Glow beschleunigt und intensiviert sich
         float glowSpeed = 3f + fuseProgress * 6f;
         float glowPulse = MathF.Sin(_globalTimer * glowSpeed) * 0.3f + 0.5f;
-        byte glowAlpha = (byte)(80 + fuseProgress * 80); // Heller kurz vor Explosion
+        byte glowAlpha = (byte)(80 + fuseProgress * 80);
         _glowPaint.Color = _palette.BombGlowColor.WithAlpha((byte)(glowAlpha * glowPulse));
         _glowPaint.MaskFilter = _mediumGlow;
         canvas.DrawCircle(bomb.X, bomb.Y, drawSize * 0.5f, _glowPaint);
@@ -1065,7 +1076,6 @@ public class GameRenderer : IDisposable
         _fillPaint.MaskFilter = null;
         if (bomb.IsSliding)
         {
-            // Oval bei Slide
             canvas.DrawOval(bomb.X, bomb.Y, radius * stretchX, radius * stretchY, _fillPaint);
         }
         else
@@ -1087,9 +1097,15 @@ public class GameRenderer : IDisposable
         canvas.DrawPath(_fusePath, _strokePaint);
         _strokePaint.MaskFilter = null;
 
-        // Spark at tip
+        // Spark at tip mit Glow-Halo
         if (((int)(_globalTimer * 10) % 2) == 0)
         {
+            // Äußerer Glow-Halo für den Funken
+            _glowPaint.Color = new SKColor(255, 180, 50, (byte)(60 + fuseProgress * 60));
+            _glowPaint.MaskFilter = _smallGlow;
+            canvas.DrawCircle(bomb.X + 8, bomb.Y - radius - 4, 5, _glowPaint);
+            _glowPaint.MaskFilter = null;
+
             _fillPaint.Color = isNeon ? new SKColor(255, 200, 100) : SKColors.Yellow;
             _fillPaint.MaskFilter = isNeon ? _smallGlow : null;
             canvas.DrawCircle(bomb.X + 8, bomb.Y - radius - 4, 3, _fillPaint);
@@ -1108,25 +1124,10 @@ public class GameRenderer : IDisposable
         float alpha = 1f - progress * 0.3f;
         float cs = GameGrid.CELL_SIZE;
 
-        // Initialer Explosions-Blitz (erste 20% der Dauer)
-        if (progress < 0.2f)
-        {
-            float flashAlpha = (1f - progress / 0.2f) * 0.6f;
-            _fillPaint.Color = SKColors.White.WithAlpha((byte)(255 * flashAlpha));
-            _fillPaint.MaskFilter = _outerGlow;
-            foreach (var cell in explosion.AffectedCells)
-            {
-                float fx = cell.X * cs - 2;
-                float fy = cell.Y * cs - 2;
-                canvas.DrawRect(fx, fy, cs + 4, cs + 4, _fillPaint);
-            }
-            _fillPaint.MaskFilter = null;
-        }
-
-        // Shockwave-Ring (expandierender Kreis in den ersten 40%)
+        // Shockwave-Ring (expandierender Kreis in den ersten 40%) - doppelter Ring
         if (progress < 0.4f && explosion.SourceBomb != null)
         {
-            float shockProgress = progress / 0.4f; // 0→1 innerhalb des Shockwave-Fensters
+            float shockProgress = progress / 0.4f;
             float maxRadius = explosion.SourceBomb.Range * cs;
             float radius = shockProgress * maxRadius;
             float shockAlpha = (1f - shockProgress) * 0.5f;
@@ -1134,69 +1135,85 @@ public class GameRenderer : IDisposable
             float centerX = explosion.X + cs / 2f;
             float centerY = explosion.Y + cs / 2f;
 
-            _strokePaint.Color = _palette.ExplosionCore.WithAlpha((byte)(255 * shockAlpha));
-            _strokePaint.StrokeWidth = 2f + (1f - shockProgress) * 2f; // Dünner werdend
-            _strokePaint.MaskFilter = isNeon ? _smallGlow : null;
+            // Äußerer Ring (breit, diffus)
+            _strokePaint.Color = _palette.ExplosionOuter.WithAlpha((byte)(120 * shockAlpha));
+            _strokePaint.StrokeWidth = 3f + (1f - shockProgress) * 3f;
+            _strokePaint.MaskFilter = _mediumGlow;
             canvas.DrawCircle(centerX, centerY, radius, _strokePaint);
+
+            // Innerer Ring (dünn, hell)
+            _strokePaint.Color = _palette.ExplosionCore.WithAlpha((byte)(255 * shockAlpha));
+            _strokePaint.StrokeWidth = 1.5f + (1f - shockProgress) * 1.5f;
+            _strokePaint.MaskFilter = isNeon ? _smallGlow : null;
+            canvas.DrawCircle(centerX, centerY, radius * 0.85f, _strokePaint);
             _strokePaint.MaskFilter = null;
         }
 
-        // Outer glow ring
-        _glowPaint.Color = _palette.ExplosionOuter.WithAlpha((byte)(80 * alpha));
-        _glowPaint.MaskFilter = isNeon ? _mediumGlow : _outerGlow;
+        // Envelope berechnen (einmal für alle Arme)
+        float envelope = ExplosionShaders.CalculateEnvelope(progress, alpha);
+        if (envelope < 0.01f) return;
 
+        _fillPaint.MaskFilter = null; // Sauberer State
+
+        // Center-Punkt (Pixel-Mitte der Center-Zelle)
+        float cx = explosion.GridX * cs + cs / 2f;
+        float cy = explosion.GridY * cs + cs / 2f;
+
+        // Arm-Längen berechnen: Wie viele Zellen in jede Richtung?
+        int armLeft = 0, armRight = 0, armUp = 0, armDown = 0;
         foreach (var cell in explosion.AffectedCells)
         {
-            float gpx = cell.X * cs;
-            float gpy = cell.Y * cs;
-            canvas.DrawRect(gpx - 2, gpy - 2, cs + 4, cs + 4, _glowPaint);
+            int relX = cell.X - explosion.GridX;
+            int relY = cell.Y - explosion.GridY;
+
+            if (relX < 0 && relY == 0) armLeft = Math.Max(armLeft, -relX);
+            if (relX > 0 && relY == 0) armRight = Math.Max(armRight, relX);
+            if (relY < 0 && relX == 0) armUp = Math.Max(armUp, -relY);
+            if (relY > 0 && relX == 0) armDown = Math.Max(armDown, relY);
         }
-        _glowPaint.MaskFilter = null;
 
-        // Main explosion fill
-        foreach (var cell in explosion.AffectedCells)
+        // Arme als durchgehende Flammenstreifen rendern (keine Zell-Grenzen sichtbar)
+        if (armLeft > 0)
+            ExplosionShaders.DrawFlameArm(canvas, cx, cy, armLeft, -1, 0, cs,
+                _globalTimer, _palette.ExplosionOuter, _palette.ExplosionInner, _palette.ExplosionCore, envelope);
+        if (armRight > 0)
+            ExplosionShaders.DrawFlameArm(canvas, cx, cy, armRight, 1, 0, cs,
+                _globalTimer, _palette.ExplosionOuter, _palette.ExplosionInner, _palette.ExplosionCore, envelope);
+        if (armUp > 0)
+            ExplosionShaders.DrawFlameArm(canvas, cx, cy, armUp, 0, -1, cs,
+                _globalTimer, _palette.ExplosionOuter, _palette.ExplosionInner, _palette.ExplosionCore, envelope);
+        if (armDown > 0)
+            ExplosionShaders.DrawFlameArm(canvas, cx, cy, armDown, 0, 1, cs,
+                _globalTimer, _palette.ExplosionOuter, _palette.ExplosionInner, _palette.ExplosionCore, envelope);
+
+        // Center-Feuerball (über den Armen, damit er die Übergänge verdeckt)
+        ExplosionShaders.DrawCenterFire(canvas, cx, cy, cs,
+            _globalTimer, _palette.ExplosionOuter, _palette.ExplosionInner, _palette.ExplosionCore, envelope);
+
+        // Wärme-Distortion (Heat Haze) über dem gesamten Explosionsbereich
+        if (progress > 0.1f)
         {
-            float px = cell.X * cs;
-            float py = cell.Y * cs;
-            float inset = 4;
-
-            // Outer color
-            _fillPaint.Color = _palette.ExplosionOuter.WithAlpha((byte)(255 * alpha));
-            _fillPaint.MaskFilter = null;
-
-            switch (cell.Type)
+            // Bounding-Box aller Explosions-Zellen berechnen
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            foreach (var cell in explosion.AffectedCells)
             {
-                case ExplosionCellType.Center:
-                    canvas.DrawRect(px + inset, py + inset, cs - inset * 2, cs - inset * 2, _fillPaint);
-                    break;
-                case ExplosionCellType.HorizontalMiddle:
-                    canvas.DrawRect(px, py + inset, cs, cs - inset * 2, _fillPaint);
-                    break;
-                case ExplosionCellType.VerticalMiddle:
-                    canvas.DrawRect(px + inset, py, cs - inset * 2, cs, _fillPaint);
-                    break;
-                default:
-                    canvas.DrawRect(px + inset, py + inset, cs - inset * 2, cs - inset * 2, _fillPaint);
-                    break;
+                float px = cell.X * cs;
+                float py = cell.Y * cs;
+                if (px < minX) minX = px;
+                if (py < minY) minY = py;
+                if (px + cs > maxX) maxX = px + cs;
+                if (py + cs > maxY) maxY = py + cs;
             }
 
-            // Inner core
-            _fillPaint.Color = _palette.ExplosionInner.WithAlpha((byte)(200 * alpha));
-            canvas.DrawRect(px + cs / 4f, py + cs / 4f, cs / 2f, cs / 2f, _fillPaint);
+            // Heat Haze reicht über die Explosion hinaus (nach oben mehr)
+            float hazeExpand = cs * 0.5f;
+            var hazeRect = new SKRect(
+                minX - hazeExpand, minY - cs, // Mehr Platz nach oben (Hitze steigt auf)
+                maxX + hazeExpand, maxY + hazeExpand);
 
-            // Bright center dot (Neon: cyan, Classic: white-yellow)
-            if (isNeon)
-            {
-                _fillPaint.Color = _palette.ExplosionCore.WithAlpha((byte)(180 * alpha));
-                _fillPaint.MaskFilter = _smallGlow;
-                canvas.DrawCircle(px + cs / 2f, py + cs / 2f, cs * 0.15f, _fillPaint);
-                _fillPaint.MaskFilter = null;
-            }
-            else
-            {
-                _fillPaint.Color = _palette.ExplosionCore.WithAlpha((byte)(200 * alpha));
-                canvas.DrawCircle(px + cs / 2f, py + cs / 2f, cs * 0.15f, _fillPaint);
-            }
+            float hazeIntensity = alpha * (1f - progress * 0.5f);
+            ExplosionShaders.DrawHeatHaze(canvas, hazeRect, _globalTimer, hazeIntensity, _fillPaint);
         }
     }
 

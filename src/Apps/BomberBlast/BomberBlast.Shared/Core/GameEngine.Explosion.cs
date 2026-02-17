@@ -234,12 +234,23 @@ public partial class GameEngine
 
         _soundManager.PlaySound(SoundManager.SFX_EXPLOSION);
 
-        // Game-Feel: Screen-Shake und Explosions-Partikel
+        // Game-Feel: Screen-Shake und Explosions-Partikel (aufgewertet)
         _screenShake.Trigger(3f, 0.2f);
         float px = bomb.X;
         float py = bomb.Y;
-        _particleSystem.Emit(px, py, 8, ParticleColors.Explosion, 100f, 0.5f);
-        _particleSystem.Emit(px, py, 4, ParticleColors.ExplosionLight, 60f, 0.3f);
+
+        // Funken die nach außen fliegen (schnell, leuchtend, elongiert)
+        _particleSystem.EmitExplosionSparks(px, py, 12, ParticleColors.ExplosionSpark, 160f);
+
+        // Glut-Partikel die langsam aufsteigen (glühend, Glow)
+        _particleSystem.EmitEmbers(px, py, 6, ParticleColors.ExplosionEmber);
+        _particleSystem.EmitEmbers(px, py, 3, ParticleColors.ExplosionEmberBright);
+
+        // Klassische Partikel für Volumen
+        _particleSystem.EmitShaped(px, py, 6, ParticleColors.Explosion,
+            ParticleShape.Circle, 80f, 0.5f, 2.5f, hasGlow: true);
+        _particleSystem.EmitShaped(px, py, 4, ParticleColors.ExplosionLight,
+            ParticleShape.Circle, 50f, 0.3f, 2f);
 
         // Explosionseffekte sofort verarbeiten
         ProcessExplosion(explosion);

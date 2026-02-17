@@ -19,11 +19,12 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - GC-Optimierung: Gepoolte SKPaint/SKFont/SKPath (6 per-frame Allokationen eliminiert)
 - HUD: Side-Panel rechts (TIME, SCORE, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
 
-### SkiaSharp Zusatz-Visualisierungen (11 Renderer)
+### SkiaSharp Zusatz-Visualisierungen (12 Renderer)
 | Renderer | Beschreibung |
 |----------|-------------|
 | GameRenderer | Haupt-Spiel-Rendering (Grid, Entities, Explosions, HUD) |
-| ParticleSystem | Struct-Pool (200 max), Block-/Kill-/PowerUp-Partikel |
+| ExplosionShaders | CPU-basierte Flammen: Arm-Rendering (Bezier-Pfade, FBM Noise), Heat Haze |
+| ParticleSystem | Struct-Pool (300 max), 4 Formen (Rectangle, Circle, Spark, Ember), Glow-Effekte |
 | ScreenShake | Explosions-Shake (3px) + Player-Death-Shake (5px) |
 | SpriteSheet | Sprite-Atlas Verwaltung |
 | GameFloatingTextSystem | Score-Popups, Combo-Text, PowerUp-Text (Struct-Pool 20 max) |
@@ -136,9 +137,13 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Celebration**: Confetti bei Welt-Freischaltung
 - **ScreenShake**: Explosion (3px, 0.2s), PlayerDeath (5px, 0.3s) via `Graphics/ScreenShake.cs`, Timer-Clamp verhindert negativen Progress
 - **Hit-Pause**: Frame-Freeze bei Enemy-Kill (50ms), Player-Death (100ms)
-- **Partikel-System**: `Graphics/ParticleSystem.cs` - Struct-Pool (200 max), bei Block-Zerstoerung/Enemy-Kill/PowerUp/Exit
-- **Explosions-Blitz**: Weißer Flash in den ersten 20% der Explosionsdauer (visueller Impact)
-- **Explosions-Nachglühen**: 0.4s warmer Schimmer auf Zellen nach Explosionsende (Cell.AfterglowTimer)
+- **Partikel-System**: `Graphics/ParticleSystem.cs` - Struct-Pool (300 max), 4 Formen (Rectangle, Circle, Spark, Ember), Glow-Halo auf Funken/Glut
+- **Flammen-Rendering (CPU)**: `Graphics/ExplosionShaders.cs` - Arm-basiert (durchgehende Bezier-Pfade statt Pro-Zelle), 3 Schichten (Glow + Hauptflamme + Kern), FBM-Noise-modulierte Ränder, natürliche Verjüngung zum Ende, Flammen-Zungen entlang der Arme
+- **Wärme-Distortion (Heat Haze)**: Gradient-Overlay über Explosions-Bounding-Box, aufsteigender Wellen-Effekt
+- **Explosions-Funken**: Elongierte Streifen in Flugrichtung + Glow-Halo + heller Kopf, 12 pro Explosion
+- **Glut-Partikel**: Langsam aufsteigende glühende Punkte mit Pulsation + Glow, 9 pro Explosion
+- **Doppelter Shockwave-Ring**: Äußerer diffuser Ring (orange, Glow) + innerer heller Ring (core-Farbe)
+- **Explosions-Nachglühen**: 0.4s warmer Schimmer auf Zellen nach Explosionsende (mit Glow + hellem Kern)
 - **Bomben-Pulsation**: Beschleunigt von 8→24Hz + stärkere Amplitude je näher an Explosion
 - **Squash/Stretch**: Bomben-Platzierung (Birth-Bounce 0.3s, sin-basiert), Bomben-Slide (15% Stretch in Richtung), Gegner-Tod (Squash flacher+breiter), Spieler-Tod (2-Phasen: Stretch hoch → Squash flach)
 - **Walk-Animation**: Prozedurales Wippen (sin-basiert) bei Spieler-/Gegnerbewegung
@@ -263,9 +268,10 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Goldener Rand-Glow**: Ring am Iris-Rand bei Level-Start
 
 ### Explosions-Shockwave
-- **Expandierender Ring**: In ersten 40% der Explosionsdauer
+- **Doppelter expandierender Ring**: In ersten 40% der Explosionsdauer
+- **Äußerer Ring**: Orange mit MediumGlow, Stroke 6→3px
+- **Innerer Ring**: ExplosionCore (hell), 85% Radius, Stroke 3→1.5px
 - **Radius**: Wächst von 0 bis Bomben-Range * CELL_SIZE
-- **Stroke**: Wird dünner werdend (4px→2px), Farbe = ExplosionCore
 
 ### Kick-Bomb Mechanik
 - **Aktivierung**: Spieler bewegt sich auf Bombe zu → Bombe gleitet in Blickrichtung
@@ -305,6 +311,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **17.02.2026**: Explosions- und Bomben-Visuals komplett überarbeitet: CPU-basierte Flammen mit arm-basiertem Rendering (durchgehende Bezier-Pfade mit FBM-Noise-modulierten Rändern statt Pro-Zelle → nahtlose Übergänge), 3 Schichten (Glow + Hauptflamme + Kern) + Flammen-Zungen, natürliche Verjüngung zum Ende. Plasma-Energie-Ring um Bomben ab 50% Zündschnur, Wärme-Distortion (Heat Haze) über Explosions-Bereich, doppelter Shockwave-Ring (äußerer diffuser + innerer heller Ring), Partikel-System erweitert auf 300 mit 4 Formen (Rectangle/Circle/Spark/Ember) + Glow + Luftwiderstand + Rotation, 12 Funken-Partikel + 9 Glut-Partikel pro Explosion, Nachglühen mit Glow + hellem Kern, Funken-Glow-Halo am Bomben-Zünder. Datei: `Graphics/ExplosionShaders.cs`.
 - **16.02.2026**: 4 neue SkiaSharp-Visualisierungen: HudVisualization (animierter Score-Counter mit rollenden Ziffern + pulsierender Timer unter 30s mit Farbwechsel normal→warning→critical + PowerUp-Icons mit Glow-Aura), LevelSelectVisualization (Level-Thumbnails mit 5 Welt-Farbpaletten + Gold-Shimmer Sterne + Lock-Overlay), AchievementIconRenderer (5 Kategorie-Farben + Trophy-Symbol bei freigeschaltet + Schloss+Fortschrittsring bei gesperrt), GameOverVisualization (großer Score mit pulsierendem Glow + Score-Breakdown Balken + Gold/Silber/Bronze Medaillen mit Shimmer + Coin-Counter mit Münz-Icon).
 - **15.02.2026 (4)**: HelpView SkiaSharp-Icons: HelpIconRenderer.cs (statische DrawEnemy/DrawPowerUp Methoden, identische Render-Logik wie GameRenderer ohne Animationen), SKCanvasView (32x32) pro Gegner- und PowerUp-Karte in HelpView.axaml, 4 fehlende PowerUps ergänzt (Kick/LineBomb/PowerBomb/Skull), 8 RESX-Keys (Name+Desc) in 6 Sprachen, PaintSurface-Handler in HelpView.axaml.cs.
 - **15.02.2026 (3)**: Daily Challenge Feature: IDailyChallengeService (Streak-System, Score-Tracking, Coin-Bonus 200-3000 pro Streak-Tag), DailyChallengeView mit Stats-Karten (Best Score, Streak, Longest Streak, Total Completed, Streak-Bonus), LevelGenerator.GenerateDailyChallengeLevel(seed) deterministisch aus Datum, GameEngine.StartDailyChallengeModeAsync + _isDailyChallenge Flag (kein Continue, kein NextLevel), MainMenu-Button (orange, #FF6B00), 9 RESX-Keys in 6 Sprachen, DI-Registrierung (14 Services + 11 ViewModels).

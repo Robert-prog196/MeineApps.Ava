@@ -7,8 +7,8 @@ namespace BomberBlast.Models.Entities;
 /// </summary>
 public class Explosion : Entity
 {
-    /// <summary>Duration of explosion in seconds</summary>
-    public const float DURATION = 0.5f;
+    /// <summary>Dauer der Explosion in Sekunden (länger = Flammen besser sichtbar)</summary>
+    public const float DURATION = 1.0f;
 
     /// <summary>Source bomb that created this explosion</summary>
     public Bomb? SourceBomb { get; }
