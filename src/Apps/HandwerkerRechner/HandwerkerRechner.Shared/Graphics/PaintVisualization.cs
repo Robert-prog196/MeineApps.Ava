@@ -76,5 +76,83 @@ public static class PaintVisualization
             $"{numberOfCoats} Anstriche = {litersNeeded:F1} L",
             new SKPoint(ox + rw / 2f, oy + rh + 12f),
             SkiaThemeHelper.TextSecondary, 9f);
+
+        // Farbkannen-Icons (unterhalb der Wand)
+        if (litersNeeded > 0)
+        {
+            DrawPaintCans(canvas, bounds, ox, oy + rh + 24f, rw, litersNeeded);
+        }
+    }
+
+    private static readonly SKPaint _canPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _canStroke = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1.2f };
+    private static readonly SKFont _canFont = new() { Size = 8f };
+
+    /// <summary>
+    /// Zeichnet Farbkannen-Icons für den Gesamtbedarf.
+    /// Pro Kanne ~2.5L (Standardgröße), maximal 10 Icons angezeigt.
+    /// </summary>
+    private static void DrawPaintCans(SKCanvas canvas, SKRect bounds,
+        float startX, float canY, float availWidth, float litersNeeded)
+    {
+        float canSize = 18f;
+        float spacing = 4f;
+        float canLiters = 2.5f; // Standard-Kanister
+
+        int cansNeeded = (int)Math.Ceiling(litersNeeded / canLiters);
+        int maxCans = Math.Min(cansNeeded, 10);
+
+        // Zentriert
+        float totalW = maxCans * canSize + (maxCans - 1) * spacing;
+        float cx = startX + availWidth / 2f - totalW / 2f;
+
+        var canColor = SkiaThemeHelper.Accent;
+        _canStroke.Color = SkiaThemeHelper.AdjustBrightness(canColor, 0.6f);
+
+        for (int i = 0; i < maxCans; i++)
+        {
+            float x = cx + i * (canSize + spacing);
+            float y = canY;
+
+            // Kannen-Körper (Rechteck mit abgerundeten Ecken)
+            float bodyW = canSize * 0.75f;
+            float bodyH = canSize * 0.85f;
+            float bodyX = x + (canSize - bodyW) / 2f;
+            float bodyY = y + canSize * 0.15f;
+
+            _canPaint.Color = canColor;
+            canvas.DrawRoundRect(new SKRect(bodyX, bodyY, bodyX + bodyW, bodyY + bodyH),
+                2f, 2f, _canPaint);
+            canvas.DrawRoundRect(new SKRect(bodyX, bodyY, bodyX + bodyW, bodyY + bodyH),
+                2f, 2f, _canStroke);
+
+            // Henkel oben
+            var henkelRect = new SKRect(
+                x + canSize * 0.3f, y,
+                x + canSize * 0.7f, y + canSize * 0.25f);
+            using var henkelPath = new SKPath();
+            henkelPath.AddArc(henkelRect, 180f, 180f);
+            canvas.DrawPath(henkelPath, _canStroke);
+
+            // Farbspiegel (halbtransparent, obere Hälfte heller)
+            _canPaint.Color = SkiaThemeHelper.AdjustBrightness(canColor, 1.3f).WithAlpha(80);
+            canvas.DrawRect(bodyX + 1f, bodyY + 1f, bodyW - 2f, bodyH * 0.35f, _canPaint);
+        }
+
+        // "×N" Anzeige wenn mehr als 10
+        if (cansNeeded > 10)
+        {
+            float labelX = cx + totalW + 6f;
+            _textPaint.Color = SkiaThemeHelper.TextSecondary;
+            _canFont.Size = 9f;
+            canvas.DrawText($"... ×{cansNeeded}", labelX, canY + canSize / 2f + 3f,
+                SKTextAlign.Left, _canFont, _textPaint);
+        }
+
+        // Kannengrößen-Info
+        _textPaint.Color = SkiaThemeHelper.TextMuted;
+        _canFont.Size = 7f;
+        canvas.DrawText($"({canLiters:F1}L/Kanne)", startX + availWidth / 2f, canY + canSize + 10f,
+            SKTextAlign.Center, _canFont, _textPaint);
     }
 }

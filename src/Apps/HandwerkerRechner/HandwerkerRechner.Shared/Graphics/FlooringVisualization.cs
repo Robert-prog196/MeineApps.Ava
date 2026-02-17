@@ -82,6 +82,33 @@ public static class FlooringVisualization
             canvas.Restore();
         }
 
+        // Verschnitt-Zone: Rechter und unterer Rand markieren
+        if (wastePercent > 0)
+        {
+            float wasteEdgeR = bw > 1f ? (rw % bw) : 0; // Rest rechts
+            float wasteEdgeB = bh > 1f ? (rh % bh) : 0; // Rest unten
+
+            if (wasteEdgeR > 1f)
+            {
+                // Rechte Verschnitt-Zone schraffieren
+                var wasteRectR = new SKRect(ox + rw - wasteEdgeR, oy, ox + rw, oy + rh);
+                _boardFill.Color = SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Error, 30);
+                canvas.DrawRect(wasteRectR, _boardFill);
+                SkiaBlueprintCanvas.DrawCrosshatch(canvas, wasteRectR,
+                    SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Error, 50), 6f);
+            }
+
+            if (wasteEdgeB > 1f)
+            {
+                // Untere Verschnitt-Zone schraffieren
+                var wasteRectB = new SKRect(ox, oy + rh - wasteEdgeB, ox + rw, oy + rh);
+                _boardFill.Color = SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Error, 30);
+                canvas.DrawRect(wasteRectB, _boardFill);
+                SkiaBlueprintCanvas.DrawCrosshatch(canvas, wasteRectB,
+                    SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Error, 50), 6f);
+            }
+        }
+
         // Raum-Umriss
         _roomStroke.Color = SkiaThemeHelper.TextPrimary;
         canvas.DrawRect(ox, oy, rw, rh, _roomStroke);
@@ -94,5 +121,24 @@ public static class FlooringVisualization
         SkiaBlueprintCanvas.DrawDimensionLine(canvas,
             new SKPoint(ox, oy), new SKPoint(ox, oy + rh),
             $"{roomWidthM:F2} m", offset: -14f);
+
+        // Flächenbedarf + Verschnitt-Info
+        float totalArea = roomLengthM * roomWidthM;
+        float wasteArea = totalArea * (wastePercent / 100f);
+        string infoText = wastePercent > 0
+            ? $"{totalArea:F1} m² + {wastePercent:F0}% = {totalArea + wasteArea:F1} m²"
+            : $"{totalArea:F1} m²";
+
+        SkiaBlueprintCanvas.DrawMeasurementText(canvas, infoText,
+            new SKPoint(ox + rw / 2f, oy + rh + 18f),
+            wastePercent > 0 ? SkiaThemeHelper.Warning : SkiaThemeHelper.TextSecondary, 10f);
+
+        // Dielen-Maß
+        if (bw > 15f)
+        {
+            SkiaBlueprintCanvas.DrawDimensionLine(canvas,
+                new SKPoint(ox, oy + rh + 32f), new SKPoint(ox + Math.Min(bw, rw), oy + rh + 32f),
+                $"{boardLengthM:F2} m × {boardWidthCm:F0} cm", offset: 10f);
+        }
     }
 }

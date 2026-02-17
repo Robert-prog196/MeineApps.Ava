@@ -116,8 +116,13 @@ public static class GardenVisualization
             SkiaThemeHelper.Accent, 10f);
     }
 
+    private static readonly SKFont _layerFont = new() { Size = 9f };
+    private static readonly SKPaint _layerText = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKColor _grassColor = new(0x22, 0xC5, 0x5E); // Gras-Grün
+
     /// <summary>
-    /// Erdschichten-Profil: Seitenansicht mit Mutterboden-Schicht.
+    /// Erdschichten-Profil: Seitenansicht mit 3 Schichten (Mutterboden, Sand, Kies/Untergrund).
+    /// Schicht-Labels rechts, Grasnarbe oben, Wurzel-Andeutungen.
     /// </summary>
     private static void RenderSoil(SKCanvas canvas, SKRect bounds,
         float soilArea, float soilDepthCm, int bagsNeeded)
@@ -125,27 +130,69 @@ public static class GardenVisualization
         if (soilArea <= 0 || soilDepthCm <= 0) return;
 
         float sideLen = MathF.Sqrt(soilArea);
-        float totalDepthCm = soilDepthCm + 20f; // Etwas mehr für Untergrund
+        // 3 Schichten: Mutterboden (gewünscht), Sand-Schicht (30% Tiefe), Kies/Untergrund (Rest)
+        float sandDepthCm = soilDepthCm * 0.3f;
+        float gravelDepthCm = 15f; // Festwert für Untergrund
+        float totalDepthCm = soilDepthCm + sandDepthCm + gravelDepthCm;
 
-        var fit = SkiaBlueprintCanvas.FitToCanvas(bounds, sideLen, totalDepthCm / 100f, 40f);
+        var fit = SkiaBlueprintCanvas.FitToCanvas(bounds, sideLen, totalDepthCm / 100f, 45f);
         float scale = fit.Scale;
         float ox = fit.OffsetX;
         float oy = fit.OffsetY;
 
         float profileW = sideLen * scale;
         float soilH = soilDepthCm / 100f * scale;
-        float totalH = totalDepthCm / 100f * scale;
+        float sandH = sandDepthCm / 100f * scale;
+        float gravelH = gravelDepthCm / 100f * scale;
+        float totalH = soilH + sandH + gravelH;
 
-        // Oberfläche (grüne Linie)
-        _borderPaint.Color = SkiaThemeHelper.Success;
-        canvas.DrawLine(ox, oy, ox + profileW, oy, _borderPaint);
+        // === Grasnarbe (wellige grüne Linie oben) ===
+        _borderPaint.Color = _grassColor;
+        _borderPaint.StrokeWidth = 3f;
+        using var grassPath = new SKPath();
+        grassPath.MoveTo(ox, oy);
+        int segments = (int)(profileW / 8f);
+        for (int i = 1; i <= segments; i++)
+        {
+            float px = ox + i * (profileW / segments);
+            float py = oy + MathF.Sin(i * 0.8f) * 2f; // Leichte Welle
+            grassPath.LineTo(px, py);
+        }
+        canvas.DrawPath(grassPath, _borderPaint);
+        _borderPaint.StrokeWidth = 2f;
 
-        // Mutterboden/Kompost (obere Schicht - braun)
-        _soilFill.Color = SkiaThemeHelper.WithAlpha(_topsoilColor, 180);
+        // Gras-Halme (kleine vertikale Striche)
+        _stoneFill.Color = SkiaThemeHelper.WithAlpha(_grassColor, 150);
+        var rng = new Random(42);
+        for (int i = 0; i < 20; i++)
+        {
+            float gx = ox + (float)rng.NextDouble() * profileW;
+            float gh = 3f + (float)rng.NextDouble() * 4f;
+            canvas.DrawLine(gx, oy, gx, oy - gh, _borderPaint);
+        }
+
+        // === Schicht 1: Mutterboden (braun, mit Textur) ===
+        _soilFill.Color = SkiaThemeHelper.WithAlpha(_topsoilColor, 200);
         canvas.DrawRect(ox, oy, profileW, soilH, _soilFill);
 
-        // Punkte für Erd-Textur
-        var rng = new Random(42);
+        // Wurzel-Andeutungen
+        _stoneFill.Color = SkiaThemeHelper.WithAlpha(new SKColor(0x8B, 0x5E, 0x3C), 100);
+        for (int i = 0; i < 5; i++)
+        {
+            float rx = ox + 15f + (float)rng.NextDouble() * (profileW - 30f);
+            float ry = oy + 4f;
+            float rLen = 8f + (float)rng.NextDouble() * (soilH * 0.6f);
+            using var rootPath = new SKPath();
+            rootPath.MoveTo(rx, ry);
+            rootPath.QuadTo(rx + (float)(rng.NextDouble() - 0.5) * 10f, ry + rLen * 0.5f,
+                rx + (float)(rng.NextDouble() - 0.5) * 8f, ry + rLen);
+            _borderPaint.Color = SkiaThemeHelper.WithAlpha(new SKColor(0x8B, 0x5E, 0x3C), 60);
+            _borderPaint.StrokeWidth = 1f;
+            canvas.DrawPath(rootPath, _borderPaint);
+            _borderPaint.StrokeWidth = 2f;
+        }
+
+        // Erd-Partikel (Punkte)
         _stoneFill.Color = SkiaThemeHelper.WithAlpha(_topsoilColor, 100);
         for (int i = 0; i < 30; i++)
         {
@@ -154,25 +201,69 @@ public static class GardenVisualization
             canvas.DrawCircle(px, py, 1f + (float)rng.NextDouble() * 1.5f, _stoneFill);
         }
 
-        // Untergrund (Kies/Sand - heller)
-        float undergH = totalH - soilH;
-        _soilFill.Color = SkiaThemeHelper.WithAlpha(_gravelColor, 120);
-        canvas.DrawRect(ox, oy + soilH, profileW, undergH, _soilFill);
+        // === Schicht 2: Sand (gelb/beige) ===
+        float sandY = oy + soilH;
+        _soilFill.Color = SkiaThemeHelper.WithAlpha(_sandColor, 180);
+        canvas.DrawRect(ox, sandY, profileW, sandH, _soilFill);
+
+        // Feine Punkte als Sand-Textur
+        _stoneFill.Color = SkiaThemeHelper.WithAlpha(_sandColor, 100);
+        for (int i = 0; i < 40; i++)
+        {
+            float px = ox + (float)rng.NextDouble() * profileW;
+            float py = sandY + (float)rng.NextDouble() * sandH;
+            canvas.DrawCircle(px, py, 0.5f + (float)rng.NextDouble() * 0.8f, _stoneFill);
+        }
+
+        // === Schicht 3: Kies/Untergrund (grau, Schraffur) ===
+        float gravelY = sandY + sandH;
+        _soilFill.Color = SkiaThemeHelper.WithAlpha(_gravelColor, 140);
+        canvas.DrawRect(ox, gravelY, profileW, gravelH, _soilFill);
 
         SkiaBlueprintCanvas.DrawHatch(canvas,
-            new SKRect(ox, oy + soilH, ox + profileW, oy + totalH),
+            new SKRect(ox, gravelY, ox + profileW, gravelY + gravelH),
             45f, SkiaThemeHelper.WithAlpha(_gravelColor, 60), 6f);
 
-        // Trennlinie zwischen Schichten
+        // Kleine Steine im Kies
+        _stoneFill.Color = SkiaThemeHelper.WithAlpha(_gravelColor, 80);
+        for (int i = 0; i < 15; i++)
+        {
+            float sx = ox + (float)rng.NextDouble() * profileW;
+            float sy = gravelY + (float)rng.NextDouble() * gravelH;
+            float sr = 1.5f + (float)rng.NextDouble() * 2f;
+            canvas.DrawOval(sx, sy, sr, sr * 0.7f, _stoneFill);
+        }
+
+        // === Trennlinien zwischen Schichten (gestrichelt) ===
         SkiaBlueprintCanvas.DrawDashedLine(canvas,
-            new SKPoint(ox, oy + soilH), new SKPoint(ox + profileW, oy + soilH),
+            new SKPoint(ox, sandY), new SKPoint(ox + profileW, sandY),
             SkiaThemeHelper.Warning, 4f, 3f);
 
-        // Umriss
+        SkiaBlueprintCanvas.DrawDashedLine(canvas,
+            new SKPoint(ox, gravelY), new SKPoint(ox + profileW, gravelY),
+            SkiaThemeHelper.WithAlpha(SkiaThemeHelper.TextMuted, 120), 4f, 3f);
+
+        // === Umriss ===
         _borderPaint.Color = SkiaThemeHelper.TextPrimary;
         canvas.DrawRect(ox, oy, profileW, totalH, _borderPaint);
 
-        // Maßlinien
+        // === Schicht-Labels (rechts außen) ===
+        float labelX = ox + profileW + 8f;
+        _layerText.Color = _topsoilColor;
+        _layerFont.Size = 8f;
+
+        canvas.DrawText("Mutterboden", labelX, oy + soilH / 2f + 3f,
+            SKTextAlign.Left, _layerFont, _layerText);
+
+        _layerText.Color = _sandColor;
+        canvas.DrawText("Sand", labelX, sandY + sandH / 2f + 3f,
+            SKTextAlign.Left, _layerFont, _layerText);
+
+        _layerText.Color = _gravelColor;
+        canvas.DrawText("Kies", labelX, gravelY + gravelH / 2f + 3f,
+            SKTextAlign.Left, _layerFont, _layerText);
+
+        // === Maßlinien ===
         SkiaBlueprintCanvas.DrawDimensionLine(canvas,
             new SKPoint(ox - 4f, oy), new SKPoint(ox - 4f, oy + soilH),
             $"{soilDepthCm:F0} cm", offset: -14f);
@@ -181,7 +272,7 @@ public static class GardenVisualization
             new SKPoint(ox, oy + totalH + 4f), new SKPoint(ox + profileW, oy + totalH + 4f),
             $"{sideLen:F1} m", offset: 12f);
 
-        // Bag-Info
+        // === Säcke-Info ===
         SkiaBlueprintCanvas.DrawMeasurementText(canvas,
             $"{bagsNeeded} Säcke",
             new SKPoint(ox + profileW / 2f, oy + soilH / 2f),

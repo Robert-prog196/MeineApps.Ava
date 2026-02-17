@@ -105,13 +105,65 @@ public static class TileVisualization
             new SKPoint(ox, oy), new SKPoint(ox, oy + rh),
             $"{roomWidthM:F2} m", offset: -14f);
 
-        // Verschnitt-Info
+        // Verschnitt-Info-Box (unten rechts, semi-transparenter Hintergrund)
         if (wastePercent > 0)
         {
-            SkiaBlueprintCanvas.DrawMeasurementText(canvas,
-                $"+{wastePercent:F0}%",
-                new SKPoint(ox + rw - 20f, oy + rh - 8f),
-                SkiaThemeHelper.Error, 9f);
+            DrawWasteInfoBox(canvas, ox, oy, rw, rh, wastePercent, tileLengthCm, tileWidthCm);
         }
+
+        // Fliesen-Maß (Einzelfliese) als kleine Bemaßung
+        if (tw > 20f && th > 20f)
+        {
+            // Erste volle Fliese bemaßen
+            SkiaBlueprintCanvas.DrawDimensionLine(canvas,
+                new SKPoint(ox, oy + rh + 20f), new SKPoint(ox + tw, oy + rh + 20f),
+                $"{tileLengthCm:F0} cm", offset: 10f);
+        }
+    }
+
+    private static readonly SKPaint _infoBoxBg = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _infoBoxBorder = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1.5f };
+    private static readonly SKPaint _infoTextPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKFont _infoTitleFont = new() { Size = 11f };
+    private static readonly SKFont _infoValueFont = new() { Size = 14f };
+    private static readonly SKFont _infoDetailFont = new() { Size = 9f };
+
+    /// <summary>
+    /// Zeichnet eine Info-Box mit Verschnitt-Details (unten rechts im Raum).
+    /// </summary>
+    private static void DrawWasteInfoBox(SKCanvas canvas, float ox, float oy,
+        float rw, float rh, float wastePercent, float tileLenCm, float tileWidCm)
+    {
+        float boxW = 90f;
+        float boxH = 52f;
+        float boxX = ox + rw - boxW - 6f;
+        float boxY = oy + rh - boxH - 6f;
+
+        // Hintergrund mit Blur-Effekt
+        _infoBoxBg.Color = SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Background, 200);
+        var boxRect = new SKRect(boxX, boxY, boxX + boxW, boxY + boxH);
+        canvas.DrawRoundRect(boxRect, 6f, 6f, _infoBoxBg);
+
+        // Rand in Fehlerfarbe
+        _infoBoxBorder.Color = SkiaThemeHelper.WithAlpha(SkiaThemeHelper.Error, 150);
+        canvas.DrawRoundRect(boxRect, 6f, 6f, _infoBoxBorder);
+
+        // Titel "Verschnitt"
+        _infoTextPaint.Color = SkiaThemeHelper.Error;
+        _infoTitleFont.Size = 9f;
+        canvas.DrawText("Verschnitt", boxX + boxW / 2f, boxY + 12f,
+            SKTextAlign.Center, _infoTitleFont, _infoTextPaint);
+
+        // Großer Prozentwert
+        _infoTextPaint.Color = SkiaThemeHelper.Error;
+        _infoValueFont.Size = 16f;
+        canvas.DrawText($"+{wastePercent:F0}%", boxX + boxW / 2f, boxY + 30f,
+            SKTextAlign.Center, _infoValueFont, _infoTextPaint);
+
+        // Fliesengröße
+        _infoTextPaint.Color = SkiaThemeHelper.TextMuted;
+        _infoDetailFont.Size = 8f;
+        canvas.DrawText($"{tileLenCm:F0}×{tileWidCm:F0} cm", boxX + boxW / 2f, boxY + 42f,
+            SKTextAlign.Center, _infoDetailFont, _infoTextPaint);
     }
 }

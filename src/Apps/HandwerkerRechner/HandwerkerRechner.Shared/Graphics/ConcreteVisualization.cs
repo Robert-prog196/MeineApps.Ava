@@ -13,21 +13,43 @@ public static class ConcreteVisualization
     private static readonly SKPaint _topFill = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
     private static readonly SKPaint _sideFill = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
 
+    private static readonly SKPaint _mixPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+    private static readonly SKPaint _mixStroke = new() { IsAntialias = true, Style = SKPaintStyle.Stroke, StrokeWidth = 1f };
+    private static readonly SKFont _mixFont = new() { Size = 9f };
+    private static readonly SKPaint _mixTextPaint = new() { IsAntialias = true, Style = SKPaintStyle.Fill };
+
+    // Mischverhältnis-Farben
+    private static readonly SKColor _cementColor = new(0x78, 0x85, 0x8C); // Grau (Zement)
+    private static readonly SKColor _sandMixColor = new(0xD4, 0xBE, 0x8C); // Sand
+    private static readonly SKColor _gravelMixColor = new(0x9C, 0x8C, 0x7C); // Kies
+    private static readonly SKColor _waterMixColor = new(0x38, 0xBD, 0xF8); // Wasser
+
     /// <summary>
     /// subType: 0=Platte, 1=Streifenfundament, 2=Säule
+    /// mixRatio: Optional Zement:Sand:Kies Verhältnis (z.B. 1:2:3). Null = kein Mischverhältnis.
     /// </summary>
     public static void Render(SKCanvas canvas, SKRect bounds, int subType,
-        float dim1Cm, float dim2Cm, float dim3Cm, float volumeM3, bool hasResult)
+        float dim1Cm, float dim2Cm, float dim3Cm, float volumeM3, bool hasResult,
+        float cementParts = 1, float sandParts = 2, float gravelParts = 3)
     {
         if (!hasResult) return;
 
         SkiaBlueprintCanvas.DrawGrid(canvas, bounds, 20f);
 
+        // Hauptvisualisierung in oberen ~75% des Bereichs
+        var mainBounds = new SKRect(bounds.Left, bounds.Top, bounds.Right, bounds.Bottom - 40f);
+
         switch (subType)
         {
-            case 0: RenderSlab(canvas, bounds, dim1Cm, dim2Cm, dim3Cm, volumeM3); break;
-            case 1: RenderStrip(canvas, bounds, dim1Cm, dim2Cm, dim3Cm, volumeM3); break;
-            case 2: RenderColumn(canvas, bounds, dim1Cm, dim2Cm, volumeM3); break;
+            case 0: RenderSlab(canvas, mainBounds, dim1Cm, dim2Cm, dim3Cm, volumeM3); break;
+            case 1: RenderStrip(canvas, mainBounds, dim1Cm, dim2Cm, dim3Cm, volumeM3); break;
+            case 2: RenderColumn(canvas, mainBounds, dim1Cm, dim2Cm, volumeM3); break;
+        }
+
+        // Mischverhältnis-Leiste am unteren Rand
+        if (cementParts > 0 || sandParts > 0 || gravelParts > 0)
+        {
+            DrawMixRatioBar(canvas, bounds, cementParts, sandParts, gravelParts);
         }
     }
 
@@ -229,5 +251,80 @@ public static class ConcreteVisualization
             $"{volumeM3:F3} m³",
             new SKPoint(cx, topY + colH + 28f),
             SkiaThemeHelper.Accent, 11f);
+    }
+
+    /// <summary>
+    /// Zeichnet eine horizontale Mischverhältnis-Leiste am unteren Rand.
+    /// Zeigt Zement : Sand : Kies als farbige Segmente mit Labels.
+    /// </summary>
+    private static void DrawMixRatioBar(SKCanvas canvas, SKRect bounds,
+        float cementParts, float sandParts, float gravelParts)
+    {
+        float total = cementParts + sandParts + gravelParts;
+        if (total <= 0) return;
+
+        float barH = 14f;
+        float barLeft = bounds.Left + 20f;
+        float barRight = bounds.Right - 20f;
+        float barW = barRight - barLeft;
+        float barY = bounds.Bottom - 32f;
+        float cornerR = barH / 2f;
+
+        var barRect = new SKRect(barLeft, barY, barRight, barY + barH);
+
+        // Clip auf abgerundetes Rechteck
+        canvas.Save();
+        using var clipPath = new SKPath();
+        clipPath.AddRoundRect(barRect, cornerR, cornerR);
+        canvas.ClipPath(clipPath);
+
+        float currentX = barLeft;
+
+        // Zement-Segment
+        float cW = (cementParts / total) * barW;
+        _mixPaint.Color = _cementColor;
+        canvas.DrawRect(currentX, barY, cW, barH, _mixPaint);
+        currentX += cW;
+
+        // Sand-Segment
+        float sW = (sandParts / total) * barW;
+        _mixPaint.Color = _sandMixColor;
+        canvas.DrawRect(currentX, barY, sW, barH, _mixPaint);
+        currentX += sW;
+
+        // Kies-Segment
+        float gW = (gravelParts / total) * barW;
+        _mixPaint.Color = _gravelMixColor;
+        canvas.DrawRect(currentX, barY, gW, barH, _mixPaint);
+
+        canvas.Restore();
+
+        // Rahmen
+        _mixStroke.Color = SkiaThemeHelper.WithAlpha(SkiaThemeHelper.TextMuted, 100);
+        canvas.DrawRoundRect(barRect, cornerR, cornerR, _mixStroke);
+
+        // Labels über den Segmenten
+        _mixTextPaint.Color = SkiaThemeHelper.TextSecondary;
+        _mixFont.Size = 8f;
+
+        float cCx = barLeft + cW / 2f;
+        float sCx = barLeft + cW + sW / 2f;
+        float gCx = barLeft + cW + sW + gW / 2f;
+
+        // Verhältnis-Text in den Segmenten (wenn breit genug)
+        _mixTextPaint.Color = SKColors.White.WithAlpha(200);
+        if (cW > 25f)
+            canvas.DrawText("Zement", cCx, barY + barH / 2f + 3f, SKTextAlign.Center, _mixFont, _mixTextPaint);
+        if (sW > 25f)
+            canvas.DrawText("Sand", sCx, barY + barH / 2f + 3f, SKTextAlign.Center, _mixFont, _mixTextPaint);
+        if (gW > 25f)
+            canvas.DrawText("Kies", gCx, barY + barH / 2f + 3f, SKTextAlign.Center, _mixFont, _mixTextPaint);
+
+        // Verhältnis-Angabe darunter
+        _mixTextPaint.Color = SkiaThemeHelper.TextMuted;
+        _mixFont.Size = 9f;
+        string ratioText = $"Mischverhältnis {cementParts:F0} : {sandParts:F0} : {gravelParts:F0}";
+        canvas.DrawText(ratioText, bounds.MidX, barY + barH + 12f,
+            SKTextAlign.Center, _mixFont, _mixTextPaint);
     }
 }
