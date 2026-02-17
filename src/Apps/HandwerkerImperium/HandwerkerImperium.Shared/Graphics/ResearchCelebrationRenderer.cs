@@ -15,7 +15,7 @@ public class ResearchCelebrationRenderer
     // Celebration-State
     private bool _isActive;
     private float _celebrationTime;
-    private float _celebrationDuration = 2.5f;
+    private float _celebrationDuration = 3.5f;
     private ResearchBranch _celebrationBranch;
     private string _bonusText = string.Empty;
 
@@ -72,7 +72,7 @@ public class ResearchCelebrationRenderer
             Radius = 10,
             MaxRadius = 300,
             Alpha = 1.0f,
-            Speed = 200
+            Speed = 140
         });
     }
 
@@ -99,7 +99,7 @@ public class ResearchCelebrationRenderer
         UpdateAndDrawConfetti(canvas, bounds, deltaTime);
 
         // Bonus-Text (aufsteigend)
-        if (_celebrationTime < 2.0f)
+        if (_celebrationTime < 3.0f)
         {
             DrawBonusText(canvas, cx, cy, branchColor);
         }
@@ -124,7 +124,7 @@ public class ResearchCelebrationRenderer
         {
             var ring = _glowRings[i];
             ring.Radius += ring.Speed * deltaTime;
-            ring.Alpha -= deltaTime * 0.6f;
+            ring.Alpha -= deltaTime * 0.4f;
 
             if (ring.Alpha <= 0 || ring.Radius > ring.MaxRadius)
             {
@@ -153,7 +153,7 @@ public class ResearchCelebrationRenderer
                     Radius = 5,
                     MaxRadius = 250,
                     Alpha = 0.8f,
-                    Speed = 160
+                    Speed = 110
                 });
             }
         }
@@ -168,7 +168,7 @@ public class ResearchCelebrationRenderer
         for (int i = 0; i < count; i++)
         {
             float angle = Random.Shared.NextSingle() * MathF.Tau;
-            float speed = 100 + Random.Shared.NextSingle() * 200;
+            float speed = 70 + Random.Shared.NextSingle() * 140;
 
             _confetti.Add(new ConfettiParticle
             {
@@ -177,9 +177,9 @@ public class ResearchCelebrationRenderer
                 VX = MathF.Cos(angle) * speed,
                 VY = MathF.Sin(angle) * speed - 50, // Leicht nach oben
                 Rotation = Random.Shared.NextSingle() * 360,
-                RotationSpeed = (Random.Shared.NextSingle() - 0.5f) * 500,
+                RotationSpeed = (Random.Shared.NextSingle() - 0.5f) * 300,
                 Color = ConfettiColors[Random.Shared.Next(ConfettiColors.Length)],
-                Life = 1.5f + Random.Shared.NextSingle() * 1.0f,
+                Life = 2.0f + Random.Shared.NextSingle() * 1.5f,
                 Size = 3 + Random.Shared.NextSingle() * 4,
                 NeedsInit = true
             });
@@ -206,7 +206,7 @@ public class ResearchCelebrationRenderer
             // Physik
             p.X += p.VX * deltaTime;
             p.Y += p.VY * deltaTime;
-            p.VY += 180 * deltaTime;  // Gravity
+            p.VY += 120 * deltaTime;  // Gravity
             p.VX *= 0.98f;            // Luftwiderstand
             p.Rotation += p.RotationSpeed * deltaTime;
             p.Life -= deltaTime;
@@ -238,7 +238,7 @@ public class ResearchCelebrationRenderer
         if (string.IsNullOrEmpty(_bonusText)) return;
 
         // Text steigt auf und wird groesser
-        float textProgress = Math.Clamp(_celebrationTime / 1.5f, 0, 1);
+        float textProgress = Math.Clamp(_celebrationTime / 2.0f, 0, 1);
         float textY = cy - textProgress * 60;
         float textScale = 0.5f + textProgress * 0.5f;
 

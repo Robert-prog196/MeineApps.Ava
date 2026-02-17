@@ -42,6 +42,7 @@ public partial class ResearchView : UserControl
     private DispatcherTimer? _renderTimer;
     private ResearchViewModel? _vm;
     private DateTime _lastRenderTime = DateTime.UtcNow;
+    private float _currentDelta;
 
     /// <summary>
     /// Letzte bekannte Bounds des TreeCanvas (für Touch-HitTest DPI-Skalierung).
@@ -160,6 +161,11 @@ public partial class ResearchView : UserControl
 
     private void OnRenderTick(object? sender, EventArgs e)
     {
+        // Delta einmal pro Tick berechnen, damit alle Canvas das gleiche Delta bekommen
+        var now = DateTime.UtcNow;
+        _currentDelta = Math.Min((float)(now - _lastRenderTime).TotalSeconds, 0.1f);
+        _lastRenderTime = now;
+
         // Alle Canvas-Elemente invalidieren
         _headerCanvas?.InvalidateSurface();
         _tabCanvas?.InvalidateSurface();
@@ -378,17 +384,11 @@ public partial class ResearchView : UserControl
     // ═══════════════════════════════════════════════════════════════════════
 
     /// <summary>
-    /// Berechnet die Delta-Zeit seit dem letzten Render-Frame.
+    /// Gibt die im aktuellen Tick berechnete Delta-Zeit zurück.
+    /// Wird einmal pro Tick in OnRenderTick berechnet, damit alle Canvas
+    /// das gleiche Delta bekommen (vorher bekam die letzte Canvas ~0ms).
     /// </summary>
-    private float CalculateDelta()
-    {
-        var now = DateTime.UtcNow;
-        var delta = (float)(now - _lastRenderTime).TotalSeconds;
-        _lastRenderTime = now;
-
-        // Delta begrenzen (verhindert Sprünge bei langen Pausen)
-        return Math.Min(delta, 0.1f);
-    }
+    private float CalculateDelta() => _currentDelta;
 
     /// <summary>
     /// Entfernt Emoji-Prefix aus Tab-Labels (z.B. "🔧 Werkzeuge" → "Werkzeuge").
