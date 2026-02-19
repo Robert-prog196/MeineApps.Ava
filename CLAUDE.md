@@ -91,8 +91,8 @@ Alle 8 Apps im geschlossenen Test, warten auf 12 Tester fuer Produktion.
 | FinanzRechner | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
 | FitnessRechner | v2.0.4 | Banner + Rewarded | 3,99 remove_ads |
 | WorkTimePro | v2.0.4 | Banner + Rewarded | 3,99/Mo oder 19,99 Lifetime |
-| HandwerkerImperium | v2.0.7 | Banner + Rewarded | 4,99 Premium |
-| BomberBlast | v2.0.6 | Banner + Rewarded | 3,99 remove_ads |
+| HandwerkerImperium | v2.0.8 | Banner + Rewarded | 4,99 Premium |
+| BomberBlast | v2.0.7 | Banner + Rewarded | 3,99 remove_ads |
 
 ---
 
@@ -333,7 +333,8 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | Material Icons unsichtbar | `MaterialIconStyles` nicht in App.axaml registriert | `<materialIcons:MaterialIconStyles />` in `<Application.Styles>` |
 | AdMob Crash auf Android | UMP Namespace hat Typo | `Xamarin.Google.UserMesssagingPlatform` (3x 's') |
 | DateTime Timer falsch (1h) | UTC→Lokal Konvertierung | `DateTimeStyles.RoundtripKind` bei Parse |
-| Release-Build crasht (Debug OK) | Meist stale Build-Artefakte oder falsche Flags | obj/bin löschen, clean rebuild. SDK-Defaults (.NET 10) funktionieren - keine extra Flags nötig |
+| Release-Build crasht (Debug OK) | Meist stale Build-Artefakte oder falsche Flags | obj/bin löschen, clean rebuild |
+| Mono JIT Assertion `!ji->async` Crash | Profiled AOT (SDK-Default) kompiliert nur hot Methods, Rest fällt auf JIT zurück → JIT-Bug auf manchen Geräten (z.B. Huawei P30) | `AndroidEnableProfiledAot=false` in Directory.Build.targets → Full AOT (alle Methoden kompiliert, kein JIT). `UseInterpreter=true` geht NICHT zusammen mit AOT (XA0119) |
 | SKCanvasView updatet nicht | `InvalidateVisual()` verwendet | `InvalidateSurface()` verwenden |
 | SKCanvasView leer bei IsVisible-Toggle | `InvalidateSurface()` auf unsichtbare Canvas wird ignoriert | Nach Sichtbar-Werden erneut Daten setzen/Calculate() aufrufen, damit PropertyChanged → InvalidateSurface() feuert |
 | CSS translate() Exception | Fehlende px-Einheiten | `translate(0px, 400px)` statt `translate(0, 400)` |

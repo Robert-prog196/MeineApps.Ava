@@ -1070,9 +1070,6 @@
   <data name="TotalEarned" xml:space="preserve">
     <value>Total: {0}</value>
   </data>
-  <data name="NewHighScore" xml:space="preserve">
-    <value>NOVO RECORDE!</value>
-  </data>
   <data name="DailyChallengeNew" xml:space="preserve">
     <value>Novo!</value>
   </data>

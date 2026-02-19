@@ -2,7 +2,7 @@ namespace BomberBlast.Services;
 
 /// <summary>
 /// Mapping von lokalen Achievement-/Leaderboard-IDs auf Google Play Games Services IDs.
-/// TODO: Echte IDs aus der Play Console eintragen.
+/// IDs aus der Google Play Console (Projekt 353652455692).
 /// </summary>
 public static class PlayGamesIds
 {
@@ -10,8 +10,8 @@ public static class PlayGamesIds
     // LEADERBOARDS
     // ═══════════════════════════════════════════════════════════════════════
 
-    public const string LeaderboardArcadeHighscore = "TODO_LEADERBOARD_ARCADE";
-    public const string LeaderboardTotalStars = "TODO_LEADERBOARD_STARS";
+    public const string LeaderboardArcadeHighscore = "CgkIjPLQuqUKEAIQGA";
+    public const string LeaderboardTotalStars = "CgkIjPLQuqUKEAIQGQ";
 
     // ═══════════════════════════════════════════════════════════════════════
     // ACHIEVEMENTS → GPGS-ID MAPPING
@@ -19,53 +19,47 @@ public static class PlayGamesIds
 
     /// <summary>
     /// Gibt die GPGS-Achievement-ID für eine lokale Achievement-ID zurück.
-    /// Gibt null zurück wenn kein Mapping existiert oder die ID ein TODO-Platzhalter ist.
+    /// Gibt null zurück wenn kein Mapping existiert.
     /// </summary>
     public static string? GetGpgsAchievementId(string localId)
     {
-        var gpgsId = localId switch
+        return localId switch
         {
             // Fortschritt
-            "first_victory" => "TODO_ACH_FIRST_VICTORY",
-            "world1" => "TODO_ACH_WORLD1",
-            "world2" => "TODO_ACH_WORLD2",
-            "world3" => "TODO_ACH_WORLD3",
-            "world4" => "TODO_ACH_WORLD4",
-            "world5" => "TODO_ACH_WORLD5",
-            "daily_streak7" => "TODO_ACH_DAILY_STREAK7",
-            "daily_complete30" => "TODO_ACH_DAILY_COMPLETE30",
+            "first_victory" => "CgkIjPLQuqUKEAIQAQ",
+            "world1" => "CgkIjPLQuqUKEAIQGg",
+            "world2" => "CgkIjPLQuqUKEAIQEA",
+            "world3" => "CgkIjPLQuqUKEAIQAg",
+            "world4" => "CgkIjPLQuqUKEAIQAw",
+            "world5" => "CgkIjPLQuqUKEAIQBA",
+            "daily_streak7" => "CgkIjPLQuqUKEAIQBQ",
+            "daily_complete30" => "CgkIjPLQuqUKEAIQEQ",
 
             // Meisterschaft
-            "stars_50" => "TODO_ACH_STARS_50",
-            "stars_100" => "TODO_ACH_STARS_100",
-            "stars_150" => "TODO_ACH_STARS_150",
+            "stars_50" => "CgkIjPLQuqUKEAIQFQ",
+            "stars_100" => "CgkIjPLQuqUKEAIQBg",
+            "stars_150" => "CgkIjPLQuqUKEAIQBw",
 
             // Kampf
-            "kills_100" => "TODO_ACH_KILLS_100",
-            "kills_500" => "TODO_ACH_KILLS_500",
-            "kills_1000" => "TODO_ACH_KILLS_1000",
-            "kick_master" => "TODO_ACH_KICK_MASTER",
-            "power_bomber" => "TODO_ACH_POWER_BOMBER",
+            "kills_100" => "CgkIjPLQuqUKEAIQCA",
+            "kills_500" => "CgkIjPLQuqUKEAIQCQ",
+            "kills_1000" => "CgkIjPLQuqUKEAIQCg",
+            "kick_master" => "CgkIjPLQuqUKEAIQEg",
+            "power_bomber" => "CgkIjPLQuqUKEAIQCw",
 
             // Geschick
-            "no_damage" => "TODO_ACH_NO_DAMAGE",
-            "efficient" => "TODO_ACH_EFFICIENT",
-            "speedrun" => "TODO_ACH_SPEEDRUN",
-            "combo3" => "TODO_ACH_COMBO3",
-            "combo5" => "TODO_ACH_COMBO5",
-            "curse_survivor" => "TODO_ACH_CURSE_SURVIVOR",
+            "no_damage" => "CgkIjPLQuqUKEAIQDA",
+            "efficient" => "CgkIjPLQuqUKEAIQFg",
+            "speedrun" => "CgkIjPLQuqUKEAIQDQ",
+            "combo3" => "CgkIjPLQuqUKEAIQDg",
+            "combo5" => "CgkIjPLQuqUKEAIQEw",
+            "curse_survivor" => "CgkIjPLQuqUKEAIQFw",
 
             // Arcade
-            "arcade_10" => "TODO_ACH_ARCADE_10",
-            "arcade_25" => "TODO_ACH_ARCADE_25",
+            "arcade_10" => "CgkIjPLQuqUKEAIQFA",
+            "arcade_25" => "CgkIjPLQuqUKEAIQDw",
 
             _ => null
         };
-
-        // Platzhalter-IDs überspringen (noch nicht in Play Console konfiguriert)
-        if (gpgsId != null && gpgsId.StartsWith("TODO_"))
-            return null;
-
-        return gpgsId;
     }
 }

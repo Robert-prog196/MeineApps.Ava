@@ -6,7 +6,7 @@
 
 Idle-Game: Baue dein Handwerker-Imperium auf, stelle Mitarbeiter ein, kaufe Werkzeuge, erforsche Upgrades, schalte neue Workshop-Typen frei. Verdiene Geld durch automatische Auftraege oder spiele Mini-Games.
 
-**Version:** 2.0.3 | **Package-ID:** com.meineapps.handwerkerimperium | **Status:** Geschlossener Test
+**Version:** 2.0.8 (VersionCode 14) | **Package-ID:** com.meineapps.handwerkerimperium | **Status:** Geschlossener Test
 
 ## Haupt-Features
 
@@ -20,16 +20,23 @@ Idle-Game: Baue dein Handwerker-Imperium auf, stelle Mitarbeiter ein, kaufe Werk
 - **Daily Login Rewards** (30-Tage-Zyklus mit steigenden Belohnungen)
 - **Achievements** (33 Erfolge)
 - **Prestige-System** (3 Stufen: Bronze ab Lv.30, Silver ab Lv.100, Gold ab Lv.250)
-- **Events** (8 zufällige Events + saisonaler Multiplikator)
+- **Events** (8 zufällige Events + saisonaler Multiplikator, Intervall skaliert mit Prestige: 8h/30% bis 3h/50%)
+- **Auftragstypen** (Standard/Large 1.8x/Weekly 4x 7-Tage-Deadline/Cooperation 2.5x Multi-Workshop)
+- **Stammkunden** (Perfect-Rating → Wiederkehrende Kunden mit bis zu 1.5x Bonus, max 20)
 - **Bulk Buy** (x1/x10/x100/Max für Workshop-Upgrades)
 - **Hold-to-Upgrade** (Upgrade-Button gedrückt halten = schnelles Hochleveln, Zusammenfassung am Ende)
-- **Milestone-Celebrations** (Level 10/25/50/100/250/500/1000 mit Goldschrauben-Bonus)
+- **Milestone-Celebrations** (Spieler-Level 10/25/50/100/250/500/1000 mit Goldschrauben-Bonus, Workshop-Level 50/100/250/500/1000 mit 2-50 Goldschrauben)
 - **Statistiken** (Gesamt-Verdienst, Workshop-Verteilung)
 - **Feierabend-Rush** (2h 2x-Boost, 1x täglich gratis, danach 10 Goldschrauben)
 - **Meisterwerkzeuge** (12 sammelbare Artefakte mit passiven Einkommens-Boni, 5 Seltenheitsstufen)
 - **Lieferant-System** (Variable Rewards alle 2-5 Minuten: Geld, Schrauben, XP, Mood, Speed)
 - **Prestige-Shop** (12 Items: Income, XP, Mood, Kosten, Rush, Lieferant, Goldschrauben)
-- **Story-System** (10 Kapitel von NPC "Meister Hans", fortschrittsbasierte Freischaltung, Geld/Schrauben/XP-Belohnungen)
+- **Story-System** (25 Kapitel von NPC "Meister Hans" mit SkiaSharp-Portrait, 4 Stimmungen, Idle-/Blinzel-Animation, fortschrittsbasierte Freischaltung inkl. Prestige-Trigger, Geld/Schrauben/XP-Belohnungen)
+- **Tutorial** (8-Schritte interaktiver Leitfaden beim ersten Start, Bottom-Sheet Overlay, überspringbar)
+- **In-App Review** (Automatische Review-Prompts bei Meilensteinen: Level 20/50/100, erstes Prestige, 50 Aufträge)
+- **Benachrichtigungen** (4 Typen: Forschung fertig, Lieferant wartet, Rush verfügbar, Daily Reward. Android: AlarmManager + BroadcastReceiver)
+- **Google Play Games** (Leaderboards: Spieler-Level + Gesamtverdienst. Cloud-Save: Automatisches Backup, Vergleich beim App-Start)
+- **Audio + Haptik** (15 Sound-Effekte via SoundPool, 7 Vibrations-Muster. Android-spezifisch via Factory-Pattern)
 
 ## Premium & Ads
 
@@ -60,8 +67,9 @@ Enum: `Carpenter`, `Plumber`, `Electrician`, `Painter`, `Roofer`, `Contractor`, 
 Jeder Typ hat: `BaseIncomeMultiplier`, `UnlockLevel`, `UnlockCost`, `RequiredPrestige`
 
 ### Worker-System
-10 Tiers via Enum: `F` (0.5x), `E` (0.75x), `D` (1.0x), `C` (1.3x), `B` (1.7x), `A` (2.2x), `S` (3.0x), `SS` (4.5x), `SSS` (7.0x), `Legendary` (12.0x)
-`HireWorker()` → kostet Geld (levelabhängig: Basis * (1 + (Level-1) * 0.02)), erhoeht Workshop-Effizienz. A+ Tiers kosten zusätzlich Goldschrauben.
+10 Tiers via Enum: `F` (0.4x), `E` (0.65x), `D` (1.0x), `C` (1.5x), `B` (2.25x), `A` (3.35x), `S` (4.9x), `SS` (7.25x), `SSS` (11.25x), `Legendary` (17.5x)
+Löhne ~1.8x pro Tier (5/9/16/28/50/90/160/280/500/900 €/h). ROI sinkt sanft (~15%/Tier) statt steil (~50%/Tier).
+`HireWorker()` → individuelle Marktpreise via `Worker.CalculateMarketPrice()`: Tier-Basis * Level-Skalierung * Talent (0.7x-1.3x) * Persönlichkeit (0.9x-1.2x) * Spezialisierung (+15%) * Effizienz-Position (0.85x-1.15x). A+ Tiers kosten zusätzlich Goldschrauben.
 Tier-Farben: F=Grau, E=Gruen, D=#0E7490(Teal), C=#B45309(DarkOrange), B=Amber, A=Rot, S=Gold, SS=Lila, SSS=Cyan, Legendary=Rainbow-Gradient
 **3 Training-Typen**: Efficiency (XP→Level→+Effizienz), Endurance (senkt FatiguePerHour, max -50%), Morale (senkt MoodDecayPerHour, max -50%). TrainingType Enum + Worker.EnduranceBonus/MoraleBonus (persistiert). Training-Typ-Auswahl + Echtzeit-Fortschrittsbalken in WorkerProfileView.
 **Worker-Avatare**: WorkerAvatarControl (Controls/WorkerAvatarControl.cs) rendert Pixel-Art via WorkerAvatarRenderer (Graphics/). Worker.IsFemale (deterministisch aus Id) bestimmt Geschlecht (Haare/Lippen/Kiefer). Avatare in WorkerMarketView (40dp) und WorkerProfileView (64dp).
@@ -73,7 +81,8 @@ Tier-Farben: F=Grau, E=Gruen, D=#0E7490(Teal), C=#B45309(DarkOrange), B=Amber, A
 4. Rewarded Ad (5 Schrauben)
 5. IAP-Paket (100/500/2000 Schrauben)
 6. Daily Login Rewards (1-25 Schrauben je nach Tag im 30-Tage-Zyklus)
-7. Milestone-Level (3-200 Schrauben bei Level 10/25/50/100/250/500/1000)
+7. Spieler-Milestone-Level (3-200 Schrauben bei Level 10/25/50/100/250/500/1000)
+8. Workshop-Milestone-Level (2-50 Schrauben bei Workshop-Level 50/100/250/500/1000)
 
 ### Research Tree
 45 Upgrades in 3 Branches à 15 Level: Tools (Effizienz + MiniGame-Zone), Management (Löhne + Worker-Slots), Marketing (Belohnungen + Order-Slots)
@@ -85,6 +94,7 @@ Kosten: Geld (500 bis 1B). Dauer: 10min bis 72h (Echtzeit). Effekte werden im Ga
 Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spielfeld. Header, Result-Display, Countdown und Action-Buttons bleiben XAML. Jeder Renderer hat `Render()` + `HitTest()`, View hat 20fps Render-Loop (DispatcherTimer 50ms), Touch via `PointerPressed` + DPI-Skalierung.
 **Tutorial-System**: Beim ersten Spielstart jedes MiniGame-Typs wird ein Tutorial-Overlay angezeigt (Titel + Erklärungs-Text + "Verstanden"-Button). Tracking über `GameState.SeenMiniGameTutorials` (List<MiniGameType>). 8 Tutorial-Texte + TutorialGotIt in 6 Sprachen.
 **Belohnungsanzeige**: Belohnungen (Geld + XP) werden IMMER angezeigt, nicht nur bei der letzten Aufgabe. Bei Zwischen-Aufgaben wird eine Teilbelohnung berechnet (BaseReward/TaskCount * ResultPercentage). Button-Text mit TextTrimming="CharacterEllipsis" gegen Überlauf.
+**Ergebnis-Animation**: Zwischen-Runden: Sterne sofort gesetzt (keine Animation), kein GameCompleted Event. Letzte Runde: Aggregierte Sterne aus allen TaskResults berechnet (totalStars/totalPossible*3, Clamp 0-3), staggered Animation (100ms Delay, 250ms Duration), GameCompleted Event feuert. MiniGameEffectHelper: ShowStarsStaggeredAsync 100ms Delay + 250ms Animation.
 
 - **Sawing** (SawingGameRenderer): Timing-Bar mit Zonen, animierte Säge, Sägemehl-Partikel
 - **Pipe Puzzle** (PipePuzzleRenderer): Metall-Rohre auf Beton, Wasser-Puls, Flansche/Nieten
@@ -108,11 +118,15 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 | `EventService` | Zufällige Events (8 Typen) + saisonaler Multiplikator |
 | `DailyChallengeService` | 3 Challenges/Tag (00:00 Reset) |
 | `DailyRewardService` | 30-Tage Login-Zyklus mit steigenden Belohnungen |
-| `QuickJobService` | Schnelle MiniGame-Jobs (4min Rotation, 20/Tag Limit) |
-| `StoryService` | 10 Story-Kapitel von Meister Hans, fortschrittsbasierte Freischaltung + Belohnungen |
+| `QuickJobService` | Schnelle MiniGame-Jobs (Rotation 8-15min nach Prestige, Limit 20-40/Tag nach Prestige) |
+| `StoryService` | 25 Story-Kapitel von Meister Hans (Tutorial/EarlyGame/MidGame/Prestige/Endgame), fortschrittsbasierte Freischaltung inkl. Prestige-Trigger + Belohnungen |
 | `AchievementService` | 33 Erfolge tracken + Goldschrauben-Rewards |
 | `OfflineProgressService` | Offline-Einnahmen (Brutto mit allen Modifikatoren - Kosten, * Saison-Multiplikator) |
-| `OrderGeneratorService` | Aufträge generieren (Belohnung einkommensbasiert skalierend, pro freigeschaltetem Workshop-Typ) |
+| `OrderGeneratorService` | Aufträge generieren (4 OrderTypes: Standard/Large/Weekly/Cooperation, Kundennamen, Stammkunden-Zuweisung, Reputation beeinflusst Order-Qualität) |
+| `ReviewService` | In-App Review Prompts (Preferences-basiert, 14-Tage Cooldown, Trigger: Level 20/50/100, Prestige, 50 Aufträge) |
+| `AudioService` / `AndroidAudioService` | Sound-Effekte (SoundPool, 15 GameSounds) + Haptik (Vibrator, 7 VibrationType). Desktop-Stub / Android-Implementierung. Factory-Pattern in App.axaml.cs |
+| `NotificationService` / `AndroidNotificationService` | Lokale Push-Benachrichtigungen (4 Typen: Forschung fertig, Lieferant wartet, Rush verfügbar, Daily Reward). AlarmManager + BroadcastReceiver auf Android. In Einstellungen abschaltbar |
+| `PlayGamesService` / `AndroidPlayGamesService` | Google Play Games Integration: Leaderboards (Spieler-Level, Gesamtverdienst), Cloud-Save (SnapshotsClient, parallel fire-and-forget). Desktop-Stub / Android-Implementierung. Factory-Pattern in App.axaml.cs |
 
 ## Game Juice
 
@@ -120,6 +134,7 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 |---------|-----------------|
 | Workshop Cards | Farbiges BorderBrush nach Typ + SkiaSharp-Illustrationen (WorkshopCardRenderer) als Header auf jeder Dashboard-Karte (48dp, 8 thematische Szenen: Hobel+Holz, Rohre+Wasser, Kabel+Blitze, Farbroller+Palette, Dachziegel+Dachstuhl, Kran+Bauhelm, Zirkel+Bauplan, Gebäude+Krone). WorkshopIllustrationView (Custom SKCanvasView für DataTemplates) |
 | Worker Avatars | WorkerAvatarControl (SKCanvasView) mit SkiaSharp Pixel-Art: 6 Hauttöne, 6 Haarfarben, 6 Kleidungsfarben, 3 Hut-Stile (Bauhelm/Mütze/Schutzhelm), Tier-Farbe+Sterne(S+), Mood-Gesichtsausdruck, Geschlecht (weiblich: schmalerer Kopf/langes Haar/Wimpern/vollere Lippen/Ohrringe/Wangenröte; männlich: kantiger Kiefer/Kurzhaar/Koteletten/Augenbrauen/Bart-Schatten). 5 Accessoire-Varianten (Brille/Schutzbrille/Pflaster/Bleistift/keine). Schulter-/Körperansatz mit Arbeitskleidung. 40dp in WorkerMarketView, 64dp in WorkerProfileView |
+| Meister Hans Portrait | MeisterHansRenderer (SkiaSharp): NPC-Portrait 120x120 im Story-Dialog. 4 Stimmungen (happy/proud/concerned/excited), Idle-Bobbing (Sinus), Blinzel-Animation (alle 3-4.5s für 150ms), gelber Schutzhelm, Bart+Schnurrbart, stimmungsabhängige Augen/Brauen/Mund/Deko-Elemente (Gold-Sterne bei proud, Ausrufezeichen bei excited, Schweißtropfen bei concerned). 20fps DispatcherTimer in MainView.axaml.cs |
 | Golden Screw Icon | Gold-Shimmer Animation (CSS scale+rotate Loop) |
 | Level-Up | CelebrationOverlay mit Confetti (100 Partikel, 2s) |
 | Income | FloatingTextOverlay (gruen, +100px, 1.5s) |
@@ -135,7 +150,7 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 | Fenster-Blinken | Nachts (20-06 Uhr) blinken Fenster deterministisch (kein Random) |
 | MiniGame Result-Polish | Staggered Stars (200ms Delay), Rating-Farbe (Gold/Gruen/Orange/Rot), Border-Pulse, Reward-Text-Animation, Zone-Flash. MiniGameEffectHelper (wiederverwendbar) |
 | MiniGame Countdown | Overlay mit pulsierendem 3-2-1-GO! Text (Code-Behind Animation) |
-| Workshop-Animationen | 8 große erkennbare Szenen-Animationen pro Workshop-Typ (WorkshopView.axaml.cs): Carpenter (Säge schneidet Brett), Plumber (L-Rohrsystem+Wasserfluss+Ventilrad), Electrician (3 Kabel+Strom-Pulse+Verteilerdose), Painter (Wand wird mit Roller gestrichen), Roofer (Dachziegel progressiv gelegt), Contractor (Backsteinmauer wächst von unten), Architect (Bauplan progressiv gezeichnet), GeneralContractor (Goldener Vertrag+Stempel+Shimmer). Worker-Skalierung (0/1/2-3/4+), Extra-Effekte ab 4+ Workern |
+| Workshop-Animationen | 8 ikonische Szenen via `WorkshopSceneRenderer.cs` (IsAntialias=true, volle Canvas-Breite): Carpenter (Kreissäge+Brett+Sägespäne), Plumber (Waschbecken+Wasserhahn+Rohrschlüssel), Electrician (offener Sicherungskasten+Kabel+Strom-Pulse+LED-Glow), Painter (Wand streichen+Farbroller+Leiter+Tropfen), Roofer (Hausdach-Seitenansicht+Ziegel progressiv+Hammer), Contractor (Backsteinmauer+Kelle+Kran+Mörtel), Architect (Blaupause+Grundriss progressiv gezeichnet+Bleistift+Lineal), GeneralContractor (Goldener Vertrag+Stempel+Shimmer+Münzen). Strichmännchen-Worker mit typ-spezifischen Accessoires (Helme/Kappen/Brillen/Krawatten/Berets). Drop-Shadows (3 gecachte MaskFilter), Tool-Glow (Säge=weiß, Wasser=blau, Hammer=Flash). PingPong-Animationen (sanftes Hin-und-Her statt hartem Reset). Level-basierte Visuals: Lv50+ Tool-Glow, Lv250+ Gold-Sterne, Lv500+ SkiaGlowEffect Premium-Aura, Lv1000 SkiaShimmerEffect Gold-Overlay. Münz-Emission skaliert mit Level (Lv250+ 2 Münzen, Lv500+ 3). Worker-Skalierung (0/1/2-3/4+), Extra-Effekte ab 4+ Workern. Hintergrund: `WorkshopInteriorRenderer.cs` mit Gradient+Boden-Pattern+Vignette-Beleuchtung (radialer Gradient)+Wand-Details (Werkzeug-Silhouetten/Rohre/Rahmen/Fenster, alpha 15-25). Ambient-Partikel: SkiaParticleManager(30) in WorkshopView mit typ-spezifischen Partikeln (Sägespäne/Wasserspritzer/Funken/Farbdunst/Staub/Gold-Glitzer) |
 | Muenz-Partikel | 2-3 goldene Coin-Partikel im City-Header bei "money" FloatingText (via AnimationManager.AddCoinParticle) |
 | Money-Display Flash | Kurzer Opacity-Flash (400ms, 1.0→0.6→1.0) auf MoneyText bei Geld-Einnahmen |
 | Confetti bei Events | AddLevelUpConfetti im City-Header bei "level" und "golden_screws" FloatingText-Kategorien |
@@ -183,6 +198,27 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 - **DecayReputation()**: Langsamer Abbau >50 wenn keine Aufträge abgeschlossen werden (1/Tag)
 - **Event-ReputationChange**: CelebrityEndorsement (+5), EconomicDownturn (+2) wirken einmalig bei Event-Start
 - **Prestige-Reset**: Setzt Reputation auf Startwert (50) zurück
+- **ExtraOrderSlots**: >=70 → +1 Slot, >=90 → +2 Slots (addiert zu GenerateAvailableOrders totalCount)
+- **OrderQualityBonus**: <30 → -10% (mehr Standard), >=80 → +20% (weniger Standard, mehr Large/Weekly/Cooperation)
+
+## Auftragstypen (OrderType)
+
+| Typ | Freischaltung | Belohnung | Besonderheit |
+|-----|---------------|-----------|-------------|
+| Standard | Immer | 1.0x | Basis |
+| Large | WS-Level 10+ | 1.8x | Mehr Aufgaben |
+| Cooperation | WS-Level 15+, >=2 Workshops | 2.5x | Aufgaben aus 2 Workshop-Typen gemischt |
+| Weekly | WS-Level 20+ | 4.0x | 7-Tage-Deadline, wird bei Ablauf entfernt |
+
+- **Kundennamen**: Deterministisch aus ~30 deutschen Vor+Nachnamen generiert
+- **Stammkunden**: 20% Chance auf Stammkunden-Zuweisung, BonusMultiplier 1.1-1.5x (0.02 pro Perfect über 5, max 20 Stammkunden)
+- **Abgelaufene Orders**: GameLoop prüft alle 60 Ticks, entfernt aus AvailableOrders + bricht aktiven Order ab
+
+## Event-Mechanik
+
+- **AffectedWorkshop**: HighDemand/MaterialShortage betreffen zufälligen Workshop-Typ → RewardMultiplier nur für passende Orders
+- **MarketRestriction**: WorkerStrike → nur Tier C und niedriger im Arbeitermarkt verfügbar
+- **Intervall-Skalierung**: Kein Prestige 8h/30%, Bronze 6h/35%, Silver 4h/40%, Gold+ 3h/50%
 
 ## Event-SpecialEffects
 
@@ -236,6 +272,14 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 
 ## Changelog Highlights
 
+- **v2.0.7 (19.02.2026)**: Release-Vorbereitung (10 Punkte): (1) Hardcodierte "OK"-Strings in MainView.axaml durch `{loc:Translate OK}` ersetzt. (2) SaveGameService ErrorOccurred Event für alle 4 catch-Blöcke. (3) IAP Premium + Restore in SettingsViewModel (echte PurchaseService-Aufrufe). (4) ReviewService (Preferences-basiert, 14-Tage Cooldown, Milestones: Level 20/50/100, Prestige, 50 Orders). (5) Tutorial-Overlay (8 Schritte, Bottom-Sheet, Skip/Next Commands). (6) AudioService + AndroidAudioService (SoundPool 15 GameSounds, Vibrator 7 Patterns, Factory-Pattern). (7) NotificationService + AndroidNotificationService (4 Typen: ResearchDone, DeliveryWaiting, RushAvailable, DailyReward; AlarmManager+BroadcastReceiver). (8) PlayGamesService + AndroidPlayGamesService (Leaderboards: PlayerLevel+TotalMoney, Cloud-Save via SnapshotsClient). (9) Cloud-Save Integration in SaveGameService (parallel fire-and-forget). (10) Settings erweitert: Notifications+CloudSave Toggles. 20 neue RESX-Keys in 6 Sprachen.
+- **v2.0.3 (19.02.2026)**: Gameplay-Overhaul (15 Punkte): (1) DifficultyStars Expert = 4 Sterne in 7/8 ViewModels (fehlender Case vor Default). (2) Blueprint Expert-Parameter (16 Steps, 4 Cols, 20s, 2000ms Memo). (3) Painting Hard/Expert rebalanciert (Hard 22s statt 32s, Expert 6x6/30s). (4) Expert Reward 5→8x, XP 4.5→7x. (5) Wiring Expert 7 Wires/18s. (6) Inspection Hard/Expert 28s. (7) DesignPuzzle Expert 10 Rooms. (8) Event-RewardMultiplier in CompleteActiveOrder verdrahtet (inkl. AffectedWorkshop-Filter). (9) OrderType Large/Weekly/Cooperation generiert (DetermineOrderType mit Level+Reputation-basierter Wahrscheinlichkeit, Kundennamen, Cooperation mischt 2 Workshop-Typen). (10) Abgelaufene Orders im GameLoop (alle 60 Ticks). (11) Stammkunden-System (Perfect→RegularCustomer, BonusMultiplier 1.1-1.5x). (12) Event AffectedWorkshop (HighDemand/MaterialShortage) + MarketRestriction (WorkerStrike→Tier C). (13) Event-Intervalle Prestige-skaliert (8h→3h, 30%→50%). (14) QuickJob Rotation/Limit Prestige-skaliert (15→8min, 20→40/Tag). (15) Workshop-Kosten hybrid (linear bis Lv.100, exponentiell 1.008^(Lv-100) danach). Reputation: ExtraOrderSlots + OrderQualityBonus. 7 neue RESX-Keys in 6 Sprachen.
+- **v2.0.3 (19.02.2026)**: MiniGame-Schwierigkeit Workshop-Level + Prestige-basiert: (1) OrderGeneratorService.GetDifficulty(workshopLevel, prestigeCount) statt GetDifficultyForPlayerLevel(playerLevel). 5 WS-Level-Stufen (1-25/26-100/101-300/301-700/701+) x 4 Prestige-Stufen (0/1+/2+/3+). Expert nur mit Prestige. (2) QuickJobService.GetQuickJobDifficulty(workshopLevel): 4 Stufen (1-50=Easy/51-200=E50M50/201-500=E20M55H25/501+=E5M45H50), kein Expert. (3) Workshop-Level aus state.Workshops statt hardcodiert Easy.
+- **v2.0.3 (19.02.2026)**: RoofTiling-MiniGame Overhaul: (1) Kontrastreichere Farbpalette (Rot/Terrakotta/Dunkelbraun/Sandgelb/Schiefer statt 6 erdige Brauntöne). (2) Schwierigkeit rebalanciert: Easy 3x3/45s, Medium 4x4/50s, Hard 5x4/50s, Expert 5x5/45s (max 5 statt 6 Farben). (3) Gleichmäßige Hint-Verteilung: Jede Reihe mindestens 1 Hint garantiert. (4) Teilbewertung bei Zeitablauf: >=90% platziert + <=2 Fehler = Good, >=70% + <=4 = Ok, <70% = Miss. Fehlertoleranz für Ok auf 8 erhöht. (5) SelectColorHint: Farbpalette pulsiert wenn ohne Farbwahl getippt wird (Opacity-Blink 2x). (6) Tutorial-Text verbessert (Gold-Rand-Hinweise erklärt) in 6 Sprachen.
+- **v2.0.3 (19.02.2026)**: MiniGame-Ergebnis-Anzeige verbessert: (1) €-Fix: PipePuzzleView.axaml `\u20ac` → `&#x20AC;`. (2) Sterne-Animation beschleunigt: MiniGameEffectHelper Delay 200→100ms, Duration 400→250ms (~1.8s→~1.05s). (3) Zwischen-Runden (nicht letzte Aufgabe): Sterne sofort setzen (kein staggered), kein GameCompleted Event. (4) Letzte Aufgabe: Aggregierte Sterne aus order.TaskResults berechnet (totalStars/totalPossible*3, Clamp 0-3), dann staggered Animation + GameCompleted. Alle 8 ViewModels identisch geändert.
+- **v2.0.3 (18.02.2026)**: Story-System Overhaul: (1) Von 10 auf 25 Kapitel erweitert (Tutorial 1-5, Early Game 6-12, Mid Game 13-17, Prestige 18-21, Endgame 22-25). (2) SkiaSharp NPC-Portrait (MeisterHansRenderer): 4 Stimmungen (happy/proud/concerned/excited), Idle-Bobbing, Blinzel-Animation (3-4.5s Intervall, 150ms Dauer), gelber Helm, Bart, stimmungsabhängige Deko (Gold-Sterne/Ausrufezeichen/Schweißtropfen). (3) Story-Dialog UI: SKCanvasView 120x120 Portrait, Speech-Bubble Layout, Kapitel-Badge, goldene Reward-Box. (4) StoryChapter.IsTutorial Flag + MainViewModel Properties (StoryChapterNumber, StoryTotalChapters, IsStoryTutorial, StoryChapterBadge). (5) 51 neue RESX-Keys (StoryTipFromHans + 25x Title/Text) in 6 Sprachen. (6) Prestige-basierte Trigger (RequiredPrestige 1-13).
+- **v2.0.3 (18.02.2026)**: Worker-Balance + Level-Anforderungssystem: (1) Effizienz-Ranges stark erweitert (~1.5x pro Tier): F=0.3-0.5 bis Legendary=13.0-22.0. (2) Löhne ~1.8x/Tier (5-900 €/h). ROI sinkt ~15%/Tier statt ~50%. (3) Individuelle Marktpreise: `Worker.CalculateMarketPrice()` (Talent 0.7-1.3x, Persönlichkeit, Spezialisierung +15%, Effizienz-Position 0.85-1.15x). Einkommensbasierter Mindestpreis: ~3min NettoEinkommen * TierStufe als Floor. (4) **Level-Anforderungsmalus**: Workshop-Level >30 senkt Worker-Effizienz (-2% alle 30 Level). Tier-Resistenz: F=0% bis Legendary=100% immun. Forschung (5 Management-Nodes) gibt bis zu +0.40 LevelResistanceBonus (Cap 0.50). `Workshop.GetWorkerLevelFitFactor()` in GrossIncomePerSecond. Min-Faktor 20%. (5) SanitizeState migriert bestehende Worker (Löhne + Effizienz-Clamp).
+- **v2.0.3 (18.02.2026)**: Workshop-Milestones überarbeitet: Schwellen von [10,25,50,100,250,500,1000] auf [50,100,250,500,1000] geändert (weniger Benachrichtigungs-Spam bei schnellem Hochleveln). Workshop-Milestones geben jetzt Goldschrauben-Belohnung (2/5/10/25/50) statt nur Benachrichtigung.
 - **v2.0.3 (17.02.2026)**: MiniGame-Verbesserungen + Auftrags-Rebalancing: (1) Hauptauftrags-Belohnungen einkommensbasiert skalierend (wie QuickJobs): `perTaskReward = Max(100+Level*100, NetIncomePerSecond*300)` mit Task-Count-Multiplikator und 15% Bonus pro Extra-Aufgabe. (2) MiniGame-Belohnungen IMMER sichtbar (nicht nur letzte Aufgabe): Teilbelohnung pro Aufgabe berechnet (BaseReward/TaskCount * ResultPercentage). (3) MiniGame-Button-Text Überlauf behoben: TextBlock mit TextTrimming="CharacterEllipsis" statt direktem Content-Binding auf Button. (4) MiniGame-Tutorial-System: Tutorial-Overlay beim ersten Spielstart pro MiniGame-Typ (8 Tutorials in 6 Sprachen). GameState.SeenMiniGameTutorials (List<MiniGameType>). CheckAndShowTutorial() + DismissTutorial() in allen 8 ViewModels. 19 neue Lokalisierungs-Keys (TutorialXxxTitle/Text + TutorialGotIt) in 6 Sprachen.
 - **v2.0.3 (16.02.2026)**: SkiaSharp LinearProgress-Visualisierung: 14 ProgressBars in 8 Views durch SKCanvasView + LinearProgressVisualization ersetzt. DashboardView (4: XP-Level amber/gold mit Glow, DailyChallenge orange, Workshop-Level orange, Milestone gold), WorkshopView (1: LevelProgress), WorkerProfileView (4: Mood grün/Fatigue rot/XP orange/Training orange), OrderView (1: OrderProgress), AchievementsView (2: OverallProgress + Achievement-Fortschritt im DataTemplate), InspectionGameView (1: InspectionProgress), PaintingGameView (1: PaintProgress). Gradient-Balken mit Glow-Effekt, DataTemplate-Handler per Reflection.
 - **v2.0.3 (16.02.2026)**: Research UX-Verbesserungen: (1) Header verkleinert (MinHeight 140→90, Font 20→16, Icons 28→22/24→20, Badges 14→12, Padding 16,12→12,6). (2) TopPadding im ResearchTreeRenderer 10→30 (erste Forschung nicht mehr verdeckt). (3) Bestätigungsdialog beim Starten einer Forschung: Zeigt Name, Effekt-Beschreibung, Kosten und Dauer. StartResearch ist jetzt async mit ConfirmationRequested (Ad-Banner wird automatisch ausgeblendet). 2 neue Lokalisierungs-Keys (ResearchConfirmCost, ResearchConfirmDuration) in 6 Sprachen. (4) Tab-Selector Margin 12→8.
@@ -259,7 +303,7 @@ Alle 8 Mini-Games nutzen dedizierte SkiaSharp-Renderer (Graphics/) für das Spie
 - **v2.0.3 (15.02.2026)**: Research-Labor Header: ResearchLabRenderer (SkiaSharp) zeichnet animierte Werkstatt-Szene als Header-Hintergrund in ResearchView. Elemente: Holzwand+Boden, Bücherregal links, Arbeitstisch mit Glaskolben/Blaupausen/Werkzeugen, 2 rotierende Zahnräder, pulsierende Glühbirne, Dampf-Partikel aus Kolben. Bei aktiver Forschung: Funken-Partikel + glühender Fortschrittsbalken. Semi-transparenter Gradient-Overlay (#B0/#A0 Alpha). 20fps Render-Loop via DispatcherTimer im Code-Behind.
 - **v2.0.3 (15.02.2026)**: Game Juice Phase 6: (1) Muenz-Partikel im City-Header bei Geld-Einnahmen (3 goldene Coin-Partikel via AnimationManager.AddCoinParticle). (2) Money-Display Opacity-Flash (400ms Blink) bei Einnahmen. (3) Confetti-Burst bei "level" und "golden_screws" FloatingText-Events. (4) Offline-Earnings loesen FloatingText "money" aus → Muenz-Partikel + Flash. Neuer OnFloatingTextForParticles-Handler parallel zu OnFloatingTextRequested.
 - **v2.0.3 (15.02.2026)**: MiniGame Visual Polish Phase 5.1+5.2: (1) MiniGameEffectHelper (wiederverwendbar) mit Staggered Stars, Rating-Brush, Border-Pulse, Countdown-Animation, Reward-Text-Animation, Zone-Flash. (2) SawingGameView Polish: Countdown-Overlay mit pulsierendem Text, Result-Section mit Rating-Farbe (Gold/Gruen/Orange/Rot), staggered Sterne per Code-Behind, Border-Pulse, animierte Belohnungs-Texte, Zone-Flash bei Treffer. (3) SawingGameViewModel: GameStarted/GameCompleted/ZoneHit Events. (4) App.axaml: Rating-CSS-Klassen (RatingPerfect/Good/Ok/Miss).
-- **v2.0.3 (15.02.2026)**: Story-System: 10 Kapitel von NPC "Meister Hans" (StoryChapter Model, IStoryService/StoryService, DI-Registrierung). Fortschrittsbasierte Freischaltung (Level, Workshops, Aufträge, Prestige). Belohnungen: Geld, Goldschrauben, XP. GameState erweitert um ViewedStoryIds + PendingStoryId.
+- **v2.0.3 (15.02.2026)**: Story-System Initial: StoryChapter Model, IStoryService/StoryService, DI-Registrierung. Fortschrittsbasierte Freischaltung (Level, Workshops, Aufträge, Prestige). Belohnungen: Geld, Goldschrauben, XP. GameState erweitert um ViewedStoryIds + PendingStoryId. (Erweitert auf 25 Kapitel + NPC-Portrait am 18.02.2026)
 - **v2.0.3 (15.02.2026)**: City-Skyline im Dashboard-Header: SKCanvasView als Header-Hintergrund (DashboardView.axaml), CityRenderer zeichnet animierte Gebäude/Straße, semi-transparenter Gradient-Overlay (#B0/#A0 Alpha) darüber damit City durchscheint, 20fps Render-Loop via DispatcherTimer. GetGameStateForRendering() in MainViewModel für Rendering-Zugriff. CityRenderer animiert: (1) 4 Pixel-Art Wolken (verschiedene Höhen/Geschwindigkeiten). (2) Rauchpartikel aus Schornsteinen (3 Partikel/Workshop, aufsteigend+verblassend). (3) Blinkende Fenster nachts (20-06 Uhr, deterministisch).
 - **v2.0.3 (15.02.2026)**: Hold-to-Upgrade: Upgrade-Button auf Workshop-Karten gedrückt halten = schnelles Hochleveln (DispatcherTimer 120ms). Stille Upgrades ohne Sound/FloatingText pro Tick, am Ende einmalig Sound + Zusammenfassung ("+N Level!"). Tunneling PointerPressed/Released Events in DashboardView.axaml.cs, FindUpgradeButton() traversiert visuellen Baum. 3 neue public Methoden in MainViewModel (UpgradeWorkshopSilent, PlayUpgradeSound, RefreshSingleWorkshopPublic).
 - **v2.0.3 (13.02.2026)**: 4-Punkt Bugfix: (1) Dashboard Workshop-Karten Layout: RowDefinitions von `Auto,*,Auto` auf `Auto,Auto,Auto` geändert, VerticalAlignment="Top" statt "Stretch" → Karten überlappen/schneiden nicht mehr ab. Kompakterer Header (Icon+Name+Level-Badge in einer Zeile). (2) Daily Challenges Live-Update: ChallengeProgressChanged Event in IDailyChallengeService/DailyChallengeService hinzugefügt, wird bei IncrementChallenge()/SetChallengeMax() gefeuert. MainViewModel subscribt Event → RefreshChallenges() sofort statt nur bei Tab-Wechsel. RefreshChallenges() erstellt neue Listen-Kopie (CommunityToolkit Referenz-Gleichheitsprüfung umgangen). (3) Research ProgressBar Fix: Progress (0-100) wird durch 100 geteilt für ProgressBar Maximum=1 (in UpdateTimer() und BuildBranchDisplayItems()). Vorher zeigte 1% bereits volle Bar. (4) Worker-Transfer Fix: IsVisible bindet an bool HasAvailableWorkshops statt int Count (Avalonia konvertiert int nicht zu bool). SelectedTransferWorkshop Property statt fragiler ComboBox CommandParameter-Binding. TransferWorkerCommand parameterlos. SanitizeState: AssignedWorkshop wird korrigiert wenn Worker in falschem Workshop steckt.
