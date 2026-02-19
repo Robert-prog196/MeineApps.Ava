@@ -1,5 +1,7 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using BomberBlast.Models;
 using BomberBlast.Services;
 using MeineApps.Core.Ava.Localization;
 using MeineApps.Core.Premium.Ava.Services;
@@ -18,6 +20,7 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
     private readonly ILocalizationService _localizationService;
     private readonly IDailyRewardService _dailyRewardService;
     private readonly IReviewService _reviewService;
+    private readonly IDailyChallengeService _dailyChallengeService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
@@ -53,6 +56,25 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private int _coinBalance;
 
+    [ObservableProperty]
+    private string _totalEarnedText = "";
+
+    /// <summary>Ob die heutige Daily Challenge noch nicht gespielt wurde</summary>
+    [ObservableProperty]
+    private bool _isDailyChallengeNew;
+
+    // Daily Reward Popup
+    [ObservableProperty]
+    private bool _isRewardPopupVisible;
+
+    [ObservableProperty]
+    private string _rewardPopupTitle = "";
+
+    [ObservableProperty]
+    private string _rewardClaimText = "";
+
+    public ObservableCollection<DailyRewardDisplayItem> RewardDays { get; } = [];
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -63,7 +85,8 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
     public bool HasProgress => ShowContinueButton;
 
     public MainMenuViewModel(IProgressService progressService, IPurchaseService purchaseService, ICoinService coinService,
-        ILocalizationService localizationService, IDailyRewardService dailyRewardService, IReviewService reviewService)
+        ILocalizationService localizationService, IDailyRewardService dailyRewardService, IReviewService reviewService,
+        IDailyChallengeService dailyChallengeService)
     {
         _progressService = progressService;
         _purchaseService = purchaseService;
@@ -71,6 +94,7 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
         _localizationService = localizationService;
         _dailyRewardService = dailyRewardService;
         _reviewService = reviewService;
+        _dailyChallengeService = dailyChallengeService;
 
         // Live-Update bei Coin-Änderungen (z.B. aus Shop, Rewarded Ads)
         _coinService.BalanceChanged += OnBalanceChanged;
@@ -95,28 +119,10 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
     {
         ShowContinueButton = _progressService.HighestCompletedLevel > 0;
 
-        // 7-Tage Daily Reward prüfen und automatisch vergeben
+        // 7-Tage Daily Reward: Popup anzeigen statt auto-claim
         if (_dailyRewardService.IsRewardAvailable)
         {
-            var reward = _dailyRewardService.ClaimReward();
-            if (reward != null)
-            {
-                _coinService.AddCoins(reward.Coins);
-
-                var dayText = string.Format(
-                    _localizationService.GetString("DailyRewardDay") ?? "Day {0}",
-                    reward.Day);
-                var bonusText = $"{dayText}: +{reward.Coins:N0} Coins!";
-
-                if (reward.ExtraLives > 0)
-                {
-                    bonusText += $" +{reward.ExtraLives} " +
-                        (_localizationService.GetString("DailyRewardExtraLife") ?? "Extra Life");
-                }
-
-                FloatingTextRequested?.Invoke(bonusText, "gold");
-                CelebrationRequested?.Invoke();
-            }
+            ShowRewardPopup();
         }
 
         // In-App Review prüfen
@@ -129,7 +135,76 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
 
         CoinBalance = _coinService.Balance;
         CoinsText = _coinService.Balance.ToString("N0");
+        TotalEarnedText = string.Format(
+            _localizationService.GetString("TotalEarned") ?? "Total: {0}",
+            _coinService.TotalEarned.ToString("N0"));
+        IsDailyChallengeNew = !_dailyChallengeService.IsCompletedToday;
         OnPropertyChanged(nameof(HasProgress));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // DAILY REWARD POPUP
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private void ShowRewardPopup()
+    {
+        RewardPopupTitle = _localizationService.GetString("DailyRewardTitle") ?? "Daily Bonus";
+        RewardClaimText = _localizationService.GetString("DailyRewardClaim") ?? "Claim";
+
+        RewardDays.Clear();
+        var rewards = _dailyRewardService.GetRewards();
+        foreach (var r in rewards)
+        {
+            RewardDays.Add(new DailyRewardDisplayItem
+            {
+                Day = r.Day,
+                DayText = $"Day {r.Day}",
+                CoinsText = $"+{r.Coins:N0}",
+                HasExtraLife = r.ExtraLives > 0,
+                IsClaimed = r.IsClaimed,
+                IsCurrentDay = r.IsCurrentDay,
+                IsFuture = !r.IsClaimed && !r.IsCurrentDay
+            });
+        }
+
+        IsRewardPopupVisible = true;
+    }
+
+    [RelayCommand]
+    private void ClaimDailyReward()
+    {
+        var reward = _dailyRewardService.ClaimReward();
+        if (reward != null)
+        {
+            _coinService.AddCoins(reward.Coins);
+
+            var dayText = string.Format(
+                _localizationService.GetString("DailyRewardDay") ?? "Day {0}",
+                reward.Day);
+            var bonusText = $"{dayText}: +{reward.Coins:N0} Coins!";
+
+            if (reward.ExtraLives > 0)
+            {
+                bonusText += $" +{reward.ExtraLives} " +
+                    (_localizationService.GetString("DailyRewardExtraLife") ?? "Extra Life");
+            }
+
+            FloatingTextRequested?.Invoke(bonusText, "gold");
+            CelebrationRequested?.Invoke();
+        }
+
+        IsRewardPopupVisible = false;
+
+        // Coin-Anzeige aktualisieren
+        CoinBalance = _coinService.Balance;
+        CoinsText = _coinService.Balance.ToString("N0");
+    }
+
+    [RelayCommand]
+    private void DismissRewardPopup()
+    {
+        // Popup schließen OHNE zu claimen (naechster Besuch zeigt es erneut)
+        IsRewardPopupVisible = false;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -207,6 +282,9 @@ public partial class MainMenuViewModel : ObservableObject, IDisposable
     {
         CoinBalance = _coinService.Balance;
         CoinsText = _coinService.Balance.ToString("N0");
+        TotalEarnedText = string.Format(
+            _localizationService.GetString("TotalEarned") ?? "Total: {0}",
+            _coinService.TotalEarned.ToString("N0"));
     }
 
     // ═══════════════════════════════════════════════════════════════════════

@@ -20,6 +20,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly IPurchaseService _purchaseService;
     private readonly IGameStyleService _gameStyleService;
+    private readonly IPlayGamesService _playGames;
     private readonly InputManager _inputManager;
     private readonly SoundManager _soundManager;
 
@@ -123,6 +124,19 @@ public partial class SettingsViewModel : ObservableObject
     public string NeonStyleDesc => _localizationService.GetString("StyleNeonDesc");
 
     // ═══════════════════════════════════════════════════════════════════════
+    // OBSERVABLE PROPERTIES - GOOGLE PLAY GAMES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _playGamesEnabled;
+
+    [ObservableProperty]
+    private bool _isPlayGamesSignedIn;
+
+    [ObservableProperty]
+    private string _playGamesPlayerName = "";
+
+    // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES - LANGUAGE & PREMIUM
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -165,6 +179,7 @@ public partial class SettingsViewModel : ObservableObject
         ILocalizationService localizationService,
         IPurchaseService purchaseService,
         IGameStyleService gameStyleService,
+        IPlayGamesService playGames,
         InputManager inputManager,
         SoundManager soundManager)
     {
@@ -173,6 +188,7 @@ public partial class SettingsViewModel : ObservableObject
         _localizationService = localizationService;
         _purchaseService = purchaseService;
         _gameStyleService = gameStyleService;
+        _playGames = playGames;
         _inputManager = inputManager;
         _soundManager = soundManager;
 
@@ -211,6 +227,11 @@ public partial class SettingsViewModel : ObservableObject
 
         // Premium
         IsPremium = _purchaseService.IsPremium;
+
+        // Google Play Games
+        PlayGamesEnabled = _playGames.IsEnabled;
+        IsPlayGamesSignedIn = _playGames.IsSignedIn;
+        PlayGamesPlayerName = _playGames.PlayerName ?? "";
     }
 
     /// <summary>
@@ -219,7 +240,8 @@ public partial class SettingsViewModel : ObservableObject
     public void OnAppearing()
     {
         IsPremium = _purchaseService.IsPremium;
-
+        IsPlayGamesSignedIn = _playGames.IsSignedIn;
+        PlayGamesPlayerName = _playGames.PlayerName ?? "";
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -449,6 +471,46 @@ public partial class SettingsViewModel : ObservableObject
                 $"{_localizationService.GetString("RestoreFailed")}: {ex.Message}",
                 _localizationService.GetString("OK"));
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PROPERTY CHANGE HANDLERS - PLAY GAMES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    partial void OnPlayGamesEnabledChanged(bool value)
+    {
+        if (_isInitializing) return;
+
+        _playGames.IsEnabled = value;
+
+        // Bei Aktivierung Sign-In versuchen
+        if (value && !_playGames.IsSignedIn)
+        {
+            _ = TryPlayGamesSignInAsync();
+        }
+    }
+
+    private async Task TryPlayGamesSignInAsync()
+    {
+        var result = await _playGames.SignInAsync();
+        IsPlayGamesSignedIn = result;
+        PlayGamesPlayerName = _playGames.PlayerName ?? "";
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COMMANDS - PLAY GAMES
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private async Task ShowLeaderboardsAsync()
+    {
+        await _playGames.ShowLeaderboardsAsync();
+    }
+
+    [RelayCommand]
+    private async Task ShowGpgsAchievementsAsync()
+    {
+        await _playGames.ShowAchievementsAsync();
     }
 
     // ═══════════════════════════════════════════════════════════════════════

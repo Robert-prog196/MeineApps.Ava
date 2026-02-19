@@ -1,4 +1,5 @@
 using BomberBlast.Models;
+using BomberBlast.Models.Entities;
 
 namespace BomberBlast.Services;
 
@@ -33,4 +34,19 @@ public interface IAchievementService
 
     /// <summary>Stern-Fortschritt aktualisieren</summary>
     Achievement? OnStarsUpdated(int totalStars);
+
+    /// <summary>Combo erreicht - prüft Combo-Achievements</summary>
+    Achievement? OnComboReached(int comboCount);
+
+    /// <summary>Bombe gekickt - prüft Kick-Achievements</summary>
+    Achievement? OnBombKicked();
+
+    /// <summary>Power-Bomb platziert - prüft Power-Bomb-Achievements</summary>
+    Achievement? OnPowerBombUsed();
+
+    /// <summary>Curse überlebt - prüft Curse-Achievements</summary>
+    Achievement? OnCurseSurvived(CurseType curseType);
+
+    /// <summary>Daily Challenge abgeschlossen - prüft Daily-Challenge-Achievements</summary>
+    Achievement? OnDailyChallengeCompleted(int totalCompleted, int currentStreak);
 }

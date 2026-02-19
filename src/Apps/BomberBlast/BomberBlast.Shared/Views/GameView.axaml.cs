@@ -10,6 +10,7 @@ namespace BomberBlast.Views;
 public partial class GameView : UserControl
 {
     private int _renderWidth, _renderHeight;
+    private float _touchScaleX = 1f, _touchScaleY = 1f; // Gecacht für Touch-Koordinaten
     private GameViewModel? _subscribedVm;
     private DispatcherTimer? _renderTimer;
 
@@ -118,16 +119,15 @@ public partial class GameView : UserControl
         int width = (int)bounds.Width;
         int height = (int)bounds.Height;
 
-        // Fallback auf e.Info falls Bounds ungueltig
-        if (width <= 0 || height <= 0)
-        {
-            width = e.Info.Width;
-            height = e.Info.Height;
-        }
+        if (width <= 0 || height <= 0) return;
 
-        // Fuer Touch-Koordinaten-Konvertierung speichern
+        // Fuer Touch-Koordinaten-Konvertierung speichern + Scale-Faktoren cachen
         _renderWidth = width;
         _renderHeight = height;
+        var bw = GameCanvas.Bounds.Width;
+        var bh = GameCanvas.Bounds.Height;
+        _touchScaleX = bw > 0 ? width / (float)bw : 1f;
+        _touchScaleY = bh > 0 ? height / (float)bh : 1f;
 
         ViewModel?.OnPaintSurface(canvas, width, height);
     }
@@ -141,13 +141,8 @@ public partial class GameView : UserControl
         if (ViewModel is null) return;
 
         var point = e.GetPosition(GameCanvas);
-        var boundsWidth = GameCanvas.Bounds.Width;
-        var boundsHeight = GameCanvas.Bounds.Height;
-        float scaleX = boundsWidth > 0 ? _renderWidth / (float)boundsWidth : 1f;
-        float scaleY = boundsHeight > 0 ? _renderHeight / (float)boundsHeight : 1f;
-
-        float x = (float)(point.X * scaleX);
-        float y = (float)(point.Y * scaleY);
+        float x = (float)(point.X * _touchScaleX);
+        float y = (float)(point.Y * _touchScaleY);
 
         ViewModel.OnPointerPressed(x, y, _renderWidth, _renderHeight);
         e.Handled = true;
@@ -158,13 +153,8 @@ public partial class GameView : UserControl
         if (ViewModel is null) return;
 
         var point = e.GetPosition(GameCanvas);
-        var boundsWidth = GameCanvas.Bounds.Width;
-        var boundsHeight = GameCanvas.Bounds.Height;
-        float scaleX = boundsWidth > 0 ? _renderWidth / (float)boundsWidth : 1f;
-        float scaleY = boundsHeight > 0 ? _renderHeight / (float)boundsHeight : 1f;
-
-        float x = (float)(point.X * scaleX);
-        float y = (float)(point.Y * scaleY);
+        float x = (float)(point.X * _touchScaleX);
+        float y = (float)(point.Y * _touchScaleY);
 
         ViewModel.OnPointerMoved(x, y);
         e.Handled = true;

@@ -4,7 +4,6 @@
              xmlns:models="using:BomberBlast.Models"
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
-             xmlns:conv="using:Avalonia.Data.Converters"
              x:Class="BomberBlast.Views.ShopView"
              x:DataType="vm:ShopViewModel">
 
@@ -59,121 +58,477 @@
         </Grid>
       </Border>
 
-      <!-- Upgrade-Liste -->
+      <!-- Scrollbarer Inhalt -->
       <ScrollViewer Grid.Row="1"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding ShopItems}" Margin="12,8,12,80">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"
-                         HorizontalAlignment="Center" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="models:ShopDisplayItem">
-              <Border Background="{DynamicResource CardColor}"
-                      CornerRadius="12"
-                      Padding="12"
-                      Margin="6"
-                      Width="240"
-                      BoxShadow="0 2 8 0 #30000000">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+        <StackPanel Margin="12,8,12,80" Spacing="16">
 
-                  <!-- Icon-Badge -->
-                  <Border Grid.Row="0" Grid.Column="0"
-                          Grid.RowSpan="2"
-                          Width="44" Height="44"
-                          CornerRadius="10"
-                          Margin="0,0,10,0"
-                          VerticalAlignment="Center">
-                    <Border.Background>
-                      <SolidColorBrush Color="{Binding IconColor}" Opacity="0.2" />
-                    </Border.Background>
-                    <mi:MaterialIcon Kind="{Binding IconKind}"
-                                     Width="24" Height="24"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center">
-                      <mi:MaterialIcon.Foreground>
-                        <SolidColorBrush Color="{Binding IconColor}" />
-                      </mi:MaterialIcon.Foreground>
-                    </mi:MaterialIcon>
-                  </Border>
+          <!-- ═══════════════════════════════════════════════
+               SHOP-UPGRADES
+               ═══════════════════════════════════════════════ -->
+          <ItemsControl ItemsSource="{Binding ShopItems}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:ShopDisplayItem">
+                <Border Background="{DynamicResource CardColor}"
+                        CornerRadius="12"
+                        Padding="12"
+                        Margin="6"
+                        Width="240"
+                        BoxShadow="0 2 8 0 #30000000">
+                  <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
 
-                  <!-- Name -->
-                  <TextBlock Grid.Row="0" Grid.Column="1"
-                             Text="{Binding DisplayName}"
-                             FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <!-- Icon-Badge -->
+                    <Border Grid.Row="0" Grid.Column="0"
+                            Grid.RowSpan="2"
+                            Width="44" Height="44"
+                            CornerRadius="10"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center">
+                      <Border.Background>
+                        <SolidColorBrush Color="{Binding IconColor}" Opacity="0.2" />
+                      </Border.Background>
+                      <mi:MaterialIcon Kind="{Binding IconKind}"
+                                       Width="24" Height="24"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                        <mi:MaterialIcon.Foreground>
+                          <SolidColorBrush Color="{Binding IconColor}" />
+                        </mi:MaterialIcon.Foreground>
+                      </mi:MaterialIcon>
+                    </Border>
 
-                  <!-- Beschreibung -->
-                  <TextBlock Grid.Row="1" Grid.Column="1"
-                             Text="{Binding DisplayDescription}"
-                             FontSize="11"
-                             Foreground="{DynamicResource TextSecondaryBrush}"
-                             TextWrapping="Wrap" />
+                    <!-- Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding DisplayName}"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
 
-                  <!-- Level-Fortschritt -->
-                  <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                              Orientation="Horizontal" Spacing="8"
-                              Margin="0,8,0,4">
-                    <TextBlock Text="{Binding LevelDots}"
-                               FontSize="16"
-                               Foreground="{DynamicResource AccentBrush}"
-                               VerticalAlignment="Center" />
-                    <TextBlock Text="{Binding LevelText}"
-                               FontSize="12"
-                               Foreground="{DynamicResource TextMutedBrush}"
-                               VerticalAlignment="Center" />
-                  </StackPanel>
+                    <!-- Beschreibung -->
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding DisplayDescription}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
 
-                  <!-- Kauf-Button oder Maxed-Badge -->
-                  <Panel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                         Margin="0,4,0,0">
-                    <!-- Maxed: Gruener Checkmark -->
-                    <Border IsVisible="{Binding IsMaxed}"
-                            Background="#1B5E20"
+                    <!-- Level-Fortschritt -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                Orientation="Horizontal" Spacing="8"
+                                Margin="0,8,0,4">
+                      <TextBlock Text="{Binding LevelDots}"
+                                 FontSize="16"
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding LevelText}"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource TextMutedBrush}"
+                                 VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Kauf-Button oder Maxed-Badge -->
+                    <Panel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Margin="0,4,0,0">
+                      <!-- Maxed: Gruener Checkmark -->
+                      <Border IsVisible="{Binding IsMaxed}"
+                              Background="#1B5E20"
+                              CornerRadius="8"
+                              Padding="8,6"
+                              HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Spacing="6"
+                                    HorizontalAlignment="Center">
+                          <mi:MaterialIcon Kind="CheckCircle" Width="16" Height="16"
+                                           Foreground="#4CAF50" />
+                          <TextBlock Text="{loc:Translate ShopMaxed}"
+                                     FontSize="13" FontWeight="SemiBold"
+                                     Foreground="#4CAF50" />
+                        </StackPanel>
+                      </Border>
+
+                      <!-- Kauf-Button -->
+                      <Button IsVisible="{Binding !IsMaxed}"
+                              Command="{Binding $parent[ItemsControl].((vm:ShopViewModel)DataContext).PurchaseCommand}"
+                              CommandParameter="{Binding}"
+                              IsEnabled="{Binding CanBuy}"
+                              Classes="GameButton"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Center"
+                              CornerRadius="8"
+                              Padding="8,6">
+                        <Button.Background>
+                          <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
+                        </Button.Background>
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <mi:MaterialIcon Kind="CircleMultiple" Width="14" Height="14"
+                                           Foreground="#FFD700" />
+                          <TextBlock Text="{Binding NextPrice, StringFormat='{}{0:N0}'}"
+                                     FontSize="13" FontWeight="SemiBold"
+                                     Foreground="White" />
+                        </StackPanel>
+                      </Button>
+                    </Panel>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- ═══════════════════════════════════════════════
+               FÄHIGKEITEN (PowerUps)
+               ═══════════════════════════════════════════════ -->
+          <TextBlock Text="{Binding SectionPowerUpsText}"
+                     FontSize="17" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     Margin="6,8,0,0" />
+
+          <ItemsControl ItemsSource="{Binding PowerUpItems}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:PowerUpDisplayItem">
+                <Border CornerRadius="12"
+                        Padding="12"
+                        Margin="6"
+                        Width="240"
+                        BoxShadow="0 2 8 0 #30000000"
+                        Opacity="{Binding CardOpacity}">
+                  <Border.Background>
+                    <SolidColorBrush Color="{DynamicResource CardColor}" />
+                  </Border.Background>
+                  <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+
+                    <!-- Icon-Badge -->
+                    <Border Grid.Row="0" Grid.Column="0"
+                            Grid.RowSpan="2"
+                            Width="44" Height="44"
+                            CornerRadius="10"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center">
+                      <Border.Background>
+                        <SolidColorBrush Color="{Binding IconColor}" Opacity="0.2" />
+                      </Border.Background>
+                      <Panel>
+                        <!-- PowerUp-Icon (freigeschaltet) -->
+                        <mi:MaterialIcon Kind="{Binding IconKind}"
+                                         Width="24" Height="24"
+                                         IsVisible="{Binding IsUnlocked}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center">
+                          <mi:MaterialIcon.Foreground>
+                            <SolidColorBrush Color="{Binding IconColor}" />
+                          </mi:MaterialIcon.Foreground>
+                        </mi:MaterialIcon>
+                        <!-- Schloss-Icon (gesperrt) -->
+                        <mi:MaterialIcon Kind="Lock"
+                                         Width="24" Height="24"
+                                         IsVisible="{Binding !IsUnlocked}"
+                                         Foreground="#666666"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center" />
+                      </Panel>
+                    </Border>
+
+                    <!-- Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding DisplayName}"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <!-- Beschreibung -->
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding DisplayDescription}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+
+                    <!-- Unlock-Status: Freigeschaltet -->
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Margin="0,8,0,0"
                             CornerRadius="8"
-                            Padding="8,6"
-                            HorizontalAlignment="Stretch">
+                            Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding IsUnlocked}">
+                      <Border.Background>
+                        <SolidColorBrush Color="#1B5E20" Opacity="0.3" />
+                      </Border.Background>
                       <StackPanel Orientation="Horizontal" Spacing="6"
                                   HorizontalAlignment="Center">
-                        <mi:MaterialIcon Kind="CheckCircle" Width="16" Height="16"
+                        <mi:MaterialIcon Kind="CheckCircle" Width="14" Height="14"
                                          Foreground="#4CAF50" />
-                        <TextBlock Text="{loc:Translate ShopMaxed}"
-                                   FontSize="13" FontWeight="SemiBold"
+                        <TextBlock Text="{Binding UnlockText}"
+                                   FontSize="12" FontWeight="SemiBold"
                                    Foreground="#4CAF50" />
                       </StackPanel>
                     </Border>
 
-                    <!-- Kauf-Button -->
-                    <Button IsVisible="{Binding !IsMaxed}"
-                            Command="{Binding $parent[ItemsControl].((vm:ShopViewModel)DataContext).PurchaseCommand}"
-                            CommandParameter="{Binding}"
-                            IsEnabled="{Binding CanBuy}"
-                            Classes="GameButton"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
+                    <!-- Unlock-Status: Gesperrt -->
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Margin="0,8,0,0"
                             CornerRadius="8"
-                            Padding="8,6">
+                            Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding !IsUnlocked}">
+                      <Border.Background>
+                        <SolidColorBrush Color="{DynamicResource CardColor}" Opacity="0.5" />
+                      </Border.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6"
+                                  HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="Lock" Width="14" Height="14"
+                                         Foreground="#888888" />
+                        <TextBlock Text="{Binding UnlockText}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </StackPanel>
+                    </Border>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- ═══════════════════════════════════════════════
+               WELT-MECHANIKEN
+               ═══════════════════════════════════════════════ -->
+          <TextBlock Text="{Binding SectionMechanicsText}"
+                     FontSize="17" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     Margin="6,8,0,0" />
+
+          <ItemsControl ItemsSource="{Binding MechanicItems}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:PowerUpDisplayItem">
+                <Border CornerRadius="12"
+                        Padding="12"
+                        Margin="6"
+                        Width="240"
+                        BoxShadow="0 2 8 0 #30000000"
+                        Opacity="{Binding CardOpacity}">
+                  <Border.Background>
+                    <SolidColorBrush Color="{DynamicResource CardColor}" />
+                  </Border.Background>
+                  <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+
+                    <!-- Icon-Badge -->
+                    <Border Grid.Row="0" Grid.Column="0"
+                            Grid.RowSpan="2"
+                            Width="44" Height="44"
+                            CornerRadius="10"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center">
+                      <Border.Background>
+                        <SolidColorBrush Color="{Binding IconColor}" Opacity="0.2" />
+                      </Border.Background>
+                      <Panel>
+                        <mi:MaterialIcon Kind="{Binding IconKind}"
+                                         Width="24" Height="24"
+                                         IsVisible="{Binding IsUnlocked}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center">
+                          <mi:MaterialIcon.Foreground>
+                            <SolidColorBrush Color="{Binding IconColor}" />
+                          </mi:MaterialIcon.Foreground>
+                        </mi:MaterialIcon>
+                        <mi:MaterialIcon Kind="Lock"
+                                         Width="24" Height="24"
+                                         IsVisible="{Binding !IsUnlocked}"
+                                         Foreground="#666666"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center" />
+                      </Panel>
+                    </Border>
+
+                    <!-- Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding DisplayName}"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <!-- Beschreibung -->
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding DisplayDescription}"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+
+                    <!-- Unlock-Status: Freigeschaltet -->
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Margin="0,8,0,0"
+                            CornerRadius="8"
+                            Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding IsUnlocked}">
+                      <Border.Background>
+                        <SolidColorBrush Color="#1B5E20" Opacity="0.3" />
+                      </Border.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6"
+                                  HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="CheckCircle" Width="14" Height="14"
+                                         Foreground="#4CAF50" />
+                        <TextBlock Text="{Binding UnlockText}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#4CAF50" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Unlock-Status: Gesperrt -->
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Margin="0,8,0,0"
+                            CornerRadius="8"
+                            Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding !IsUnlocked}">
+                      <Border.Background>
+                        <SolidColorBrush Color="{DynamicResource CardColor}" Opacity="0.5" />
+                      </Border.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6"
+                                  HorizontalAlignment="Center">
+                        <mi:MaterialIcon Kind="Lock" Width="14" Height="14"
+                                         Foreground="#888888" />
+                        <TextBlock Text="{Binding UnlockText}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                      </StackPanel>
+                    </Border>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- ═══════════════════════════════════════════════
+               SPIELER-SKINS
+               ═══════════════════════════════════════════════ -->
+          <TextBlock Text="{Binding SectionSkinsText}"
+                     FontSize="17" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     Margin="6,8,0,0" />
+
+          <ItemsControl ItemsSource="{Binding SkinItems}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:SkinDisplayItem">
+                <Border CornerRadius="12"
+                        Padding="12"
+                        Margin="6"
+                        Width="240"
+                        BoxShadow="0 2 8 0 #30000000"
+                        Opacity="{Binding CardOpacity}">
+                  <Border.Background>
+                    <SolidColorBrush Color="{DynamicResource CardColor}" />
+                  </Border.Background>
+                  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*">
+
+                    <!-- Farb-Vorschau (Gradient-Kreis) -->
+                    <Border Grid.Row="0" Grid.Column="0"
+                            Grid.RowSpan="2"
+                            Width="44" Height="44"
+                            CornerRadius="22"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            BorderThickness="2">
+                      <Border.BorderBrush>
+                        <SolidColorBrush Color="{Binding SecondaryColor}" />
+                      </Border.BorderBrush>
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                          <GradientStop Color="{Binding PrimaryColor}" Offset="0" />
+                          <GradientStop Color="{Binding SecondaryColor}" Offset="1" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                    </Border>
+
+                    <!-- Name -->
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding DisplayName}"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <!-- Status: Ausgewählt -->
+                    <Border Grid.Row="1" Grid.Column="1"
+                            Margin="0,4,0,0"
+                            CornerRadius="8"
+                            Padding="8,5"
+                            HorizontalAlignment="Left"
+                            IsVisible="{Binding IsEquipped}">
+                      <Border.Background>
+                        <SolidColorBrush Color="#1B5E20" Opacity="0.3" />
+                      </Border.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <mi:MaterialIcon Kind="CheckCircle" Width="14" Height="14"
+                                         Foreground="#4CAF50" />
+                        <TextBlock Text="{Binding StatusText}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#4CAF50" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Status: Gesperrt (Premium) -->
+                    <Border Grid.Row="1" Grid.Column="1"
+                            Margin="0,4,0,0"
+                            CornerRadius="8"
+                            Padding="8,5"
+                            HorizontalAlignment="Left"
+                            IsVisible="{Binding IsLocked}">
+                      <Border.Background>
+                        <SolidColorBrush Color="{DynamicResource CardColor}" Opacity="0.5" />
+                      </Border.Background>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <mi:MaterialIcon Kind="Lock" Width="14" Height="14"
+                                         Foreground="#FFD700" />
+                        <TextBlock Text="{Binding StatusText}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#FFD700" />
+                      </StackPanel>
+                    </Border>
+
+                    <!-- Auswählen-Button -->
+                    <Button Grid.Row="1" Grid.Column="1"
+                            Margin="0,4,0,0"
+                            IsVisible="{Binding CanSelect}"
+                            Command="{Binding $parent[ItemsControl].((vm:ShopViewModel)DataContext).SelectSkinCommand}"
+                            CommandParameter="{Binding}"
+                            Classes="GameButton"
+                            HorizontalAlignment="Left"
+                            CornerRadius="8"
+                            Padding="12,5">
                       <Button.Background>
                         <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
                       </Button.Background>
-                      <StackPanel Orientation="Horizontal" Spacing="6">
-                        <mi:MaterialIcon Kind="CircleMultiple" Width="14" Height="14"
-                                         Foreground="#FFD700" />
-                        <TextBlock Text="{Binding NextPrice, StringFormat='{}{0:N0}'}"
-                                   FontSize="13" FontWeight="SemiBold"
-                                   Foreground="White" />
-                      </StackPanel>
+                      <TextBlock Text="{Binding StatusText}"
+                                 FontSize="12" FontWeight="SemiBold"
+                                 Foreground="White" />
                     </Button>
-                  </Panel>
 
-                </Grid>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+        </StackPanel>
       </ScrollViewer>
 
     </Grid>

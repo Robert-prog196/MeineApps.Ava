@@ -64,15 +64,7 @@ public class ReviewService : IReviewService
             }
         }
 
-        // Erstes Erfolgserlebnis (Level 3-5) oder alle 14 Tage nach Level-Complete
-        if (level <= MAX_LEVEL_FOR_FIRST_REVIEW || string.IsNullOrEmpty(lastPrompted))
-        {
-            _shouldPrompt = true;
-        }
-        else
-        {
-            // Nach Cooldown-Ablauf bei jedem Level-Complete erneut fragen
-            _shouldPrompt = true;
-        }
+        // Cooldown abgelaufen → Review anfordern
+        _shouldPrompt = true;
     }
 }

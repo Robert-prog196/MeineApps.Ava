@@ -135,8 +135,18 @@ public class ProgressService : IProgressService
         return 1;
     }
 
-    /// <summary>Hoechstes abgeschlossenes Level zurueckgeben</summary>
-    public int GetHighestCompletedLevel() => _data.HighestCompleted;
+    public int GetBaseScoreForLevel(int level)
+    {
+        int world = GetWorldForLevel(level);
+        return world switch
+        {
+            1 => 800 + level * 200,
+            2 => 1500 + level * 300,
+            3 => 2500 + level * 400,
+            4 => 4000 + level * 500,
+            _ => 6000 + level * 600
+        };
+    }
 
     public void ResetProgress()
     {

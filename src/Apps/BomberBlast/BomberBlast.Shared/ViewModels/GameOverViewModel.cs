@@ -138,6 +138,22 @@ public partial class GameOverViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasSummary;
 
+    // Near-Miss (knapp am nächsten Stern vorbei)
+    [ObservableProperty]
+    private string _nearMissText = "";
+
+    [ObservableProperty]
+    private bool _hasNearMiss;
+
+    // Paid Continue (199 Coins als Alternative zur Ad)
+    [ObservableProperty]
+    private bool _canPaidContinue;
+
+    [ObservableProperty]
+    private string _paidContinueText = "";
+
+    private const int PAID_CONTINUE_COST = 199;
+
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
@@ -192,10 +208,16 @@ public partial class GameOverViewModel : ObservableObject
         CanDoubleCoins = coins > 0 && _rewardedAdService.IsAvailable;
         CanContinue = canContinue && _rewardedAdService.IsAvailable;
 
-        // Level-Skip: Ab 3 Fehlversuchen im Story-Mode
-        CanSkipLevel = !isLevelComplete && !IsArcadeMode && fails >= 3 && _rewardedAdService.IsAvailable;
+        // Level-Skip: Ab 2 Fehlversuchen im Story-Mode
+        CanSkipLevel = !isLevelComplete && !IsArcadeMode && fails >= 2 && _rewardedAdService.IsAvailable;
         SkipLevelText = _localizationService.GetString("SkipLevel");
         SkipLevelInfoText = _localizationService.GetString("SkipLevelInfo");
+
+        // Paid Continue: Alternative zur Ad wenn Coins vorhanden
+        CanPaidContinue = canContinue && !HasContinued && _coinService.CanAfford(PAID_CONTINUE_COST);
+        PaidContinueText = string.Format(
+            _localizationService.GetString("PaidContinue") ?? "Continue ({0} Coins)",
+            PAID_CONTINUE_COST);
 
         // Lokalisierte Button-Texte
         DoubleCoinsButtonText = _localizationService.GetString("DoubleCoins");
@@ -217,6 +239,22 @@ public partial class GameOverViewModel : ObservableObject
             Star1Earned = StarsEarned >= 1;
             Star2Earned = StarsEarned >= 2;
             Star3Earned = StarsEarned >= 3;
+
+            // Near-Miss: Knapp am nächsten Stern vorbei (innerhalb 30% des Schwellwerts)
+            HasNearMiss = false;
+            if (StarsEarned < 3)
+            {
+                int baseScoreForLevel = _progressService.GetBaseScoreForLevel(level);
+                int nextThreshold = baseScoreForLevel * (StarsEarned + 1);
+                int pointsNeeded = nextThreshold - score;
+                if (pointsNeeded > 0 && pointsNeeded < baseScoreForLevel * 0.3f)
+                {
+                    NearMissText = string.Format(
+                        _localizationService.GetString("NearMissStars") ?? "Only {0} more points for the next star!",
+                        pointsNeeded.ToString("N0"));
+                    HasNearMiss = true;
+                }
+            }
         }
     }
 
@@ -246,22 +284,40 @@ public partial class GameOverViewModel : ObservableObject
     {
         if (HasContinued || IsArcadeMode) return;
 
-        bool rewarded = await _rewardedAdService.ShowAdAsync("continue");
+        bool rewarded = await _rewardedAdService.ShowAdAsync("revival");
         if (rewarded)
         {
-            // Coins fuer bisherigen Fortschritt gutschreiben
-            if (CoinsEarned > 0)
-            {
-                _coinService.AddCoins(CoinsEarned);
-                CoinsEarned = 0; // Doppelte Gutschrift verhindern
-            }
-
-            HasContinued = true;
-            CanContinue = false;
-
-            // Zurueck zum Spiel mit Continue-Modus
-            NavigationRequested?.Invoke($"Game?mode={Mode}&level={Level}&continue=true");
+            PerformContinue();
         }
+    }
+
+    [RelayCommand]
+    private void PaidContinue()
+    {
+        if (HasContinued || IsArcadeMode) return;
+        if (!_coinService.TrySpendCoins(PAID_CONTINUE_COST)) return;
+
+        PerformContinue();
+    }
+
+    /// <summary>
+    /// Gemeinsame Continue-Logik (Ad oder Coins)
+    /// </summary>
+    private void PerformContinue()
+    {
+        // Coins fuer bisherigen Fortschritt gutschreiben
+        if (CoinsEarned > 0)
+        {
+            _coinService.AddCoins(CoinsEarned);
+            CoinsEarned = 0; // Doppelte Gutschrift verhindern
+        }
+
+        HasContinued = true;
+        CanContinue = false;
+        CanPaidContinue = false;
+
+        // Zurueck zum Spiel mit Continue-Modus
+        NavigationRequested?.Invoke($"Game?mode={Mode}&level={Level}&continue=true");
     }
 
     [RelayCommand]
@@ -323,6 +379,9 @@ public partial class GameOverViewModel : ObservableObject
     // COIN-COUNTER ANIMATION
     // ═══════════════════════════════════════════════════════════════════════
 
+    private int _coinAnimFrame;
+    private const int COIN_ANIM_FRAMES = 35; // ~0.56s bei 60fps
+
     private void StartCoinAnimation()
     {
         _coinAnimTimer?.Stop();
@@ -332,16 +391,21 @@ public partial class GameOverViewModel : ObservableObject
             return;
         }
 
+        _coinAnimFrame = 0;
         _coinAnimTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
         _coinAnimTimer.Tick += (_, _) =>
         {
-            // Increment pro Frame: Coins / 30 Frames (~0.5s bei 60fps)
-            int step = Math.Max(1, _targetCoins / 30);
-            _animatedCoins = Math.Min(_animatedCoins + step, _targetCoins);
+            _coinAnimFrame++;
+            // Ease-Out: Anfangs schnell, Ende langsam (1 - (1-t)^2)
+            float t = Math.Min(1f, (float)_coinAnimFrame / COIN_ANIM_FRAMES);
+            float eased = 1f - (1f - t) * (1f - t);
+            _animatedCoins = (int)(eased * _targetCoins);
             CoinsEarnedText = $"+{_animatedCoins:N0}";
 
-            if (_animatedCoins >= _targetCoins)
+            if (_coinAnimFrame >= COIN_ANIM_FRAMES)
             {
+                _animatedCoins = _targetCoins;
+                CoinsEarnedText = $"+{_targetCoins:N0}";
                 _coinAnimTimer?.Stop();
                 _coinAnimTimer = null;
             }

@@ -4,6 +4,7 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:loc="using:MeineApps.Core.Ava.Localization"
              xmlns:skia="using:Avalonia.Labs.Controls"
+             xmlns:models="using:BomberBlast.Models"
              x:Class="BomberBlast.Views.MainMenuView"
              x:DataType="vm:MainMenuViewModel">
 
@@ -54,11 +55,17 @@
             </StackPanel>
           </Border>
 
+          <TextBlock Text="{Binding TotalEarnedText}"
+                     FontSize="11"
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     HorizontalAlignment="Center"
+                     Margin="0,6,0,0" />
+
           <TextBlock Text="{Binding VersionText}"
                      FontSize="12"
                      Foreground="{DynamicResource TextMutedBrush}"
                      HorizontalAlignment="Center"
-                     Margin="0,12,0,0" />
+                     Margin="0,8,0,0" />
         </StackPanel>
 
         <!-- Rechts: Button Grid (2 Spalten) -->
@@ -153,22 +160,34 @@
                   Height="48" />
 
           <!-- Daily Challenge (Links) -->
-          <Button Grid.Row="4" Grid.Column="0"
-                  Classes="Primary GameButton"
-                  Background="#FF6B00"
-                  Command="{Binding DailyChallengeCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="0,6,6,0"
-                  Height="48">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <mi:MaterialIcon Kind="Sword" Width="18" Height="18"
-                               Foreground="White" />
-              <TextBlock Text="{loc:Translate DailyChallengeTitle}"
-                         Foreground="White"
-                         FontSize="13" />
-            </StackPanel>
-          </Button>
+          <Panel Grid.Row="4" Grid.Column="0" Margin="0,6,6,0">
+            <Button Classes="Primary GameButton"
+                    Background="#FF6B00"
+                    Command="{Binding DailyChallengeCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="48">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="Sword" Width="18" Height="18"
+                                 Foreground="White" />
+                <TextBlock Text="{loc:Translate DailyChallengeTitle}"
+                           Foreground="White"
+                           FontSize="13" />
+              </StackPanel>
+            </Button>
+            <!-- "Neu!" Badge -->
+            <Border IsVisible="{Binding IsDailyChallengeNew}"
+                    Background="#FF2020"
+                    CornerRadius="8"
+                    Padding="5,2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,-4,-2,0">
+              <TextBlock Text="{loc:Translate DailyChallengeNew}"
+                         FontSize="10" FontWeight="Bold"
+                         Foreground="White" />
+            </Border>
+          </Panel>
 
           <!-- Achievements (Rechts) -->
           <Button Grid.Row="4" Grid.Column="1"
@@ -191,6 +210,105 @@
       </Grid>
 
     </Grid>
+
+    <!-- Daily Reward Popup Overlay -->
+    <Border IsVisible="{Binding IsRewardPopupVisible}"
+            Background="#CC000000"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="16" Padding="20"
+              MaxWidth="520" MaxHeight="300"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              BoxShadow="0 8 24 0 #60000000">
+        <Grid RowDefinitions="Auto,*,Auto">
+          <!-- Titel -->
+          <StackPanel Orientation="Horizontal" Spacing="8"
+                      HorizontalAlignment="Center" Margin="0,0,0,12">
+            <mi:MaterialIcon Kind="Gift" Width="24" Height="24" Foreground="#FFD700" />
+            <TextBlock Text="{Binding RewardPopupTitle}"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="#FFD700" />
+          </StackPanel>
+
+          <!-- 7-Tage-Kalender -->
+          <ItemsControl Grid.Row="1" ItemsSource="{Binding RewardDays}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="6"
+                            HorizontalAlignment="Center" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="models:DailyRewardDisplayItem">
+                <Border Width="58" CornerRadius="8"
+                        Padding="4,6"
+                        Opacity="{Binding CardOpacity}"
+                        BorderThickness="2"
+                        BorderBrush="{Binding BorderColor}">
+                  <Border.Background>
+                    <SolidColorBrush Color="{Binding BackgroundColor}" />
+                  </Border.Background>
+                  <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <!-- Tag -->
+                    <TextBlock Text="{Binding DayText}"
+                               FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <!-- Status-Icon -->
+                    <Panel Height="20" HorizontalAlignment="Center">
+                      <!-- Claimed: Haken -->
+                      <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                                       Foreground="#22C55E"
+                                       IsVisible="{Binding IsClaimed}" />
+                      <!-- Aktuell: Geschenk -->
+                      <mi:MaterialIcon Kind="Gift" Width="20" Height="20"
+                                       Foreground="#FFD700"
+                                       IsVisible="{Binding IsCurrentDay}" />
+                      <!-- Zukunft: Schloss -->
+                      <mi:MaterialIcon Kind="Lock" Width="20" Height="20"
+                                       Foreground="#666666"
+                                       IsVisible="{Binding IsFuture}" />
+                    </Panel>
+                    <!-- Coins -->
+                    <TextBlock Text="{Binding CoinsText}"
+                               FontSize="11" FontWeight="Bold"
+                               Foreground="#FFD700"
+                               HorizontalAlignment="Center" />
+                    <!-- Extra-Leben Bonus -->
+                    <mi:MaterialIcon Kind="HeartPlus" Width="14" Height="14"
+                                     Foreground="#FF4444"
+                                     IsVisible="{Binding HasExtraLife}"
+                                     HorizontalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Buttons -->
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12"
+                      HorizontalAlignment="Center" Margin="0,12,0,0">
+            <Button Command="{Binding ClaimDailyRewardCommand}"
+                    Classes="Primary GameButton"
+                    Background="#FFD700"
+                    Height="44" MinWidth="140"
+                    HorizontalContentAlignment="Center">
+              <TextBlock Text="{Binding RewardClaimText}"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="#1A1A2A" />
+            </Button>
+            <Button Command="{Binding DismissRewardPopupCommand}"
+                    Classes="Secondary GameButton"
+                    Height="44" MinWidth="100"
+                    HorizontalContentAlignment="Center">
+              <mi:MaterialIcon Kind="Close" Width="20" Height="20"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Border>
+
   </Panel>
 
 </UserControl>

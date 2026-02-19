@@ -37,6 +37,11 @@ public partial class App : Application
     /// </summary>
     public static Func<IServiceProvider, ISoundService>? SoundServiceFactory { get; set; }
 
+    /// <summary>
+    /// Factory fuer plattformspezifischen IPlayGamesService (Android setzt AndroidPlayGamesService).
+    /// </summary>
+    public static Func<IServiceProvider, IPlayGamesService>? PlayGamesServiceFactory { get; set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -98,6 +103,12 @@ public partial class App : Application
         services.AddSingleton<ILocalizationService>(sp =>
             new LocalizationService(AppStrings.ResourceManager, sp.GetRequiredService<IPreferencesService>()));
 
+        // Google Play Games Services
+        if (PlayGamesServiceFactory != null)
+            services.AddSingleton<IPlayGamesService>(sp => PlayGamesServiceFactory!(sp));
+        else
+            services.AddSingleton<IPlayGamesService, NullPlayGamesService>();
+
         // Game Services
         services.AddSingleton<IProgressService, ProgressService>();
         services.AddSingleton<IHighScoreService, HighScoreService>();
@@ -115,8 +126,8 @@ public partial class App : Application
         services.AddSingleton<ICustomizationService, CustomizationService>();
         services.AddSingleton<IReviewService, ReviewService>();
         services.AddSingleton<IAchievementService, AchievementService>();
+        services.AddSingleton<IDiscoveryService, DiscoveryService>();
         services.AddSingleton<SoundManager>();
-        services.AddSingleton<SpriteSheet>();
         services.AddSingleton<InputManager>();
         services.AddSingleton<GameRenderer>();
         services.AddSingleton<GameEngine>();
@@ -134,5 +145,6 @@ public partial class App : Application
         services.AddTransient<ShopViewModel>();
         services.AddTransient<AchievementsViewModel>();
         services.AddTransient<DailyChallengeViewModel>();
+        services.AddTransient<VictoryViewModel>();
     }
 }

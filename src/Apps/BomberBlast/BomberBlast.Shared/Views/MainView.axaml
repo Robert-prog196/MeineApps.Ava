@@ -78,6 +78,11 @@
       <Border Classes="PageView" x:Name="DailyChallengeBorder">
         <views:DailyChallengeView DataContext="{Binding DailyChallengeVm}" />
       </Border>
+
+      <!-- Victory (alle 50 Level geschafft) -->
+      <Border Classes="PageView" x:Name="VictoryBorder">
+        <views:VictoryView DataContext="{Binding VictoryVm}" />
+      </Border>
     </Panel>
 
     <!-- Row 1: Ad-Banner Spacer (64dp fuer adaptive Banner, sichtbar wenn aktiv und nicht im Spiel) -->

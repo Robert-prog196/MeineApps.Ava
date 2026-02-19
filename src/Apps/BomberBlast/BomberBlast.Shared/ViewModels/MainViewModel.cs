@@ -41,6 +41,7 @@ public partial class MainViewModel : ObservableObject
     public ShopViewModel ShopVm { get; }
     public AchievementsViewModel AchievementsVm { get; }
     public DailyChallengeViewModel DailyChallengeVm { get; }
+    public VictoryViewModel VictoryVm { get; }
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -75,6 +76,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isDailyChallengeActive;
+
+    [ObservableProperty]
+    private bool _isVictoryActive;
 
     /// <summary>
     /// Ad-Banner-Spacer: sichtbar in Menü-Views, versteckt im Game-View
@@ -124,6 +128,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IAdService _adService;
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IAchievementService _achievementService;
+    private readonly ICoinService _coinService;
 
     /// <summary>
     /// Zeitpunkt des letzten Back-Presses (für Double-Back-to-Exit)
@@ -151,11 +156,13 @@ public partial class MainViewModel : ObservableObject
         ShopViewModel shopVm,
         AchievementsViewModel achievementsVm,
         DailyChallengeViewModel dailyChallengeVm,
+        VictoryViewModel victoryVm,
         ILocalizationService localization,
         IAdService adService,
         IPurchaseService purchaseService,
         IRewardedAdService rewardedAdService,
-        IAchievementService achievementService)
+        IAchievementService achievementService,
+        ICoinService coinService)
     {
         MenuVm = menuVm;
         GameVm = gameVm;
@@ -168,10 +175,12 @@ public partial class MainViewModel : ObservableObject
         ShopVm = shopVm;
         AchievementsVm = achievementsVm;
         DailyChallengeVm = dailyChallengeVm;
+        VictoryVm = victoryVm;
         _localizationService = localization;
         _adService = adService;
         _rewardedAdService = rewardedAdService;
         _achievementService = achievementService;
+        _coinService = coinService;
 
         // Game Juice Events weiterleiten
         GameOverVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
@@ -179,11 +188,14 @@ public partial class MainViewModel : ObservableObject
         MenuVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
         LevelSelectVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
 
-        // Achievement-Toast bei Unlock
+        // Achievement-Toast bei Unlock (mit Coin-Belohnung)
         _achievementService.AchievementUnlocked += (_, achievement) =>
         {
             var name = localization.GetString(achievement.NameKey) ?? achievement.NameKey;
-            FloatingTextRequested?.Invoke($"Achievement: {name}!", "gold");
+            string text = achievement.CoinReward > 0
+                ? $"Achievement: {name}! +{achievement.CoinReward} Coins"
+                : $"Achievement: {name}!";
+            FloatingTextRequested?.Invoke(text, "gold");
         };
 
         // Shop: Kauf-Feedback
@@ -225,6 +237,7 @@ public partial class MainViewModel : ObservableObject
         WireNavigation(shopVm);
         WireNavigation(achievementsVm);
         WireNavigation(dailyChallengeVm);
+        WireNavigation(victoryVm);
 
         // Daily Challenge Game Juice Events weiterleiten
         DailyChallengeVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
@@ -406,6 +419,15 @@ public partial class MainViewModel : ObservableObject
                         DailyChallengeVm.SubmitScore(score);
                     }
 
+                    // Arcade High Score → Gold Confetti + FloatingText
+                    if (isHighScore && mode == "arcade" && score > 0)
+                    {
+                        CelebrationRequested?.Invoke();
+                        FloatingTextRequested?.Invoke(
+                            _localizationService.GetString("NewHighScore") ?? "NEW HIGH SCORE!",
+                            "gold");
+                    }
+
                     // Level Complete → Confetti + Floating Text
                     if (levelComplete)
                     {
@@ -438,6 +460,35 @@ public partial class MainViewModel : ObservableObject
                 IsDailyChallengeActive = true;
                 IsAdBannerVisible = _adService.BannerVisible;
                 DailyChallengeVm.OnAppearing();
+                break;
+
+            case "Victory":
+                IsVictoryActive = true;
+                IsAdBannerVisible = _adService.BannerVisible;
+                VictoryVm.OnAppearing();
+                // Query-Parameter parsen (score, coins)
+                if (route.Contains('?'))
+                {
+                    var vQuery = route[(route.IndexOf('?') + 1)..];
+                    var vScore = 0;
+                    var vCoins = 0;
+                    foreach (var param in vQuery.Split('&'))
+                    {
+                        var parts = param.Split('=');
+                        if (parts.Length == 2)
+                        {
+                            if (parts[0] == "score") int.TryParse(parts[1], out vScore);
+                            if (parts[0] == "coins") int.TryParse(parts[1], out vCoins);
+                        }
+                    }
+                    VictoryVm.SetScore(vScore);
+                    // Coins gutschreiben
+                    if (vCoins > 0) _coinService.AddCoins(vCoins);
+                }
+                CelebrationRequested?.Invoke();
+                FloatingTextRequested?.Invoke(
+                    _localizationService.GetString("VictoryTitle") ?? "Victory!",
+                    "gold");
                 break;
 
             case "..":
@@ -477,6 +528,7 @@ public partial class MainViewModel : ObservableObject
         IsShopActive = false;
         IsAchievementsActive = false;
         IsDailyChallengeActive = false;
+        IsVictoryActive = false;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -542,7 +594,7 @@ public partial class MainViewModel : ObservableObject
 
         // 5. Alle anderen Sub-Views → zurück zum Hauptmenü
         if (IsGameOverActive || IsLevelSelectActive || IsHighScoresActive ||
-            IsHelpActive || IsShopActive || IsAchievementsActive || IsDailyChallengeActive)
+            IsHelpActive || IsShopActive || IsAchievementsActive || IsDailyChallengeActive || IsVictoryActive)
         {
             HideAll();
             IsMainMenuActive = true;

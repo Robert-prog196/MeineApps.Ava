@@ -14,6 +14,7 @@ public partial class DailyChallengeViewModel : ObservableObject
     private readonly IDailyChallengeService _dailyChallengeService;
     private readonly ICoinService _coinService;
     private readonly ILocalizationService _localizationService;
+    private readonly IAchievementService _achievementService;
 
     public event Action<string>? NavigationRequested;
     public event Action<string, string>? FloatingTextRequested;
@@ -65,11 +66,13 @@ public partial class DailyChallengeViewModel : ObservableObject
     public DailyChallengeViewModel(
         IDailyChallengeService dailyChallengeService,
         ICoinService coinService,
-        ILocalizationService localizationService)
+        ILocalizationService localizationService,
+        IAchievementService achievementService)
     {
         _dailyChallengeService = dailyChallengeService;
         _coinService = coinService;
         _localizationService = localizationService;
+        _achievementService = achievementService;
     }
 
     public void OnAppearing()
@@ -86,6 +89,11 @@ public partial class DailyChallengeViewModel : ObservableObject
         if (score <= 0) return;
 
         bool isNewBest = _dailyChallengeService.SubmitScore(score);
+
+        // Achievement: Daily Challenge Fortschritt prüfen
+        _achievementService.OnDailyChallengeCompleted(
+            _dailyChallengeService.TotalCompleted,
+            _dailyChallengeService.CurrentStreak);
 
         // Streak-Bonus vergeben
         int bonus = _dailyChallengeService.GetStreakBonus();

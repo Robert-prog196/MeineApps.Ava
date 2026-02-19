@@ -50,7 +50,16 @@ public partial class AchievementsViewModel : ObservableObject
                     ? $"{achievement.Progress}/{achievement.Target}"
                     : (achievement.IsUnlocked ? "✓" : ""),
                 IconName = achievement.IconName,
-                CategoryName = achievement.Category.ToString()
+                CategoryName = achievement.Category.ToString(),
+                CategoryIndex = (int)achievement.Category,
+                ProgressFraction = achievement.Target > 0
+                    ? (float)achievement.Progress / achievement.Target
+                    : 0f,
+                CoinReward = achievement.CoinReward,
+                HasCoinReward = achievement.CoinReward > 0,
+                CoinRewardText = achievement.CoinReward > 0
+                    ? $"+{achievement.CoinReward:N0} Coins"
+                    : ""
             });
         }
     }
@@ -72,4 +81,13 @@ public class AchievementItem
     public string ProgressText { get; init; } = "";
     public string IconName { get; init; } = "";
     public string CategoryName { get; init; } = "";
+    public int CoinReward { get; init; }
+    public bool HasCoinReward { get; init; }
+    public string CoinRewardText { get; init; } = "";
+
+    /// <summary>Kategorie-Index für AchievementIconRenderer (0-4)</summary>
+    public int CategoryIndex { get; init; }
+
+    /// <summary>Fortschritt als Float 0.0-1.0 für Ring-Anzeige</summary>
+    public float ProgressFraction { get; init; }
 }

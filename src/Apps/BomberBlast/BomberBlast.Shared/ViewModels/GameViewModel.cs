@@ -454,9 +454,14 @@ public partial class GameViewModel : ObservableObject, IDisposable
         var effBonus = _gameEngine.LastEfficiencyBonus;
         var multiplier = _gameEngine.LastScoreMultiplier;
 
-        if (_gameEngine.IsDailyChallenge || (_gameEngine.CurrentLevel >= 50 && !_gameEngine.IsArcadeMode))
+        if (_gameEngine.CurrentLevel >= 50 && !_gameEngine.IsArcadeMode && !_gameEngine.IsDailyChallenge)
         {
-            // Daily Challenge oder Sieg → Game Over Screen mit Level-Complete-Flag
+            // Alle 50 Level geschafft → Victory-Screen!
+            NavigationRequested?.Invoke($"Victory?score={score}&coins={coins}");
+        }
+        else if (_gameEngine.IsDailyChallenge)
+        {
+            // Daily Challenge → Game Over Screen mit Level-Complete-Flag
             NavigationRequested?.Invoke(
                 $"GameOver?score={score}&level={level}&highscore={isHighScore}&mode={mode}" +
                 $"&coins={coins}&levelcomplete=true&cancontinue=false" +

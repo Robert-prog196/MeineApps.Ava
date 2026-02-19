@@ -21,6 +21,7 @@ public partial class MainView : UserControl
     private Border? _shopBorder;
     private Border? _achievementsBorder;
     private Border? _dailyChallengeBorder;
+    private Border? _victoryBorder;
 
     public MainView()
     {
@@ -43,6 +44,7 @@ public partial class MainView : UserControl
         _shopBorder = this.FindControl<Border>("ShopBorder");
         _achievementsBorder = this.FindControl<Border>("AchievementsBorder");
         _dailyChallengeBorder = this.FindControl<Border>("DailyChallengeBorder");
+        _victoryBorder = this.FindControl<Border>("VictoryBorder");
 
         // Initial: MainMenu aktiv setzen
         UpdateActiveClasses();
@@ -96,6 +98,7 @@ public partial class MainView : UserControl
         SetActiveClass(_shopBorder, _vm.IsShopActive);
         SetActiveClass(_achievementsBorder, _vm.IsAchievementsActive);
         SetActiveClass(_dailyChallengeBorder, _vm.IsDailyChallengeActive);
+        SetActiveClass(_victoryBorder, _vm.IsVictoryActive);
     }
 
     private static void SetActiveClass(Border? border, bool isActive)

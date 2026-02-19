@@ -35,6 +35,9 @@ public interface IProgressService
     /// <summary>Welt-Nummer (1-5) fuer ein Level</summary>
     int GetWorldForLevel(int level);
 
+    /// <summary>Basis-Score für Stern-Berechnung eines Levels</summary>
+    int GetBaseScoreForLevel(int level);
+
     /// <summary>Reset all progress</summary>
     void ResetProgress();
 }

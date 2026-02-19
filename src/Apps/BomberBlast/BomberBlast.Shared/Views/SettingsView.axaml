@@ -297,6 +297,69 @@
             </StackPanel>
           </Border>
 
+          <!-- Google Play Games Section -->
+          <Border Classes="SettingsCard">
+            <StackPanel Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="GooglePlay" Width="20" Height="20"
+                                 Foreground="#34A853" />
+                <TextBlock Text="{loc:Translate PlayGamesSection}"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- Aktivierungs-Toggle -->
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{loc:Translate PlayGamesEnabled}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
+                <ToggleSwitch Grid.Column="1"
+                              OnContent="" OffContent=""
+                              IsChecked="{Binding PlayGamesEnabled}" />
+              </Grid>
+
+              <!-- Sign-In Status -->
+              <Grid ColumnDefinitions="*,Auto"
+                    IsVisible="{Binding IsPlayGamesSignedIn}">
+                <StackPanel>
+                  <TextBlock Text="{Binding PlayGamesPlayerName}"
+                             FontSize="14" FontWeight="SemiBold"
+                             Foreground="{DynamicResource SuccessBrush}" />
+                </StackPanel>
+                <mi:MaterialIcon Grid.Column="1"
+                                 Kind="CheckCircle" Width="20" Height="20"
+                                 Foreground="{DynamicResource SuccessBrush}" />
+              </Grid>
+
+              <!-- Buttons (nur wenn eingeloggt) -->
+              <Grid ColumnDefinitions="*,*" IsVisible="{Binding IsPlayGamesSignedIn}">
+                <Button Grid.Column="0"
+                        Classes="Secondary"
+                        Command="{Binding ShowLeaderboardsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,0,4,0">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="TrophyOutline" Width="16" Height="16" />
+                    <TextBlock Text="{loc:Translate ShowLeaderboards}" FontSize="12" />
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="1"
+                        Classes="Secondary"
+                        Command="{Binding ShowGpgsAchievementsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Margin="4,0,0,0">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="Medal" Width="16" Height="16" />
+                    <TextBlock Text="{loc:Translate ShowGpgsAchievements}" FontSize="12" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+
           <!-- Language + Premium: Side by Side -->
           <Grid ColumnDefinitions="*,*">
 
@@ -345,11 +408,29 @@
                                    Foreground="{DynamicResource SuccessBrush}" />
                 </Grid>
 
-                <TextBlock Text="{loc:Translate PremiumDescription}"
-                           FontSize="11"
-                           Foreground="{DynamicResource TextMutedBrush}"
-                           TextWrapping="Wrap"
-                           IsVisible="{Binding !IsPremium}" />
+                <!-- Premium Feature-Liste -->
+                <StackPanel Spacing="6" IsVisible="{Binding !IsPremium}">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="AdsOff" Width="14" Height="14" Foreground="#22C55E" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureNoAds}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="CircleMultiple" Width="14" Height="14" Foreground="#FFD700" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureDoubleCoins}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="Palette" Width="14" Height="14" Foreground="#A78BFA" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureSkins}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="Heart" Width="14" Height="14" Foreground="#EF4444" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureSupport}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                </StackPanel>
 
                 <!-- Buy Premium -->
                 <Button Content="{loc:Translate BuyPremium}"
