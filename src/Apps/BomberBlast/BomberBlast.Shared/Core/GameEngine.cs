@@ -26,7 +26,6 @@ public partial class GameEngine : IDisposable
 {
     // Dependencies
     private readonly SoundManager _soundManager;
-    private readonly SpriteSheet _spriteSheet;
     private readonly IProgressService _progressService;
     private readonly IHighScoreService _highScoreService;
     private readonly InputManager _inputManager;
@@ -38,6 +37,11 @@ public partial class GameEngine : IDisposable
     private readonly ITutorialService _tutorialService;
     private readonly TutorialOverlay _tutorialOverlay;
     private readonly IAchievementService _achievementService;
+    private readonly IDiscoveryService _discoveryService;
+    private readonly IPlayGamesService _playGames;
+
+    // Discovery-Hints (Erstentdeckung von PowerUps/Mechaniken)
+    private readonly DiscoveryOverlay _discoveryOverlay;
 
     // Game state
     private GameState _state = GameState.Menu;
@@ -60,6 +64,9 @@ public partial class GameEngine : IDisposable
     private int _arcadeWave;
     private bool _levelCompleteHandled;
     private bool _continueUsed;
+
+    // Gecachte Mechanik-Zellen (vermeidet 150-Zellen-Grid-Scan pro Frame)
+    private readonly List<Cell> _mechanicCells = new();
 
     // Statistics
     private int _bombsUsed;
@@ -110,6 +117,9 @@ public partial class GameEngine : IDisposable
     // Sterne-Rating bei Level-Complete (für Overlay-Rendering)
     private int _levelCompleteStars;
 
+    // Erster Sieg (Level 1 zum ersten Mal abgeschlossen)
+    private bool _isFirstVictory;
+
     // Welt-/Wave-Ankündigung
     private float _worldAnnouncementTimer;
     private string _worldAnnouncementText = "";
@@ -120,8 +130,14 @@ public partial class GameEngine : IDisposable
     private float _pontanSpawnTimer;
     private const int PONTAN_MAX_COUNT = 3;
     private const float PONTAN_SPAWN_INTERVAL = 5f; // Sekunden zwischen Spawns
+    private const float PONTAN_WARNING_TIME = 1.5f; // Sekunden Vorwarnung vor Spawn
     private const int PONTAN_MIN_DISTANCE = 5; // Mindestabstand zum Spieler
     private readonly Random _pontanRandom = new(); // Wiederverwendbar statt new Random() pro Aufruf
+
+    // Pontan-Spawn-Warnung (vorberechnete Position)
+    private float _pontanWarningX;
+    private float _pontanWarningY;
+    private bool _pontanWarningActive;
 
     // Tutorial
     private float _tutorialWarningTimer;
@@ -194,6 +210,13 @@ public partial class GameEngine : IDisposable
             }
         }
 
+        // Discovery-Hint: Tap zum Schließen
+        if (_discoveryOverlay.IsActive && _state == GameState.Playing)
+        {
+            _discoveryOverlay.Dismiss();
+            return;
+        }
+
         // Tutorial: Skip-Button oder Tap-to-Continue prüfen
         if (_tutorialService.IsActive && _state == GameState.Playing)
         {
@@ -233,7 +256,6 @@ public partial class GameEngine : IDisposable
 
     public GameEngine(
         SoundManager soundManager,
-        SpriteSheet spriteSheet,
         IProgressService progressService,
         IHighScoreService highScoreService,
         InputManager inputManager,
@@ -243,10 +265,11 @@ public partial class GameEngine : IDisposable
         IPurchaseService purchaseService,
         GameRenderer renderer,
         ITutorialService tutorialService,
-        IAchievementService achievementService)
+        IAchievementService achievementService,
+        IDiscoveryService discoveryService,
+        IPlayGamesService playGames)
     {
         _soundManager = soundManager;
-        _spriteSheet = spriteSheet;
         _progressService = progressService;
         _highScoreService = highScoreService;
         _inputManager = inputManager;
@@ -258,7 +281,10 @@ public partial class GameEngine : IDisposable
         _renderer = renderer;
         _tutorialService = tutorialService;
         _achievementService = achievementService;
+        _discoveryService = discoveryService;
+        _playGames = playGames;
         _tutorialOverlay = new TutorialOverlay(localizationService);
+        _discoveryOverlay = new DiscoveryOverlay(localizationService);
         _grid = new GameGrid();
         _timer = new GameTimer();
         _enemyAI = new EnemyAI(_grid);
@@ -295,7 +321,7 @@ public partial class GameEngine : IDisposable
     public void DoubleScore()
     {
         int scoreBefore = _player.Score;
-        _player.Score *= 2;
+        _player.Score = (int)Math.Min((long)_player.Score * 2, int.MaxValue);
         int coinsEarned = _player.Score - scoreBefore;
         OnScoreChanged?.Invoke(_player.Score);
         OnCoinsEarned?.Invoke(coinsEarned, _player.Score, true);
@@ -393,6 +419,13 @@ public partial class GameEngine : IDisposable
 
     private void UpdatePlaying(float deltaTime)
     {
+        // Discovery-Hint aktiv → Spiel pausiert, nur Overlay-Timer aktualisieren
+        if (_discoveryOverlay.IsActive)
+        {
+            _discoveryOverlay.Update(deltaTime);
+            return;
+        }
+
         // Echtzeit-deltaTime speichern BEVOR Slow-Motion angewendet wird
         // Timer und Combo-Timer laufen in Echtzeit (kein Exploit durch Slow-Motion)
         float realDeltaTime = deltaTime;
@@ -400,7 +433,7 @@ public partial class GameEngine : IDisposable
         // Slow-Motion: deltaTime verlangsamen für dramatischen Effekt
         if (_slowMotionTimer > 0)
         {
-            _slowMotionTimer -= realDeltaTime; // Echtzeit runterzählen
+            _slowMotionTimer = MathF.Max(0, _slowMotionTimer - realDeltaTime);
             float progress = _slowMotionTimer / SLOW_MOTION_DURATION;
             // Sanftes Easing: langsam → normal (Ease-Out)
             _slowMotionFactor = SLOW_MOTION_FACTOR + (1f - SLOW_MOTION_FACTOR) * (1f - progress);
@@ -490,7 +523,14 @@ public partial class GameEngine : IDisposable
         int prevGridX = _player.GridX;
         int prevGridY = _player.GridY;
         _player.Move(deltaTime, _grid);
+
+        // Achievement: Curse-Ende erkennen (vor Update cursed, nach Update nicht mehr)
+        var curseBeforeUpdate = _player.IsCursed ? _player.ActiveCurse : CurseType.None;
         _player.Update(deltaTime);
+        if (curseBeforeUpdate != CurseType.None && !_player.IsCursed)
+        {
+            _achievementService.OnCurseSurvived(curseBeforeUpdate);
+        }
 
         // Kick-Mechanik: Wenn Spieler auf eine Bombe läuft und Kick hat
         if (_player.HasKick && _player.IsMoving)
@@ -547,6 +587,9 @@ public partial class GameEngine : IDisposable
         cell.Bomb.Kick(_player.FacingDirection);
         cell.Bomb = null; // Aus Grid entfernen, UpdateBombSlide registriert sie am Ziel
         _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB); // Kick-Sound (kann später eigenen bekommen)
+
+        // Achievement: Bomben-Kick zählen
+        _achievementService.OnBombKicked();
     }
 
     private void UpdatePlayerDied(float deltaTime)
@@ -574,9 +617,20 @@ public partial class GameEngine : IDisposable
                 // High Score speichern (Arcade)
                 if (_isArcadeMode)
                 {
+                    // Arcade-Score ans GPGS-Leaderboard senden (unabhaengig von Highscore)
+                    _ = _playGames.SubmitScoreAsync(PlayGamesIds.LeaderboardArcadeHighscore, _player.Score);
+
                     if (_highScoreService.IsHighScore(_player.Score))
                     {
                         _highScoreService.AddScore("PLAYER", _player.Score, _arcadeWave);
+
+                        // Goldene Confetti-Partikel bei neuem Highscore
+                        _particleSystem.EmitShaped(_player.X, _player.Y, 20, new SKColor(255, 215, 0),
+                            ParticleShape.Circle, 140f, 1.0f, 3f, hasGlow: true);
+                        _particleSystem.EmitExplosionSparks(_player.X, _player.Y, 12, new SKColor(255, 200, 50), 160f);
+                        _floatingText.Spawn(_player.X, _player.Y - 30,
+                            _localizationService.GetString("NewHighScore") ?? "NEW HIGH SCORE!",
+                            new SKColor(255, 215, 0), 20f, 2.0f);
                     }
                 }
 
@@ -669,13 +723,11 @@ public partial class GameEngine : IDisposable
                 float dx = _player.FacingDirection.GetDeltaX() * iceBoost;
                 float dy = _player.FacingDirection.GetDeltaY() * iceBoost;
 
-                // Nur anwenden wenn Zielposition begehbar ist
+                // 4-Ecken-Kollisionsprüfung (wie Player.CanMoveTo)
                 float newX = _player.X + dx;
                 float newY = _player.Y + dy;
-                int targetGX = (int)MathF.Floor(newX / GameGrid.CELL_SIZE);
-                int targetGY = (int)MathF.Floor(newY / GameGrid.CELL_SIZE);
-                var targetCell = _grid.TryGetCell(targetGX, targetGY);
-                if (targetCell != null && targetCell.IsWalkable(_player.HasWallpass, _player.HasBombpass))
+                float halfSize = GameGrid.CELL_SIZE * 0.35f;
+                if (CollisionHelper.CanMoveToPlayer(newX, newY, halfSize, _grid, _player.HasWallpass, _player.HasBombpass))
                 {
                     _player.X = newX;
                     _player.Y = newY;
@@ -691,7 +743,7 @@ public partial class GameEngine : IDisposable
     {
         float conveyorSpeed = 40f; // Pixel pro Sekunde
 
-        // Spieler auf Förderband
+        // Spieler auf Förderband (4-Ecken-Kollisionsprüfung)
         var playerCell = _grid.TryGetCell(_player.GridX, _player.GridY);
         if (playerCell?.Type == CellType.Conveyor)
         {
@@ -700,10 +752,8 @@ public partial class GameEngine : IDisposable
 
             float newX = _player.X + dx;
             float newY = _player.Y + dy;
-            int targetGX = (int)MathF.Floor(newX / GameGrid.CELL_SIZE);
-            int targetGY = (int)MathF.Floor(newY / GameGrid.CELL_SIZE);
-            var targetCell = _grid.TryGetCell(targetGX, targetGY);
-            if (targetCell != null && targetCell.IsWalkable(_player.HasWallpass, _player.HasBombpass))
+            float halfSize = GameGrid.CELL_SIZE * 0.35f;
+            if (CollisionHelper.CanMoveToPlayer(newX, newY, halfSize, _grid, _player.HasWallpass, _player.HasBombpass))
             {
                 _player.X = newX;
                 _player.Y = newY;
@@ -737,15 +787,11 @@ public partial class GameEngine : IDisposable
     /// </summary>
     private void UpdateTeleporterMechanic(float deltaTime)
     {
-        // Teleporter-Cooldowns aktualisieren
-        for (int x = 0; x < GameGrid.WIDTH; x++)
+        // Teleporter-Cooldowns aktualisieren (gecachte Zellen statt Grid-Scan)
+        foreach (var cell in _mechanicCells)
         {
-            for (int y = 0; y < GameGrid.HEIGHT; y++)
-            {
-                var cell = _grid[x, y];
-                if (cell.Type == CellType.Teleporter && cell.TeleporterCooldown > 0)
-                    cell.TeleporterCooldown -= deltaTime;
-            }
+            if (cell.Type == CellType.Teleporter && cell.TeleporterCooldown > 0)
+                cell.TeleporterCooldown -= deltaTime;
         }
 
         // Spieler-Teleportation
@@ -796,14 +842,14 @@ public partial class GameEngine : IDisposable
     /// </summary>
     private void UpdateLavaCrackMechanic(float deltaTime)
     {
-        for (int x = 0; x < GameGrid.WIDTH; x++)
+        // Gecachte Lava-Zellen statt 150-Zellen-Grid-Scan
+        foreach (var cell in _mechanicCells)
         {
-            for (int y = 0; y < GameGrid.HEIGHT; y++)
-            {
-                var cell = _grid[x, y];
                 if (cell.Type != CellType.LavaCrack) continue;
 
                 cell.LavaCrackTimer += deltaTime;
+                int x = cell.X;
+                int y = cell.Y;
 
                 // Spieler-Schaden bei aktivem Lava-Riss
                 if (cell.IsLavaCrackActive && _player.GridX == x && _player.GridY == y)
@@ -839,7 +885,6 @@ public partial class GameEngine : IDisposable
                         }
                     }
                 }
-            }
         }
     }
 
@@ -870,6 +915,36 @@ public partial class GameEngine : IDisposable
     }
 
     // ═══════════════════════════════════════════════════════════════════════
+    // DISCOVERY HINTS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Discovery-Hint fuer eine ID prüfen und ggf. anzeigen.
+    /// Markiert das Item als entdeckt und zeigt Overlay bei Erstentdeckung.
+    /// </summary>
+    private void TryShowDiscoveryHint(string discoveryId)
+    {
+        var hintKey = _discoveryService.GetDiscoveryTitleKey(discoveryId);
+        if (hintKey != null)
+        {
+            var descKey = _discoveryService.GetDiscoveryDescKey(discoveryId) ?? hintKey;
+            ShowDiscoveryHint(hintKey, descKey);
+        }
+    }
+
+    /// <summary>
+    /// Discovery-Hint anzeigen (pausiert das Spiel bis Tap oder Auto-Dismiss)
+    /// </summary>
+    private void ShowDiscoveryHint(string titleKey, string descKey)
+    {
+        // Kein Hint wenn schon einer aktiv ist oder Tutorial läuft
+        if (_discoveryOverlay.IsActive || _tutorialService.IsActive)
+            return;
+
+        _discoveryOverlay.Show(titleKey, descKey);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
     // DISPOSE
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -886,6 +961,7 @@ public partial class GameEngine : IDisposable
         _particleSystem.Dispose();
         _floatingText.Dispose();
         _tutorialOverlay.Dispose();
+        _discoveryOverlay.Dispose();
         _inputManager.Dispose();
     }
 }

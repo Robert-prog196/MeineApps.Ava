@@ -1,6 +1,7 @@
 using BomberBlast.Graphics;
 using BomberBlast.Models.Entities;
 using BomberBlast.Models.Grid;
+using SkiaSharp;
 
 namespace BomberBlast.Core;
 
@@ -56,6 +57,7 @@ public partial class GameEngine
             gridX * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f,
             gridY * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f,
             _player, megaRange, _player.HasDetonator);
+        bomb.SlotsConsumed = _player.MaxBombs; // Alle Slots belegt, alle bei Explosion freigeben
         _bombs.Add(bomb);
         cell.Bomb = bomb;
         _player.ActiveBombs = _player.MaxBombs; // Alle Slots belegt
@@ -63,6 +65,9 @@ public partial class GameEngine
 
         _soundManager.PlaySound(SoundManager.SFX_PLACE_BOMB);
         _soundManager.PlaySound(SoundManager.SFX_FUSE);
+
+        // Achievement: Power-Bomb Einsatz zählen
+        _achievementService.OnPowerBombUsed();
     }
 
     /// <summary>
@@ -234,22 +239,28 @@ public partial class GameEngine
 
         _soundManager.PlaySound(SoundManager.SFX_EXPLOSION);
 
-        // Game-Feel: Screen-Shake und Explosions-Partikel (aufgewertet)
-        _screenShake.Trigger(3f, 0.2f);
+        // Game-Feel: Screen-Shake und Partikel eskalieren mit Kettenreaktions-Tiefe
+        int depth = bomb.ChainDepth;
+        float shakeIntensity = 3f + depth * 1.5f;
+        float shakeDuration = 0.2f + depth * 0.05f;
+        _screenShake.Trigger(shakeIntensity, shakeDuration);
+
         float px = bomb.X;
         float py = bomb.Y;
+        int sparkCount = 12 + depth * 4;  // Mehr Funken bei Kettenreaktion
+        int emberCount = 6 + depth * 2;
 
         // Funken die nach außen fliegen (schnell, leuchtend, elongiert)
-        _particleSystem.EmitExplosionSparks(px, py, 12, ParticleColors.ExplosionSpark, 160f);
+        _particleSystem.EmitExplosionSparks(px, py, sparkCount, ParticleColors.ExplosionSpark, 160f + depth * 20f);
 
         // Glut-Partikel die langsam aufsteigen (glühend, Glow)
-        _particleSystem.EmitEmbers(px, py, 6, ParticleColors.ExplosionEmber);
-        _particleSystem.EmitEmbers(px, py, 3, ParticleColors.ExplosionEmberBright);
+        _particleSystem.EmitEmbers(px, py, emberCount, ParticleColors.ExplosionEmber);
+        _particleSystem.EmitEmbers(px, py, 3 + depth, ParticleColors.ExplosionEmberBright);
 
         // Klassische Partikel für Volumen
-        _particleSystem.EmitShaped(px, py, 6, ParticleColors.Explosion,
-            ParticleShape.Circle, 80f, 0.5f, 2.5f, hasGlow: true);
-        _particleSystem.EmitShaped(px, py, 4, ParticleColors.ExplosionLight,
+        _particleSystem.EmitShaped(px, py, 6 + depth * 2, ParticleColors.Explosion,
+            ParticleShape.Circle, 80f + depth * 15f, 0.5f, 2.5f, hasGlow: true);
+        _particleSystem.EmitShaped(px, py, 4 + depth, ParticleColors.ExplosionLight,
             ParticleShape.Circle, 50f, 0.3f, 2f);
 
         // Explosionseffekte sofort verarbeiten
@@ -270,9 +281,10 @@ public partial class GameEngine
                 DestroyBlock(gridCell);
             }
 
-            // Kettenreaktion mit anderen Bomben
+            // Kettenreaktion mit anderen Bomben (Tiefe propagieren)
             if (gridCell.Bomb != null && !gridCell.Bomb.HasExploded)
             {
+                gridCell.Bomb.ChainDepth = (explosion.SourceBomb?.ChainDepth ?? 0) + 1;
                 gridCell.Bomb.TriggerChainReaction();
             }
 
@@ -333,13 +345,18 @@ public partial class GameEngine
                         _particleSystem.Emit(bpx, bpy, 12, ParticleColors.ExitReveal, 60f, 0.8f);
                         _particleSystem.Emit(bpx, bpy, 6, ParticleColors.ExitRevealLight, 40f, 0.5f);
                     }
-                    // PowerUp anzeigen wenn versteckt
+                    // PowerUp anzeigen wenn versteckt (mit Pop-Out Animation)
                     else if (cell.HiddenPowerUp.HasValue)
                     {
                         var powerUp = PowerUp.CreateAtGrid(cell.X, cell.Y, cell.HiddenPowerUp.Value);
+                        powerUp.BirthTimer = Models.Entities.PowerUp.BIRTH_DURATION;
                         _powerUps.Add(powerUp);
                         cell.PowerUp = powerUp;
                         cell.HiddenPowerUp = null;
+
+                        // Gold-Partikel-Burst bei PowerUp-Erscheinung
+                        _particleSystem.Emit(bpx, bpy, 8, new SKColor(255, 215, 0), 50f, 0.4f);
+                        _particleSystem.Emit(bpx, bpy, 4, new SKColor(255, 255, 200), 30f, 0.3f);
 
                         _soundManager.PlaySound(SoundManager.SFX_POWERUP);
                     }

@@ -338,7 +338,7 @@ public static class ExplosionShaders
         float time, float armSeed, SKColor colorOuter, SKColor colorInner,
         float envelope, bool isHorizontal)
     {
-        int tongueCount = Math.Clamp((int)(length / 12f), 3, 5);
+        int tongueCount = Math.Clamp((int)(length / 15f), 1, 5);
 
         for (int i = 0; i < tongueCount; i++)
         {

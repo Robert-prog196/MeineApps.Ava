@@ -24,9 +24,10 @@ public static class LevelGenerator
     ];
 
     /// <summary>
-    /// Generiert ein Level für eine bestimmte Levelnummer (1-50)
+    /// Generiert ein Level für eine bestimmte Levelnummer (1-50).
+    /// highestCompleted filtert PowerUps auf freigeschaltete Typen.
     /// </summary>
-    public static Level GenerateLevel(int levelNumber)
+    public static Level GenerateLevel(int levelNumber, int highestCompleted = int.MaxValue)
     {
         var level = new Level
         {
@@ -42,6 +43,7 @@ public static class LevelGenerator
         if (levelNumber % 10 == 0 && levelNumber <= 50)
         {
             ConfigureBossLevel(level, levelNumber, world);
+            FilterLockedPowerUps(level, highestCompleted);
             return level;
         }
 
@@ -49,12 +51,14 @@ public static class LevelGenerator
         if (levelNumber % 5 == 0 && levelNumber <= 50)
         {
             ConfigureBonusLevel(level, levelNumber, world);
+            FilterLockedPowerUps(level, highestCompleted);
             return level;
         }
 
         // Normales Level
         ConfigureEnemies(level, levelNumber);
         ConfigurePowerUps(level, levelNumber);
+        FilterLockedPowerUps(level, highestCompleted);
         ConfigureBlockDensity(level, levelNumber);
 
         // Welt-Mechanik zuweisen (ab Welt 2)
@@ -405,6 +409,15 @@ public static class LevelGenerator
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Flamepass });
             level.PowerUps.Add(new PowerUpPlacement { Type = PowerUpType.Skull });
         }
+    }
+
+    /// <summary>
+    /// Entfernt PowerUps die noch nicht freigeschaltet sind (basierend auf höchstem abgeschlossenem Level).
+    /// </summary>
+    private static void FilterLockedPowerUps(Level level, int highestCompleted)
+    {
+        if (highestCompleted >= int.MaxValue) return; // Kein Filter nötig
+        level.PowerUps.RemoveAll(p => p.Type.GetUnlockLevel() > Math.Max(highestCompleted, level.Number));
     }
 
     private static void ConfigureBlockDensity(Level level, int levelNumber)

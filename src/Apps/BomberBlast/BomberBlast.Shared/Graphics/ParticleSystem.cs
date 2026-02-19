@@ -18,7 +18,6 @@ public class ParticleSystem : IDisposable
     private readonly SKPaint _paint = new() { IsAntialias = true };
     private readonly SKPaint _glowPaint = new() { IsAntialias = true };
     private readonly SKMaskFilter _particleGlow = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
-    private readonly SKPath _sparkPath = new();
 
     /// <summary>Ob aktive Partikel vorhanden sind</summary>
     public bool HasActiveParticles => _activeCount > 0;
@@ -250,7 +249,6 @@ public class ParticleSystem : IDisposable
         _paint.Dispose();
         _glowPaint.Dispose();
         _particleGlow.Dispose();
-        _sparkPath.Dispose();
     }
 
     /// <summary>

@@ -26,6 +26,20 @@ public class PowerUp : Entity
     /// <summary>Dauer der Einsammel-Animation</summary>
     public const float COLLECT_DURATION = 0.3f;
 
+    /// <summary>Spawn-Animation Timer (Pop-Out bei Block-Zerstörung)</summary>
+    public float BirthTimer { get; set; }
+
+    /// <summary>Dauer der Spawn-Animation</summary>
+    public const float BIRTH_DURATION = 0.25f;
+
+    /// <summary>Spawn-Animation aktiv?</summary>
+    public bool IsBirthing => BirthTimer > 0;
+
+    /// <summary>Spawn-Scale (0→1 mit Overshoot)</summary>
+    public float BirthScale => IsBirthing
+        ? 1f + 0.2f * MathF.Sin(MathF.PI * (1f - BirthTimer / BIRTH_DURATION))
+        : 1f;
+
     /// <summary>Standard lifetime before disappearing (0 = never)</summary>
     public const float DEFAULT_LIFETIME = 0f; // Infinite in original
 
@@ -40,6 +54,10 @@ public class PowerUp : Entity
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
+
+        // Spawn-Animation
+        if (BirthTimer > 0)
+            BirthTimer -= deltaTime;
 
         // Handle expiration timer if set
         if (RemainingTime > 0)

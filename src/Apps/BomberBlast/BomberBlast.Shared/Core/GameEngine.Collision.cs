@@ -31,7 +31,8 @@ public partial class GameEngine
             }
         }
 
-        // Spieler-Kollision mit Gegnern
+        // Spieler-Kollision mit Gegnern (nicht mehr prüfen wenn Spieler bereits stirbt)
+        if (!_player.IsDying)
         foreach (var enemy in _enemies)
         {
             if (!enemy.IsActive || enemy.IsDying)
@@ -90,6 +91,12 @@ public partial class GameEngine
                 string powerUpName = GetPowerUpShortName(powerUp.Type);
                 var powerUpColor = GetPowerUpTextColor(powerUp.Type);
                 _floatingText.Spawn(powerUp.X, powerUp.Y, powerUpName, powerUpColor, 13f, 1.0f);
+
+                // Discovery-Hint bei Erstentdeckung (nur für nicht-triviale PowerUps)
+                if (powerUp.Type.GetUnlockLevel() > 1)
+                {
+                    TryShowDiscoveryHint("powerup_" + powerUp.Type.ToString().ToLower());
+                }
 
                 // Tutorial: PowerUp-Schritt abgeschlossen
                 _tutorialService.CheckStepCompletion(TutorialStepType.CollectPowerUp);
@@ -172,6 +179,13 @@ public partial class GameEngine
         _screenShake.Trigger(5f, 0.3f);
         _hitPauseTimer = 0.1f;
 
+        // Tod-Partikel: Burst nach außen (orange/rot)
+        _particleSystem.EmitShaped(_player.X, _player.Y, 16, new SKColor(255, 100, 30),
+            ParticleShape.Circle, 120f, 0.6f, 3f, hasGlow: true);
+        _particleSystem.EmitShaped(_player.X, _player.Y, 8, new SKColor(255, 50, 0),
+            ParticleShape.Circle, 80f, 0.4f, 2.5f);
+        _particleSystem.EmitExplosionSparks(_player.X, _player.Y, 10, new SKColor(255, 180, 50), 140f);
+
         _soundManager.PlaySound(SoundManager.SFX_PLAYER_DEATH);
     }
 
@@ -212,6 +226,9 @@ public partial class GameEngine
                 ? new SKColor(255, 50, 0)   // Rot für hohe Combos
                 : new SKColor(255, 150, 0); // Orange für niedrige Combos
             _floatingText.Spawn(enemy.X, enemy.Y - 12, comboText, comboColor, 18f, 1.5f);
+
+            // Achievement: Combo-Schwellen prüfen
+            _achievementService.OnComboReached(_comboCount);
         }
 
         // Game-Feel: Hit-Pause + Partikel bei Enemy-Kill

@@ -163,6 +163,10 @@ public class Player : Entity
     private const float GRID_ALIGN_THRESHOLD = 0.45f; // 45% der Zellgroesse
     private const float GRID_ALIGN_SPEED = 6f; // Multiplikator fuer Align-Geschwindigkeit
 
+    // Stuck-Detection: Zählt Frames in denen sich der Spieler trotz Input nicht bewegt
+    private int _stuckFrames;
+    private const int STUCK_THRESHOLD = 10; // Nach 10 Frames ohne Bewegung → Recovery
+
     /// <summary>
     /// Bewege Spieler in aktuelle Richtung mit automatischem Grid-Alignment.
     /// Klassisches Bomberman-Gefühl: Querachse wird sanft zum Grid-Zentrum gezogen,
@@ -171,9 +175,15 @@ public class Player : Entity
     public void Move(float deltaTime, GameGrid grid)
     {
         if (IsDying || MovementDirection == Direction.None)
+        {
+            _stuckFrames = 0;
             return;
+        }
 
         FacingDirection = MovementDirection;
+
+        float prevX = X;
+        float prevY = Y;
 
         float speed = Speed * deltaTime;
         float dx = MovementDirection.GetDeltaX() * speed;
@@ -187,6 +197,58 @@ public class Player : Entity
             AlignToGridAxis(ref dx, X, speed, deltaTime);
 
         TryMove(dx, dy, grid);
+
+        // Stuck-Detection: Wenn Spieler aktiv steuert aber sich nicht bewegt
+        if (MathF.Abs(X - prevX) < 0.01f && MathF.Abs(Y - prevY) < 0.01f)
+        {
+            _stuckFrames++;
+            if (_stuckFrames >= STUCK_THRESHOLD)
+            {
+                RecoverToNearestCell(grid);
+                _stuckFrames = 0;
+            }
+        }
+        else
+        {
+            _stuckFrames = 0;
+        }
+    }
+
+    /// <summary>
+    /// Notfall-Recovery: Setzt den Spieler zum nächsten begehbaren Zellzentrum zurück.
+    /// Wird nur ausgelöst wenn der Spieler mehrere Frames trotz Input feststeckt.
+    /// </summary>
+    private void RecoverToNearestCell(GameGrid grid)
+    {
+        float halfSize = GameGrid.CELL_SIZE * 0.35f;
+        int gx = GridX;
+        int gy = GridY;
+
+        // Aktuelle Zelle prüfen
+        float centerX = gx * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+        float centerY = gy * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+        if (CollisionHelper.CanMoveToPlayer(centerX, centerY, halfSize, grid, HasWallpass, HasBombpass))
+        {
+            X = centerX;
+            Y = centerY;
+            return;
+        }
+
+        // Nachbar-Zellen prüfen (4 Richtungen)
+        int[] offsets = { 0, -1, 0, 1, -1, 0, 1, 0 };
+        for (int i = 0; i < offsets.Length; i += 2)
+        {
+            int nx = gx + offsets[i];
+            int ny = gy + offsets[i + 1];
+            float ncx = nx * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            float ncy = ny * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            if (CollisionHelper.CanMoveToPlayer(ncx, ncy, halfSize, grid, HasWallpass, HasBombpass))
+            {
+                X = ncx;
+                Y = ncy;
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -242,10 +304,15 @@ public class Player : Entity
             }
         }
 
-        // Grid-Bounds einhalten
+        // Grid-Bounds einhalten: Spieler-Hitbox darf nie in Außenwand-Zellen ragen
+        // Außenwände sind Row/Col 0 und Row HEIGHT-1/Col WIDTH-1,
+        // daher muss Minimum = CELL_SIZE + halfSize sein (erste begehbare Zelle = Index 1)
         float halfSize = GameGrid.CELL_SIZE * 0.35f;
-        X = Math.Clamp(X, halfSize, grid.PixelWidth - halfSize);
-        Y = Math.Clamp(Y, halfSize, grid.PixelHeight - halfSize);
+        float minBound = GameGrid.CELL_SIZE + halfSize;
+        float maxBoundX = grid.PixelWidth - GameGrid.CELL_SIZE - halfSize;
+        float maxBoundY = grid.PixelHeight - GameGrid.CELL_SIZE - halfSize;
+        X = Math.Clamp(X, minBound, maxBoundX);
+        Y = Math.Clamp(Y, minBound, maxBoundY);
     }
 
     /// <summary>
@@ -255,7 +322,6 @@ public class Player : Entity
     /// </summary>
     private void TryCornerAssist(float dx, float dy, GameGrid grid)
     {
-        float halfSize = GameGrid.CELL_SIZE * 0.35f;
         float cellCenter;
         float offset;
 

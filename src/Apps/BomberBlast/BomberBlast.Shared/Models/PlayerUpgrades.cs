@@ -34,7 +34,7 @@ public class PlayerUpgrades
         { UpgradeType.ExtraLives, [7500, 20000] },
         { UpgradeType.ScoreMultiplier, [4000, 10000, 20000] },
         { UpgradeType.TimeBonus, [6000] },
-        { UpgradeType.ShieldStart, [15000] },
+        { UpgradeType.ShieldStart, [8000] },
         { UpgradeType.CoinBonus, [8000, 25000] },
         { UpgradeType.PowerUpLuck, [5000, 15000] }
     };

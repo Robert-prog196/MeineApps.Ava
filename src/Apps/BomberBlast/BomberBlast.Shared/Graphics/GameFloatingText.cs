@@ -110,7 +110,7 @@ public class GameFloatingTextSystem : IDisposable
             if (!entry.IsActive) continue;
 
             float progress = entry.Timer / entry.Duration;
-            byte alpha = (byte)(255 * (1f - progress * progress)); // Quadratisches Ausblenden
+            byte alpha = (byte)(255 * (1f - MathF.Sqrt(progress))); // Sanfteres Ausblenden (sqrt statt quadratisch)
 
             // Spielfeld → Screen Transformation
             float screenX = entry.X * scale + offsetX;

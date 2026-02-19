@@ -30,6 +30,10 @@ public partial class GameEngine
             canvas.Translate(_screenShake.OffsetX, _screenShake.OffsetY);
         }
 
+        // Combo-Daten an Renderer übergeben
+        _renderer.ComboCount = _comboCount;
+        _renderer.ComboTimer = _comboTimer;
+
         // Spiel rendern (gecachte Exit-Zelle übergeben für Performance)
         _renderer.Render(canvas, _grid, _player,
             _enemies, _bombs, _explosions, _powerUps,
@@ -43,6 +47,12 @@ public partial class GameEngine
 
         // Floating Text rendern (Score-Popups, Combos, PowerUp-Texte)
         _floatingText.Render(canvas, _renderer.Scale, _renderer.OffsetX, _renderer.OffsetY);
+
+        // Pontan-Spawn-Warnung rendern (pulsierendes "!" an vorberechneter Position)
+        if (_pontanWarningActive && _state == GameState.Playing)
+        {
+            RenderPontanWarning(canvas);
+        }
 
         // Screen-Shake Canvas wiederherstellen
         if (_screenShake.IsActive)
@@ -72,6 +82,12 @@ public partial class GameEngine
         if (_worldAnnouncementTimer > 0)
         {
             RenderWorldAnnouncement(canvas, screenWidth, screenHeight);
+        }
+
+        // Discovery-Overlay rendern (über State-Overlay, unter Tutorial)
+        if (_discoveryOverlay.IsActive)
+        {
+            _discoveryOverlay.Render(canvas, screenWidth, screenHeight);
         }
 
         // Tutorial-Overlay rendern (über allem)
@@ -154,7 +170,7 @@ public partial class GameEngine
         canvas.DrawText(text, screenWidth / 2, screenHeight / 2, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
 
         // Countdown
-        int countdown = (int)(START_DELAY - _stateTimer) + 1;
+        int countdown = (int)MathF.Ceiling(START_DELAY - _stateTimer);
         _overlayFont.Size = 72;
         _overlayTextPaint.Color = SKColors.Yellow;
         canvas.DrawText(countdown.ToString(), screenWidth / 2, screenHeight / 2 + 80, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
@@ -206,6 +222,20 @@ public partial class GameEngine
         _overlayTextPaint.MaskFilter = _overlayGlowFilterLarge;
 
         canvas.DrawText(_localizationService.GetString("LevelComplete"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
+
+        // Erster Sieg: Extra goldener Text über "Level Complete"
+        if (_isFirstVictory)
+        {
+            _overlayFont.Size = 36;
+            _overlayTextPaint.Color = new SKColor(255, 215, 0); // Gold
+            float victoryPulse = 1f + MathF.Sin(_stateTimer * 6f) * 0.1f;
+            canvas.Save();
+            canvas.Translate(screenWidth / 2, screenHeight / 2 - 100);
+            canvas.Scale(victoryPulse);
+            string firstVictoryText = _localizationService.GetString("FirstVictory") ?? "FIRST VICTORY!";
+            canvas.DrawText(firstVictoryText, 0, 0, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
+            canvas.Restore();
+        }
 
         _overlayTextPaint.Color = SKColors.Yellow;
         _overlayTextPaint.MaskFilter = null;
@@ -288,6 +318,20 @@ public partial class GameEngine
         _overlayTextPaint.MaskFilter = _overlayGlowFilterLarge;
 
         canvas.DrawText(_localizationService.GetString("GameOver"), screenWidth / 2, screenHeight / 2 - 50, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
+
+        // Arcade High Score: Goldener pulsierender Text
+        if (_isArcadeMode && IsCurrentScoreHighScore && _player.Score > 0)
+        {
+            _overlayFont.Size = 28;
+            _overlayTextPaint.Color = new SKColor(255, 215, 0); // Gold
+            float pulse = 1f + MathF.Sin(_stateTimer * 6f) * 0.08f;
+            canvas.Save();
+            canvas.Translate(screenWidth / 2, screenHeight / 2 - 90);
+            canvas.Scale(pulse);
+            string highScoreText = _localizationService.GetString("NewHighScore") ?? "NEW HIGH SCORE!";
+            canvas.DrawText(highScoreText, 0, 0, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
+            canvas.Restore();
+        }
 
         _overlayTextPaint.Color = SKColors.White;
         _overlayTextPaint.MaskFilter = null;
@@ -380,6 +424,29 @@ public partial class GameEngine
 
         // Style zurücksetzen
         _overlayTextPaint.Style = SKPaintStyle.StrokeAndFill;
+    }
+
+    private void RenderPontanWarning(SKCanvas canvas)
+    {
+        // Pulsierender roter "!" Marker an der vorberechneten Spawn-Position
+        float sx = _pontanWarningX * _renderer.Scale + _renderer.OffsetX;
+        float sy = _pontanWarningY * _renderer.Scale + _renderer.OffsetY;
+
+        float pulse = MathF.Sin(_stateTimer * 8f) * 0.5f + 0.5f; // 0→1 Puls
+        float scale = 0.8f + pulse * 0.4f; // 0.8→1.2
+        byte alpha = (byte)(120 + pulse * 135); // 120→255
+
+        // Roter Kreis-Hintergrund
+        _overlayBgPaint.Color = new SKColor(255, 0, 0, (byte)(alpha * 0.4f));
+        float circleRadius = 14f * scale * _renderer.Scale;
+        canvas.DrawCircle(sx, sy, circleRadius, _overlayBgPaint);
+
+        // "!" Text
+        _overlayFont.Size = 22f * scale * _renderer.Scale;
+        _overlayTextPaint.Color = new SKColor(255, 50, 50, alpha);
+        _overlayTextPaint.MaskFilter = _overlayGlowFilter;
+        canvas.DrawText("!", sx, sy + 7f * scale * _renderer.Scale, SKTextAlign.Center, _overlayFont, _overlayTextPaint);
+        _overlayTextPaint.MaskFilter = null;
     }
 
     private void RenderWorldAnnouncement(SKCanvas canvas, float screenWidth, float screenHeight)

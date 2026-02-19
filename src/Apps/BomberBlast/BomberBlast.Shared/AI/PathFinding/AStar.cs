@@ -28,6 +28,9 @@ public class AStar
     // Gepoolte Liste fuer ReconstructPath() (vermeidet Allokation pro Pfadsuche)
     private readonly List<(int x, int y)> _pathBuffer = new();
 
+    // Singleton leere Queue (vermeidet Allokation bei fehlgeschlagener Pfadsuche)
+    private static readonly Queue<(int x, int y)> EmptyPath = new();
+
     public AStar(GameGrid grid)
     {
         _grid = grid;
@@ -86,8 +89,8 @@ public class AStar
             }
         }
 
-        // No path found
-        return new Queue<(int x, int y)>();
+        // Kein Pfad gefunden - Singleton statt neue Allokation
+        return EmptyPath;
     }
 
     /// <summary>

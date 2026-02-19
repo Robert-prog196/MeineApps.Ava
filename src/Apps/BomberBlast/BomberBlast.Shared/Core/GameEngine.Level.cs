@@ -3,6 +3,7 @@ using BomberBlast.Models;
 using BomberBlast.Models.Entities;
 using BomberBlast.Models.Grid;
 using BomberBlast.Models.Levels;
+using BomberBlast.Services;
 using SkiaSharp;
 
 namespace BomberBlast.Core;
@@ -20,7 +21,7 @@ public partial class GameEngine
         _isArcadeMode = false;
         _isDailyChallenge = false;
         _currentLevelNumber = levelNumber;
-        _currentLevel = LevelGenerator.GenerateLevel(levelNumber);
+        _currentLevel = LevelGenerator.GenerateLevel(levelNumber, _progressService.HighestCompletedLevel);
         _continueUsed = false;
 
         _player.ResetForNewGame();
@@ -130,8 +131,20 @@ public partial class GameEngine
         var random = new Random(_currentLevel.Seed ?? Environment.TickCount);
 
         // Welt-Mechanik-Zellen platzieren (VOR Blöcken, damit Blöcke nur auf leere Zellen kommen)
+        _mechanicCells.Clear();
         if (_currentLevel.Mechanic != WorldMechanic.None)
+        {
             _grid.PlaceWorldMechanicCells(_currentLevel.Mechanic, random);
+
+            // Mechanik-Zellen cachen (Teleporter/LavaCrack brauchen pro-Frame-Update)
+            for (int cy = 0; cy < _grid.Height; cy++)
+                for (int cx = 0; cx < _grid.Width; cx++)
+                {
+                    var c = _grid[cx, cy];
+                    if (c.Type == CellType.Teleporter || c.Type == CellType.LavaCrack)
+                        _mechanicCells.Add(c);
+                }
+        }
 
         // Blöcke platzieren (überspringt Spezial-Zellen automatisch)
         _grid.PlaceBlocks(_currentLevel.BlockDensity, random);
@@ -160,17 +173,17 @@ public partial class GameEngine
         // Spieler aktivieren
         _player.IsActive = true;
 
-        // Sprites laden falls nötig
-        if (!_spriteSheet.IsLoaded)
-        {
-            await _spriteSheet.LoadAsync();
-        }
-
         // Tutorial starten bei Level 1 wenn noch nicht abgeschlossen
         if (_currentLevelNumber == 1 && !_isArcadeMode && !_tutorialService.IsCompleted)
         {
             _tutorialService.Start();
             _tutorialWarningTimer = 0;
+        }
+
+        // Discovery-Hint für Welt-Mechanik (bei erstem Kontakt)
+        if (_currentLevel.Mechanic != WorldMechanic.None)
+        {
+            TryShowDiscoveryHint("mechanic_" + _currentLevel.Mechanic.ToString().ToLower());
         }
     }
 
@@ -483,6 +496,16 @@ public partial class GameEngine
         _soundManager.PlaySound(SoundManager.SFX_LEVEL_COMPLETE);
         OnScoreChanged?.Invoke(_player.Score);
 
+        // Erster Sieg: Level 1 zum ersten Mal abgeschlossen
+        _isFirstVictory = _currentLevelNumber == 1 && _progressService.HighestCompletedLevel == 0;
+        if (_isFirstVictory)
+        {
+            // Extra Gold-Partikel für ersten Sieg
+            _particleSystem.EmitShaped(_player.X, _player.Y, 24, new SKColor(255, 215, 0),
+                Graphics.ParticleShape.Circle, 150f, 1.0f, 3.5f, hasGlow: true);
+            _particleSystem.EmitExplosionSparks(_player.X, _player.Y, 16, new SKColor(255, 200, 50), 180f);
+        }
+
         // Sterne-Anzeige: Arcade hat keine Sterne
         if (_isArcadeMode)
             _levelCompleteStars = 0;
@@ -561,6 +584,9 @@ public partial class GameEngine
                 _highScoreService.AddScore("PLAYER", _player.Score, 50);
             }
 
+            // Story-Score ans GPGS-Leaderboard senden
+            _ = _playGames.SubmitScoreAsync(PlayGamesIds.LeaderboardArcadeHighscore, _player.Score);
+
             // Coins wurden bereits in CompleteLevel (Level 50) gutgeschrieben → kein Doppel-Credit
             OnVictory?.Invoke();
         }
@@ -580,23 +606,40 @@ public partial class GameEngine
     }
 
     /// <summary>
-    /// Gestaffeltes Pontan-Spawning (weniger unfair als 4 auf einmal)
+    /// Gestaffeltes Pontan-Spawning mit Vorwarnung (pulsierendes "!" 1.5s vor Spawn)
     /// </summary>
     private void UpdatePontanPunishment(float deltaTime)
     {
         if (!_pontanPunishmentActive || _pontanSpawned >= PONTAN_MAX_COUNT)
         {
             _pontanPunishmentActive = false;
+            _pontanWarningActive = false;
             return;
         }
 
         _pontanSpawnTimer -= deltaTime;
+
+        // Vorwarnung: Position vorberechnen wenn Timer unter Warnschwelle fällt
+        if (!_pontanWarningActive && _pontanSpawnTimer <= PONTAN_WARNING_TIME && _pontanSpawnTimer > 0)
+        {
+            PreCalculateNextPontanSpawn();
+        }
+
         if (_pontanSpawnTimer > 0)
             return;
 
         _pontanSpawnTimer = PONTAN_SPAWN_INTERVAL;
+        _pontanWarningActive = false;
 
-        // Einzelnen Pontan spawnen
+        // Pontan an der vorberechneten Position spawnen
+        SpawnPontanAtWarningPosition();
+    }
+
+    /// <summary>
+    /// Nächste Pontan-Spawn-Position vorberechnen und Warnung aktivieren
+    /// </summary>
+    private void PreCalculateNextPontanSpawn()
+    {
         int playerCellX = _player.GridX;
         int playerCellY = _player.GridY;
 
@@ -605,18 +648,15 @@ public partial class GameEngine
             int x = _pontanRandom.Next(3, GameGrid.WIDTH - 1);
             int y = _pontanRandom.Next(3, GameGrid.HEIGHT - 1);
 
-            // Mindestabstand zum Spieler
             if (Math.Abs(x - playerCellX) + Math.Abs(y - playerCellY) < PONTAN_MIN_DISTANCE)
                 continue;
 
             var cell = _grid.TryGetCell(x, y);
             if (cell == null || cell.Type != CellType.Empty)
                 continue;
-
             if (cell.Bomb != null || cell.PowerUp != null)
                 continue;
 
-            // Kein anderer Enemy auf der Zelle
             bool enemyOnCell = false;
             foreach (var existing in _enemies)
             {
@@ -628,16 +668,46 @@ public partial class GameEngine
             }
             if (enemyOnCell) continue;
 
-            var enemy = Enemy.CreateAtGrid(x, y, EnemyType.Pontan);
-            _enemies.Add(enemy);
-            _pontanSpawned++;
-
-            // Warn-Partikel am Spawn-Punkt
-            float epx = x * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
-            float epy = y * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
-            _particleSystem.Emit(epx, epy, 8, new SkiaSharp.SKColor(255, 0, 80), 60f, 0.5f);
-            break;
+            _pontanWarningX = x * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            _pontanWarningY = y * GameGrid.CELL_SIZE + GameGrid.CELL_SIZE / 2f;
+            _pontanWarningActive = true;
+            return;
         }
+    }
+
+    /// <summary>
+    /// Pontan an der vorberechneten Warnposition spawnen
+    /// </summary>
+    private void SpawnPontanAtWarningPosition()
+    {
+        if (!_pontanWarningActive)
+        {
+            // Fallback: Keine Vorberechnung → direkt suchen
+            PreCalculateNextPontanSpawn();
+            if (!_pontanWarningActive) return;
+        }
+
+        int gx = (int)MathF.Floor(_pontanWarningX / GameGrid.CELL_SIZE);
+        int gy = (int)MathF.Floor(_pontanWarningY / GameGrid.CELL_SIZE);
+
+        // Validierung (Zelle könnte sich geändert haben)
+        var cell = _grid.TryGetCell(gx, gy);
+        if (cell == null || cell.Type != CellType.Empty || cell.Bomb != null)
+        {
+            // Position ungültig → neue suchen
+            PreCalculateNextPontanSpawn();
+            if (!_pontanWarningActive) return;
+            gx = (int)MathF.Floor(_pontanWarningX / GameGrid.CELL_SIZE);
+            gy = (int)MathF.Floor(_pontanWarningY / GameGrid.CELL_SIZE);
+        }
+
+        var enemy = Enemy.CreateAtGrid(gx, gy, EnemyType.Pontan);
+        _enemies.Add(enemy);
+        _pontanSpawned++;
+
+        // Spawn-Partikel
+        _particleSystem.Emit(_pontanWarningX, _pontanWarningY, 8, new SKColor(255, 0, 80), 60f, 0.5f);
+        _floatingText.Spawn(_pontanWarningX, _pontanWarningY - 16, "!", new SKColor(255, 0, 0), 24f, 1.0f);
     }
 
     /// <summary>
@@ -680,7 +750,7 @@ public partial class GameEngine
                 _soundManager.PlaySound(SoundManager.SFX_LEVEL_COMPLETE);
                 return;
             }
-            _currentLevel = LevelGenerator.GenerateLevel(_currentLevelNumber);
+            _currentLevel = LevelGenerator.GenerateLevel(_currentLevelNumber, _progressService.HighestCompletedLevel);
 
             // Welt-Ankündigung bei neuem Welt-Start (Level 11, 21, 31, 41)
             if ((_currentLevelNumber - 1) % 10 == 0)

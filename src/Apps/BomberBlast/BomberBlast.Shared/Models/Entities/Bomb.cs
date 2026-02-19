@@ -39,6 +39,10 @@ public class Bomb : Entity
     public Direction SlideDirection { get; set; } = Direction.None;
     /// <summary>Gleitgeschwindigkeit (Pixel/Sekunde)</summary>
     public const float SLIDE_SPEED = 160f;
+    /// <summary>Belegte Bomben-Slots (1 fuer normal, MaxBombs fuer PowerBomb)</summary>
+    public int SlotsConsumed { get; set; } = 1;
+    /// <summary>Kettenreaktions-Tiefe (0 = direkt platziert, 1+ = durch andere Bombe ausgelöst)</summary>
+    public int ChainDepth { get; set; }
 
     public override float AnimationSpeed => 4f;
 
@@ -83,7 +87,7 @@ public class Bomb : Entity
         // Decrease owner's active bomb count
         if (Owner != null)
         {
-            Owner.ActiveBombs = Math.Max(0, Owner.ActiveBombs - 1);
+            Owner.ActiveBombs = Math.Max(0, Owner.ActiveBombs - SlotsConsumed);
         }
     }
 

@@ -68,6 +68,24 @@ public enum WorldMechanic
 }
 
 /// <summary>
+/// Extension-Methoden für WorldMechanic
+/// </summary>
+public static class WorldMechanicExtensions
+{
+    /// <summary>
+    /// Ab welchem Level diese Mechanik freigeschaltet wird (Story-Modus).
+    /// </summary>
+    public static int GetUnlockLevel(this WorldMechanic mechanic) => mechanic switch
+    {
+        WorldMechanic.Ice => 13,
+        WorldMechanic.Conveyor => 23,
+        WorldMechanic.Teleporter => 33,
+        WorldMechanic.LavaCrack => 42,
+        _ => 1
+    };
+}
+
+/// <summary>
 /// Vorgefertigtes Level-Layout mit festen Wand-Positionen
 /// </summary>
 public enum LevelLayout

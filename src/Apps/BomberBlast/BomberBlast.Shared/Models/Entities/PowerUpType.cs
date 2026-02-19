@@ -140,4 +140,24 @@ public static class PowerUpExtensions
     {
         return $"PowerUp_{type}";
     }
+
+    /// <summary>
+    /// Ab welchem Level dieses PowerUp freigeschaltet wird (Story-Modus).
+    /// </summary>
+    public static int GetUnlockLevel(this PowerUpType type) => type switch
+    {
+        PowerUpType.BombUp => 1,
+        PowerUpType.Fire => 1,
+        PowerUpType.Speed => 1,
+        PowerUpType.Kick => 10,
+        PowerUpType.Mystery => 15,
+        PowerUpType.Skull => 20,
+        PowerUpType.Wallpass => 20,
+        PowerUpType.Detonator => 25,
+        PowerUpType.Bombpass => 25,
+        PowerUpType.LineBomb => 30,
+        PowerUpType.Flamepass => 35,
+        PowerUpType.PowerBomb => 40,
+        _ => 1
+    };
 }

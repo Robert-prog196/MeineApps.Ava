@@ -336,7 +336,7 @@ public class EnemyAI
         // Bomben in der Gefahrenzone anderer Bomben lösen Kettenreaktionen aus
         bool changed = true;
         int iterations = 0;
-        while (changed && iterations < 5) // Max 5 Iterationen (verhindert Endlosschleife)
+        while (changed && iterations < 3) // Max 3 Iterationen (Performance + ausreichend für Ketten)
         {
             changed = false;
             iterations++;

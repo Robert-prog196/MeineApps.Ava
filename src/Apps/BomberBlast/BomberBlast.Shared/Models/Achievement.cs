@@ -28,6 +28,9 @@ public class Achievement
 
     /// <summary>Material.Icons Name für das Badge</summary>
     public string IconName { get; init; } = "Trophy";
+
+    /// <summary>Coin-Belohnung bei Freischaltung (0 = keine)</summary>
+    public int CoinReward { get; init; }
 }
 
 /// <summary>

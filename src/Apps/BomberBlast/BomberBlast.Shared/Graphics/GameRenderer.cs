@@ -12,7 +12,6 @@ namespace BomberBlast.Graphics;
 public class GameRenderer : IDisposable
 {
     private bool _disposed;
-    private readonly SpriteSheet _spriteSheet;
     private readonly IGameStyleService _styleService;
     private readonly ICustomizationService _customizationService;
 
@@ -23,6 +22,10 @@ public class GameRenderer : IDisposable
 
     // HUD constants
     private const float HUD_LOGICAL_WIDTH = 120f;
+
+    // Combo-Daten (gesetzt von GameEngine vor jedem Render)
+    public int ComboCount { get; set; }
+    public float ComboTimer { get; set; }
 
     /// <summary>
     /// Verschiebung nach unten fuer Banner-Ad oben (in Canvas-Einheiten).
@@ -319,9 +322,8 @@ public class GameRenderer : IDisposable
     public float OffsetX => _offsetX;
     public float OffsetY => _offsetY;
 
-    public GameRenderer(SpriteSheet spriteSheet, IGameStyleService styleService, ICustomizationService customizationService)
+    public GameRenderer(IGameStyleService styleService, ICustomizationService customizationService)
     {
-        _spriteSheet = spriteSheet;
         _styleService = styleService;
         _customizationService = customizationService;
         _palette = _styleService.CurrentStyle == GameVisualStyle.Neon ? NeonPalette : ClassicPalette;
@@ -504,7 +506,7 @@ public class GameRenderer : IDisposable
                 float intensity = cell.AfterglowTimer / Models.Entities.Explosion.AFTERGLOW_DURATION;
 
                 // Basis-Glow (orange, weicher Rand)
-                byte alpha = (byte)(70 * intensity);
+                byte alpha = (byte)(100 * intensity);
                 _fillPaint.Color = _palette.ExplosionOuter.WithAlpha(alpha);
                 _fillPaint.MaskFilter = _outerGlow;
                 canvas.DrawRect(x * cs - 1, y * cs - 1, cs + 2, cs + 2, _fillPaint);
@@ -538,7 +540,7 @@ public class GameRenderer : IDisposable
             // Intensität steigt je näher an Explosion (0 bei 0.8s → 1 bei 0s)
             float intensity = 1f - (bomb.FuseTimer / 0.8f);
             // Pulsieren (schneller bei weniger Zeit)
-            float pulse = MathF.Sin(_globalTimer * (10f + intensity * 15f)) * 0.3f + 0.7f;
+            float pulse = MathF.Sin(_globalTimer * (10f + intensity * 5f)) * 0.3f + 0.7f;
             byte alpha = (byte)(50 * intensity * pulse);
             if (alpha < 5) continue;
 
@@ -1291,7 +1293,7 @@ public class GameRenderer : IDisposable
         if (player.IsCursed)
         {
             float cursePulse = MathF.Sin(_globalTimer * 8f) * 0.3f + 0.7f;
-            _glowPaint.Color = new SKColor(180, 0, 180, (byte)(80 * cursePulse));
+            _glowPaint.Color = new SKColor(180, 0, 180, (byte)(140 * cursePulse));
             _glowPaint.MaskFilter = _mediumGlow;
             canvas.DrawRoundRect(bx - 4, by - 4, bodyW + 8, bodyH + 8, 10, 10, _glowPaint);
             _glowPaint.MaskFilter = null;
@@ -1758,6 +1760,51 @@ public class GameRenderer : IDisposable
         canvas.DrawText(_lastScoreString, cx, cy, SKTextAlign.Center, _hudFontMedium, _textPaint);
         _textPaint.MaskFilter = null;
         cy += 28;
+
+        // ── COMBO (nur wenn aktiv) ──
+        if (ComboCount >= 2)
+        {
+            cy += 4;
+            // Alpha-Fade bei ablaufendem Timer (sanftes Ausblenden statt abruptem Verschwinden)
+            float comboAlphaFactor = ComboTimer < 0.5f ? ComboTimer / 0.5f : 1f;
+
+            // Combo-Text (pulsierend, farbig nach Stärke)
+            float comboPulse = MathF.Sin(_globalTimer * 12f) * 0.15f;
+            float comboScale = 1f + comboPulse;
+            var comboColor = ComboCount >= 5
+                ? new SKColor(255, 50, 50)     // Rot ab x5 (MEGA)
+                : ComboCount >= 4
+                    ? new SKColor(255, 80, 30)  // Orange-Rot ab x4
+                    : new SKColor(255, 165, 0); // Orange x2-x3
+            comboColor = comboColor.WithAlpha((byte)(255 * comboAlphaFactor));
+
+            string comboStr = ComboCount >= 5 ? $"MEGA x{ComboCount}" : $"x{ComboCount}";
+            _textPaint.Color = comboColor;
+            _textPaint.MaskFilter = isNeon ? _hudTextGlow : SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 3f);
+            float originalFontSize = _hudFontMedium.Size;
+            _hudFontMedium.Size = originalFontSize * comboScale;
+            canvas.DrawText(comboStr, cx, cy, SKTextAlign.Center, _hudFontMedium, _textPaint);
+            _hudFontMedium.Size = originalFontSize;
+            _textPaint.MaskFilter = null;
+            cy += 16;
+
+            // Timer-Bar (schrumpft von voll nach leer)
+            float barW = w - 30;
+            float barH = 3f;
+            float barX = x + 15;
+            float timerFrac = Math.Clamp(ComboTimer / 2f, 0f, 1f); // 2s = COMBO_WINDOW
+
+            // Hintergrund (dunkel)
+            _fillPaint.Color = new SKColor(60, 60, 60, (byte)(255 * comboAlphaFactor));
+            _fillPaint.MaskFilter = null;
+            _fillPaint.Shader = null;
+            canvas.DrawRoundRect(barX, cy, barW, barH, 1.5f, 1.5f, _fillPaint);
+
+            // Füllstand (farbig)
+            _fillPaint.Color = comboColor.WithAlpha((byte)(200 * comboAlphaFactor));
+            canvas.DrawRoundRect(barX, cy, barW * timerFrac, barH, 1.5f, 1.5f, _fillPaint);
+            cy += 10;
+        }
 
         // Separator
         canvas.DrawLine(x + 10, cy, x + w - 10, cy, _strokePaint);
