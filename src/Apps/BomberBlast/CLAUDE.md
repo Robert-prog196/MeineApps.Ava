@@ -7,7 +7,7 @@
 Bomberman-Klon mit SkiaSharp Rendering, AI Pathfinding und mehreren Input-Methoden.
 Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/Cyberpunk.
 
-**Version:** 2.0.4 (VersionCode 13) | **Package-ID:** org.rsdigital.bomberblast | **Status:** Geschlossener Test
+**Version:** 2.0.6 (VersionCode 15) | **Package-ID:** org.rsdigital.bomberblast | **Status:** Geschlossener Test
 
 ## Haupt-Features
 
@@ -17,7 +17,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - 60fps Game Loop via DispatcherTimer (16ms) in GameView.axaml.cs, InvalidateSurface() treibt PaintSurface
 - DPI-Handling: `canvas.LocalClipBounds` statt `e.Info.Width/Height`
 - GC-Optimierung: Gepoolte SKPaint/SKFont/SKPath (6 per-frame Allokationen eliminiert)
-- HUD: Side-Panel rechts (TIME, SCORE, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
+- HUD: Side-Panel rechts (TIME, SCORE, COMBO mit Timer-Bar, LIVES, BOMBS/FIRE mit Mini-Icons, PowerUp-Liste mit Glow)
 
 ### SkiaSharp Zusatz-Visualisierungen (12 Renderer)
 | Renderer | Beschreibung |
@@ -26,7 +26,6 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 | ExplosionShaders | CPU-basierte Flammen: Arm-Rendering (Bezier-Pfade, FBM Noise), Heat Haze |
 | ParticleSystem | Struct-Pool (300 max), 4 Formen (Rectangle, Circle, Spark, Ember), Glow-Effekte |
 | ScreenShake | Explosions-Shake (3px) + Player-Death-Shake (5px) |
-| SpriteSheet | Sprite-Atlas Verwaltung |
 | GameFloatingTextSystem | Score-Popups, Combo-Text, PowerUp-Text (Struct-Pool 20 max) |
 | TutorialOverlay | 4-Rechteck-Dimming + Text-Bubble + Highlight |
 | HelpIconRenderer | Statische Enemy/PowerUp Icons für HelpView |
@@ -34,6 +33,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 | LevelSelectVisualization | Level-Thumbnails mit Welt-Farben + Gold-Shimmer Sterne + Lock-Overlay |
 | AchievementIconRenderer | 5 Kategorie-Farben, Trophy bei freigeschaltet, Schloss+Fortschrittsring bei gesperrt |
 | GameOverVisualization | Großer Score mit Glow + Score-Breakdown Balken + Medaillen (Gold/Silber/Bronze) + Coin-Counter |
+| DiscoveryOverlay | Erstentdeckungs-Hint (Gold-Rahmen, NEU!-Badge, Titel+Beschreibung, Fade-In+Scale-Bounce, Auto-Dismiss 5s) |
 
 ### Input-Handler (2x)
 - **FloatingJoystick**: Touch-basiert, zwei Modi: Floating (erscheint wo getippt, Standard) + Fixed (immer sichtbar unten links). Bomb-Button weiter in die Spielfläche gerückt (80px/60px Offset statt 30px/20px)
@@ -84,11 +84,12 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - Banner wird beim Betreten des GameView versteckt, beim Verlassen wieder angezeigt
 - BannerTopOffset immer 0 (kein Viewport-Offset mehr nötig)
 
-### Rewarded (4 Placements)
-1. `continue` → GameOver: Coins verdoppeln / Weitermachen (1x pro Versuch)
-2. `level_skip` → GameOver: Level ueberspringen (nach 3 Fails)
+### Rewarded (5 Placements)
+1. `continue` → GameOver: Coins verdoppeln (1x pro Versuch)
+2. `level_skip` → GameOver: Level ueberspringen (nach 2 Fails)
 3. `power_up` → LevelSelect: Power-Up Boost (ab Level 20, alle 3 PowerUps)
 4. `score_double` → GameView: Score verdoppeln (nach Level-Complete)
+5. `revival` → GameOver: Weitermachen / Wiederbelebung (1x pro Versuch)
 
 ## App-spezifische Services
 
@@ -104,8 +105,10 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 | IDailyRewardService | 7-Tage Daily Login Bonus (500-5000 Coins, Tag 5 Extra-Leben) |
 | ICustomizationService | Spieler/Gegner-Skins (Default, Gold, Neon, Cyber, Retro) |
 | IReviewService | In-App Review nach Level 3-5, 14-Tage Cooldown |
-| IAchievementService | 16 Achievements in 5 Kategorien, JSON-Persistenz |
+| IAchievementService | 24 Achievements in 5 Kategorien, JSON-Persistenz |
+| IDiscoveryService | Erstentdeckungs-Tracking (PowerUps/Mechaniken), Preferences-basiert |
 | IDailyChallengeService | Tägliche Herausforderung, Streak-Tracking, Score-Persistenz |
+| IPlayGamesService | Google Play Games Services v2 (Leaderboards, Online-Achievements, Auto-Sign-In) |
 
 ## Architektur-Entscheidungen
 
@@ -113,9 +116,11 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Touch-Koordinaten**: Proportionale Skalierung (Render-Bounds / Control-Bounds Ratio) fuer DPI-korrektes Mapping
 - **Invalidierung**: IMMER `InvalidateSurface()` (InvalidateVisual feuert NICHT PaintSurface bei SKCanvasView)
 - **Keyboard Input**: Window-Level KeyDown/KeyUp in MainWindow.axaml.cs → GameViewModel
-- **DI**: 11 ViewModels, 14 Services, GameEngine + GameRenderer + SpriteSheet in App.axaml.cs (GameRenderer + IAchievementService per DI in GameEngine injiziert)
+- **DI**: 11 ViewModels, 16 Services, GameEngine + GameRenderer in App.axaml.cs (GameRenderer + IAchievementService + IDiscoveryService + IPlayGamesService per DI in GameEngine injiziert)
 - **GameEngine Partial Classes**: GameEngine.cs (Kern), .Collision.cs, .Explosion.cs, .Level.cs, .Render.cs
 - **12 PowerUp-Typen**: BombUp, Fire, Speed, Wallpass, Detonator, Bombpass, Flamepass, Mystery, Kick, LineBomb, PowerBomb, Skull
+- **PowerUp-Freischaltung**: Level-basiert via `GetUnlockLevel()` Extension. Story-Mode filtert gesperrte PowerUps. Arcade/DailyChallenge: Alle verfügbar
+- **Discovery-System**: `IDiscoveryService` (Preferences-basiert), `DiscoveryOverlay` (SkiaSharp), pausiert Spiel bei Erstentdeckung
 - **Exit-Cell-Cache**: `_exitCell` in GameEngine, gesetzt bei RevealExit/Block-Zerstörung → Kollisions-Check + RenderExit ohne Grid-Iteration
 - **Coin-Berechnung**: `_scoreAtLevelStart` → Coins basieren auf Level-Score (nicht kumulierter Gesamtscore), verhindert Inflation
 - **Pontan-Strafe**: Gestaffelt via Timer (`_pontanPunishmentActive`), nicht alle 4 auf einmal
@@ -200,17 +205,23 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Achievement-System (Phase 7)
 
-- 16 Achievements in 5 Kategorien: Progress (5), Mastery (3), Combat (3), Skill (3), Arcade (2)
+- 24 Achievements in 5 Kategorien: Progress (8), Mastery (3), Combat (5), Skill (6), Arcade (2)
 - JSON-Persistenz via IPreferencesService
 - **IAchievementService in GameEngine injiziert** → automatische Achievement-Prüfung bei:
-  - Level-Complete → OnLevelCompleted (Welten, NoDamage, Efficient, Speedrun)
+  - Level-Complete → OnLevelCompleted (Welten, NoDamage, Efficient, Speedrun, FirstVictory)
   - Enemy-Kill → OnEnemyKilled (kumulative Kills 100/500/1000)
   - Arcade Wave → OnArcadeWaveReached (Wave 10/25)
   - Stars → OnStarsUpdated (50/100/150 Sterne)
+  - Combo → OnComboReached (x3, x5)
+  - Bomb-Kick → OnBombKicked (25 kumulative Kicks)
+  - Power-Bomb → OnPowerBombUsed (10 kumulative)
+  - Curse überlebt → OnCurseSurvived (alle 4 Typen, Bit-Flags)
+  - Daily Challenge → OnDailyChallengeCompleted (7er Streak, 30 Total)
 - **Speedrun-Fix**: Prüft `timeUsed <= 60s` (nicht `timeRemaining >= 60s`)
 - **NoDamage-Tracking**: `_playerDamagedThisLevel` Flag in GameEngine
-- AchievementsView mit Karten-Grid (Icon + Name + Beschreibung + Fortschritt)
-- RESX-Keys fuer 6 Sprachen (33 Keys: AchievementsTitle + 16x Name/Desc)
+- AchievementsView mit Karten-Grid (SkiaSharp AchievementIconCanvas + Name + Beschreibung + Fortschritt)
+- AchievementData: TotalEnemyKills, HighestArcadeWave, TotalStars, TotalBombsKicked, TotalPowerBombs, CurseTypesSurvived (Bit-Flags)
+- RESX-Keys fuer 6 Sprachen (49 Keys: AchievementsTitle + 24x Name/Desc)
 
 ## Audio-System (Phase 8)
 
@@ -260,7 +271,8 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Gestaffeltes Spawning**: 1 Pontan alle 3s statt 4 auf einmal
 - **Mindestabstand**: 5 Zellen zum Spieler (statt vorher 4)
 - **Spawn-Partikel**: Rote Partikel am Spawn-Punkt
-- **Timer-Felder**: `_pontanPunishmentActive` + `_pontanSpawned` + `_pontanSpawnTimer`
+- **Vorwarnung**: Pulsierendes rotes "!" 1.5s vor Spawn (PreCalculateNextPontanSpawn → RenderPontanWarning)
+- **Timer-Felder**: `_pontanPunishmentActive` + `_pontanSpawned` + `_pontanSpawnTimer` + `_pontanWarningActive/X/Y`
 
 ### Iris-Wipe Transition
 - **Level-Start**: Schwarzer Kreis öffnet sich vom Zentrum (SKPath mit CounterClockwise Clip)
@@ -311,10 +323,18 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **19.02.2026 (5)**: Google Play Games Services v2 Integration: IPlayGamesService Interface + NullPlayGamesService (Desktop) + AndroidPlayGamesService (Linked File in Premium.Ava). PlayGamesIds.cs mit Mapping für 24 Achievements + 2 Leaderboards (TODO-Platzhalter). Auto-Sign-In bei App-Start (GPGS v2 Standard). Achievement-Sync: AchievementService sendet bei TryUnlock() automatisch an GPGS. Leaderboard-Sync: Arcade-Score + Total-Stars an Leaderboards. SettingsView: Google Play Games Sektion (Toggle, Status, Leaderboards/Achievements Buttons). NuGet: Xamarin.GooglePlayServices.Games.V2 121.0.0.2. AndroidManifest: com.google.android.gms.games.APP_ID meta-data. Resources/values/games.xml für Game Services Project-ID. 4 neue RESX-Keys (PlayGamesSection/Enabled/ShowLeaderboards/ShowGpgsAchievements) in 6 Sprachen.
+- **19.02.2026 (4)**: UI-Polish + Achievements-Erweiterung: 8 neue Achievements (24 total): first_victory (Progress), combo3/combo5 (Skill), daily_streak7/daily_complete30 (Progress), kick_master/power_bomber (Combat), curse_survivor (Skill). Neue IAchievementService-Methoden: OnComboReached, OnBombKicked, OnPowerBombUsed, OnCurseSurvived, OnDailyChallengeCompleted. AchievementData erweitert: TotalBombsKicked, TotalPowerBombs, CurseTypesSurvived (Bit-Flags). GameEngine-Hooks: Combo nach Bonus, Kick in TryKickBomb, PowerBomb in PlacePowerBomb, Curse-Ende in UpdatePlayer (curseBeforeUpdate/nach Update). DailyChallengeViewModel: IAchievementService injiziert für Daily-Achievement-Tracking. Skin-Auswahl im Shop (ICustomizationService). AchievementIconCanvas (bindbare SKCanvasView für DataTemplates). MedalCanvas (Gold/Silber/Bronze im GameOver). Victory-Screen für Level 50. Daily Reward 7-Tage-Popup. Premium Feature-Liste. SettingsView Icon-Fix: AdOff→AdsOff. 25 neue RESX-Keys in 6 Sprachen.
+- **19.02.2026 (3)**: Final Polish + Balancing: Arcade "NEW HIGH SCORE!" Celebration (goldener pulsierender Text + Confetti + goldene Partikel bei neuem Highscore). ShieldStart Preis 15.000→8.000 Coins. Daily Challenge "Neu!"-Badge im MainMenu (IDailyChallengeService + IsDailyChallengeNew Property). TotalEarned-Anzeige im MainMenu (CoinService.TotalEarned). Pontan-Spawn-Warnung (pulsierendes rotes "!" 1.5s vor Spawn, vorberechnete Position, PreCalculateNextPontanSpawn + SpawnPontanAtWarningPosition). Flammen-Zungen Clamp-Fix (min 1 statt 3, Divisor 12→15). 2 neue RESX-Keys (TotalEarned, DailyChallengeNew) in 6 Sprachen.
+- **19.02.2026 (2)**: Visual Polish + Achievement-Belohnungen: Combo-Anzeige mit sanftem Alpha-Fade bei Timer < 0.5s (kein abruptes Verschwinden). HUD-Font-Size FP-Rundungs-Fix (save/restore statt multiply/divide). Danger-Warning Frequenz-Cap (max 15Hz statt 25Hz, kein Strobe). Curse-Indikator Alpha 80→140 (besser sichtbar). Afterglow Alpha 70→100 (kräftiger). Floating Text sqrt-Easing (länger lesbar). GameOver Coin-Counter mit Ease-Out Animation (frame-basiert statt step-basiert). Achievement Coin-Belohnungen: 500-5000 Coins pro Achievement (CoinReward Property auf Achievement Model, ICoinService in AchievementService injiziert, Belohnung bei TryUnlock(), Toast zeigt "+X Coins", AchievementsView zeigt Reward-Text in Gold).
+- **19.02.2026**: Game Juice + UX + Monetarisierung Optimierung: Spieler-Tod Partikel-Burst (orange/rot). PowerUp Pop-Out Animation (BirthTimer/BirthScale mit sin-basiertem Overshoot + Gold-Partikel). Eskalierende Kettenreaktions-Effekte (ChainDepth auf Bomb → mehr Shake/Sparks/Embers pro Ketten-Stufe). Combo-Anzeige im HUD (pulsierender Text + schrumpfende Timer-Bar, Farbe nach Stärke: Orange/Rot/MEGA). Near-Miss Feedback auf GameOver-Screen (zeigt Punkte bis zum nächsten Stern innerhalb 30% Schwelle). GameOver DoubleCoins als Primary CTA (größer, Gold, GameButton-Klasse). First Victory Celebration (goldener "ERSTER SIEG!" Text + extra Gold-Partikel bei Level 1 Erstabschluss). Revival-Ad (5. Rewarded Placement, Ad-Unit-ID fehlt noch → Robert muss diese erstellen). Paid Continue (199 Coins, Alternative zu Ad). Level-Skip ab 2 Fails (vorher 3). Explosion DURATION 1.0→0.9s. Performance: DangerZone 5→3 Iterationen, AStar EmptyPath Singleton, Touch-Scale-Caching, _mechanicCells Grid-Cache. IProgressService.GetBaseScoreForLevel() für Near-Miss-Berechnung. 3 neue RESX-Keys (NearMissStars/PaidContinue/FirstVictory) in 6 Sprachen.
+- **18.02.2026 (2)**: PowerUp-Freischaltungssystem + Discovery-Hints: PowerUps werden level-basiert freigeschaltet (12 Stufen: BombUp/Fire/Speed=1, Kick=10, Mystery=15, Skull/Wallpass=20, Detonator/Bombpass=25, LineBomb=30, Flamepass=35, PowerBomb=40). 4 Welt-Mechaniken ebenfalls (Ice=13, Conveyor=23, Teleporter=33, LavaCrack=42). LevelGenerator filtert gesperrte PowerUps in Story-Mode (Arcade/Daily: alle verfügbar). Shop: 2 neue Sektionen "Fähigkeiten" + "Welt-Mechaniken" mit Lock/Unlock-Status. DiscoveryOverlay (SkiaSharp): Gold-Rahmen, NEU!-Badge, Titel+Beschreibung, Fade-In+Scale-Bounce, Auto-Dismiss 5s oder Tap, pausiert Spiel. IDiscoveryService (Preferences-basiert, Comma-separated HashSet). 34 neue RESX-Keys in 6 Sprachen. 4 neue Dateien: IDiscoveryService, DiscoveryService, DiscoveryOverlay, PowerUpDisplayItem.
+- **18.02.2026 (3)**: Code-Cleanup: SpriteSheet.cs Platzhalter entfernt (samt DI + Referenzen), ProgressService.GetHighestCompletedLevel() (dead code), ParticleSystem._sparkPath (ungenutzt). ReviewService redundantes if-else vereinfacht. DiscoveryService doppelte Key-Generierung zu GetKeyFromId(id, suffix) zusammengeführt. ShopViewModel RefreshPowerUpItems/RefreshMechanicItems via CreateDisplayItem() konsolidiert. GameEngine: _discoveryHintActive durch _discoveryOverlay.IsActive ersetzt (doppelte Truth Source eliminiert), TryShowDiscoveryHint() Helper extrahiert. GameView.axaml.cs veralteten e.Info Fallback entfernt. ShopView.axaml MechanicItems Template: CardOpacity + bedingte Unlock-Borders (grün/Häkchen vs grau/Schloss) ergänzt.
+- **18.02.2026**: Spieler-Stuck-Bug an Außenwänden gefixt: Grid-Bounds-Clamping verschärft (Hitbox darf nie in Außenwand-Zellen ragen, Minimum = CELL_SIZE + halfSize), Ice/Conveyor-Mechaniken auf 4-Ecken-Kollisionsprüfung umgestellt (vorher nur Mittel-Zelle → konnte Spieler in ungültige Position schieben), Stuck-Recovery eingebaut (nach 10 Frames ohne Bewegung trotz Input → Snap zum nächsten begehbaren Zellzentrum).
 - **17.02.2026**: Explosions- und Bomben-Visuals komplett überarbeitet: CPU-basierte Flammen mit arm-basiertem Rendering (durchgehende Bezier-Pfade mit FBM-Noise-modulierten Rändern statt Pro-Zelle → nahtlose Übergänge), 3 Schichten (Glow + Hauptflamme + Kern) + Flammen-Zungen, natürliche Verjüngung zum Ende. Plasma-Energie-Ring um Bomben ab 50% Zündschnur, Wärme-Distortion (Heat Haze) über Explosions-Bereich, doppelter Shockwave-Ring (äußerer diffuser + innerer heller Ring), Partikel-System erweitert auf 300 mit 4 Formen (Rectangle/Circle/Spark/Ember) + Glow + Luftwiderstand + Rotation, 12 Funken-Partikel + 9 Glut-Partikel pro Explosion, Nachglühen mit Glow + hellem Kern, Funken-Glow-Halo am Bomben-Zünder. Datei: `Graphics/ExplosionShaders.cs`.
 - **16.02.2026**: 4 neue SkiaSharp-Visualisierungen: HudVisualization (animierter Score-Counter mit rollenden Ziffern + pulsierender Timer unter 30s mit Farbwechsel normal→warning→critical + PowerUp-Icons mit Glow-Aura), LevelSelectVisualization (Level-Thumbnails mit 5 Welt-Farbpaletten + Gold-Shimmer Sterne + Lock-Overlay), AchievementIconRenderer (5 Kategorie-Farben + Trophy-Symbol bei freigeschaltet + Schloss+Fortschrittsring bei gesperrt), GameOverVisualization (großer Score mit pulsierendem Glow + Score-Breakdown Balken + Gold/Silber/Bronze Medaillen mit Shimmer + Coin-Counter mit Münz-Icon).
 - **15.02.2026 (4)**: HelpView SkiaSharp-Icons: HelpIconRenderer.cs (statische DrawEnemy/DrawPowerUp Methoden, identische Render-Logik wie GameRenderer ohne Animationen), SKCanvasView (32x32) pro Gegner- und PowerUp-Karte in HelpView.axaml, 4 fehlende PowerUps ergänzt (Kick/LineBomb/PowerBomb/Skull), 8 RESX-Keys (Name+Desc) in 6 Sprachen, PaintSurface-Handler in HelpView.axaml.cs.
-- **15.02.2026 (3)**: Daily Challenge Feature: IDailyChallengeService (Streak-System, Score-Tracking, Coin-Bonus 200-3000 pro Streak-Tag), DailyChallengeView mit Stats-Karten (Best Score, Streak, Longest Streak, Total Completed, Streak-Bonus), LevelGenerator.GenerateDailyChallengeLevel(seed) deterministisch aus Datum, GameEngine.StartDailyChallengeModeAsync + _isDailyChallenge Flag (kein Continue, kein NextLevel), MainMenu-Button (orange, #FF6B00), 9 RESX-Keys in 6 Sprachen, DI-Registrierung (14 Services + 11 ViewModels).
+- **15.02.2026 (3)**: Daily Challenge Feature: IDailyChallengeService (Streak-System, Score-Tracking, Coin-Bonus 200-3000 pro Streak-Tag), DailyChallengeView mit Stats-Karten (Best Score, Streak, Longest Streak, Total Completed, Streak-Bonus), LevelGenerator.GenerateDailyChallengeLevel(seed) deterministisch aus Datum, GameEngine.StartDailyChallengeModeAsync + _isDailyChallenge Flag (kein Continue, kein NextLevel), MainMenu-Button (orange, #FF6B00), 9 RESX-Keys in 6 Sprachen, DI-Registrierung (15 Services + 11 ViewModels).
 - **15.02.2026 (2)**: Welt-Mechaniken + Layout-Patterns + Balancing: 5 Welt-Mechaniken implementiert (Ice=40% Speed-Boost, Conveyor=40px/s Push, Teleporter=gepaarte Portale mit Cooldown, LavaCrack=periodischer Schaden 4s-Zyklus). 8 Layout-Patterns in GameGrid (Classic, Cross, Arena, Maze, TwoRooms, Spiral, Diagonal, BossArena). Boss-Ankündigung "BOSS FIGHT!" mit 2.5s Timer. SkiaSharp-Rendering für alle 4 neuen Zelltypen (Classic+Neon: Ice=blaue Reflexion+Shimmer, Conveyor=Metall+animierte Chevrons, Teleporter=rotierende Bogenringe farbcodiert, LavaCrack=Zickzack-Risse+pulsierendes Glühen). Shop-Balancing: ScoreMultiplier Gesamtkosten 55k→34k. Daily Reward: Streak-Reset Gnade 1→3 Tage. Grid-Align + Corner-Assist Bewegungsfix in Player.cs.
 - **15.02.2026**: Steuerung vereinfacht: Swipe/DPad-Handler komplett entfernt (Dateien gelöscht), nur Joystick mit zwei Modi (Floating/Fixed). Settings: 3 RadioButtons → ToggleSwitch für "Fester Joystick". Bomb-Button repositioniert (80px/60px Offset statt 30px/20px). Banner-Ads im Gameplay deaktiviert (HideBanner beim Betreten, ShowBanner beim Verlassen). Neuer RESX-Key JoystickModeFixed in 6 Sprachen. InputManager-Migration für alte Swipe/DPad-Settings.
 - **14.02.2026 (14)**: LevelSelect Redesign (WorldGroups mit farbigen Sektionen, UniformGrid 10-Spalten, Lock-Overlay), Tutorial-Overlay Fix (4-Rechteck-Dimming statt SaveLayer+Clear, reduziertes Alpha, DefeatEnemies-Schritt hinzugefügt, HUD-Overlap-Fix), ScrollViewer-Fix in 6 Views (Padding→Margin auf Kind-Element + VerticalScrollBarVisibility=Auto), Achievements-Button im MainMenu hinzugefügt.

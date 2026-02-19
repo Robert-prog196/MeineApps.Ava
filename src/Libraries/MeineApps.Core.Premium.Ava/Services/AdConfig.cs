@@ -78,6 +78,7 @@ public static class AdConfig
         public const string RewardedLevelSkip = "ca-app-pub-2588160251469436/6793333855";
         public const string RewardedPowerUp = "ca-app-pub-2588160251469436/8246016321";
         public const string RewardedScoreDouble = "ca-app-pub-2588160251469436/6242669514";
+        public const string RewardedRevival = "ca-app-pub-2588160251469436/2795298966";
     }
 
     public static class HandwerkerImperium
@@ -133,6 +134,7 @@ public static class AdConfig
             ("BomberBlast", "level_skip") => BomberBlast.RewardedLevelSkip,
             ("BomberBlast", "power_up") => BomberBlast.RewardedPowerUp,
             ("BomberBlast", "score_double") => BomberBlast.RewardedScoreDouble,
+            ("BomberBlast", "revival") => BomberBlast.RewardedRevival,
             ("BomberBlast", _) => BomberBlast.RewardedContinue,
 
             // FinanzRechner

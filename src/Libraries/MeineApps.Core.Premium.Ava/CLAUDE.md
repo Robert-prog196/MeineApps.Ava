@@ -16,7 +16,8 @@ MeineApps.Core.Premium.Ava/
 │   ├── AdMobHelper.cs              # Native AdMob banner (linked file, NOT compiled here)
 │   ├── RewardedAdHelper.cs         # Rewarded Ad helper (linked file, NOT compiled here)
 │   ├── AndroidRewardedAdService.cs # IRewardedAdService Android-Impl (linked file, NOT compiled here)
-│   └── AndroidPurchaseService.cs   # Google Play Billing Client (linked file, NOT compiled here)
+│   ├── AndroidPurchaseService.cs   # Google Play Billing Client (linked file, NOT compiled here)
+│   └── AndroidPlayGamesService.cs # Google Play Games Services v2 (linked file, NOT compiled here)
 ├── Services/
 │   ├── IAdService.cs          # Ad service interface
 │   ├── IPurchaseService.cs    # Purchase service interface

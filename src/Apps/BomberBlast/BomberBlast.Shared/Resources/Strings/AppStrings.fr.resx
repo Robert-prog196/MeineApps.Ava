@@ -937,4 +937,248 @@
   <data name="DailyChallengeRetry" xml:space="preserve">
     <value>Rejouer</value>
   </data>
+  <!-- Discovery Hints -->
+  <data name="DiscoverKick" xml:space="preserve">
+    <value>Coup de pied</value>
+  </data>
+  <data name="DiscoverKickDesc" xml:space="preserve">
+    <value>Frappez les bombes dans votre direction !</value>
+  </data>
+  <data name="DiscoverWallpass" xml:space="preserve">
+    <value>Passe-mur</value>
+  </data>
+  <data name="DiscoverWallpassDesc" xml:space="preserve">
+    <value>Traversez les blocs destructibles !</value>
+  </data>
+  <data name="DiscoverDetonator" xml:space="preserve">
+    <value>Détonateur</value>
+  </data>
+  <data name="DiscoverDetonatorDesc" xml:space="preserve">
+    <value>Déclenchez toutes les bombes manuellement !</value>
+  </data>
+  <data name="DiscoverBombpass" xml:space="preserve">
+    <value>Passe-bombe</value>
+  </data>
+  <data name="DiscoverBombpassDesc" xml:space="preserve">
+    <value>Traversez vos propres bombes !</value>
+  </data>
+  <data name="DiscoverFlamepass" xml:space="preserve">
+    <value>Passe-flamme</value>
+  </data>
+  <data name="DiscoverFlamepassDesc" xml:space="preserve">
+    <value>Immunisé contre les explosions !</value>
+  </data>
+  <data name="DiscoverMystery" xml:space="preserve">
+    <value>Mystère</value>
+  </data>
+  <data name="DiscoverMysteryDesc" xml:space="preserve">
+    <value>35 secondes d'invincibilité !</value>
+  </data>
+  <data name="DiscoverLinebomb" xml:space="preserve">
+    <value>Bombe en ligne</value>
+  </data>
+  <data name="DiscoverLinebombDesc" xml:space="preserve">
+    <value>Placez toutes les bombes en ligne !</value>
+  </data>
+  <data name="DiscoverPowerbomb" xml:space="preserve">
+    <value>Méga bombe</value>
+  </data>
+  <data name="DiscoverPowerbombDesc" xml:space="preserve">
+    <value>Une méga bombe à portée maximale !</value>
+  </data>
+  <data name="DiscoverSkull" xml:space="preserve">
+    <value>Crâne</value>
+  </data>
+  <data name="DiscoverSkullDesc" xml:space="preserve">
+    <value>Malédiction aléatoire pendant 10 secondes !</value>
+  </data>
+  <data name="DiscoverIce" xml:space="preserve">
+    <value>Glace</value>
+  </data>
+  <data name="DiscoverIceDesc" xml:space="preserve">
+    <value>Sol glissant - vous glissez sur la glace !</value>
+  </data>
+  <data name="DiscoverConveyor" xml:space="preserve">
+    <value>Tapis roulant</value>
+  </data>
+  <data name="DiscoverConveyorDesc" xml:space="preserve">
+    <value>Vous pousse dans la direction de la flèche !</value>
+  </data>
+  <data name="DiscoverTeleporter" xml:space="preserve">
+    <value>Téléporteur</value>
+  </data>
+  <data name="DiscoverTeleporterDesc" xml:space="preserve">
+    <value>Téléporte vers le portail jumelé !</value>
+  </data>
+  <data name="DiscoverLavacrack" xml:space="preserve">
+    <value>Fissure de lave</value>
+  </data>
+  <data name="DiscoverLavacrackDesc" xml:space="preserve">
+    <value>Dégâts de lave périodiques - surveillez la lueur !</value>
+  </data>
+  <data name="SectionPowerUps" xml:space="preserve">
+    <value>Capacités</value>
+  </data>
+  <data name="SectionMechanics" xml:space="preserve">
+    <value>Mécaniques du monde</value>
+  </data>
+  <data name="UnlockedAt" xml:space="preserve">
+    <value>Dès le niveau {0}</value>
+  </data>
+  <data name="Unlocked" xml:space="preserve">
+    <value>Débloqué</value>
+  </data>
+  <data name="TapToDismiss" xml:space="preserve">
+    <value>Appuyez pour fermer</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>NOUVEAU !</value>
+  </data>
+  <data name="Mechanic_Ice" xml:space="preserve">
+    <value>Glace</value>
+  </data>
+  <data name="Mechanic_Ice_Desc" xml:space="preserve">
+    <value>Sol glissant qui vous fait déraper</value>
+  </data>
+  <data name="Mechanic_Conveyor" xml:space="preserve">
+    <value>Tapis roulant</value>
+  </data>
+  <data name="Mechanic_Conveyor_Desc" xml:space="preserve">
+    <value>Pousse joueurs et ennemis dans la direction de la flèche</value>
+  </data>
+  <data name="Mechanic_Teleporter" xml:space="preserve">
+    <value>Téléporteur</value>
+  </data>
+  <data name="Mechanic_Teleporter_Desc" xml:space="preserve">
+    <value>Portails jumelés qui téléportent instantanément</value>
+  </data>
+  <data name="Mechanic_LavaCrack" xml:space="preserve">
+    <value>Fissure de lave</value>
+  </data>
+  <data name="Mechanic_LavaCrack_Desc" xml:space="preserve">
+    <value>Éruptions de lave périodiques qui blessent tout le monde</value>
+  </data>
+  <data name="NearMissStars" xml:space="preserve">
+    <value>Plus que {0} points pour la prochaine étoile !</value>
+  </data>
+  <data name="PaidContinue" xml:space="preserve">
+    <value>Continuer ({0} Coins)</value>
+  </data>
+  <data name="FirstVictory" xml:space="preserve">
+    <value>PREMIÈRE VICTOIRE !</value>
+  </data>
+  <data name="TotalEarned" xml:space="preserve">
+    <value>Total : {0}</value>
+  </data>
+  <data name="DailyChallengeNew" xml:space="preserve">
+    <value>Nouveau !</value>
+  </data>
+
+  <!-- Skins Shop -->
+  <data name="SectionSkins" xml:space="preserve">
+    <value>Skins de Joueur</value>
+  </data>
+  <data name="SkinSelect" xml:space="preserve">
+    <value>Sélectionner</value>
+  </data>
+  <data name="SkinLocked" xml:space="preserve">
+    <value>Premium uniquement</value>
+  </data>
+
+  <!-- Daily Reward Popup -->
+  <data name="DailyRewardClaimed" xml:space="preserve">
+    <value>Réclamé !</value>
+  </data>
+  <data name="DailyRewardTomorrow" xml:space="preserve">
+    <value>Demain : {0} Coins</value>
+  </data>
+
+  <!-- Premium Features -->
+  <data name="PremiumFeatureNoAds" xml:space="preserve">
+    <value>✦ Sans Publicité</value>
+  </data>
+  <data name="PremiumFeatureDoubleCoins" xml:space="preserve">
+    <value>✦ x2 Pièces par Niveau</value>
+  </data>
+  <data name="PremiumFeatureSkins" xml:space="preserve">
+    <value>✦ 4 Skins Exclusifs</value>
+  </data>
+  <data name="PremiumFeatureSupport" xml:space="preserve">
+    <value>✦ Soutenir le Développement</value>
+  </data>
+
+  <!-- New Achievements -->
+  <data name="AchCombo3" xml:space="preserve">
+    <value>Roi du Combo</value>
+  </data>
+  <data name="AchCombo3Desc" xml:space="preserve">
+    <value>Obtenez un combo x3 ou plus</value>
+  </data>
+  <data name="AchCombo5" xml:space="preserve">
+    <value>Méga Combiste</value>
+  </data>
+  <data name="AchCombo5Desc" xml:space="preserve">
+    <value>Obtenez un MEGA combo x5</value>
+  </data>
+  <data name="AchDailyStreak7" xml:space="preserve">
+    <value>Joueur Dévoué</value>
+  </data>
+  <data name="AchDailyStreak7Desc" xml:space="preserve">
+    <value>Complétez 7 défis quotidiens d'affilée</value>
+  </data>
+  <data name="AchDailyComplete30" xml:space="preserve">
+    <value>Vétéran des Défis</value>
+  </data>
+  <data name="AchDailyComplete30Desc" xml:space="preserve">
+    <value>Complétez 30 défis quotidiens au total</value>
+  </data>
+  <data name="AchKickMaster" xml:space="preserve">
+    <value>Maître du Kick</value>
+  </data>
+  <data name="AchKickMasterDesc" xml:space="preserve">
+    <value>Bottez 25 bombes au total</value>
+  </data>
+  <data name="AchCurseSurvivor" xml:space="preserve">
+    <value>Survivant de Malédiction</value>
+  </data>
+  <data name="AchCurseSurvivorDesc" xml:space="preserve">
+    <value>Survivez aux 4 types de malédiction</value>
+  </data>
+  <data name="AchFirstVictory" xml:space="preserve">
+    <value>Premiers Pas</value>
+  </data>
+  <data name="AchFirstVictoryDesc" xml:space="preserve">
+    <value>Complétez votre premier niveau</value>
+  </data>
+  <data name="AchPowerBomber" xml:space="preserve">
+    <value>Power Bomber</value>
+  </data>
+  <data name="AchPowerBomberDesc" xml:space="preserve">
+    <value>Utilisez 10 Super Bombes au total</value>
+  </data>
+
+  <!-- Victory Screen -->
+  <data name="VictorySubtitle" xml:space="preserve">
+    <value>Vous avez terminé les 50 niveaux !</value>
+  </data>
+  <data name="VictoryStars" xml:space="preserve">
+    <value>Étoiles totales : {0}/150</value>
+  </data>
+  <data name="VictoryThanks" xml:space="preserve">
+    <value>Merci d'avoir joué !</value>
+  </data>
+
+  <!-- Google Play Games -->
+  <data name="PlayGamesSection" xml:space="preserve">
+    <value>Google Play Games</value>
+  </data>
+  <data name="PlayGamesEnabled" xml:space="preserve">
+    <value>Fonctions en ligne</value>
+  </data>
+  <data name="ShowLeaderboards" xml:space="preserve">
+    <value>Classements</value>
+  </data>
+  <data name="ShowGpgsAchievements" xml:space="preserve">
+    <value>Succès</value>
+  </data>
 </root>
