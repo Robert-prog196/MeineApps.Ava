@@ -30,7 +30,7 @@ public static class MiniGameEffectHelper
 
         for (int i = 0; i < 3; i++)
         {
-            await Task.Delay(200); // 200ms Verzoegerung zwischen Sternen
+            await Task.Delay(100); // 100ms Verzoegerung zwischen Sternen
 
             var star = stars[i];
             bool isFilled = i < rating;
@@ -38,7 +38,7 @@ public static class MiniGameEffectHelper
             // Fade-In mit Opacity-Pulse als Bounce-Ersatz
             var animation = new Animation
             {
-                Duration = TimeSpan.FromMilliseconds(400),
+                Duration = TimeSpan.FromMilliseconds(250),
                 Easing = new CubicEaseOut(),
                 Children =
                 {

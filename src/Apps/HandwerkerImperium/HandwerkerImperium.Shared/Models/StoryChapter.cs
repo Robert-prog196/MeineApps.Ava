@@ -40,4 +40,9 @@ public class StoryChapter
     /// NPC-Portrait-Stimmung für Meister Hans (happy, proud, concerned, excited).
     /// </summary>
     public string Mood { get; init; } = "happy";
+
+    /// <summary>
+    /// True für Tutorial-Kapitel (1-5), die Gameplay-Tipps geben.
+    /// </summary>
+    public bool IsTutorial { get; init; }
 }

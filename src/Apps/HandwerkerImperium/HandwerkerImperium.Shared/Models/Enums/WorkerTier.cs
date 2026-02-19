@@ -27,14 +27,14 @@ public static class WorkerTierExtensions
     {
         WorkerTier.F => 0.30m,
         WorkerTier.E => 0.50m,
-        WorkerTier.D => 0.65m,
-        WorkerTier.C => 0.80m,
-        WorkerTier.B => 0.95m,
-        WorkerTier.A => 1.10m,
-        WorkerTier.S => 1.30m,
-        WorkerTier.SS => 1.50m,
-        WorkerTier.SSS => 1.80m,
-        WorkerTier.Legendary => 2.20m,
+        WorkerTier.D => 0.75m,
+        WorkerTier.C => 1.10m,
+        WorkerTier.B => 1.70m,
+        WorkerTier.A => 2.50m,
+        WorkerTier.S => 3.80m,
+        WorkerTier.SS => 5.50m,
+        WorkerTier.SSS => 8.50m,
+        WorkerTier.Legendary => 13.00m,
         _ => 0.50m
     };
 
@@ -44,16 +44,16 @@ public static class WorkerTierExtensions
     public static decimal GetMaxEfficiency(this WorkerTier tier) => tier switch
     {
         WorkerTier.F => 0.50m,
-        WorkerTier.E => 0.70m,
-        WorkerTier.D => 0.85m,
-        WorkerTier.C => 1.00m,
-        WorkerTier.B => 1.20m,
-        WorkerTier.A => 1.40m,
-        WorkerTier.S => 1.50m,
-        WorkerTier.SS => 1.80m,
-        WorkerTier.SSS => 2.20m,
-        WorkerTier.Legendary => 3.00m,
-        _ => 0.70m
+        WorkerTier.E => 0.80m,
+        WorkerTier.D => 1.25m,
+        WorkerTier.C => 1.90m,
+        WorkerTier.B => 2.80m,
+        WorkerTier.A => 4.20m,
+        WorkerTier.S => 6.00m,
+        WorkerTier.SS => 9.00m,
+        WorkerTier.SSS => 14.00m,
+        WorkerTier.Legendary => 22.00m,
+        _ => 0.80m
     };
 
     /// <summary>
@@ -62,16 +62,16 @@ public static class WorkerTierExtensions
     public static decimal GetWagePerHour(this WorkerTier tier) => tier switch
     {
         WorkerTier.F => 5m,
-        WorkerTier.E => 10m,
-        WorkerTier.D => 20m,
-        WorkerTier.C => 40m,
-        WorkerTier.B => 80m,
-        WorkerTier.A => 160m,
-        WorkerTier.S => 320m,
-        WorkerTier.SS => 640m,
-        WorkerTier.SSS => 1_280m,
-        WorkerTier.Legendary => 2_560m,
-        _ => 10m
+        WorkerTier.E => 9m,
+        WorkerTier.D => 16m,
+        WorkerTier.C => 28m,
+        WorkerTier.B => 50m,
+        WorkerTier.A => 90m,
+        WorkerTier.S => 160m,
+        WorkerTier.SS => 280m,
+        WorkerTier.SSS => 500m,
+        WorkerTier.Legendary => 900m,
+        _ => 9m
     };
 
     /// <summary>
@@ -137,6 +137,25 @@ public static class WorkerTierExtensions
         WorkerTier.SSS => "#7C4DFF",   // DeepPurple
         WorkerTier.Legendary => "#FFD700", // Gold
         _ => "#9E9E9E"
+    };
+
+    /// <summary>
+    /// Resistenz gegen den Workshop-Level-Anforderungsmalus (0.0 = voller Malus, 1.0 = immun).
+    /// Höhere Tiers können besser mit anspruchsvolleren Workshops umgehen.
+    /// </summary>
+    public static decimal GetLevelResistance(this WorkerTier tier) => tier switch
+    {
+        WorkerTier.F => 0.00m,
+        WorkerTier.E => 0.10m,
+        WorkerTier.D => 0.20m,
+        WorkerTier.C => 0.30m,
+        WorkerTier.B => 0.40m,
+        WorkerTier.A => 0.55m,
+        WorkerTier.S => 0.70m,
+        WorkerTier.SS => 0.80m,
+        WorkerTier.SSS => 0.90m,
+        WorkerTier.Legendary => 1.00m,
+        _ => 0.00m
     };
 
     /// <summary>

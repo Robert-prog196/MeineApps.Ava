@@ -92,6 +92,13 @@ public class GameState
     [JsonPropertyName("activeOrder")]
     public Order? ActiveOrder { get; set; }
 
+    /// <summary>
+    /// Temporär gesetzter QuickJob während MiniGame läuft (nicht persistiert).
+    /// Wird von MainViewModel gesetzt/geleert, von MiniGame-VMs für Belohnungs-Anzeige gelesen.
+    /// </summary>
+    [JsonIgnore]
+    public QuickJob? ActiveQuickJob { get; set; }
+
     [JsonPropertyName("totalOrdersCompleted")]
     public int TotalOrdersCompleted { get; set; }
 
@@ -217,6 +224,12 @@ public class GameState
     [JsonPropertyName("hapticsEnabled")]
     public bool HapticsEnabled { get; set; } = true;
 
+    [JsonPropertyName("notificationsEnabled")]
+    public bool NotificationsEnabled { get; set; } = true;
+
+    [JsonPropertyName("cloudSaveEnabled")]
+    public bool CloudSaveEnabled { get; set; } = true;
+
     [JsonPropertyName("language")]
     public string Language { get; set; } = "";
 
@@ -270,6 +283,7 @@ public class GameState
 
     /// <summary>
     /// Ob der tägliche Gratis-Rush verfügbar ist (noch nicht heute verwendet).
+    /// Zeitmanipulations-sicher: Wenn LastFreeRushUsed in der Zukunft liegt, ist future &lt; today false → blockiert.
     /// </summary>
     [JsonIgnore]
     public bool IsFreeRushAvailable => LastFreeRushUsed.Date < DateTime.UtcNow.Date;

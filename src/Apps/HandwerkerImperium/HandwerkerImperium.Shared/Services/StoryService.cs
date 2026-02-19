@@ -4,8 +4,8 @@ using HandwerkerImperium.Services.Interfaces;
 namespace HandwerkerImperium.Services;
 
 /// <summary>
-/// Verwaltet die Story-Kapitel von Meister Hans.
-/// Prüft bei Fortschritt ob neue Kapitel freigeschaltet werden.
+/// Verwaltet die Story-Kapitel von Meister Hans (25 Kapitel).
+/// Tutorial (1-5), Early Game (6-12), Mid Game (13-17), Prestige (18-21), Endgame (22-25).
 /// </summary>
 public class StoryService : IStoryService
 {
@@ -57,23 +57,23 @@ public class StoryService : IStoryService
         if (!state.ViewedStoryIds.Contains(chapterId))
         {
             state.ViewedStoryIds.Add(chapterId);
+
+            // Belohnungen nur beim ERSTEN Mal vergeben (Race-Condition-Schutz)
+            var chapter = _chapters.FirstOrDefault(c => c.Id == chapterId);
+            if (chapter != null)
+            {
+                if (chapter.MoneyReward > 0)
+                    _gameStateService.AddMoney(chapter.MoneyReward);
+                if (chapter.GoldenScrewReward > 0)
+                    _gameStateService.AddGoldenScrews(chapter.GoldenScrewReward);
+                if (chapter.XpReward > 0)
+                    _gameStateService.AddXp(chapter.XpReward);
+            }
         }
 
         if (state.PendingStoryId == chapterId)
         {
             state.PendingStoryId = null;
-        }
-
-        // Belohnungen vergeben
-        var chapter = _chapters.FirstOrDefault(c => c.Id == chapterId);
-        if (chapter != null)
-        {
-            if (chapter.MoneyReward > 0)
-                _gameStateService.AddMoney(chapter.MoneyReward);
-            if (chapter.GoldenScrewReward > 0)
-                _gameStateService.AddGoldenScrews(chapter.GoldenScrewReward);
-            if (chapter.XpReward > 0)
-                _gameStateService.AddXp(chapter.XpReward);
         }
 
         _gameStateService.MarkDirty();
@@ -108,7 +108,7 @@ public class StoryService : IStoryService
         // Alle gesetzten Bedingungen müssen erfüllt sein
         if (chapter.RequiredPlayerLevel > 0 && state.PlayerLevel < chapter.RequiredPlayerLevel)
             return false;
-        if (chapter.RequiredWorkshopCount > 0 && state.Workshops.Count(w => w.Level > 1) < chapter.RequiredWorkshopCount)
+        if (chapter.RequiredWorkshopCount > 0 && state.UnlockedWorkshopTypes.Count < chapter.RequiredWorkshopCount)
             return false;
         if (chapter.RequiredTotalOrders > 0 && state.TotalOrdersCompleted < chapter.RequiredTotalOrders)
             return false;
@@ -119,147 +119,400 @@ public class StoryService : IStoryService
 
     private static List<StoryChapter> CreateChapters() =>
     [
+        // ═══════════════════════════════════════════════════════════════
+        // TUTORIAL (Kapitel 1-5, Level 1-5)
+        // ═══════════════════════════════════════════════════════════════
+
         new()
         {
-            Id = "ch01_welcome",
+            Id = "tutorial_welcome",
             ChapterNumber = 1,
             TitleKey = "Story_Ch01_Title",
             TextKey = "Story_Ch01_Text",
             TitleFallback = "Willkommen, Lehrling!",
-            TextFallback = "Ich bin Meister Hans, der erfahrenste Handwerker der Stadt. Du hast Potenzial, das sehe ich! Zusammen bauen wir ein Handwerker-Imperium auf. Fang an, indem du deine Schreinerei aufrüstest!",
+            TextFallback = "Ich bin Meister Hans! 40 Jahre Erfahrung, und ich hab' schon alles gesehen. Na ja, fast alles – einen Lehrling der so motiviert aussieht wie du noch nicht! Deine Schreinerei ist klein, aber fein. Rüste sie auf, dann reden wir weiter!",
             RequiredPlayerLevel = 1,
             MoneyReward = 100,
             XpReward = 10,
-            Mood = "happy"
+            Mood = "happy",
+            IsTutorial = true
         },
         new()
         {
-            Id = "ch02_first_upgrade",
+            Id = "tutorial_orders",
             ChapterNumber = 2,
             TitleKey = "Story_Ch02_Title",
             TextKey = "Story_Ch02_Text",
-            TitleFallback = "Gute Arbeit!",
-            TextFallback = "Du hast deine erste Werkstatt aufgerüstet! So fängt jeder Meister an. Jetzt brauchst du einen Lehrling, der dir hilft. Ein guter Arbeiter ist Gold wert!",
-            RequiredPlayerLevel = 3,
-            MoneyReward = 500,
-            GoldenScrewReward = 1,
-            XpReward = 25,
-            Mood = "proud"
+            TitleFallback = "Dein erster Auftrag!",
+            TextFallback = "Telefon klingelt? Das ist ein Kunde! Bei Aufträgen musst du kleine Geschicklichkeitsspiele meistern – Sägen, Rohre legen, Kabel verlegen. Je besser du abschneidest, desto mehr Geld und Erfahrung gibt's. Also: Ran an die Arbeit!",
+            RequiredPlayerLevel = 2,
+            MoneyReward = 250,
+            GoldenScrewReward = 0,
+            XpReward = 20,
+            Mood = "excited",
+            IsTutorial = true
         },
         new()
         {
-            Id = "ch03_new_workshop",
+            Id = "tutorial_workers",
             ChapterNumber = 3,
             TitleKey = "Story_Ch03_Title",
             TextKey = "Story_Ch03_Text",
-            TitleFallback = "Zeit für Expansion!",
-            TextFallback = "Die Klempner-Zunft sucht Nachwuchs! Schalte die Klempnerei frei und verdopple dein Einkommen. Mehrere Standbeine sind das Geheimnis eines erfolgreichen Imperiums.",
-            RequiredPlayerLevel = 5,
-            RequiredWorkshopCount = 1,
-            MoneyReward = 1000,
-            GoldenScrewReward = 2,
-            XpReward = 50,
-            Mood = "excited"
+            TitleFallback = "Arbeiter einstellen!",
+            TextFallback = "Allein schaffst du das auf Dauer nicht, Lehrling. Auf dem Arbeitsmarkt warten Fachkräfte – jeder hat eigene Stärken und Schwächen. Stell welche ein und sie verdienen Geld, während du Kaffee trinkst! Na ja, fast...",
+            RequiredPlayerLevel = 3,
+            MoneyReward = 500,
+            GoldenScrewReward = 1,
+            XpReward = 30,
+            Mood = "proud",
+            IsTutorial = true
         },
         new()
         {
-            Id = "ch04_first_order",
+            Id = "tutorial_golden_screws",
             ChapterNumber = 4,
             TitleKey = "Story_Ch04_Title",
             TextKey = "Story_Ch04_Text",
-            TitleFallback = "Dein erster Auftrag!",
-            TextFallback = "Ein Kunde hat angerufen! Aufträge bringen Extra-Geld und Erfahrung. Zeig was du drauf hast - je besser deine Arbeit, desto höher die Belohnung!",
-            RequiredTotalOrders = 1,
-            MoneyReward = 2000,
+            TitleFallback = "Goldschrauben!",
+            TextFallback = "Siehst du diese goldenen Schrauben? Die sind selten und wertvoll! Du bekommst sie durch Mini-Games, Herausforderungen und Erfolge. Damit kannst du Premium-Arbeiter anheuern und besondere Boosts kaufen. Hüte sie wie deinen Augapfel!",
+            RequiredPlayerLevel = 4,
+            MoneyReward = 750,
+            GoldenScrewReward = 2,
+            XpReward = 40,
+            Mood = "happy",
+            IsTutorial = true
+        },
+        new()
+        {
+            Id = "tutorial_buildings",
+            ChapterNumber = 5,
+            TitleKey = "Story_Ch05_Title",
+            TextKey = "Story_Ch05_Text",
+            TitleFallback = "Gebäude & Forschung!",
+            TextFallback = "Jetzt wird's ernst! Im Forschungsbaum kannst du mächtige Upgrades freischalten – bessere Werkzeuge, effizienteres Management, stärkeres Marketing. Und Gebäude geben permanente Boni. Eine Kantine zum Beispiel hält deine Arbeiter bei Laune!",
+            RequiredPlayerLevel = 5,
+            MoneyReward = 1_000,
+            GoldenScrewReward = 2,
+            XpReward = 50,
+            Mood = "excited",
+            IsTutorial = true
+        },
+
+        // ═══════════════════════════════════════════════════════════════
+        // EARLY GAME (Kapitel 6-12, Level 8-60)
+        // ═══════════════════════════════════════════════════════════════
+
+        new()
+        {
+            Id = "early_plumber",
+            ChapterNumber = 6,
+            TitleKey = "Story_Ch06_Title",
+            TextKey = "Story_Ch06_Text",
+            TitleFallback = "Die Klempnerei öffnet!",
+            TextFallback = "Wasser marsch! Die Klempnerei ist ein Goldesel, glaub mir. Jeder braucht mal einen Klempner – besonders nachts um drei, wenn das Rohr platzt! Die Aufträge sind lukrativ und die Mini-Games machen sogar mir Spaß.",
+            RequiredPlayerLevel = 8,
+            RequiredWorkshopCount = 1,
+            MoneyReward = 5_000,
+            GoldenScrewReward = 3,
             XpReward = 75,
             Mood = "excited"
         },
         new()
         {
-            Id = "ch05_growing_business",
-            ChapterNumber = 5,
-            TitleKey = "Story_Ch05_Title",
-            TextKey = "Story_Ch05_Text",
-            TitleFallback = "Wachsendes Geschäft",
-            TextFallback = "Drei Werkstätten! Du wirst langsam zum echten Unternehmer. Denk daran: Jede Werkstatt hat eigene Stärken. Investiere klug und halte die Kosten im Blick!",
+            Id = "early_first_worker",
+            ChapterNumber = 7,
+            TitleKey = "Story_Ch07_Title",
+            TextKey = "Story_Ch07_Text",
+            TitleFallback = "Dein erster richtiger Mitarbeiter!",
+            TextFallback = "Das Tier-System bei Arbeitern ist wichtig: F-Tier Arbeiter sind günstig, aber... naja, sie verwechseln schon mal Hammer und Schraubenzieher. Spar auf bessere Tiers – ein A-Tier Arbeiter bringt das Zehnfache rein!",
             RequiredPlayerLevel = 10,
-            RequiredWorkshopCount = 3,
-            MoneyReward = 5000,
+            RequiredTotalOrders = 5,
+            MoneyReward = 10_000,
             GoldenScrewReward = 3,
             XpReward = 100,
             Mood = "proud"
         },
         new()
         {
-            Id = "ch06_master_tools",
-            ChapterNumber = 6,
-            TitleKey = "Story_Ch06_Title",
-            TextKey = "Story_Ch06_Text",
-            TitleFallback = "Meisterwerkzeuge",
-            TextFallback = "Ich habe gehört, du sammelst Meisterwerkzeuge! Jedes Werkzeug hat besondere Kräfte. Sammle sie alle und du wirst unaufhaltbar!",
+            Id = "early_electrician",
+            ChapterNumber = 8,
+            TitleKey = "Story_Ch08_Title",
+            TextKey = "Story_Ch08_Text",
+            TitleFallback = "Unter Strom!",
+            TextFallback = "Die Elektrikerei – mein Liebling! Kabel verlegen ist Kunst, nicht Handwerk. Ein falscher Draht und... *puff*! Aber keine Sorge, bei uns ist alles gut isoliert. Die Elektrik bringt richtig gutes Geld!",
             RequiredPlayerLevel = 15,
-            MoneyReward = 10000,
+            RequiredWorkshopCount = 2,
+            MoneyReward = 25_000,
             GoldenScrewReward = 5,
             XpReward = 150,
             Mood = "happy"
         },
         new()
         {
-            Id = "ch07_empire_builder",
-            ChapterNumber = 7,
-            TitleKey = "Story_Ch07_Title",
-            TextKey = "Story_Ch07_Text",
-            TitleFallback = "Der Imperium-Erbauer",
-            TextFallback = "Fünf Werkstätten und ein florierendes Geschäft! Du bist auf dem besten Weg, das größte Handwerker-Imperium der Stadt aufzubauen. Weiter so!",
-            RequiredPlayerLevel = 25,
-            RequiredWorkshopCount = 5,
-            MoneyReward = 50000,
-            GoldenScrewReward = 10,
+            Id = "early_daily",
+            ChapterNumber = 9,
+            TitleKey = "Story_Ch09_Title",
+            TextKey = "Story_Ch09_Text",
+            TitleFallback = "Tägliche Herausforderungen!",
+            TextFallback = "Schau mal, Geselle – jeden Tag gibt's drei neue Herausforderungen! Schließ Aufträge ab, spiel Mini-Games, verdiene Geld. Die Belohnungen lohnen sich, besonders die Goldschrauben. Ein echter Handwerker arbeitet jeden Tag!",
+            RequiredPlayerLevel = 18,
+            RequiredTotalOrders = 10,
+            MoneyReward = 50_000,
+            GoldenScrewReward = 5,
+            XpReward = 200,
+            Mood = "excited"
+        },
+        new()
+        {
+            Id = "early_painter",
+            ChapterNumber = 10,
+            TitleKey = "Story_Ch10_Title",
+            TextKey = "Story_Ch10_Text",
+            TitleFallback = "Farbe bekennen!",
+            TextFallback = "Die Malerei bringt Farbe in dein Imperium! Ein guter Maler hat Farbgefühl – und Geduld. Beim Streich-Minigame musst du die richtige Reihenfolge treffen. Mein Tipp: Achte auf die blinkenden Felder, Geselle!",
+            RequiredPlayerLevel = 22,
+            RequiredWorkshopCount = 3,
+            MoneyReward = 100_000,
+            GoldenScrewReward = 8,
             XpReward = 250,
+            Mood = "happy"
+        },
+        new()
+        {
+            Id = "early_mastertools",
+            ChapterNumber = 11,
+            TitleKey = "Story_Ch11_Title",
+            TextKey = "Story_Ch11_Text",
+            TitleFallback = "Legendäre Werkzeuge!",
+            TextFallback = "Du hast Meisterwerkzeuge entdeckt! Diese antiken Artefakte tragen die Kraft vergangener Handwerksmeister in sich. Jedes gibt einen permanenten Einkommensbonus. Sammle alle 12 und du wirst die Meisterkrone erhalten – das mächtigste Werkzeug von allen!",
+            RequiredPlayerLevel = 35,
+            RequiredTotalOrders = 20,
+            MoneyReward = 500_000,
+            GoldenScrewReward = 10,
+            XpReward = 400,
             Mood = "proud"
         },
         new()
         {
-            Id = "ch08_prestige",
-            ChapterNumber = 8,
-            TitleKey = "Story_Ch08_Title",
-            TextKey = "Story_Ch08_Text",
-            TitleFallback = "Neuanfang mit Erfahrung",
-            TextFallback = "Manchmal muss man einen Schritt zurück machen, um zwei vorwärts zu gehen. Prestige gibt dir permanente Boni für deinen nächsten Durchlauf. Trau dich!",
-            RequiredPrestige = 1,
-            MoneyReward = 100000,
-            GoldenScrewReward = 20,
-            XpReward = 500,
+            Id = "early_roofer",
+            ChapterNumber = 12,
+            TitleKey = "Story_Ch12_Title",
+            TextKey = "Story_Ch12_Text",
+            TitleFallback = "Hoch hinaus!",
+            TextFallback = "Die Dachdeckerei – nichts für Leute mit Höhenangst! Aber die Margen sind fantastisch. Und zwischen uns: Bald wirst du ein Level erreichen, wo etwas Besonderes wartet. 'Prestige' nennen wir das. Aber dazu später mehr...",
+            RequiredPlayerLevel = 60,
+            RequiredWorkshopCount = 4,
+            MoneyReward = 2_000_000,
+            GoldenScrewReward = 15,
+            XpReward = 600,
+            Mood = "excited"
+        },
+
+        // ═══════════════════════════════════════════════════════════════
+        // MID GAME (Kapitel 13-17, Level 75-250)
+        // ═══════════════════════════════════════════════════════════════
+
+        new()
+        {
+            Id = "mid_contractor",
+            ChapterNumber = 13,
+            TitleKey = "Story_Ch13_Title",
+            TextKey = "Story_Ch13_Text",
+            TitleFallback = "Der Bauunternehmer!",
+            TextFallback = "Fünf Werkstätten und 50 Aufträge – du bist kein Lehrling mehr, Geselle! Die Bauunternehmung ist der nächste Schritt: Mauern hochziehen, Krane bedienen, ganze Häuser bauen. Das ist die Champions League des Handwerks!",
+            RequiredPlayerLevel = 100,
+            RequiredWorkshopCount = 5,
+            RequiredTotalOrders = 50,
+            MoneyReward = 25_000_000,
+            GoldenScrewReward = 25,
+            XpReward = 1_000,
+            Mood = "proud"
+        },
+        new()
+        {
+            Id = "mid_empire",
+            ChapterNumber = 14,
+            TitleKey = "Story_Ch14_Title",
+            TextKey = "Story_Ch14_Text",
+            TitleFallback = "Das Handwerker-Viertel!",
+            TextFallback = "Sechs Werkstätten! Die Leute nennen deinen Bezirk schon 'Handwerker-Viertel'. Deine Arbeiter pfeifen morgens fröhlich auf dem Weg zur Arbeit – na gut, die meisten jedenfalls. Halte ihre Stimmung hoch, dann läuft der Laden!",
+            RequiredPlayerLevel = 125,
+            RequiredWorkshopCount = 6,
+            MoneyReward = 50_000_000,
+            GoldenScrewReward = 30,
+            XpReward = 1_500,
+            Mood = "happy"
+        },
+        new()
+        {
+            Id = "mid_reputation",
+            ChapterNumber = 15,
+            TitleKey = "Story_Ch15_Title",
+            TextKey = "Story_Ch15_Text",
+            TitleFallback = "Der Ruf der Stadt!",
+            TextFallback = "75 Aufträge – dein Ruf eilt dir voraus! Die Reputation bestimmt, wie viel Kunden bereit sind zu zahlen. Gute Arbeit = gute Bewertungen = mehr Geld. Schlechte Arbeit... naja, davon reden wir nicht. Mach einfach weiter so!",
+            RequiredPlayerLevel = 150,
+            RequiredTotalOrders = 75,
+            MoneyReward = 100_000_000,
+            GoldenScrewReward = 40,
+            XpReward = 2_000,
+            Mood = "excited"
+        },
+        new()
+        {
+            Id = "mid_prestige_hint",
+            ChapterNumber = 16,
+            TitleKey = "Story_Ch16_Title",
+            TextKey = "Story_Ch16_Text",
+            TitleFallback = "Ein Neuanfang?",
+            TextFallback = "Geselle, ich muss mit dir über Prestige reden. Es klingt verrückt: Alles aufgeben und von vorne anfangen. Aber glaub mir – mit den permanenten Boni wächst du beim zweiten Mal doppelt so schnell. Ich selbst hab's dreimal gemacht. Überlege es dir gut...",
+            RequiredPlayerLevel = 200,
+            RequiredWorkshopCount = 6,
+            MoneyReward = 250_000_000,
+            GoldenScrewReward = 50,
+            XpReward = 3_000,
             Mood = "concerned"
         },
         new()
         {
-            Id = "ch09_legend",
-            ChapterNumber = 9,
-            TitleKey = "Story_Ch09_Title",
-            TextKey = "Story_Ch09_Text",
-            TitleFallback = "Die Legende",
-            TextFallback = "Du hast es geschafft! Alle Werkstätten, zahllose Aufträge, und dein Name ist in der ganzen Stadt bekannt. Ich bin stolz auf dich, Meister!",
+            Id = "mid_mastery",
+            ChapterNumber = 17,
+            TitleKey = "Story_Ch17_Title",
+            TextKey = "Story_Ch17_Text",
+            TitleFallback = "Bereit für den Neuanfang!",
+            TextFallback = "100 Aufträge und Level 250 – du hast alles gemeistert was dieses Leben zu bieten hat. Die Prestige-Tür steht offen. Geh hindurch und komm stärker zurück. Ich warte hier auf dich, Geselle. Nein, ich warte auf dich... Meister!",
+            RequiredPlayerLevel = 250,
+            RequiredTotalOrders = 100,
+            MoneyReward = 500_000_000,
+            GoldenScrewReward = 75,
+            XpReward = 5_000,
+            Mood = "proud"
+        },
+
+        // ═══════════════════════════════════════════════════════════════
+        // PRESTIGE-REISE (Kapitel 18-21)
+        // ═══════════════════════════════════════════════════════════════
+
+        new()
+        {
+            Id = "prestige_first",
+            ChapterNumber = 18,
+            TitleKey = "Story_Ch18_Title",
+            TextKey = "Story_Ch18_Text",
+            TitleFallback = "Wie Phönix aus der Asche!",
+            TextFallback = "Du hast es getan, Meister! Ein Neuanfang – aber diesmal mit Erfahrung und permanenten Boni. Alles fühlt sich vertraut an, aber du bist schneller, stärker, klüger. Das ist das Geheimnis der wahren Meister: Fallen und wieder aufstehen!",
+            RequiredPrestige = 1,
+            MoneyReward = 1_000_000,
+            GoldenScrewReward = 100,
+            XpReward = 7_500,
+            Mood = "concerned"
+        },
+        new()
+        {
+            Id = "prestige_architect",
+            ChapterNumber = 19,
+            TitleKey = "Story_Ch19_Title",
+            TextKey = "Story_Ch19_Text",
+            TitleFallback = "Das Architekturbüro!",
+            TextFallback = "Ein neuer Workshop-Typ, Meister! Das Architekturbüro – hier werden Träume zu Bauplänen. Grundrisse zeichnen, Häuser designen, Visionen verwirklichen. Das ist Handwerk auf höchstem Niveau. Ich bin... *schnief*... so stolz auf dich!",
+            RequiredPrestige = 1,
             RequiredPlayerLevel = 50,
-            RequiredWorkshopCount = 7,
-            RequiredTotalOrders = 50,
-            MoneyReward = 500000,
+            MoneyReward = 5_000_000,
             GoldenScrewReward = 50,
-            XpReward = 1000,
+            XpReward = 5_000,
+            Mood = "excited"
+        },
+        new()
+        {
+            Id = "prestige_silver",
+            ChapterNumber = 20,
+            TitleKey = "Story_Ch20_Title",
+            TextKey = "Story_Ch20_Text",
+            TitleFallback = "Silber-Prestige!",
+            TextFallback = "Viermal neu angefangen – und jedes Mal besser! Du hast Silber-Prestige erreicht, Meister. Das schaffen die wenigsten. Dein Imperium wächst jetzt mit einer Geschwindigkeit, die selbst mich beeindruckt. Und ich bin nicht leicht zu beeindrucken!",
+            RequiredPrestige = 4,
+            MoneyReward = 50_000_000,
+            GoldenScrewReward = 200,
+            XpReward = 15_000,
             Mood = "proud"
         },
         new()
         {
-            Id = "ch10_grandmaster",
-            ChapterNumber = 10,
-            TitleKey = "Story_Ch10_Title",
-            TextKey = "Story_Ch10_Text",
-            TitleFallback = "Großmeister",
-            TextFallback = "Level 100! Du bist jetzt der Großmeister der Handwerker-Gilde. Dein Imperium ist ein Vorbild für alle. Aber vergiss nicht: Ein wahrer Meister hört nie auf zu lernen!",
-            RequiredPlayerLevel = 100,
-            MoneyReward = 1000000,
+            Id = "prestige_general",
+            ChapterNumber = 21,
+            TitleKey = "Story_Ch21_Title",
+            TextKey = "Story_Ch21_Text",
+            TitleFallback = "Der Generalunternehmer!",
+            TextFallback = "Der letzte Workshop-Typ: Generalunternehmer! Du koordinierst jetzt ALLES – von der kleinsten Schraube bis zum größten Kran. Kein Projekt ist dir zu groß. Du bist nicht mehr nur ein Handwerker, du bist eine Institution!",
+            RequiredPrestige = 4,
+            RequiredPlayerLevel = 75,
+            MoneyReward = 100_000_000,
             GoldenScrewReward = 100,
-            XpReward = 2000,
+            XpReward = 10_000,
+            Mood = "excited"
+        },
+
+        // ═══════════════════════════════════════════════════════════════
+        // ENDGAME (Kapitel 22-25, Level 500+, Gold Prestige)
+        // ═══════════════════════════════════════════════════════════════
+
+        new()
+        {
+            Id = "endgame_gold",
+            ChapterNumber = 22,
+            TitleKey = "Story_Ch22_Title",
+            TextKey = "Story_Ch22_Text",
+            TitleFallback = "Gold-Prestige!",
+            TextFallback = "Ich... ich bin sprachlos, Großmeister. 13 Prestige-Durchläufe. GOLD. In 40 Jahren Handwerk habe ich so etwas noch nie gesehen. Dein Name wird in die Gilden-Chronik eingehen. Neben meinem natürlich – ich hab dich schließlich ausgebildet!",
+            RequiredPrestige = 13,
+            MoneyReward = 500_000_000,
+            GoldenScrewReward = 500,
+            XpReward = 25_000,
+            Mood = "excited"
+        },
+        new()
+        {
+            Id = "endgame_legend",
+            ChapterNumber = 23,
+            TitleKey = "Story_Ch23_Title",
+            TextKey = "Story_Ch23_Text",
+            TitleFallback = "Die lebende Legende!",
+            TextFallback = "Level 500 und sieben Werkstätten auf dem Höhepunkt – du bist eine lebende Legende! Die Handwerkskammer hat angerufen, sie wollen ein Portrait von dir aufhängen. Gleich neben meinem. Na gut, vielleicht sogar ÜBER meinem. Du hast es verdient.",
+            RequiredPlayerLevel = 500,
+            RequiredWorkshopCount = 7,
+            MoneyReward = 1_000_000_000,
+            GoldenScrewReward = 300,
+            XpReward = 50_000,
+            Mood = "proud"
+        },
+        new()
+        {
+            Id = "endgame_allmax",
+            ChapterNumber = 24,
+            TitleKey = "Story_Ch24_Title",
+            TextKey = "Story_Ch24_Text",
+            TitleFallback = "Alle Werkstätten, alle Meister!",
+            TextFallback = "Acht Werkstätten, 500 Aufträge, alles auf Maximum. Dein Imperium erstreckt sich über die ganze Stadt! Die Handwerker der nächsten Generation schauen zu dir auf. Weißt du was? Ich glaube, der Schüler hat den Meister übertroffen. Und das sage ich nicht leichtfertig!",
+            RequiredPlayerLevel = 750,
+            RequiredWorkshopCount = 8,
+            RequiredTotalOrders = 500,
+            MoneyReward = 5_000_000_000,
+            GoldenScrewReward = 500,
+            XpReward = 75_000,
+            Mood = "happy"
+        },
+        new()
+        {
+            Id = "endgame_grandmaster",
+            ChapterNumber = 25,
+            TitleKey = "Story_Ch25_Title",
+            TextKey = "Story_Ch25_Text",
+            TitleFallback = "Großmeister der Handwerker-Gilde!",
+            TextFallback = "Level 1000. Großmeister der Handwerker-Gilde. Es gibt keinen höheren Titel. Von einem nervösen Lehrling mit einer kleinen Schreinerei zum mächtigsten Handwerker der Geschichte – DEINE Geschichte! Ich bin alt geworden mit dir, Großmeister. Aber es war jede Minute wert. Danke.",
+            RequiredPlayerLevel = 1000,
+            MoneyReward = 10_000_000_000,
+            GoldenScrewReward = 1_000,
+            XpReward = 100_000,
             Mood = "excited"
         }
     ];

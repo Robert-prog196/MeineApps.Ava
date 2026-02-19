@@ -84,7 +84,8 @@ public class GameLoopService : IGameLoopService, IDisposable
         _timer.Tick -= OnTimerTick;
         _timer = null;
 
-        _gameStateService.State.TotalPlayTimeSeconds += (long)SessionDuration.TotalSeconds;
+        // Nur die aktive Zeit seit letztem Start/Resume akkumulieren
+        _gameStateService.State.TotalPlayTimeSeconds += (long)(DateTime.UtcNow - _sessionStart).TotalSeconds;
         _gameStateService.State.LastPlayedAt = DateTime.UtcNow;
 
         _saveGameService.SaveAsync().FireAndForget();
@@ -95,6 +96,8 @@ public class GameLoopService : IGameLoopService, IDisposable
         _isPaused = true;
         _timer?.Stop();
 
+        // Bisherige aktive Session-Zeit akkumulieren
+        _gameStateService.State.TotalPlayTimeSeconds += (long)(DateTime.UtcNow - _sessionStart).TotalSeconds;
         _gameStateService.State.LastPlayedAt = DateTime.UtcNow;
         _saveGameService.SaveAsync().FireAndForget();
     }
@@ -102,6 +105,8 @@ public class GameLoopService : IGameLoopService, IDisposable
     public void Resume()
     {
         _isPaused = false;
+        // Session-Start neu setzen damit Pause-Zeit nicht mitgezählt wird
+        _sessionStart = DateTime.UtcNow;
         _timer?.Start();
     }
 
@@ -239,7 +244,8 @@ public class GameLoopService : IGameLoopService, IDisposable
                 ws.TotalEarned += ws.GrossIncomePerSecond;
                 foreach (var worker in ws.Workers.Where(w => w.IsWorking))
                 {
-                    worker.TotalEarned += ws.BaseIncomePerWorker * worker.EffectiveEfficiency;
+                    // LevelFitFactor berücksichtigen (Workshop-Level-Malus für niedrige Tiers)
+                    worker.TotalEarned += ws.BaseIncomePerWorker * worker.EffectiveEfficiency * ws.GetWorkerLevelFitFactor(worker);
                 }
             }
         }
@@ -257,11 +263,23 @@ public class GameLoopService : IGameLoopService, IDisposable
             _eventService?.CheckForNewEvent();
         }
 
-        // 9b. Quick Job Rotation + Daily Challenge Reset (alle 60 Ticks = 1 Minute)
+        // 9b. Quick Job Rotation + Daily Challenge Reset + Deadline-Check (alle 60 Ticks = 1 Minute)
         if (_tickCount % 60 == 0)
         {
             _quickJobService?.RotateIfNeeded();
             _dailyChallengeService?.CheckAndResetIfNewDay();
+
+            // Abgelaufene Orders aus AvailableOrders entfernen
+            state.AvailableOrders.RemoveAll(o => o.IsExpired);
+
+            // Aktiven Order abbrechen wenn Deadline abgelaufen
+            if (state.ActiveOrder?.IsExpired == true)
+            {
+                state.ActiveOrder.CurrentTaskIndex = 0;
+                state.ActiveOrder.TaskResults.Clear();
+                state.ActiveOrder = null;
+                OrderExpired?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         // 9d. Lieferant: Prüfen ob neue Lieferung generiert werden soll
@@ -308,6 +326,11 @@ public class GameLoopService : IGameLoopService, IDisposable
             state.Money,
             SessionDuration));
     }
+
+    /// <summary>
+    /// Event wenn ein Auftrag wegen abgelaufener Deadline verfällt.
+    /// </summary>
+    public event EventHandler? OrderExpired;
 
     /// <summary>
     /// Event für neue Meisterwerkzeug-Freischaltungen (UI-Benachrichtigung).
@@ -432,9 +455,12 @@ public class GameLoopService : IGameLoopService, IDisposable
         int buildingSlots = extension?.ExtraWorkerSlots ?? 0;
 
         int totalExtra = researchSlots + buildingSlots;
+        decimal levelResistance = Math.Min(researchEffects?.LevelResistanceBonus ?? 0m, 0.50m);
+
         foreach (var ws in state.Workshops)
         {
             ws.ExtraWorkerSlots = totalExtra;
+            ws.LevelResistanceBonus = levelResistance;
         }
     }
 

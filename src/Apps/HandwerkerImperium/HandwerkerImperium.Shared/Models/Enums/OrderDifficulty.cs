@@ -43,7 +43,7 @@ public static class OrderDifficultyExtensions
         OrderDifficulty.Easy => 1.0m,
         OrderDifficulty.Medium => 1.5m,
         OrderDifficulty.Hard => 3.5m,
-        OrderDifficulty.Expert => 5.0m,
+        OrderDifficulty.Expert => 8.0m,
         _ => 1.0m
     };
 
@@ -55,7 +55,7 @@ public static class OrderDifficultyExtensions
         OrderDifficulty.Easy => 1.0m,
         OrderDifficulty.Medium => 1.75m,
         OrderDifficulty.Hard => 3.0m,
-        OrderDifficulty.Expert => 4.5m,
+        OrderDifficulty.Expert => 7.0m,
         _ => 1.0m
     };
 

@@ -69,30 +69,138 @@ public class OrderGeneratorService : IOrderGeneratorService
         ]
     };
 
+    // Kundennamen für Aufträge
+    private static readonly string[] _firstNames =
+    {
+        "Hans", "Klaus", "Werner", "Petra", "Sabine", "Ingrid", "Thomas", "Michael",
+        "Monika", "Helga", "Stefan", "Andreas", "Brigitte", "Ursula", "Frank",
+        "Jürgen", "Renate", "Dieter", "Gabriele", "Gerhard", "Manfred", "Erika",
+        "Wolfgang", "Heike", "Ralf", "Ulrike", "Heinz", "Karin", "Bernd", "Martina"
+    };
+    private static readonly string[] _lastNames =
+    {
+        "Müller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner",
+        "Becker", "Schulz", "Hoffmann", "Schäfer", "Koch", "Bauer", "Richter",
+        "Klein", "Wolf", "Schröder", "Neumann", "Schwarz", "Zimmermann", "Braun",
+        "Krüger", "Hartmann", "Lange", "Schmitt", "Werner", "Krause", "Meier",
+        "Lehmann", "Schmid"
+    };
+
     public OrderGeneratorService(IGameStateService gameStateService, IResearchService? researchService = null)
     {
         _gameStateService = gameStateService;
         _researchService = researchService;
     }
 
+    /// <summary>
+    /// Generiert einen Kundennamen deterministisch aus einem Seed.
+    /// </summary>
+    private static string GenerateCustomerName(int seed)
+    {
+        var rng = new Random(seed);
+        return $"{_firstNames[rng.Next(_firstNames.Length)]} {_lastNames[rng.Next(_lastNames.Length)]}";
+    }
+
+    /// <summary>
+    /// Bestimmt den OrderType basierend auf Spieler-Level und freigeschalteten Workshops.
+    /// Höhere Level schalten Large/Cooperation/Weekly frei.
+    /// </summary>
+    private OrderType DetermineOrderType(int workshopLevel, int playerLevel)
+    {
+        var state = _gameStateService.State;
+        int unlockedWorkshops = state.Workshops.Count(w => state.IsWorkshopUnlocked(w.Type));
+        int roll = Random.Shared.Next(100);
+
+        // Reputation-Bonus: Gute Reputation senkt Standard-Wahrscheinlichkeit
+        decimal reputationBonus = state.Reputation.OrderQualityBonus;
+        int adjustedRoll = (int)(roll - reputationBonus * 100);
+
+        return playerLevel switch
+        {
+            < 10 => OrderType.Standard,
+            < 15 => adjustedRoll < 70 ? OrderType.Standard : OrderType.Large,
+            < 20 => unlockedWorkshops >= 2
+                ? adjustedRoll < 55 ? OrderType.Standard
+                    : adjustedRoll < 80 ? OrderType.Large
+                    : OrderType.Cooperation
+                : adjustedRoll < 70 ? OrderType.Standard : OrderType.Large,
+            _ => unlockedWorkshops >= 2
+                ? adjustedRoll < 45 ? OrderType.Standard
+                    : adjustedRoll < 70 ? OrderType.Large
+                    : adjustedRoll < 85 ? OrderType.Cooperation
+                    : OrderType.Weekly
+                : adjustedRoll < 55 ? OrderType.Standard
+                    : adjustedRoll < 80 ? OrderType.Large
+                    : OrderType.Weekly
+        };
+    }
+
     public Order GenerateOrder(WorkshopType workshopType, int workshopLevel)
     {
+        var state = _gameStateService.State;
         var templates = _templates.GetValueOrDefault(workshopType, _templates[WorkshopType.Carpenter]);
 
         // Select a template based on level (higher levels get harder orders)
         int maxTemplateIndex = Math.Min(templates.Count - 1, (workshopLevel - 1) / 2);
         var template = templates[Random.Shared.Next(0, maxTemplateIndex + 1)];
 
-        // Determine difficulty based on PLAYER level (not workshop level)
-        // This provides progressive challenge as players advance
-        int playerLevel = _gameStateService.State.PlayerLevel;
-        var difficulty = GetDifficultyForPlayerLevel(playerLevel);
+        // Schwierigkeit basiert auf Workshop-Level + Prestige-Stufe
+        int prestigeCount = state.Prestige?.TotalPrestigeCount ?? 0;
+        var difficulty = GetDifficulty(workshopLevel, prestigeCount);
+
+        int playerLevel = state.PlayerLevel;
+
+        // OrderType bestimmen (Standard, Large, Weekly, Cooperation)
+        var orderType = DetermineOrderType(workshopLevel, playerLevel);
+
+        // Tasks erstellen basierend auf OrderType
+        var (minTasks, maxTasks) = orderType.GetTaskCount();
+        int targetTaskCount = Random.Shared.Next(minTasks, maxTasks + 1);
+        var tasks = new List<OrderTask>();
+
+        if (orderType == OrderType.Cooperation)
+        {
+            // Cooperation: Tasks aus 2 verschiedenen Workshop-Typen mischen
+            var unlockedWorkshops = state.Workshops
+                .Where(w => state.IsWorkshopUnlocked(w.Type) && w.Type != workshopType)
+                .ToList();
+            var secondType = unlockedWorkshops.Count > 0
+                ? unlockedWorkshops[Random.Shared.Next(unlockedWorkshops.Count)].Type
+                : workshopType;
+            var secondTemplates = _templates.GetValueOrDefault(secondType, templates);
+            var secondTemplate = secondTemplates[Random.Shared.Next(Math.Min(secondTemplates.Count, maxTemplateIndex + 1))];
+
+            // Tasks abwechselnd mischen
+            for (int i = 0; i < targetTaskCount; i++)
+            {
+                var src = i % 2 == 0 ? template : secondTemplate;
+                int idx = i / 2 % src.GameTypes.Length;
+                tasks.Add(new OrderTask
+                {
+                    GameType = src.GameTypes[idx],
+                    DescriptionKey = $"task_{src.GameTypes[idx].ToString().ToLower()}",
+                    DescriptionFallback = src.GameTypes[idx].GetLocalizationKey()
+                });
+            }
+        }
+        else
+        {
+            // Standard/Large/Weekly: Template-Tasks wiederholen/mischen
+            for (int i = 0; i < targetTaskCount; i++)
+            {
+                var gt = template.GameTypes[i % template.GameTypes.Length];
+                tasks.Add(new OrderTask
+                {
+                    GameType = gt,
+                    DescriptionKey = $"task_{gt.ToString().ToLower()}",
+                    DescriptionFallback = gt.GetLocalizationKey()
+                });
+            }
+        }
 
         // Basis-Belohnung skaliert mit aktuellem Einkommen (wie QuickJobs)
-        // Formel: Max(Level-basiert, Einkommen-basiert) * Aufgaben-Anzahl
-        // → Hauptaufträge geben MEHR als QuickJobs wegen Aufgaben-Multiplikator
-        var netIncomePerSecond = Math.Max(0m, _gameStateService.State.NetIncomePerSecond);
-        var taskCount = template.GameTypes.Length;
+        var netIncomePerSecond = Math.Max(0m, state.NetIncomePerSecond);
+        int taskCount = tasks.Count;
         // Pro Aufgabe ~5 Minuten Einkommen (300s), Mindestens Level*100 pro Aufgabe
         var perTaskReward = Math.Max(100m + playerLevel * 100m, netIncomePerSecond * 300m);
         // Aufgaben-Anzahl als Multiplikator (mit Bonus: mehr Tasks = überproportional mehr)
@@ -102,23 +210,50 @@ public class OrderGeneratorService : IOrderGeneratorService
         // Calculate base XP (skaliert mit Aufgaben-Anzahl)
         int baseXp = 25 * workshopLevel * taskCount;
 
+        // Kundennamen generieren
+        int nameSeed = (int)(DateTime.UtcNow.Ticks % int.MaxValue) ^ Random.Shared.Next();
+        string customerName = GenerateCustomerName(nameSeed);
+
         // Create the order
         var order = new Order
         {
             TitleKey = template.TitleKey,
             TitleFallback = template.TitleFallback,
             WorkshopType = workshopType,
+            OrderType = orderType,
             Difficulty = difficulty,
             BaseReward = Math.Round(baseReward),
             BaseXp = baseXp,
             RequiredLevel = Math.Max(1, workshopLevel - 1),
-            Tasks = template.GameTypes.Select(gt => new OrderTask
-            {
-                GameType = gt,
-                DescriptionKey = $"task_{gt.ToString().ToLower()}",
-                DescriptionFallback = gt.GetLocalizationKey()
-            }).ToList()
+            CustomerName = customerName,
+            CustomerAvatarSeed = nameSeed.ToString("X8"),
+            Tasks = tasks
         };
+
+        // Deadline für Weekly-Orders
+        if (orderType.HasDeadline())
+            order.Deadline = DateTime.UtcNow + orderType.GetDeadline();
+
+        // Cooperation: Benötigte Workshop-Typen setzen
+        if (orderType == OrderType.Cooperation)
+        {
+            var requiredTypes = tasks.Select(t => t.GameType)
+                .Distinct()
+                .Select(gt => workshopType) // Vereinfacht: Haupt-Workshop
+                .Distinct()
+                .ToList();
+            order.RequiredWorkshops = requiredTypes;
+        }
+
+        // Stammkunden-Zuordnung (20% Chance wenn Stammkunden vorhanden)
+        var regulars = state.Reputation.RegularCustomers.Where(c => c.IsRegular).ToList();
+        if (regulars.Count > 0 && Random.Shared.NextDouble() < 0.20)
+        {
+            var customer = regulars[Random.Shared.Next(regulars.Count)];
+            order.CustomerId = customer.Id;
+            order.CustomerName = customer.Name;
+            order.CustomerAvatarSeed = customer.AvatarSeed;
+        }
 
         return order;
     }
@@ -132,7 +267,8 @@ public class OrderGeneratorService : IOrderGeneratorService
         var office = state.GetBuilding(BuildingType.Office);
         int extraFromBuilding = office?.ExtraOrderSlots ?? 0;
         int extraFromResearch = _researchService?.GetTotalEffects()?.ExtraOrderSlots ?? 0;
-        int totalCount = count + extraFromBuilding + extraFromResearch;
+        int extraFromReputation = state.Reputation.ExtraOrderSlots;
+        int totalCount = count + extraFromBuilding + extraFromResearch + extraFromReputation;
 
         // Get all unlocked workshops
         var unlockedWorkshops = state.Workshops
@@ -171,24 +307,47 @@ public class OrderGeneratorService : IOrderGeneratorService
     }
 
     /// <summary>
-    /// Gets order difficulty based on player level for progressive challenge.
-    /// Level 1-10:  80% Easy, 20% Medium
-    /// Level 11-20: 50% Easy, 40% Medium, 10% Hard
-    /// Level 21+:   20% Easy, 40% Medium, 40% Hard
+    /// Bestimmt Auftrags-Schwierigkeit basierend auf Workshop-Level und Prestige-Stufe.
+    /// Höheres Workshop-Level → mehr Hard/Expert. Prestige schaltet Expert frei.
     /// </summary>
-    private OrderDifficulty GetDifficultyForPlayerLevel(int playerLevel)
+    private static OrderDifficulty GetDifficulty(int workshopLevel, int prestigeCount)
     {
         int roll = Random.Shared.Next(100);
 
-        return playerLevel switch
+        // Prestige-Stufen: 0=Kein, 1+=Bronze, 2+=Silver, 3+=Gold
+        return (workshopLevel, prestigeCount) switch
         {
-            <= 10 => roll < 80 ? OrderDifficulty.Easy : OrderDifficulty.Medium,
-            <= 20 => roll < 50 ? OrderDifficulty.Easy
-                   : roll < 90 ? OrderDifficulty.Medium
-                   : OrderDifficulty.Hard,
-            _ => roll < 20 ? OrderDifficulty.Easy
-               : roll < 60 ? OrderDifficulty.Medium
-               : OrderDifficulty.Hard
+            // WS-Level 1-25
+            (<= 25, 0)    => roll < 80 ? OrderDifficulty.Easy : OrderDifficulty.Medium,
+            (<= 25, 1)    => roll < 65 ? OrderDifficulty.Easy : roll < 90 ? OrderDifficulty.Medium : roll < 100 - 5 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 25, 2)    => roll < 50 ? OrderDifficulty.Easy : roll < 80 ? OrderDifficulty.Medium : roll < 95 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 25, >= 3) => roll < 40 ? OrderDifficulty.Easy : roll < 70 ? OrderDifficulty.Medium : roll < 90 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+
+            // WS-Level 26-100
+            (<= 100, 0)    => roll < 45 ? OrderDifficulty.Easy : roll < 90 ? OrderDifficulty.Medium : OrderDifficulty.Hard,
+            (<= 100, 1)    => roll < 25 ? OrderDifficulty.Easy : roll < 65 ? OrderDifficulty.Medium : roll < 90 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 100, 2)    => roll < 15 ? OrderDifficulty.Easy : roll < 45 ? OrderDifficulty.Medium : roll < 80 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 100, >= 3) => roll < 5  ? OrderDifficulty.Easy : roll < 30 ? OrderDifficulty.Medium : roll < 65 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+
+            // WS-Level 101-300
+            (<= 300, 0)    => roll < 15 ? OrderDifficulty.Easy : roll < 60 ? OrderDifficulty.Medium : OrderDifficulty.Hard,
+            (<= 300, 1)    => roll < 5  ? OrderDifficulty.Easy : roll < 30 ? OrderDifficulty.Medium : roll < 75 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 300, 2)    => roll < 15 ? OrderDifficulty.Medium : roll < 60 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 300, >= 3) => roll < 10 ? OrderDifficulty.Medium : roll < 50 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+
+            // WS-Level 301-700
+            (<= 700, 0)    => roll < 5  ? OrderDifficulty.Easy : roll < 35 ? OrderDifficulty.Medium : OrderDifficulty.Hard,
+            (<= 700, 1)    => roll < 10 ? OrderDifficulty.Medium : roll < 60 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 700, 2)    => roll < 5  ? OrderDifficulty.Medium : roll < 45 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (<= 700, >= 3) => roll < 30 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+
+            // WS-Level 701+
+            (_, 0)    => roll < 20 ? OrderDifficulty.Medium : OrderDifficulty.Hard,
+            (_, 1)    => roll < 5  ? OrderDifficulty.Medium : roll < 45 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (_, 2)    => roll < 30 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+            (_, >= 3) => roll < 20 ? OrderDifficulty.Hard : OrderDifficulty.Expert,
+
+            _ => OrderDifficulty.Easy
         };
     }
 

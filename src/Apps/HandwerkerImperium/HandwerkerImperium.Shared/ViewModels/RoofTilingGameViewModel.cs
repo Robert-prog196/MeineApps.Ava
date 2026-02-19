@@ -25,15 +25,15 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
     private bool _disposed;
     private bool _isEnding;
 
-    // Farb-Palette für Dachziegel
+    // Farb-Palette für Dachziegel (kontrastreich, gut unterscheidbar)
     private static readonly string[] TileColors =
     {
-        "#C2452D", // Ziegelrot
+        "#C62828", // Klassisch Rot
         "#D4763A", // Terrakotta
-        "#8B4513", // Sattelbraun
-        "#CD853F", // Peru
-        "#A0522D", // Siena
-        "#6B3A2A"  // Dunkelbraun
+        "#5D4037", // Dunkelbraun
+        "#F9A825", // Sandgelb
+        "#37474F", // Schiefer-Grau
+        "#6D4C41"  // Mittelbraun
     };
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -138,6 +138,10 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private double _star3Opacity;
 
+    // Hinweis: Farbpalette pulsen wenn keine Farbe gewählt
+    [ObservableProperty]
+    private bool _selectColorHint;
+
     // Tutorial (beim ersten Spielstart anzeigen)
     [ObservableProperty]
     private bool _showTutorial;
@@ -160,6 +164,7 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         OrderDifficulty.Easy => "★☆☆",
         OrderDifficulty.Medium => "★★☆",
         OrderDifficulty.Hard => "★★★",
+        OrderDifficulty.Expert => "★★★★",
         _ => "★☆☆"
     };
 
@@ -242,11 +247,11 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
 
         (GridColumns, GridRows, MaxTime, colorCount, hintPercentage) = Difficulty switch
         {
-            OrderDifficulty.Easy => (4, 4, 60, 3, 0.50),
-            OrderDifficulty.Medium => (5, 4, 45, 4, 0.35),
-            OrderDifficulty.Hard => (5, 5, 30, 5, 0.25),
-            OrderDifficulty.Expert => (6, 5, 25, 6, 0.20),
-            _ => (5, 4, 45, 4, 0.35)
+            OrderDifficulty.Easy => (3, 3, 45, 3, 0.55),
+            OrderDifficulty.Medium => (4, 4, 50, 4, 0.40),
+            OrderDifficulty.Hard => (5, 4, 50, 5, 0.30),
+            OrderDifficulty.Expert => (5, 5, 45, 5, 0.25),
+            _ => (4, 4, 50, 4, 0.40)
         };
 
         // Tool-Bonus: Säge gibt Extra-Sekunden (Dachdecker nutzt Säge-Tool)
@@ -284,7 +289,15 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         int hintCount = (int)(totalTiles * hintPercentage);
         var hintIndices = new HashSet<int>();
 
-        // Verteile Hinweise gleichmäßig über das Grid
+        // Erst jede Reihe mindestens 1 Hint garantieren (Referenz in jedem Bereich)
+        for (int row = 0; row < GridRows; row++)
+        {
+            int startIdx = row * GridColumns;
+            int colIdx = _random.Next(GridColumns);
+            hintIndices.Add(startIdx + colIdx);
+        }
+
+        // Restliche Hints zufällig verteilen
         while (hintIndices.Count < hintCount)
         {
             hintIndices.Add(_random.Next(totalTiles));
@@ -389,6 +402,7 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
 
         // Spiel starten
         IsPlaying = true;
+        if (_timer != null) { _timer.Stop(); _timer.Tick -= OnTimerTick; }
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -431,9 +445,11 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         // Bereits platzierte/Hinweis-Ziegel ignorieren
         if (tile.IsPlaced || tile.IsHint) return;
 
-        // Keine Farbe gewählt
+        // Keine Farbe gewählt → Farbpalette pulsieren lassen
         if (string.IsNullOrEmpty(SelectedColor))
         {
+            SelectColorHint = true;
+            _ = ResetSelectColorHintAsync();
             return;
         }
 
@@ -495,14 +511,25 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
             // Good: <=2 Fehler + >25% Zeit übrig
             Result = MiniGameRating.Good;
         }
-        else if (allPlaced && MistakeCount <= 5)
+        else if (allPlaced && MistakeCount <= 8)
         {
-            // Ok: <=5 Fehler + alle platziert
+            // Ok: <=8 Fehler + alle platziert
             Result = MiniGameRating.Ok;
+        }
+        else if (!allPlaced && TotalToPlace > 0)
+        {
+            // Teilbewertung bei Zeitablauf: basierend auf Platzierungs-Quote
+            double placedRatio = (double)PlacedCount / TotalToPlace;
+            if (placedRatio >= 0.90 && MistakeCount <= 2)
+                Result = MiniGameRating.Good;
+            else if (placedRatio >= 0.70 && MistakeCount <= 4)
+                Result = MiniGameRating.Ok;
+            else
+                Result = MiniGameRating.Miss;
         }
         else
         {
-            // Miss: Zeit abgelaufen oder >5 Fehler
+            // >8 Fehler
             Result = MiniGameRating.Miss;
         }
 
@@ -538,8 +565,10 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
         }
         else
         {
-            RewardAmount = 0;
-            XpAmount = 0;
+            // QuickJob: Belohnung aus aktivem QuickJob lesen
+            var quickJob = _gameStateService.State.ActiveQuickJob;
+            RewardAmount = quickJob?.Reward ?? 0;
+            XpAmount = quickJob?.XpReward ?? 0;
         }
 
         // Ergebnis-Anzeige
@@ -554,8 +583,7 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
 
         IsResultShown = true;
 
-        // Sterne staggered einblenden
-        Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+        // Sterne-Bewertung berechnen
         int starCount = Result switch
         {
             MiniGameRating.Perfect => 3,
@@ -563,12 +591,42 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
             MiniGameRating.Ok => 1,
             _ => 0
         };
-        if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
-        if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
-        if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
 
-        // Visuelles Event fuer Result-Polish in der View
-        GameCompleted?.Invoke(this, starCount);
+        if (IsLastTask)
+        {
+            // Aggregierte Sterne berechnen (alle Runden zusammen)
+            if (order != null && order.TaskResults.Count > 1)
+            {
+                int totalStarSum = order.TaskResults.Sum(r => r switch
+                {
+                    MiniGameRating.Perfect => 3,
+                    MiniGameRating.Good => 2,
+                    MiniGameRating.Ok => 1,
+                    _ => 0
+                });
+                int totalPossible = order.TaskResults.Count * 3;
+                starCount = totalPossible > 0
+                    ? (int)Math.Round((double)totalStarSum / totalPossible * 3.0)
+                    : 0;
+                starCount = Math.Clamp(starCount, 0, 3);
+            }
+
+            // Sterne staggered einblenden
+            Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+            if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
+            if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
+            if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
+
+            // Visuelles Event fuer Result-Polish in der View
+            GameCompleted?.Invoke(this, starCount);
+        }
+        else
+        {
+            // Zwischen-Runde: Sterne sofort setzen, keine Animation
+            Star1Opacity = starCount >= 1 ? 1.0 : 0.3;
+            Star2Opacity = starCount >= 2 ? 1.0 : 0.3;
+            Star3Opacity = starCount >= 3 ? 1.0 : 0.3;
+        }
 
         AdWatched = false;
         CanWatchAd = IsLastTask && _rewardedAdService.IsAvailable;
@@ -650,6 +708,15 @@ public partial class RoofTilingGameViewModel : ObservableObject, IDisposable
     // ═══════════════════════════════════════════════════════════════════════
     // HELPERS
     // ═══════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Setzt den SelectColorHint nach 1 Sekunde zurück.
+    /// </summary>
+    private async Task ResetSelectColorHintAsync()
+    {
+        await Task.Delay(1000);
+        SelectColorHint = false;
+    }
 
     private void CheckAndShowTutorial(MiniGameType gameType)
     {

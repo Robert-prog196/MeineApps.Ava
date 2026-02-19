@@ -30,6 +30,26 @@ public partial class App : Application
     /// </summary>
     public static Func<IServiceProvider, IPurchaseService>? PurchaseServiceFactory { get; set; }
 
+    /// <summary>
+    /// Factory fuer plattformspezifischen IAudioService (Android setzt nativen Audio-Service).
+    /// </summary>
+    public static Func<IServiceProvider, IAudioService>? AudioServiceFactory { get; set; }
+
+    /// <summary>
+    /// Factory fuer plattformspezifischen INotificationService (Android setzt nativen Notification-Service).
+    /// </summary>
+    public static Func<IServiceProvider, INotificationService>? NotificationServiceFactory { get; set; }
+
+    /// <summary>
+    /// Factory fuer plattformspezifischen IPlayGamesService (Android setzt Google Play Games Service).
+    /// </summary>
+    public static Func<IServiceProvider, IPlayGamesService>? PlayGamesServiceFactory { get; set; }
+
+    /// <summary>
+    /// Statisches Event fuer Review-Prompt (MainActivity verdrahtet den In-App-Review-Flow).
+    /// </summary>
+    public static Action? ReviewPromptRequested;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -102,6 +122,21 @@ public partial class App : Application
         services.AddSingleton<IGameLoopService, GameLoopService>();
         services.AddSingleton<IAchievementService, AchievementService>();
         services.AddSingleton<IAudioService, AudioService>();
+        services.AddSingleton<INotificationService, NotificationService>();
+        services.AddSingleton<IPlayGamesService, PlayGamesService>();
+
+        // Android-Override: Plattformspezifischer Audio-Service
+        if (AudioServiceFactory != null)
+            services.AddSingleton<IAudioService>(sp => AudioServiceFactory!(sp));
+
+        // Android-Override: Plattformspezifischer Notification-Service
+        if (NotificationServiceFactory != null)
+            services.AddSingleton<INotificationService>(sp => NotificationServiceFactory!(sp));
+
+        // Android-Override: Google Play Games Service
+        if (PlayGamesServiceFactory != null)
+            services.AddSingleton<IPlayGamesService>(sp => PlayGamesServiceFactory!(sp));
+
         services.AddSingleton<IDailyRewardService, DailyRewardService>();
         services.AddSingleton<IOfflineProgressService, OfflineProgressService>();
         services.AddSingleton<IOrderGeneratorService, OrderGeneratorService>();
@@ -116,6 +151,7 @@ public partial class App : Application
         services.AddSingleton<IQuickJobService, QuickJobService>();
         services.AddSingleton<IDailyChallengeService, DailyChallengeService>();
         services.AddSingleton<IStoryService, StoryService>();
+        services.AddSingleton<IReviewService, ReviewService>();
 
         // ViewModels (Singleton because MainViewModel holds references to child VMs)
         services.AddSingleton<MainViewModel>();

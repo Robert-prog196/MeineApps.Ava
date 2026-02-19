@@ -24,6 +24,8 @@ public class WorkshopTypeToIconConverter : IValueConverter
             WorkshopType.Painter => Icons.Painter,
             WorkshopType.Roofer => Icons.Roofer,
             WorkshopType.Contractor => Icons.Contractor,
+            WorkshopType.Architect => Icons.RulerSquare,
+            WorkshopType.GeneralContractor => Icons.Crown,
             _ => Icons.Plumber
         };
     }

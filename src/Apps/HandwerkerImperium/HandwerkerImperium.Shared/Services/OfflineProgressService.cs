@@ -47,6 +47,12 @@ public class OfflineProgressService : IOfflineProgressService
         bool wasCapped = offlineDuration > maxDuration;
         var effectiveDuration = wasCapped ? maxDuration : offlineDuration;
 
+        // === Research-Effekte laden + Level-Resistenz-Bonus auf Workshops setzen ===
+        var researchEffects = _researchService?.GetTotalEffects();
+        decimal levelResistance = Math.Min(researchEffects?.LevelResistanceBonus ?? 0m, 0.50m);
+        foreach (var ws in state.Workshops)
+            ws.LevelResistanceBonus = levelResistance;
+
         // === Brutto-Einkommen berechnen (wie GameLoop) ===
         decimal grossIncome = state.TotalIncomePerSecond;
 
@@ -54,9 +60,6 @@ public class OfflineProgressService : IOfflineProgressService
         decimal shopIncomeBonus = GetPrestigeIncomeBonus(state);
         if (shopIncomeBonus > 0)
             grossIncome *= (1m + shopIncomeBonus);
-
-        // Research-Effizienz-Bonus (gekappt bei +50%)
-        var researchEffects = _researchService?.GetTotalEffects();
         if (researchEffects != null && researchEffects.EfficiencyBonus > 0)
             grossIncome *= (1m + Math.Min(researchEffects.EfficiencyBonus, 0.50m));
 
@@ -109,7 +112,14 @@ public class OfflineProgressService : IOfflineProgressService
     public TimeSpan GetOfflineDuration()
     {
         var lastPlayed = _gameStateService.State.LastPlayedAt;
-        return DateTime.UtcNow - lastPlayed;
+        var now = DateTime.UtcNow;
+
+        // Zeitmanipulations-Schutz: Wenn lastPlayed in der Zukunft liegt,
+        // wurde die Systemuhr zurückgestellt → keine Offline-Einnahmen
+        if (lastPlayed > now)
+            return TimeSpan.Zero;
+
+        return now - lastPlayed;
     }
 
     /// <summary>

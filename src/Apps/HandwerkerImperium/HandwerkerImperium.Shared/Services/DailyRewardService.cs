@@ -39,6 +39,10 @@ public class DailyRewardService : IDailyRewardService
             var today = DateTime.UtcNow.Date;
             var lastClaimDate = lastClaim.Date; // lastClaim ist bereits UTC
 
+            // Zeitmanipulations-Schutz: Wenn LastClaim in der Zukunft liegt, blockieren
+            if (lastClaimDate > today)
+                return false;
+
             return today > lastClaimDate;
         }
     }
@@ -130,6 +134,10 @@ public class DailyRewardService : IDailyRewardService
         var today = DateTime.UtcNow.Date;
         var lastClaimDate = lastClaim.Date; // lastClaim ist bereits UTC
         var daysSinceLastClaim = (today - lastClaimDate).Days;
+
+        // Zeitmanipulations-Schutz: Negative Tage → Streak brechen
+        if (daysSinceLastClaim < 0)
+            return true;
 
         // Streak is broken if more than 1 day has passed
         return daysSinceLastClaim > 1;

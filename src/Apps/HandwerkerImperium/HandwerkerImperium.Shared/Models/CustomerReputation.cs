@@ -74,6 +74,30 @@ public class CustomerReputation
     }
 
     /// <summary>
+    /// Extra Order-Slots basierend auf Reputation (gute Reputation = mehr Aufträge).
+    /// </summary>
+    [JsonIgnore]
+    public int ExtraOrderSlots => ReputationScore switch
+    {
+        >= 90 => 2,
+        >= 70 => 1,
+        _ => 0
+    };
+
+    /// <summary>
+    /// Order-Qualitäts-Bonus: Höhere Reputation senkt Standard-Wahrscheinlichkeit.
+    /// Negativ bei schlechter Reputation → mehr Standard-Orders.
+    /// </summary>
+    [JsonIgnore]
+    public decimal OrderQualityBonus => ReputationScore switch
+    {
+        < 30 => -0.10m,
+        < 60 => 0m,
+        < 80 => 0.10m,
+        _ => 0.20m
+    };
+
+    /// <summary>
     /// Reputation decays slowly when no orders are completed.
     /// Call once per day.
     /// </summary>

@@ -60,10 +60,22 @@ public class Workshop
     public int ExtraWorkerSlots { get; set; }
 
     /// <summary>
-    /// Extra Worker-Slots durch Rewarded Ads (persistent).
+    /// Maximale Anzahl Ad-Bonus-Slots pro Workshop (Exploit-Schutz).
+    /// </summary>
+    public const int MaxAdBonusWorkerSlots = 3;
+
+    /// <summary>
+    /// Extra Worker-Slots durch Rewarded Ads (persistent, max 3).
     /// </summary>
     [JsonPropertyName("adBonusWorkerSlots")]
     public int AdBonusWorkerSlots { get; set; }
+
+    /// <summary>
+    /// Level-Resistenz-Bonus aus Forschung (0.0-0.5). Wird extern gesetzt.
+    /// Reduziert den Workshop-Level-Anforderungsmalus auf Worker-Effizienz.
+    /// </summary>
+    [JsonIgnore]
+    public decimal LevelResistanceBonus { get; set; }
 
     /// <summary>
     /// Base income per worker per second at current level.
@@ -82,6 +94,7 @@ public class Workshop
 
     /// <summary>
     /// Total gross income per second from all workers.
+    /// Berücksichtigt den Level-Anforderungsmalus pro Worker (höhere Tiers sind resistenter).
     /// </summary>
     [JsonIgnore]
     public decimal GrossIncomePerSecond
@@ -89,22 +102,44 @@ public class Workshop
         get
         {
             if (Workers.Count == 0) return 0;
-            return Workers.Sum(w => BaseIncomePerWorker * w.EffectiveEfficiency);
+            return Workers.Sum(w => BaseIncomePerWorker * w.EffectiveEfficiency * GetWorkerLevelFitFactor(w));
         }
+    }
+
+    /// <summary>
+    /// Berechnet den Level-Anforderungsfaktor für einen Worker.
+    /// Höhere Workshop-Level sind anspruchsvoller → niedrige Tiers verlieren Effizienz.
+    /// Basis: -2% alle 30 Level. Reduziert durch Tier-Resistenz + Forschung.
+    /// </summary>
+    public decimal GetWorkerLevelFitFactor(Worker worker)
+    {
+        if (Level <= 30) return 1.0m; // Kein Malus unter Level 30
+
+        int steps = Level / 30;
+        decimal basePenalty = steps * 0.02m;
+        decimal tierResistance = worker.Tier.GetLevelResistance();
+        decimal totalResistance = Math.Min(1.0m, tierResistance + LevelResistanceBonus);
+        decimal adjustedPenalty = basePenalty * (1m - totalResistance);
+        return Math.Max(0.20m, 1m - adjustedPenalty); // Min 20% (Worker wird nie komplett nutzlos)
     }
 
     /// <summary>
     /// Rent cost per hour (scales with level).
     /// </summary>
     [JsonIgnore]
-    public decimal RentPerHour => 10m * Level;
+    public decimal RentPerHour => Level <= 100
+        ? 10m * Level
+        : 1000m * (decimal)Math.Pow(1.008, Level - 100);
 
     /// <summary>
-    /// Material-Kosten pro Stunde (skaliert mit Level, nicht mit Einkommen).
-    /// Formel: 5 * Level * TypeMultiplier - so profitiert man von Worker-Effizienz und Prestige-Boni.
+    /// Material-Kosten pro Stunde (hybrid: linear bis Lv.100, dann exponentiell).
+    /// Bis Level 100 unverändet (bestehende Savegames safe).
+    /// Ab 100 wachsen Kosten moderat exponentiell → spürbar bei hohen Leveln.
     /// </summary>
     [JsonIgnore]
-    public decimal MaterialCostPerHour => 5m * Level * Type.GetBaseIncomeMultiplier();
+    public decimal MaterialCostPerHour => Level <= 100
+        ? 5m * Level * Type.GetBaseIncomeMultiplier()
+        : 500m * (decimal)Math.Pow(1.008, Level - 100) * Type.GetBaseIncomeMultiplier();
 
     /// <summary>
     /// Total worker wages per hour.

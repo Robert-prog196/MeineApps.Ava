@@ -5,565 +5,312 @@ using HandwerkerImperium.Models.Enums;
 namespace HandwerkerImperium.Graphics;
 
 /// <summary>
-/// Rendert das Innere einer Werkstatt: Boden, Werkbänke, Arbeiter, Werkzeugwand.
-/// Jeder Workshop-Typ hat eine einzigartige visuelle Szene.
+/// Rendert den dezenten Hintergrund einer Werkstatt.
+/// Boden-Gradient + Boden-Pattern + Vignette-Beleuchtung + Wand-Details.
+/// Die eigentliche Szene wird vom WorkshopSceneRenderer darüber gezeichnet.
 /// </summary>
 public class WorkshopInteriorRenderer
 {
-    // Tier -> Farbe fuer Worker-Kreis
-    private static readonly Dictionary<WorkerTier, SKColor> TierColors = new()
-    {
-        { WorkerTier.F, new SKColor(0x9E, 0x9E, 0x9E) },  // Grey
-        { WorkerTier.E, new SKColor(0x4C, 0xAF, 0x50) },  // Green
-        { WorkerTier.D, new SKColor(0x21, 0x96, 0xF3) },  // Blue
-        { WorkerTier.C, new SKColor(0x9C, 0x27, 0xB0) },  // Purple
-        { WorkerTier.B, new SKColor(0xFF, 0xC1, 0x07) },  // Gold
-        { WorkerTier.A, new SKColor(0xF4, 0x43, 0x36) },  // Red
-        { WorkerTier.S, new SKColor(0xFF, 0x98, 0x00) }   // Orange
-    };
-
     // Workshop-Typ-spezifische Farbpaletten
-    private static readonly Dictionary<WorkshopType, (SKColor floor, SKColor wall, SKColor accent)> WorkshopColors = new()
+    private static readonly Dictionary<WorkshopType, (SKColor floorTop, SKColor floorBottom, SKColor pattern)> WorkshopColors = new()
     {
-        { WorkshopType.Carpenter,          (new SKColor(0xBC, 0xAA, 0x84), new SKColor(0xD7, 0xCC, 0xB7), new SKColor(0xA0, 0x52, 0x2D)) }, // Holztöne
-        { WorkshopType.Plumber,            (new SKColor(0xB0, 0xBE, 0xC5), new SKColor(0xCF, 0xD8, 0xDC), new SKColor(0x0E, 0x74, 0x90)) }, // Grau-Blau
-        { WorkshopType.Electrician,        (new SKColor(0xBD, 0xBD, 0xBD), new SKColor(0xE0, 0xE0, 0xE0), new SKColor(0xF9, 0x73, 0x16)) }, // Grau-Orange
-        { WorkshopType.Painter,            (new SKColor(0xE1, 0xD5, 0xC0), new SKColor(0xF5, 0xF5, 0xF5), new SKColor(0xEC, 0x48, 0x99)) }, // Hell-Pink
-        { WorkshopType.Roofer,             (new SKColor(0xA1, 0x88, 0x7F), new SKColor(0xD7, 0xCC, 0xA1), new SKColor(0xDC, 0x26, 0x26)) }, // Braun-Rot
-        { WorkshopType.Contractor,         (new SKColor(0xC8, 0xB0, 0x90), new SKColor(0xD2, 0xC4, 0xA0), new SKColor(0xEA, 0x58, 0x0C)) }, // Sand-Orange
-        { WorkshopType.Architect,          (new SKColor(0xD0, 0xD0, 0xD0), new SKColor(0xEE, 0xEE, 0xEE), new SKColor(0x78, 0x71, 0x6C)) }, // Clean-Grau
-        { WorkshopType.GeneralContractor,  (new SKColor(0xC0, 0xA8, 0x70), new SKColor(0xE8, 0xD8, 0xA0), new SKColor(0xFF, 0xD7, 0x00)) }, // Gold
+        { WorkshopType.Carpenter,          (new SKColor(0xD7, 0xCC, 0xB7), new SKColor(0xBC, 0xAA, 0x84), new SKColor(0xA6, 0x93, 0x72, 35)) },
+        { WorkshopType.Plumber,            (new SKColor(0xCF, 0xD8, 0xDC), new SKColor(0xB0, 0xBE, 0xC5), new SKColor(0x90, 0xA4, 0xAE, 35)) },
+        { WorkshopType.Electrician,        (new SKColor(0xE0, 0xE0, 0xE0), new SKColor(0xBD, 0xBD, 0xBD), new SKColor(0xA0, 0xA0, 0xA0, 30)) },
+        { WorkshopType.Painter,            (new SKColor(0xF5, 0xF5, 0xF5), new SKColor(0xE1, 0xD5, 0xC0), new SKColor(0xD0, 0xC0, 0xA8, 25)) },
+        { WorkshopType.Roofer,             (new SKColor(0xD7, 0xCC, 0xA1), new SKColor(0xA1, 0x88, 0x7F), new SKColor(0x8D, 0x6E, 0x63, 30)) },
+        { WorkshopType.Contractor,         (new SKColor(0xD2, 0xC4, 0xA0), new SKColor(0xC8, 0xB0, 0x90), new SKColor(0xB0, 0x9A, 0x78, 30)) },
+        { WorkshopType.Architect,          (new SKColor(0xEE, 0xEE, 0xEE), new SKColor(0xD0, 0xD0, 0xD0), new SKColor(0xC0, 0xC0, 0xC0, 25)) },
+        { WorkshopType.GeneralContractor,  (new SKColor(0xE8, 0xD8, 0xA0), new SKColor(0xC0, 0xA8, 0x70), new SKColor(0xA8, 0x90, 0x60, 30)) },
     };
 
     /// <summary>
-    /// Rendert das Innere eines einzelnen Workshops mit typ-spezifischer Szene.
+    /// Rendert den dezenten Hintergrund eines Workshops.
     /// </summary>
     public void Render(SKCanvas canvas, SKRect bounds, Workshop workshop)
     {
         var colors = WorkshopColors.GetValueOrDefault(workshop.Type,
-            (new SKColor(0xBC, 0xAA, 0x84), new SKColor(0xD7, 0xCC, 0xB7), new SKColor(0xA0, 0x52, 0x2D)));
+            (new SKColor(0xD7, 0xCC, 0xB7), new SKColor(0xBC, 0xAA, 0x84), new SKColor(0xA6, 0x93, 0x72, 35)));
 
-        DrawFloor(canvas, bounds, colors.Item1, workshop.Type);
-        DrawToolWall(canvas, bounds, colors.Item2, workshop.Type, colors.Item3);
-        DrawWorkbenches(canvas, bounds, workshop, colors.Item3);
-        DrawTypSpecificDecor(canvas, bounds, workshop.Type, colors.Item3);
-        DrawWorkers(canvas, bounds, workshop);
+        // Vertikaler Gradient (oben heller → unten dunkler)
+        using var gradientPaint = new SKPaint
+        {
+            IsAntialias = true,
+            Shader = SKShader.CreateLinearGradient(
+                new SKPoint(bounds.Left, bounds.Top),
+                new SKPoint(bounds.Left, bounds.Bottom),
+                new[] { colors.Item1, colors.Item2 },
+                null,
+                SKShaderTileMode.Clamp)
+        };
+        canvas.DrawRect(bounds, gradientPaint);
+
+        // Dezente Wand-Details (obere 50%, sehr subtil)
+        DrawWallDetails(canvas, bounds, workshop.Type);
+
+        // Dezentes Boden-Pattern (nur untere 25%, sehr subtil)
+        DrawSubtleFloorPattern(canvas, bounds, workshop.Type, colors.Item3);
+
+        // Vignette-Beleuchtung: Fokus auf Mitte, Ränder dunkler
+        DrawVignette(canvas, bounds);
     }
 
-    private void DrawFloor(SKCanvas canvas, SKRect bounds, SKColor floorColor, WorkshopType type)
-    {
-        // Boden-Grundfarbe
-        using (var floorPaint = new SKPaint { Color = floorColor, IsAntialias = false })
-        {
-            canvas.DrawRect(bounds, floorPaint);
-        }
+    // =================================================================
+    // Vignette-Beleuchtung (Phase 6)
+    // =================================================================
 
-        // Boden-Muster je nach Typ
-        using var linePaint = new SKPaint { IsAntialias = false, StrokeWidth = 1 };
+    private static void DrawVignette(SKCanvas canvas, SKRect bounds)
+    {
+        float cx = bounds.MidX;
+        float cy = bounds.MidY;
+        // Radius = Diagonale * 0.7 → deckt Ecken ab
+        float radius = MathF.Sqrt(bounds.Width * bounds.Width + bounds.Height * bounds.Height) * 0.55f;
+
+        using var vignettePaint = new SKPaint
+        {
+            IsAntialias = true,
+            Shader = SKShader.CreateRadialGradient(
+                new SKPoint(cx, cy),
+                radius,
+                new[]
+                {
+                    SKColors.Transparent,           // Mitte: hell
+                    SKColors.Transparent,           // Innerer Bereich: noch hell
+                    new SKColor(0, 0, 0, 25),       // Übergang
+                    new SKColor(0, 0, 0, 45),       // Ränder: dezent dunkler
+                },
+                new float[] { 0f, 0.4f, 0.75f, 1.0f },
+                SKShaderTileMode.Clamp)
+        };
+        canvas.DrawRect(bounds, vignettePaint);
+    }
+
+    // =================================================================
+    // Wand-Details (Phase 8) - sehr dezent, Alpha 15-25
+    // =================================================================
+
+    private static void DrawWallDetails(SKCanvas canvas, SKRect bounds, WorkshopType type)
+    {
+        float wallBottom = bounds.Top + bounds.Height * 0.5f;
+
+        using var detailPaint = new SKPaint
+        {
+            IsAntialias = true,
+            Style = SKPaintStyle.Stroke,
+            StrokeWidth = 1f
+        };
 
         switch (type)
         {
             case WorkshopType.Carpenter:
-                // Holz-Dielenbretter
-                linePaint.Color = floorColor.WithAlpha(180);
-                linePaint.Color = new SKColor(0xA6, 0x93, 0x72);
-                for (float y = bounds.Top + 16; y < bounds.Bottom; y += 16)
+                // Werkzeug-Silhouetten an der Wand (Säge + Hobel)
+                detailPaint.Color = new SKColor(0x8D, 0x6E, 0x63, 20);
+                // Säge
+                float sawX = bounds.Left + bounds.Width * 0.15f;
+                float sawY = bounds.Top + bounds.Height * 0.18f;
+                canvas.DrawRect(sawX, sawY, 20, 8, detailPaint);
+                canvas.DrawLine(sawX + 20, sawY + 4, sawX + 32, sawY + 4, detailPaint);
+                // Hobel
+                float planeX = bounds.Left + bounds.Width * 0.7f;
+                float planeY = bounds.Top + bounds.Height * 0.22f;
+                canvas.DrawRoundRect(planeX, planeY, 22, 10, 2, 2, detailPaint);
+                break;
+
+            case WorkshopType.Plumber:
+                // Horizontale Rohr-Linien an der Wand
+                detailPaint.Color = new SKColor(0x78, 0x90, 0x9C, 22);
+                detailPaint.StrokeWidth = 2.5f;
+                float pipeY1 = bounds.Top + bounds.Height * 0.15f;
+                float pipeY2 = bounds.Top + bounds.Height * 0.35f;
+                canvas.DrawLine(bounds.Left + 10, pipeY1, bounds.Right - 10, pipeY1, detailPaint);
+                canvas.DrawLine(bounds.Left + 30, pipeY2, bounds.Right - 30, pipeY2, detailPaint);
+                // Abgang
+                detailPaint.StrokeWidth = 2f;
+                canvas.DrawLine(bounds.Right - 30, pipeY2, bounds.Right - 30, pipeY2 + 20, detailPaint);
+                break;
+
+            case WorkshopType.Electrician:
+                // Kabelkanal-Silhouette
+                detailPaint.Color = new SKColor(0x75, 0x75, 0x75, 20);
+                detailPaint.StrokeWidth = 2f;
+                float cableY = bounds.Top + bounds.Height * 0.2f;
+                canvas.DrawLine(bounds.Left + 15, cableY, bounds.Right - 15, cableY, detailPaint);
+                // Abgänge nach unten
+                float abg1X = bounds.Left + bounds.Width * 0.3f;
+                float abg2X = bounds.Left + bounds.Width * 0.7f;
+                canvas.DrawLine(abg1X, cableY, abg1X, cableY + 25, detailPaint);
+                canvas.DrawLine(abg2X, cableY, abg2X, cableY + 18, detailPaint);
+                break;
+
+            case WorkshopType.Painter:
+                // Farbfelder an der Wand (3 kleine Quadrate)
+                detailPaint.Style = SKPaintStyle.Fill;
+                float swatchSize = 10;
+                float swatchY = bounds.Top + bounds.Height * 0.18f;
+                float swatchStartX = bounds.Left + bounds.Width * 0.6f;
+                detailPaint.Color = new SKColor(0xEC, 0x48, 0x99, 18);
+                canvas.DrawRect(swatchStartX, swatchY, swatchSize, swatchSize, detailPaint);
+                detailPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 18);
+                canvas.DrawRect(swatchStartX + swatchSize + 4, swatchY, swatchSize, swatchSize, detailPaint);
+                detailPaint.Color = new SKColor(0x66, 0xBB, 0x6A, 18);
+                canvas.DrawRect(swatchStartX + (swatchSize + 4) * 2, swatchY, swatchSize, swatchSize, detailPaint);
+                break;
+
+            case WorkshopType.Roofer:
+                // Leiter-Silhouette an der Wand lehnend
+                detailPaint.Color = new SKColor(0x8D, 0x6E, 0x63, 18);
+                detailPaint.StrokeWidth = 1.5f;
+                float ladderX = bounds.Left + bounds.Width * 0.12f;
+                float ladderTop = bounds.Top + bounds.Height * 0.08f;
+                float ladderBot = wallBottom;
+                // Holme
+                canvas.DrawLine(ladderX, ladderTop, ladderX + 6, ladderBot, detailPaint);
+                canvas.DrawLine(ladderX + 14, ladderTop, ladderX + 20, ladderBot, detailPaint);
+                // Sprossen
+                float ladderH = ladderBot - ladderTop;
+                for (int i = 1; i <= 4; i++)
+                {
+                    float frac = i / 5f;
+                    float ly = ladderTop + ladderH * frac;
+                    float lxOff = 6 * frac; // Leichte Neigung
+                    canvas.DrawLine(ladderX + lxOff, ly, ladderX + 14 + lxOff, ly, detailPaint);
+                }
+                break;
+
+            case WorkshopType.Contractor:
+                // Bauplan angepinnt (Rechteck mit Linien)
+                detailPaint.Color = new SKColor(0x90, 0x90, 0x90, 20);
+                float planX = bounds.Left + bounds.Width * 0.7f;
+                float planY = bounds.Top + bounds.Height * 0.12f;
+                canvas.DrawRect(planX, planY, 24, 18, detailPaint);
+                // Linien im Plan
+                detailPaint.StrokeWidth = 0.5f;
+                canvas.DrawLine(planX + 3, planY + 5, planX + 21, planY + 5, detailPaint);
+                canvas.DrawLine(planX + 3, planY + 9, planX + 18, planY + 9, detailPaint);
+                canvas.DrawLine(planX + 3, planY + 13, planX + 15, planY + 13, detailPaint);
+                break;
+
+            case WorkshopType.Architect:
+                // 2 Rahmen-Silhouetten (Diplom/Zertifikat)
+                detailPaint.Color = new SKColor(0xA0, 0xA0, 0xA0, 20);
+                float frameY = bounds.Top + bounds.Height * 0.12f;
+                float frame1X = bounds.Left + bounds.Width * 0.15f;
+                float frame2X = bounds.Left + bounds.Width * 0.65f;
+                canvas.DrawRect(frame1X, frameY, 20, 16, detailPaint);
+                canvas.DrawRect(frame2X, frameY, 20, 16, detailPaint);
+                // Innere Linien
+                detailPaint.StrokeWidth = 0.5f;
+                canvas.DrawLine(frame1X + 4, frameY + 6, frame1X + 16, frameY + 6, detailPaint);
+                canvas.DrawLine(frame1X + 4, frameY + 10, frame1X + 12, frameY + 10, detailPaint);
+                canvas.DrawLine(frame2X + 4, frameY + 6, frame2X + 16, frameY + 6, detailPaint);
+                canvas.DrawLine(frame2X + 4, frameY + 10, frame2X + 12, frameY + 10, detailPaint);
+                break;
+
+            case WorkshopType.GeneralContractor:
+                // Fenster-Silhouette mit Stadt-Skyline
+                detailPaint.Color = new SKColor(0xA0, 0x90, 0x60, 20);
+                float winX = bounds.Left + bounds.Width * 0.35f;
+                float winY = bounds.Top + bounds.Height * 0.08f;
+                float winW = bounds.Width * 0.3f;
+                float winH = bounds.Height * 0.28f;
+                // Fensterrahmen
+                canvas.DrawRect(winX, winY, winW, winH, detailPaint);
+                // Kreuz im Fenster
+                canvas.DrawLine(winX + winW / 2, winY, winX + winW / 2, winY + winH, detailPaint);
+                canvas.DrawLine(winX, winY + winH / 2, winX + winW, winY + winH / 2, detailPaint);
+                // Skyline (dezente Gebäude-Silhouetten im unteren Teil)
+                detailPaint.Style = SKPaintStyle.Fill;
+                detailPaint.Color = new SKColor(0x80, 0x70, 0x50, 15);
+                float skyBase = winY + winH * 0.65f;
+                float skyH1 = winH * 0.30f;
+                float skyH2 = winH * 0.22f;
+                float skyH3 = winH * 0.35f;
+                float bw = winW / 8;
+                canvas.DrawRect(winX + bw, skyBase - skyH1, bw * 1.2f, skyH1 + (winY + winH - skyBase), detailPaint);
+                canvas.DrawRect(winX + bw * 3, skyBase - skyH2, bw, skyH2 + (winY + winH - skyBase), detailPaint);
+                canvas.DrawRect(winX + bw * 4.5f, skyBase - skyH3, bw * 1.5f, skyH3 + (winY + winH - skyBase), detailPaint);
+                canvas.DrawRect(winX + bw * 6.5f, skyBase - skyH1 * 0.7f, bw, skyH1 * 0.7f + (winY + winH - skyBase), detailPaint);
+                break;
+        }
+    }
+
+    // =================================================================
+    // Boden-Pattern (Original)
+    // =================================================================
+
+    private static void DrawSubtleFloorPattern(SKCanvas canvas, SKRect bounds, WorkshopType type, SKColor patternColor)
+    {
+        using var linePaint = new SKPaint { IsAntialias = true, StrokeWidth = 0.5f, Color = patternColor };
+
+        float patternTop = bounds.Top + bounds.Height * 0.75f;
+
+        switch (type)
+        {
+            case WorkshopType.Carpenter:
+                // Dezente Holzdielen-Linien
+                for (float y = patternTop; y < bounds.Bottom; y += 14)
                     canvas.DrawLine(bounds.Left, y, bounds.Right, y, linePaint);
                 break;
 
             case WorkshopType.Plumber:
-                // Fliesen-Raster
-                linePaint.Color = new SKColor(0x90, 0xA4, 0xAE);
-                for (float y = bounds.Top + 20; y < bounds.Bottom; y += 20)
+                // Dezentes Fliesen-Raster
+                for (float y = patternTop; y < bounds.Bottom; y += 18)
                     canvas.DrawLine(bounds.Left, y, bounds.Right, y, linePaint);
-                for (float x = bounds.Left + 20; x < bounds.Right; x += 20)
-                    canvas.DrawLine(x, bounds.Top, x, bounds.Bottom, linePaint);
+                for (float x = bounds.Left + 18; x < bounds.Right; x += 18)
+                    canvas.DrawLine(x, patternTop, x, bounds.Bottom, linePaint);
                 break;
 
             case WorkshopType.Electrician:
-                // Industrieboden: Warnstreifen unten
-                linePaint.Color = new SKColor(0xFB, 0xC0, 0x2D);
-                linePaint.StrokeWidth = 3;
-                for (float x = bounds.Left; x < bounds.Right; x += 12)
-                    canvas.DrawLine(x, bounds.Bottom - 6, x + 6, bounds.Bottom, linePaint);
+                // Dezente Warnstreifen
+                linePaint.StrokeWidth = 2;
+                linePaint.Color = new SKColor(0xFB, 0xC0, 0x2D, 25);
+                for (float x = bounds.Left; x < bounds.Right; x += 14)
+                    canvas.DrawLine(x, bounds.Bottom - 4, x + 7, bounds.Bottom, linePaint);
                 break;
 
             case WorkshopType.Painter:
-                // Farbspritzer auf dem Boden
-                using (var splatPaint = new SKPaint { IsAntialias = false })
+                // Dezente Farbspritzer
+                using (var splatPaint = new SKPaint { IsAntialias = true })
                 {
                     var splatColors = new[] {
-                        new SKColor(0xEC, 0x48, 0x99, 40), new SKColor(0x42, 0xA5, 0xF5, 40),
-                        new SKColor(0x66, 0xBB, 0x6A, 40), new SKColor(0xFF, 0xCA, 0x28, 40)
+                        new SKColor(0xEC, 0x48, 0x99, 20), new SKColor(0x42, 0xA5, 0xF5, 20),
+                        new SKColor(0x66, 0xBB, 0x6A, 20), new SKColor(0xFF, 0xCA, 0x28, 20)
                     };
-                    for (int i = 0; i < 8; i++)
+                    for (int i = 0; i < 6; i++)
                     {
                         splatPaint.Color = splatColors[i % splatColors.Length];
-                        float sx = bounds.Left + 20 + (i * 37) % (bounds.Width - 40);
-                        float sy = bounds.Top + 30 + (i * 23) % (bounds.Height - 40);
-                        canvas.DrawCircle(sx, sy, 5 + (i % 3) * 2, splatPaint);
+                        float sx = bounds.Left + 30 + (i * 47) % (bounds.Width - 60);
+                        float sy = patternTop + 10 + (i * 13) % (bounds.Bottom - patternTop - 20);
+                        canvas.DrawCircle(sx, sy, 4 + (i % 3) * 2, splatPaint);
                     }
                 }
                 break;
 
             case WorkshopType.Roofer:
-                // Dachziegel-Muster (Wellenlinie)
-                linePaint.Color = new SKColor(0x8D, 0x6E, 0x63);
-                for (float y = bounds.Top + 14; y < bounds.Bottom; y += 14)
-                    canvas.DrawLine(bounds.Left, y, bounds.Right, y, linePaint);
-                break;
-
             case WorkshopType.Contractor:
-                // Beton mit Fugen
-                linePaint.Color = new SKColor(0xB0, 0x9A, 0x78);
-                for (float y = bounds.Top + 24; y < bounds.Bottom; y += 24)
+                // Dezente horizontale Linien
+                for (float y = patternTop; y < bounds.Bottom; y += 20)
                     canvas.DrawLine(bounds.Left, y, bounds.Right, y, linePaint);
                 break;
 
             case WorkshopType.Architect:
-                // Sauberer Marmorboden - diagonale Muster
-                linePaint.Color = new SKColor(0xC0, 0xC0, 0xC0, 100);
-                for (float d = bounds.Left - bounds.Height; d < bounds.Right; d += 30)
-                {
+                // Dezente diagonale Linien (Marmor)
+                linePaint.Color = new SKColor(0xC0, 0xC0, 0xC0, 20);
+                for (float d = bounds.Left - bounds.Height; d < bounds.Right; d += 35)
                     canvas.DrawLine(d, bounds.Bottom, d + bounds.Height, bounds.Top, linePaint);
-                }
                 break;
 
             case WorkshopType.GeneralContractor:
-                // Edler Parkettboden (Fischgrätmuster)
-                linePaint.Color = new SKColor(0xA8, 0x90, 0x60);
-                for (float y = bounds.Top + 12; y < bounds.Bottom; y += 12)
+                // Dezentes Fischgrätmuster
+                for (float y = patternTop; y < bounds.Bottom; y += 14)
                 {
-                    for (float x = bounds.Left; x < bounds.Right; x += 24)
+                    for (float x = bounds.Left; x < bounds.Right; x += 28)
                     {
-                        float offset = ((int)(y / 12) % 2 == 0) ? 0 : 12;
-                        canvas.DrawLine(x + offset, y, x + offset + 12, y, linePaint);
+                        float offset = ((int)(y / 14) % 2 == 0) ? 0 : 14;
+                        canvas.DrawLine(x + offset, y, x + offset + 14, y, linePaint);
                     }
                 }
                 break;
         }
-
-        // Wände (oberer und linker Rand) - Workshop-spezifische Wand
-        var wallColor = WorkshopColors.GetValueOrDefault(type,
-            (floorColor, new SKColor(0xD7, 0xCC, 0xB7), floorColor)).Item2;
-        using (var wallPaint = new SKPaint { Color = wallColor, IsAntialias = false })
-        {
-            canvas.DrawRect(bounds.Left, bounds.Top, bounds.Width, 8, wallPaint);
-            canvas.DrawRect(bounds.Left, bounds.Top, 8, bounds.Height, wallPaint);
-        }
-    }
-
-    private void DrawToolWall(SKCanvas canvas, SKRect bounds, SKColor wallColor, WorkshopType type, SKColor accent)
-    {
-        // Werkzeugwand rechts (typ-spezifische Farbe)
-        float wallWidth = 24;
-        float wallX = bounds.Right - wallWidth;
-        using (var wallBgPaint = new SKPaint { Color = new SKColor(0x60, 0x50, 0x45), IsAntialias = false })
-        {
-            canvas.DrawRect(wallX, bounds.Top + 8, wallWidth, bounds.Height - 8, wallBgPaint);
-        }
-
-        // Typ-spezifische Werkzeuge an der Wand
-        using var toolPaint = new SKPaint { IsAntialias = false };
-        float toolX = wallX + 4;
-        float toolY = bounds.Top + 16;
-
-        switch (type)
-        {
-            case WorkshopType.Carpenter:
-                // Hammer
-                toolPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                canvas.DrawRect(toolX + 6, toolY, 4, 18, toolPaint);
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawRect(toolX + 2, toolY, 12, 5, toolPaint);
-                toolY += 24;
-                // Säge
-                toolPaint.Color = new SKColor(0xB0, 0xB0, 0xB0);
-                canvas.DrawRect(toolX, toolY, 16, 3, toolPaint);
-                toolPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                canvas.DrawRect(toolX, toolY + 3, 6, 8, toolPaint);
-                toolY += 18;
-                // Hobel
-                toolPaint.Color = new SKColor(0x8D, 0x6E, 0x63);
-                canvas.DrawRect(toolX + 2, toolY, 12, 6, toolPaint);
-                toolPaint.Color = new SKColor(0xA0, 0x52, 0x2D);
-                canvas.DrawRect(toolX + 4, toolY + 6, 8, 4, toolPaint);
-                break;
-
-            case WorkshopType.Plumber:
-                // Rohrzange
-                toolPaint.Color = new SKColor(0xE0, 0x35, 0x35);
-                canvas.DrawRect(toolX + 2, toolY, 4, 18, toolPaint);
-                canvas.DrawRect(toolX + 10, toolY, 4, 18, toolPaint);
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawRect(toolX + 4, toolY + 6, 8, 4, toolPaint);
-                toolY += 24;
-                // Rohr-Stück
-                toolPaint.Color = new SKColor(0x78, 0x90, 0x9C);
-                canvas.DrawRect(toolX + 2, toolY, 12, 5, toolPaint);
-                canvas.DrawRect(toolX + 5, toolY + 5, 6, 10, toolPaint);
-                toolY += 20;
-                // Dichtungsring
-                toolPaint.Color = new SKColor(0x26, 0x32, 0x38);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 5, toolPaint);
-                toolPaint.Color = new SKColor(0x60, 0x50, 0x45);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 3, toolPaint);
-                break;
-
-            case WorkshopType.Electrician:
-                // Spannungsprüfer
-                toolPaint.Color = new SKColor(0xF9, 0x73, 0x16);
-                canvas.DrawRect(toolX + 5, toolY, 6, 16, toolPaint);
-                toolPaint.Color = new SKColor(0xFF, 0xE0, 0x82);
-                canvas.DrawRect(toolX + 6, toolY, 4, 3, toolPaint);
-                toolY += 22;
-                // Kabelrolle
-                toolPaint.Color = new SKColor(0xF4, 0x43, 0x36);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 6, toolPaint);
-                toolPaint.Color = new SKColor(0x60, 0x50, 0x45);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 2, toolPaint);
-                toolY += 18;
-                // Sicherung
-                toolPaint.Color = new SKColor(0x21, 0x21, 0x21);
-                canvas.DrawRect(toolX + 3, toolY, 10, 14, toolPaint);
-                toolPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
-                canvas.DrawRect(toolX + 5, toolY + 2, 6, 3, toolPaint);
-                break;
-
-            case WorkshopType.Painter:
-                // Pinsel
-                toolPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                canvas.DrawRect(toolX + 6, toolY, 4, 14, toolPaint);
-                toolPaint.Color = new SKColor(0xEC, 0x48, 0x99);
-                canvas.DrawRect(toolX + 4, toolY + 14, 8, 6, toolPaint);
-                toolY += 26;
-                // Farbroller
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawRect(toolX + 6, toolY, 3, 12, toolPaint);
-                toolPaint.Color = new SKColor(0x42, 0xA5, 0xF5);
-                canvas.DrawRect(toolX + 2, toolY + 12, 12, 6, toolPaint);
-                toolY += 24;
-                // Farbpalette
-                toolPaint.Color = new SKColor(0xD7, 0xCC, 0xB7);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 7, toolPaint);
-                var paletteColors = new[] {
-                    new SKColor(0xF4, 0x43, 0x36), new SKColor(0x42, 0xA5, 0xF5),
-                    new SKColor(0xFF, 0xCA, 0x28), new SKColor(0x66, 0xBB, 0x6A) };
-                for (int i = 0; i < 4; i++)
-                {
-                    toolPaint.Color = paletteColors[i];
-                    canvas.DrawCircle(toolX + 4 + (i % 2) * 8, toolY + 3 + (i / 2) * 6, 2, toolPaint);
-                }
-                break;
-
-            case WorkshopType.Roofer:
-                // Dachhammer
-                toolPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                canvas.DrawRect(toolX + 6, toolY, 4, 16, toolPaint);
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawRect(toolX + 2, toolY, 12, 4, toolPaint);
-                toolY += 24;
-                // Dachziegel
-                toolPaint.Color = new SKColor(0xDC, 0x26, 0x26);
-                canvas.DrawRect(toolX + 1, toolY, 14, 8, toolPaint);
-                toolPaint.Color = new SKColor(0xBF, 0x20, 0x20);
-                canvas.DrawLine(toolX + 1, toolY + 4, toolX + 15, toolY + 4, toolPaint);
-                toolY += 14;
-                // Leiter
-                toolPaint.Color = new SKColor(0xA1, 0x88, 0x7F);
-                canvas.DrawRect(toolX + 3, toolY, 2, 18, toolPaint);
-                canvas.DrawRect(toolX + 11, toolY, 2, 18, toolPaint);
-                for (int r = 0; r < 4; r++)
-                    canvas.DrawRect(toolX + 3, toolY + 3 + r * 5, 10, 2, toolPaint);
-                break;
-
-            case WorkshopType.Contractor:
-                // Wasserwaage
-                toolPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
-                canvas.DrawRect(toolX + 1, toolY + 4, 14, 4, toolPaint);
-                toolPaint.Color = new SKColor(0x66, 0xBB, 0x6A);
-                canvas.DrawRect(toolX + 5, toolY + 5, 6, 2, toolPaint);
-                toolY += 14;
-                // Kelle
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawRect(toolX + 3, toolY, 10, 8, toolPaint);
-                toolPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                canvas.DrawRect(toolX + 6, toolY + 8, 4, 10, toolPaint);
-                toolY += 24;
-                // Zollstock
-                toolPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
-                canvas.DrawRect(toolX + 2, toolY, 12, 3, toolPaint);
-                canvas.DrawRect(toolX + 2, toolY, 3, 12, toolPaint);
-                break;
-
-            case WorkshopType.Architect:
-                // Lineal/Geodreieck
-                toolPaint.Color = new SKColor(0xB0, 0xB0, 0xB0);
-                canvas.DrawRect(toolX + 1, toolY, 14, 3, toolPaint);
-                toolPaint.Color = new SKColor(0x90, 0x90, 0x90);
-                canvas.DrawRect(toolX + 2, toolY + 5, 12, 12, toolPaint);
-                toolY += 22;
-                // Zirkel
-                toolPaint.Color = new SKColor(0x78, 0x78, 0x78);
-                canvas.DrawLine(toolX + 8, toolY, toolX + 3, toolY + 16, toolPaint);
-                canvas.DrawLine(toolX + 8, toolY, toolX + 13, toolY + 16, toolPaint);
-                toolY += 22;
-                // Bleistift
-                toolPaint.Color = new SKColor(0xFF, 0xCA, 0x28);
-                canvas.DrawRect(toolX + 6, toolY, 4, 14, toolPaint);
-                toolPaint.Color = new SKColor(0xF5, 0xCB, 0xA7);
-                canvas.DrawRect(toolX + 7, toolY + 14, 2, 3, toolPaint);
-                break;
-
-            case WorkshopType.GeneralContractor:
-                // Goldener Schlüssel
-                toolPaint.Color = new SKColor(0xFF, 0xD7, 0x00);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 5, toolPaint);
-                toolPaint.Color = new SKColor(0x60, 0x50, 0x45);
-                canvas.DrawCircle(toolX + 8, toolY + 6, 2, toolPaint);
-                toolPaint.Color = new SKColor(0xFF, 0xD7, 0x00);
-                canvas.DrawRect(toolX + 7, toolY + 11, 3, 10, toolPaint);
-                canvas.DrawRect(toolX + 10, toolY + 15, 3, 2, toolPaint);
-                canvas.DrawRect(toolX + 10, toolY + 19, 3, 2, toolPaint);
-                toolY += 28;
-                // Aktenordner
-                toolPaint.Color = new SKColor(0x78, 0x71, 0x6C);
-                canvas.DrawRect(toolX + 2, toolY, 12, 14, toolPaint);
-                toolPaint.Color = new SKColor(0xEE, 0xEE, 0xEE);
-                canvas.DrawRect(toolX + 4, toolY + 2, 8, 10, toolPaint);
-                toolPaint.Color = new SKColor(0x78, 0x71, 0x6C);
-                canvas.DrawRect(toolX + 5, toolY + 4, 6, 1, toolPaint);
-                canvas.DrawRect(toolX + 5, toolY + 6, 6, 1, toolPaint);
-                canvas.DrawRect(toolX + 5, toolY + 8, 4, 1, toolPaint);
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Zeichnet typ-spezifische Dekorations-Elemente in der Werkstatt.
-    /// </summary>
-    private void DrawTypSpecificDecor(SKCanvas canvas, SKRect bounds, WorkshopType type, SKColor accent)
-    {
-        using var decorPaint = new SKPaint { IsAntialias = false };
-        float midX = bounds.MidX;
-
-        switch (type)
-        {
-            case WorkshopType.Carpenter:
-                // Holzstapel unten links
-                decorPaint.Color = new SKColor(0x8D, 0x65, 0x34);
-                for (int i = 0; i < 3; i++)
-                    canvas.DrawRect(bounds.Left + 12, bounds.Bottom - 16 + i * 4, 20, 3, decorPaint);
-                // Sägemehl-Häufchen
-                decorPaint.Color = new SKColor(0xD2, 0xB4, 0x8C, 120);
-                canvas.DrawCircle(bounds.Left + 50, bounds.Bottom - 10, 6, decorPaint);
-                canvas.DrawCircle(bounds.Left + 80, bounds.Bottom - 8, 4, decorPaint);
-                break;
-
-            case WorkshopType.Plumber:
-                // Rohre an der oberen Wand
-                decorPaint.Color = new SKColor(0x78, 0x90, 0x9C);
-                canvas.DrawRect(bounds.Left + 12, bounds.Top + 10, bounds.Width * 0.5f, 4, decorPaint);
-                decorPaint.Color = new SKColor(0x0E, 0x74, 0x90);
-                canvas.DrawRect(bounds.Left + 12, bounds.Top + 10, 4, 20, decorPaint);
-                // Wassertropfen
-                decorPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 150);
-                canvas.DrawCircle(bounds.Left + 16, bounds.Top + 34, 2, decorPaint);
-                // Eimer unten
-                decorPaint.Color = new SKColor(0x60, 0x7D, 0x8B);
-                canvas.DrawRect(bounds.Left + 12, bounds.Bottom - 18, 14, 14, decorPaint);
-                decorPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 100);
-                canvas.DrawRect(bounds.Left + 14, bounds.Bottom - 14, 10, 8, decorPaint);
-                break;
-
-            case WorkshopType.Electrician:
-                // Sicherungskasten an der oberen Wand
-                decorPaint.Color = new SKColor(0x42, 0x42, 0x42);
-                canvas.DrawRect(bounds.Left + 14, bounds.Top + 10, 28, 20, decorPaint);
-                decorPaint.Color = new SKColor(0x21, 0x21, 0x21);
-                canvas.DrawRect(bounds.Left + 16, bounds.Top + 12, 24, 16, decorPaint);
-                // Schalter-Reihe
-                decorPaint.Color = new SKColor(0x66, 0xBB, 0x6A); // Grün = an
-                for (int i = 0; i < 4; i++)
-                    canvas.DrawRect(bounds.Left + 18 + i * 6, bounds.Top + 14, 4, 6, decorPaint);
-                decorPaint.Color = new SKColor(0xF4, 0x43, 0x36); // Rot = aus
-                canvas.DrawRect(bounds.Left + 18 + 4 * 6, bounds.Top + 14, 4, 6, decorPaint);
-                // Kabel am Boden
-                decorPaint.Color = new SKColor(0xF9, 0x73, 0x16, 100);
-                canvas.DrawLine(bounds.Left + 60, bounds.Bottom - 6, bounds.Right - 30, bounds.Bottom - 10, decorPaint);
-                break;
-
-            case WorkshopType.Painter:
-                // Staffelei
-                decorPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-                float eX = bounds.Left + 14;
-                float eY = bounds.Bottom - 40;
-                canvas.DrawLine(eX + 6, eY, eX, eY + 36, decorPaint);
-                canvas.DrawLine(eX + 6, eY, eX + 12, eY + 36, decorPaint);
-                // Leinwand
-                decorPaint.Color = new SKColor(0xF5, 0xF5, 0xF5);
-                canvas.DrawRect(eX + 1, eY + 4, 10, 14, decorPaint);
-                // Farbklecks auf Leinwand
-                decorPaint.Color = new SKColor(0xEC, 0x48, 0x99, 180);
-                canvas.DrawCircle(eX + 5, eY + 10, 3, decorPaint);
-                decorPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 150);
-                canvas.DrawCircle(eX + 8, eY + 12, 2, decorPaint);
-                break;
-
-            case WorkshopType.Roofer:
-                // Dachziegel-Stapel
-                decorPaint.Color = new SKColor(0xDC, 0x26, 0x26);
-                for (int i = 0; i < 4; i++)
-                {
-                    canvas.DrawRect(bounds.Left + 12, bounds.Bottom - 20 + i * 4, 16, 3, decorPaint);
-                }
-                decorPaint.Color = new SKColor(0xBF, 0x20, 0x20);
-                for (int i = 0; i < 4; i++)
-                    canvas.DrawLine(bounds.Left + 12, bounds.Bottom - 18 + i * 4, bounds.Left + 28, bounds.Bottom - 18 + i * 4, decorPaint);
-                break;
-
-            case WorkshopType.Contractor:
-                // Zementsäcke
-                decorPaint.Color = new SKColor(0x9E, 0x9E, 0x9E);
-                canvas.DrawRect(bounds.Left + 12, bounds.Bottom - 22, 18, 10, decorPaint);
-                canvas.DrawRect(bounds.Left + 14, bounds.Bottom - 14, 18, 10, decorPaint);
-                decorPaint.Color = new SKColor(0x75, 0x75, 0x75);
-                using (var font = new SKFont(SKTypeface.Default, 6))
-                    canvas.DrawText("ZMT", bounds.Left + 15, bounds.Bottom - 15, SKTextAlign.Left, font, decorPaint);
-                break;
-
-            case WorkshopType.Architect:
-                // Zeichenbrett
-                decorPaint.Color = new SKColor(0xEE, 0xEE, 0xEE);
-                canvas.DrawRect(bounds.Left + 12, bounds.Top + 12, 30, 22, decorPaint);
-                decorPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 80);
-                // Grundriss-Linien
-                canvas.DrawRect(bounds.Left + 16, bounds.Top + 16, 12, 8, decorPaint);
-                canvas.DrawRect(bounds.Left + 30, bounds.Top + 16, 8, 14, decorPaint);
-                canvas.DrawRect(bounds.Left + 16, bounds.Top + 26, 6, 6, decorPaint);
-                break;
-
-            case WorkshopType.GeneralContractor:
-                // Goldene Plakette/Auszeichnung an der Wand
-                decorPaint.Color = new SKColor(0xFF, 0xD7, 0x00, 200);
-                canvas.DrawCircle(bounds.Left + 30, bounds.Top + 22, 8, decorPaint);
-                decorPaint.Color = new SKColor(0xFF, 0xB3, 0x00);
-                canvas.DrawCircle(bounds.Left + 30, bounds.Top + 22, 5, decorPaint);
-                // Stern in der Mitte
-                decorPaint.Color = new SKColor(0xFF, 0xD7, 0x00);
-                canvas.DrawRect(bounds.Left + 28, bounds.Top + 20, 4, 4, decorPaint);
-                break;
-        }
-    }
-
-    private void DrawWorkbenches(SKCanvas canvas, SKRect bounds, Workshop workshop, SKColor accent)
-    {
-        int benchCount = workshop.MaxWorkers;
-        if (benchCount == 0) benchCount = 1;
-
-        float workArea = bounds.Width - 40; // Links: 8 Wand + Rechts: 24 Werkzeugwand + 8 Abstand
-        float workTop = bounds.Top + 16;
-        float workHeight = bounds.Height - 24;
-
-        // Bänke in 2 Reihen verteilen
-        int cols = Math.Max(1, (int)Math.Ceiling(benchCount / 2.0));
-        int rows = benchCount <= cols ? 1 : 2;
-        float benchW = Math.Min(28, (workArea - (cols + 1) * 6) / cols);
-        float benchH = Math.Min(20, (workHeight - (rows + 1) * 8) / rows);
-
-        // Werkbank-Farbe: Basis-Braun mit leichtem Typ-Akzent
-        var benchColor = new SKColor(0x6D, 0x4C, 0x41);
-        var benchTopColor = new SKColor(
-            (byte)((0x8D + accent.Red) / 2),
-            (byte)((0x6E + accent.Green) / 2),
-            (byte)((0x63 + accent.Blue) / 2));
-
-        using (var benchPaint = new SKPaint { Color = benchColor, IsAntialias = false })
-        using (var benchTopPaint = new SKPaint { Color = benchTopColor, IsAntialias = false })
-        {
-            for (int i = 0; i < benchCount; i++)
-            {
-                int col = i % cols;
-                int row = i / cols;
-                float bx = bounds.Left + 16 + col * (benchW + 6);
-                float by = workTop + row * (benchH + workHeight / 2);
-
-                // Tisch-Körper
-                canvas.DrawRect(bx, by, benchW, benchH, benchPaint);
-                // Tisch-Oberfläche (typ-akzentuierter Streifen oben)
-                canvas.DrawRect(bx, by, benchW, 3, benchTopPaint);
-            }
-        }
-    }
-
-    private void DrawWorkers(SKCanvas canvas, SKRect bounds, Workshop workshop)
-    {
-        if (workshop.Workers.Count == 0) return;
-
-        int benchCount = workshop.MaxWorkers;
-        if (benchCount == 0) benchCount = 1;
-        int cols = Math.Max(1, (int)Math.Ceiling(benchCount / 2.0));
-
-        float workArea = bounds.Width - 40;
-        float workTop = bounds.Top + 16;
-        float workHeight = bounds.Height - 24;
-        float benchW = Math.Min(28, (workArea - (cols + 1) * 6) / cols);
-        float benchH = Math.Min(20, (workHeight - 3 * 8) / 2);
-
-        for (int i = 0; i < workshop.Workers.Count; i++)
-        {
-            var worker = workshop.Workers[i];
-            int col = i % cols;
-            int row = i / cols;
-
-            float bx = bounds.Left + 16 + col * (benchW + 6);
-            float by = workTop + row * (benchH + workHeight / 2);
-
-            // Worker-Position: unterhalb des Tischs
-            float workerX = bx + benchW / 2;
-            float workerY = by + benchH + 10;
-            float radius = 6;
-
-            // Worker-Kreis in Tier-Farbe
-            var tierColor = TierColors.GetValueOrDefault(worker.Tier, new SKColor(0x90, 0x90, 0x90));
-            using (var workerPaint = new SKPaint { Color = tierColor, IsAntialias = false })
-            {
-                canvas.DrawCircle(workerX, workerY, radius, workerPaint);
-            }
-
-            // Status-Anzeige
-            if (worker.IsResting)
-            {
-                // "Zzz" Text
-                using var zzzPaint = new SKPaint { Color = new SKColor(0x64, 0xB5, 0xF6), IsAntialias = false };
-                using var zzzFont = new SKFont(SKTypeface.Default, 8);
-                canvas.DrawText("Zzz", workerX + radius + 2, workerY - 2, SKTextAlign.Left, zzzFont, zzzPaint);
-            }
-            else if (worker.IsTraining)
-            {
-                // Buch-Symbol
-                using var bookPaint = new SKPaint { Color = new SKColor(0x42, 0xA5, 0xF5), IsAntialias = false };
-                canvas.DrawRect(workerX + radius + 2, workerY - 4, 6, 8, bookPaint);
-                using var spinePaint = new SKPaint { Color = new SKColor(0x1E, 0x88, 0xE5), IsAntialias = false };
-                canvas.DrawRect(workerX + radius + 2, workerY - 4, 2, 8, spinePaint);
-            }
-
-            // Mood-Indikator (kleiner Punkt rechts oben am Worker)
-            var moodColor = GetMoodColor(worker.Mood);
-            using (var moodPaint = new SKPaint { Color = moodColor, IsAntialias = false })
-            {
-                canvas.DrawCircle(workerX + radius - 1, workerY - radius + 1, 3, moodPaint);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Grün/Gelb/Rot basierend auf Stimmungswert.
-    /// </summary>
-    private static SKColor GetMoodColor(decimal mood)
-    {
-        if (mood >= 70) return new SKColor(0x4C, 0xAF, 0x50); // Grün (zufrieden)
-        if (mood >= 40) return new SKColor(0xFF, 0xC1, 0x07); // Gelb (neutral)
-        return new SKColor(0xF4, 0x43, 0x36);                  // Rot (unzufrieden)
     }
 }

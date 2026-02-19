@@ -380,6 +380,9 @@ public partial class ResearchViewModel : ObservableObject
     {
         if (!HasActiveResearch || ActiveResearch == null) return;
 
+        // NameKey VOR Abschluss speichern (LoadResearchTree setzt ActiveResearch = null)
+        var nameKey = ActiveResearch.NameKey;
+
         var success = await _rewardedAdService.ShowAdAsync("research_speedup");
         if (success)
         {
@@ -388,7 +391,7 @@ public partial class ResearchViewModel : ObservableObject
 
             AlertRequested?.Invoke(
                 _localizationService.GetString("ResearchFinishedFree"),
-                _localizationService.GetString(ActiveResearch.NameKey),
+                _localizationService.GetString(nameKey),
                 _localizationService.GetString("Great"));
         }
     }

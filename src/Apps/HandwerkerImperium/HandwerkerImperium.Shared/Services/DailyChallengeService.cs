@@ -68,9 +68,14 @@ public class DailyChallengeService : IDailyChallengeService, IDisposable
     public void CheckAndResetIfNewDay()
     {
         var state = _gameStateService.State.DailyChallengeState;
+        var today = DateTime.UtcNow.Date;
+
+        // Zeitmanipulations-Schutz: Wenn LastResetDate in der Zukunft liegt, nicht resetten
+        if (state.LastResetDate.Date > today)
+            return;
 
         // UTC fuer konsistente Tagesgrenze
-        if (DateTime.UtcNow.Date > state.LastResetDate.Date)
+        if (today > state.LastResetDate.Date)
         {
             GenerateDailyChallenges();
         }

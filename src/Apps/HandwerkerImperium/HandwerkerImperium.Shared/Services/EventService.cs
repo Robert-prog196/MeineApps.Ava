@@ -35,14 +35,22 @@ public class EventService : IEventService
         // Don't trigger new event if one is active
         if (state.ActiveEvent != null) return;
 
-        // Check timing: 1-2 events per day, minimum 8h between events
+        // Event-Intervalle + Chance skalieren nach Prestige
+        int prestigeCount = state.Prestige?.TotalPrestigeCount ?? 0;
+        (double minHours, double chance) = prestigeCount switch
+        {
+            0 => (8.0, 0.30),    // Kein Prestige: 8h, 30%
+            1 => (6.0, 0.35),    // Bronze: 6h, 35%
+            2 => (4.0, 0.40),    // Silver: 4h, 40%
+            _ => (3.0, 0.50)     // Gold+: 3h, 50%
+        };
+
         var hoursSinceLastCheck = (DateTime.UtcNow - state.LastEventCheck).TotalHours;
-        if (hoursSinceLastCheck < 8) return;
+        if (hoursSinceLastCheck < minHours) return;
 
         state.LastEventCheck = DateTime.UtcNow;
 
-        // 30% chance per check (= ~1-2 events/day with 8h interval)
-        if (Random.Shared.NextDouble() > 0.30) return;
+        if (Random.Shared.NextDouble() > chance) return;
 
         // Pick a random event type
         var randomTypes = new[]

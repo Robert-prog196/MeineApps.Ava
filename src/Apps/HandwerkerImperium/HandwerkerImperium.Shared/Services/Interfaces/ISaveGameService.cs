@@ -8,6 +8,12 @@ namespace HandwerkerImperium.Services.Interfaces;
 public interface ISaveGameService
 {
     /// <summary>
+    /// Wird bei Fehlern beim Speichern/Laden/Löschen/Importieren ausgelöst.
+    /// Parameter: Titel, Nachricht.
+    /// </summary>
+    event Action<string, string>? ErrorOccurred;
+
+    /// <summary>
     /// Whether a save file exists.
     /// </summary>
     bool SaveExists { get; }

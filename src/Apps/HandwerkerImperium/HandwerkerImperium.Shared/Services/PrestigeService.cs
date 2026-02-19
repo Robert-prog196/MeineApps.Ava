@@ -299,6 +299,9 @@ public class PrestigeService : IPrestigeService
         // === RESET: Daily Challenges ===
         state.DailyChallengeState = new DailyChallengeState();
 
+        // === RESET: Story (pending Story leeren, viewed bleiben erhalten) ===
+        state.PendingStoryId = null;
+
         // === RESET: Meisterwerkzeuge (werden nach Prestige neu verdient) ===
         state.CollectedMasterTools.Clear();
 

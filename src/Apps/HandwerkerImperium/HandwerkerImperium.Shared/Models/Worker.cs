@@ -334,6 +334,42 @@ public class Worker
     }
 
     /// <summary>
+    /// Berechnet den individuellen Marktpreis basierend auf Tier, Level, Talent,
+    /// Persönlichkeit, Spezialisierung und Basis-Effizienz innerhalb des Tiers.
+    /// Höherwertiger Worker = höherer Preis.
+    /// </summary>
+    public decimal CalculateMarketPrice(int playerLevel)
+    {
+        var baseCost = Tier.GetHiringCost(playerLevel);
+
+        // Talent-Multiplikator: 1★=0.70x, 2★=0.85x, 3★=1.00x, 4★=1.15x, 5★=1.30x
+        var talentMult = 0.70m + (Talent - 1) * 0.15m;
+
+        // Persönlichkeits-Multiplikator (wertvollere Traits kosten mehr)
+        var personalityMult = Personality switch
+        {
+            WorkerPersonality.Perfectionist => 1.20m,
+            WorkerPersonality.Specialist => 1.15m,
+            WorkerPersonality.Ambitious => 1.10m,
+            WorkerPersonality.Cheerful => 1.05m,
+            WorkerPersonality.Relaxed => 0.90m,
+            _ => 1.0m // Steady
+        };
+
+        // Spezialisierung macht Worker wertvoller
+        var specMult = Specialization.HasValue ? 1.15m : 1.0m;
+
+        // Effizienz-Position innerhalb des Tiers (höhere Basis = teurer)
+        var minEff = Tier.GetMinEfficiency();
+        var maxEff = Tier.GetMaxEfficiency();
+        var effRange = maxEff - minEff;
+        var effPosition = effRange > 0 ? Math.Clamp((Efficiency - minEff) / effRange, 0m, 1m) : 0.5m;
+        var effMult = 0.85m + effPosition * 0.30m; // 0.85x (Min) bis 1.15x (Max)
+
+        return Math.Round(baseCost * talentMult * personalityMult * specMult * effMult);
+    }
+
+    /// <summary>
     /// Creates a worker for a specific tier with random attributes.
     /// </summary>
     public static Worker CreateForTier(WorkerTier tier)

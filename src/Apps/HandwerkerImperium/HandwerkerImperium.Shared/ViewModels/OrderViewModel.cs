@@ -280,8 +280,10 @@ public partial class OrderViewModel : ObservableObject
         WorkshopType.Plumber => "minigame/pipes",
         WorkshopType.Electrician => "minigame/wiring",
         WorkshopType.Painter => "minigame/painting",
-        WorkshopType.Roofer => "minigame/sawing", // Use sawing for now
-        WorkshopType.Contractor => "minigame/sawing", // Use sawing for now
+        WorkshopType.Roofer => "minigame/rooftiling",
+        WorkshopType.Contractor => "minigame/blueprint",
+        WorkshopType.Architect => "minigame/designpuzzle",
+        WorkshopType.GeneralContractor => "minigame/inspection",
         _ => "minigame/sawing"
     };
 

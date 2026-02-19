@@ -12,5 +12,7 @@ public interface IQuickJobService
     bool NeedsRotation();
     void RotateIfNeeded();
     TimeSpan TimeUntilNextRotation { get; }
+    /// <summary>Maximale Quick Jobs pro Tag (skaliert mit Prestige).</summary>
+    int MaxDailyJobs { get; }
     event EventHandler<QuickJob>? QuickJobCompleted;
 }

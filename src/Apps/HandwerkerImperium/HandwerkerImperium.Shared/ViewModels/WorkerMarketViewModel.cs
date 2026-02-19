@@ -156,13 +156,29 @@ public partial class WorkerMarketViewModel : ObservableObject
             ? unlockedWorkshops.Average(w => w.BaseIncomePerWorker)
             : 1m;
 
+        // MarketRestriction: Während WorkerStrike höhere Tiers nicht verfügbar
+        var activeEvent = _gameStateService.State.ActiveEvent;
+        var marketRestriction = activeEvent?.IsActive == true ? activeEvent.Effect.MarketRestriction : null;
+
         // Markt IMMER anzeigen, unabhaengig von freien Plaetzen
         var playerLevel = _gameStateService.State.PlayerLevel;
+        var netIncomePerSecond = Math.Max(0m, _gameStateService.State.NetIncomePerSecond);
         var workers = market.AvailableWorkers.ToList();
+
+        // Bei MarketRestriction: Nur Worker bis zur erlaubten Tier-Stufe anzeigen
+        if (marketRestriction != null)
+            workers = workers.Where(w => w.Tier <= marketRestriction.Value).ToList();
         foreach (var worker in workers)
         {
-            // Level-skalierte Anstellungskosten
-            worker.HiringCost = worker.Tier.GetHiringCost(playerLevel);
+            // Individuelle Anstellungskosten (Tier + Level + Talent + Persönlichkeit + Spezialisierung + Effizienz)
+            var qualityPrice = worker.CalculateMarketPrice(playerLevel);
+
+            // Einkommensbasierter Mindestpreis: ~3min Netto-Einkommen * Tier-Stufe
+            // Verhindert dass Worker bei hohem Einkommen "geschenkt" werden
+            var tierMultiplier = 1.0m + (int)worker.Tier * 0.5m;
+            var incomeFloor = netIncomePerSecond * 180m * tierMultiplier;
+
+            worker.HiringCost = Math.Max(qualityPrice, Math.Round(incomeFloor));
 
             // Geschaetzter Ertrag basierend auf Durchschnitt aller Workshops
             worker.IncomeContribution = avgBaseIncome * worker.Efficiency;
@@ -275,6 +291,16 @@ public partial class WorkerMarketViewModel : ObservableObject
         var success = await _rewardedAdService.ShowAdAsync("worker_hire_bonus");
         if (success)
         {
+            // Cap bei MaxAdBonusWorkerSlots pro Workshop (Exploit-Schutz)
+            if (fullWorkshop.AdBonusWorkerSlots >= Workshop.MaxAdBonusWorkerSlots)
+            {
+                AlertRequested?.Invoke(
+                    _localizationService.GetString("Info"),
+                    _localizationService.GetString("MaxSlotReached"),
+                    "OK");
+                return;
+            }
+
             fullWorkshop.AdBonusWorkerSlots += 1;
             _gameStateService.MarkDirty();
             LoadMarket();

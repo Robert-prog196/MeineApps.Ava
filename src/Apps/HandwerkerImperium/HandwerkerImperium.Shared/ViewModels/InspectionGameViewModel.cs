@@ -152,6 +152,7 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
         OrderDifficulty.Easy => "\u2605\u2606\u2606",
         OrderDifficulty.Medium => "\u2605\u2605\u2606",
         OrderDifficulty.Hard => "\u2605\u2605\u2605",
+        OrderDifficulty.Expert => "\u2605\u2605\u2605\u2605",
         _ => "\u2605\u2606\u2606"
     };
 
@@ -241,8 +242,8 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
         {
             OrderDifficulty.Easy => (4, 4, 45, 3),
             OrderDifficulty.Medium => (5, 4, 35, 5),
-            OrderDifficulty.Hard => (5, 5, 25, 7),
-            OrderDifficulty.Expert => (6, 5, 20, 9),
+            OrderDifficulty.Hard => (5, 5, 28, 7),
+            OrderDifficulty.Expert => (6, 5, 28, 9),
             _ => (5, 4, 35, 5)
         };
 
@@ -310,6 +311,7 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
 
         // Spiel starten
         IsPlaying = true;
+        if (_timer != null) { _timer.Stop(); _timer.Tick -= OnTimerTick; }
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -411,8 +413,10 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
         }
         else
         {
-            RewardAmount = 0;
-            XpAmount = 0;
+            // QuickJob: Belohnung aus aktivem QuickJob lesen
+            var quickJob = _gameStateService.State.ActiveQuickJob;
+            RewardAmount = quickJob?.Reward ?? 0;
+            XpAmount = quickJob?.XpReward ?? 0;
         }
 
         // Ergebnis-Anzeige
@@ -427,8 +431,7 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
 
         IsResultShown = true;
 
-        // Sterne staggered einblenden
-        Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+        // Sterne-Bewertung berechnen
         int starCount = Result switch
         {
             MiniGameRating.Perfect => 3,
@@ -436,12 +439,42 @@ public partial class InspectionGameViewModel : ObservableObject, IDisposable
             MiniGameRating.Ok => 1,
             _ => 0
         };
-        if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
-        if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
-        if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
 
-        // Visuelles Event fuer Result-Polish in der View
-        GameCompleted?.Invoke(this, starCount);
+        if (IsLastTask)
+        {
+            // Aggregierte Sterne berechnen (alle Runden zusammen)
+            if (order != null && order.TaskResults.Count > 1)
+            {
+                int totalStarSum = order.TaskResults.Sum(r => r switch
+                {
+                    MiniGameRating.Perfect => 3,
+                    MiniGameRating.Good => 2,
+                    MiniGameRating.Ok => 1,
+                    _ => 0
+                });
+                int totalPossible = order.TaskResults.Count * 3;
+                starCount = totalPossible > 0
+                    ? (int)Math.Round((double)totalStarSum / totalPossible * 3.0)
+                    : 0;
+                starCount = Math.Clamp(starCount, 0, 3);
+            }
+
+            // Sterne staggered einblenden
+            Star1Opacity = 0; Star2Opacity = 0; Star3Opacity = 0;
+            if (starCount >= 1) { await Task.Delay(200); Star1Opacity = 1.0; }
+            if (starCount >= 2) { await Task.Delay(200); Star2Opacity = 1.0; }
+            if (starCount >= 3) { await Task.Delay(200); Star3Opacity = 1.0; }
+
+            // Visuelles Event fuer Result-Polish in der View
+            GameCompleted?.Invoke(this, starCount);
+        }
+        else
+        {
+            // Zwischen-Runde: Sterne sofort setzen, keine Animation
+            Star1Opacity = starCount >= 1 ? 1.0 : 0.3;
+            Star2Opacity = starCount >= 2 ? 1.0 : 0.3;
+            Star3Opacity = starCount >= 3 ? 1.0 : 0.3;
+        }
 
         AdWatched = false;
         CanWatchAd = IsLastTask && _rewardedAdService.IsAvailable;

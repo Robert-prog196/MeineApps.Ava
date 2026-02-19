@@ -50,12 +50,27 @@ public class GameEvent
 
     public static GameEvent Create(GameEventType type)
     {
+        var effect = GetDefaultEffect(type);
+
+        // HighDemand + MaterialShortage betreffen einen zufälligen Workshop-Typ
+        if (type is GameEventType.HighDemand or GameEventType.MaterialShortage)
+        {
+            var workshopTypes = Enum.GetValues<WorkshopType>();
+            effect.AffectedWorkshop = workshopTypes[Random.Shared.Next(workshopTypes.Length)];
+        }
+
+        // WorkerStrike: MarketRestriction auf Tier C (höhere Tiers streiken)
+        if (type == GameEventType.WorkerStrike)
+        {
+            effect.MarketRestriction = WorkerTier.C;
+        }
+
         var evt = new GameEvent
         {
             Type = type,
             StartedAt = DateTime.UtcNow,
             DurationTicks = type.GetDefaultDuration().Ticks,
-            Effect = GetDefaultEffect(type)
+            Effect = effect
         };
         return evt;
     }

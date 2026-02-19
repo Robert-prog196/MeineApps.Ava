@@ -84,7 +84,7 @@ public static class ResearchTree
                 new ResearchEffect { UnlocksHeadhunter = true }, ["mgmt_02", "mgmt_03"]),
             // Zeile 3: [5] [6] - beide hängen von [4] ab
             Create("mgmt_05", ResearchBranch.Management, 5, "ResearchTrainingProgram", 80_000m, TimeSpan.FromHours(4),
-                new ResearchEffect { TrainingSpeedMultiplier = 0.5m }, ["mgmt_04"]),
+                new ResearchEffect { TrainingSpeedMultiplier = 0.5m, LevelResistanceBonus = 0.05m }, ["mgmt_04"]),
             Create("mgmt_06", ResearchBranch.Management, 6, "ResearchWorkLifeBalance", 200_000m, TimeSpan.FromHours(6),
                 new ResearchEffect { WageReduction = 0.08m }, ["mgmt_04"]),
             // Zeile 4: [7] zentriert - hängt von [5] UND [6] ab
@@ -94,13 +94,13 @@ public static class ResearchTree
             Create("mgmt_08", ResearchBranch.Management, 8, "ResearchTalentScout", 1_000_000m, TimeSpan.FromHours(12),
                 new ResearchEffect { ExtraWorkerSlots = 1 }, ["mgmt_07"]),
             Create("mgmt_09", ResearchBranch.Management, 9, "ResearchLeadership", 3_000_000m, TimeSpan.FromHours(16),
-                new ResearchEffect { WageReduction = 0.10m }, ["mgmt_07"]),
+                new ResearchEffect { WageReduction = 0.10m, LevelResistanceBonus = 0.08m }, ["mgmt_07"]),
             // Zeile 6: [10] zentriert - hängt von [8] UND [9] ab
             Create("mgmt_10", ResearchBranch.Management, 10, "ResearchEliteRecruitment", 8_000_000m, TimeSpan.FromHours(24),
                 new ResearchEffect { UnlocksSTierWorkers = true }, ["mgmt_08", "mgmt_09"]),
             // Zeile 7: [11] [12] - beide hängen von [10] ab
             Create("mgmt_11", ResearchBranch.Management, 11, "ResearchMentorship", 20_000_000m, TimeSpan.FromHours(32),
-                new ResearchEffect { TrainingSpeedMultiplier = 0.5m }, ["mgmt_10"]),
+                new ResearchEffect { TrainingSpeedMultiplier = 0.5m, LevelResistanceBonus = 0.07m }, ["mgmt_10"]),
             Create("mgmt_12", ResearchBranch.Management, 12, "ResearchCorporateCulture", 50_000_000m, TimeSpan.FromHours(40),
                 new ResearchEffect { WageReduction = 0.10m }, ["mgmt_10"]),
             // Zeile 8: [13] zentriert - hängt von [11] UND [12] ab
@@ -108,9 +108,9 @@ public static class ResearchTree
                 new ResearchEffect { ExtraWorkerSlots = 2 }, ["mgmt_11", "mgmt_12"]),
             // Zeile 9: [14] [15] - beide hängen von [13] ab
             Create("mgmt_14", ResearchBranch.Management, 14, "ResearchAiManagement", 300_000_000m, TimeSpan.FromHours(60),
-                new ResearchEffect { WageReduction = 0.12m }, ["mgmt_13"]),
+                new ResearchEffect { WageReduction = 0.12m, LevelResistanceBonus = 0.10m }, ["mgmt_13"]),
             Create("mgmt_15", ResearchBranch.Management, 15, "ResearchMasterManager", 1_000_000_000m, TimeSpan.FromHours(72),
-                new ResearchEffect { ExtraWorkerSlots = 2, WageReduction = 0.15m }, ["mgmt_13"]),
+                new ResearchEffect { ExtraWorkerSlots = 2, WageReduction = 0.15m, LevelResistanceBonus = 0.10m }, ["mgmt_13"]),
         ];
     }
 

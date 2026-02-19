@@ -20,6 +20,7 @@ public partial class StatisticsViewModel : ObservableObject
     private readonly IAudioService _audioService;
     private readonly ILocalizationService _localizationService;
     private readonly IPurchaseService _purchaseService;
+    private readonly IPlayGamesService? _playGamesService;
 
     // ═══════════════════════════════════════════════════════════════════════
     // EVENTS
@@ -126,9 +127,15 @@ public partial class StatisticsViewModel : ObservableObject
     partial void OnWorkshopStatsChanged(List<WorkshopStatistic> value) => OnPropertyChanged(nameof(HasWorkshopStats));
 
     /// <summary>
-    /// Indicates whether ads should be shown (not premium).
+    /// Ob Werbung angezeigt werden soll (nicht Premium).
     /// </summary>
     public bool ShowAds => !_purchaseService.IsPremium;
+
+    /// <summary>
+    /// Ob Play Games verfügbar ist (angemeldet).
+    /// </summary>
+    [ObservableProperty]
+    private bool _isPlayGamesAvailable;
 
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
@@ -146,6 +153,7 @@ public partial class StatisticsViewModel : ObservableObject
         _audioService = audioService;
         _localizationService = localizationService;
         _purchaseService = purchaseService;
+        _playGamesService = App.Services?.GetService(typeof(IPlayGamesService)) as IPlayGamesService;
 
         LoadStatistics();
     }
@@ -190,6 +198,9 @@ public partial class StatisticsViewModel : ObservableObject
         TotalWorkers = state.Workshops.Sum(w => w.Workers.Count);
         TotalIncomePerSecond = FormatMoneyPerSecond(state.TotalIncomePerSecond);
 
+        // Play Games Verfügbarkeit prüfen
+        IsPlayGamesAvailable = _playGamesService?.IsSignedIn ?? false;
+
         WorkshopStats = state.Workshops
             .OrderBy(w => w.Type.GetUnlockLevel())
             .Select(w => new WorkshopStatistic
@@ -201,6 +212,13 @@ public partial class StatisticsViewModel : ObservableObject
                 IncomePerSecond = FormatMoneyPerSecond(w.IncomePerSecond)
             })
             .ToList();
+    }
+
+    [RelayCommand]
+    private async Task ShowLeaderboardsAsync()
+    {
+        if (_playGamesService?.IsSignedIn == true)
+            await _playGamesService.ShowLeaderboardsAsync();
     }
 
     [RelayCommand]

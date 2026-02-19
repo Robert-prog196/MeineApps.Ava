@@ -48,10 +48,19 @@ public partial class SettingsViewModel : ObservableObject
     private bool _vibrationEnabled = true;
 
     [ObservableProperty]
+    private bool _notificationsEnabled = true;
+
+    [ObservableProperty]
     private LanguageOption? _selectedLanguage;
 
     [ObservableProperty]
     private bool _isPremium;
+
+    [ObservableProperty]
+    private bool _cloudSaveEnabled = true;
+
+    [ObservableProperty]
+    private bool _isPlayGamesSignedIn;
 
     [ObservableProperty]
     private string _appVersion = "1.0.0";
@@ -111,6 +120,8 @@ public partial class SettingsViewModel : ObservableObject
 
             SoundEnabled = state.SoundEnabled;
             VibrationEnabled = state.HapticsEnabled;
+            NotificationsEnabled = state.NotificationsEnabled;
+            CloudSaveEnabled = state.CloudSaveEnabled;
             // Fallback auf aktuelle Sprache (Gerätesprache) statt Languages[0] (English)
             var langCode = !string.IsNullOrEmpty(state.Language) ? state.Language : _localizationService.CurrentLanguage;
             SelectedLanguage = Languages.FirstOrDefault(l => l.Code == langCode) ?? Languages[0];
@@ -154,6 +165,24 @@ public partial class SettingsViewModel : ObservableObject
         _saveGameService.SaveAsync().FireAndForget();
     }
 
+    partial void OnNotificationsEnabledChanged(bool value)
+    {
+        if (_isInitializing) return;
+
+        _gameStateService.State.NotificationsEnabled = value;
+        _gameStateService.MarkDirty();
+        _saveGameService.SaveAsync().FireAndForget();
+    }
+
+    partial void OnCloudSaveEnabledChanged(bool value)
+    {
+        if (_isInitializing) return;
+
+        _gameStateService.State.CloudSaveEnabled = value;
+        _gameStateService.MarkDirty();
+        _saveGameService.SaveAsync().FireAndForget();
+    }
+
     partial void OnSelectedLanguageChanged(LanguageOption? value)
     {
         if (_isInitializing || value == null) return;
@@ -177,25 +206,33 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task BuyPremiumAsync()
     {
-        // TODO: Implement IAP
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
-        ShowAlert(
-            _localizationService.GetString("Premium"),
-            _localizationService.GetString("ComingSoonDesc"),
-            "OK");
+        var success = await _purchaseService.PurchaseRemoveAdsAsync();
+        IsPremium = _purchaseService.IsPremium;
+
+        if (IsPremium)
+        {
+            _gameStateService.State.IsPremium = true;
+            _gameStateService.MarkDirty();
+            await _saveGameService.SaveAsync();
+        }
     }
 
     [RelayCommand]
     private async Task RestorePurchasesAsync()
     {
-        // TODO: Implement restore purchases
         await _audioService.PlaySoundAsync(GameSound.ButtonTap);
 
-        ShowAlert(
-            _localizationService.GetString("RestorePurchases"),
-            _localizationService.GetString("RestoringPurchasesMessage"),
-            "OK");
+        await _purchaseService.RestorePurchasesAsync();
+        IsPremium = _purchaseService.IsPremium;
+
+        if (IsPremium)
+        {
+            _gameStateService.State.IsPremium = true;
+            _gameStateService.MarkDirty();
+            await _saveGameService.SaveAsync();
+        }
     }
 
     [RelayCommand]
@@ -223,7 +260,7 @@ public partial class SettingsViewModel : ObservableObject
             ShowAlert(
                 _localizationService.GetString("GameResetCompleteTitle"),
                 _localizationService.GetString("GameResetComplete"),
-                "OK");
+                _localizationService.GetString("OK"));
 
             // Navigate back to main page
             NavigationRequested?.Invoke("//main");
@@ -242,7 +279,7 @@ public partial class SettingsViewModel : ObservableObject
             ShowAlert(
                 _localizationService.GetString("Error"),
                 _localizationService.GetString("PrivacyPolicyOpenError"),
-                "OK");
+                _localizationService.GetString("OK"));
         }
     }
 
@@ -260,7 +297,7 @@ public partial class SettingsViewModel : ObservableObject
             ShowAlert(
                 _localizationService.GetString("Error"),
                 _localizationService.GetString("EmailOpenError"),
-                "OK");
+                _localizationService.GetString("OK"));
         }
     }
 

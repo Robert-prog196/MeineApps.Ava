@@ -53,6 +53,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IEventService _eventService;
     private readonly IStoryService? _storyService;
+    private readonly ITutorialService? _tutorialService;
+    private readonly IReviewService? _reviewService;
+    private readonly IPrestigeService _prestigeService;
+    private readonly INotificationService? _notificationService;
+    private readonly IPlayGamesService? _playGamesService;
     private bool _disposed;
     private decimal _pendingOfflineEarnings;
     private QuickJob? _activeQuickJob;
@@ -309,6 +314,37 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _hasNewStory;
 
+    [ObservableProperty]
+    private int _storyChapterNumber;
+
+    [ObservableProperty]
+    private int _storyTotalChapters = 25;
+
+    [ObservableProperty]
+    private bool _isStoryTutorial;
+
+    [ObservableProperty]
+    private string _storyChapterBadge = "";
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // TUTORIAL OVERLAY (interaktives Tutorial)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isTutorialVisible;
+
+    [ObservableProperty]
+    private string _tutorialTitle = "";
+
+    [ObservableProperty]
+    private string _tutorialDescription = "";
+
+    [ObservableProperty]
+    private string _tutorialIcon = "";
+
+    [ObservableProperty]
+    private string _tutorialStepDisplay = "";
+
     // Generic Alert/Confirm Dialog
     [ObservableProperty]
     private bool _isAlertDialogVisible;
@@ -544,7 +580,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _rewardedAdService.AdUnavailable += () => ShowAlertDialog(
             _localizationService.GetString("AdVideoNotAvailableTitle"),
             _localizationService.GetString("AdVideoNotAvailableMessage"),
-            "OK");
+            _localizationService.GetString("OK"));
+
+        // SaveGame-Fehler an den Benutzer weiterleiten
+        _saveGameService.ErrorOccurred += (titleKey, msgKey) =>
+            Dispatcher.UIThread.Post(() => ShowAlertDialog(
+                _localizationService.GetString(titleKey),
+                _localizationService.GetString(msgKey),
+                _localizationService.GetString("OK")));
 
         IsAdBannerVisible = _adService.BannerVisible;
         _adService.AdsStateChanged += (_, _) => IsAdBannerVisible = _adService.BannerVisible;
@@ -638,6 +681,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _eventService.EventStarted += OnEventStarted;
         _eventService.EventEnded += OnEventEnded;
         _dailyChallengeService.ChallengeProgressChanged += OnChallengeProgressChanged;
+
+        // Tutorial verdrahten (optional, da ITutorialService als Singleton registriert)
+        _tutorialService = App.Services?.GetService(typeof(ITutorialService)) as ITutorialService;
+        if (_tutorialService != null)
+        {
+            _tutorialService.StepChanged += OnTutorialStep;
+            _tutorialService.TutorialCompleted += OnTutorialDone;
+        }
+
+        // ReviewService + PrestigeService verdrahten
+        _reviewService = App.Services?.GetService(typeof(IReviewService)) as IReviewService;
+        _prestigeService = App.Services?.GetService(typeof(IPrestigeService)) as IPrestigeService
+                           ?? throw new InvalidOperationException("IPrestigeService required");
+        _prestigeService.PrestigeCompleted += OnPrestigeCompleted;
+
+        // Notification + PlayGames Services
+        _notificationService = App.Services?.GetService(typeof(INotificationService)) as INotificationService;
+        _playGamesService = App.Services?.GetService(typeof(IPlayGamesService)) as IPlayGamesService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -657,6 +718,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 _gameStateService.Initialize();
             }
         }
+
+        // Cloud-Save prüfen (wenn Play Games angemeldet)
+        await CheckCloudSaveAsync();
 
         // Sprache synchronisieren: gespeicherte Sprache laden oder Gerätesprache übernehmen
         var savedLang = _gameStateService.State.Language;
@@ -709,8 +773,56 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Story-Kapitel prüfen (z.B. pending aus letzter Session oder Sofort-Freischaltung)
         CheckForNewStoryChapter();
 
+        // Tutorial starten wenn noch nicht abgeschlossen
+        if (_tutorialService != null && !_tutorialService.IsCompleted)
+        {
+            _tutorialService.StartTutorial();
+        }
+
         // Start the game loop for idle earnings
         _gameLoopService.Start();
+    }
+
+    /// <summary>
+    /// Vergleicht Cloud-Spielstand mit lokalem und fragt Benutzer bei neuerem Cloud-Save.
+    /// </summary>
+    private async Task CheckCloudSaveAsync()
+    {
+        if (_playGamesService?.IsSignedIn != true || !_gameStateService.State.CloudSaveEnabled)
+            return;
+
+        try
+        {
+            var cloudJson = await _playGamesService.LoadCloudSaveAsync();
+            if (string.IsNullOrEmpty(cloudJson)) return;
+
+            var cloudState = System.Text.Json.JsonSerializer.Deserialize<GameState>(cloudJson);
+            if (cloudState == null) return;
+
+            // Cloud neuer als lokal?
+            if (cloudState.LastSavedAt > _gameStateService.State.LastSavedAt)
+            {
+                var title = _localizationService.GetString("CloudSaveNewer") ?? "Cloud Save Found";
+                var message = string.Format(
+                    "{0} (Level {1})",
+                    title, cloudState.PlayerLevel);
+                var useCloud = _localizationService.GetString("UseCloudSave") ?? "Use Cloud";
+                var useLocal = _localizationService.GetString("UseLocalSave") ?? "Use Local";
+
+                var confirmed = await ShowConfirmDialog(
+                    title, message, useCloud, useLocal);
+
+                if (confirmed)
+                {
+                    await _saveGameService.ImportSaveAsync(cloudJson);
+                    RefreshFromState();
+                }
+            }
+        }
+        catch
+        {
+            // Cloud-Sync-Fehler still ignorieren (lokaler Save funktioniert)
+        }
     }
 
     private void CheckOfflineProgress()
@@ -864,6 +976,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         StoryText = string.IsNullOrEmpty(text) ? chapter.TextFallback : text;
         StoryMood = chapter.Mood;
         StoryChapterId = chapter.Id;
+        StoryChapterNumber = chapter.ChapterNumber;
+        StoryTotalChapters = 25;
+        IsStoryTutorial = chapter.IsTutorial;
+        StoryChapterBadge = chapter.IsTutorial
+            ? _localizationService.GetString("StoryTipFromHans") ?? "Tipp von Meister Hans"
+            : $"Kap. {chapter.ChapterNumber}/25";
 
         // Belohnungs-Text zusammenstellen
         var rewards = new List<string>();
@@ -879,6 +997,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
         StoryRewardText = string.Join("  |  ", rewards);
 
         IsStoryDialogVisible = true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // TUTORIAL COMMANDS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [RelayCommand]
+    private void TutorialNext()
+    {
+        _tutorialService?.NextStep();
+    }
+
+    [RelayCommand]
+    private void TutorialSkip()
+    {
+        _tutorialService?.SkipTutorial();
+    }
+
+    private void OnTutorialStep(object? sender, TutorialStep step)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            TutorialTitle = _localizationService.GetString(step.TitleKey) ?? step.TitleKey;
+            TutorialDescription = _localizationService.GetString(step.DescriptionKey) ?? step.DescriptionKey;
+            TutorialIcon = step.Icon;
+            TutorialStepDisplay = $"{(_tutorialService?.CurrentStepIndex ?? 0) + 1}/{_tutorialService?.TotalSteps ?? 0}";
+            IsTutorialVisible = true;
+        });
+    }
+
+    private void OnTutorialDone(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            IsTutorialVisible = false;
+        });
     }
 
     [RelayCommand]
@@ -1157,7 +1311,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 ShowAlertDialog(
                     _localizationService.GetString("WorkshopLocked"),
                     $"{_localizationService.GetString("RequiresLevel")}: {reason}",
-                    "OK");
+                    _localizationService.GetString("OK"));
                 await _audioService.PlaySoundAsync(GameSound.ButtonTap);
                 return;
             }
@@ -1190,7 +1344,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                             ShowAlertDialog(
                                 _localizationService.GetString("WorkshopUnlocked"),
                                 _localizationService.GetString(workshop.Type.GetLocalizationKey()),
-                                "OK");
+                                _localizationService.GetString("OK"));
                             CelebrationRequested?.Invoke();
                         }
                         else
@@ -1198,7 +1352,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                             ShowAlertDialog(
                                 _localizationService.GetString("NotEnoughMoney"),
                                 $"{_localizationService.GetString("Required")}: {halfCostDisplay}",
-                                "OK");
+                                _localizationService.GetString("OK"));
                         }
                     }
                 }
@@ -1211,7 +1365,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                         ShowAlertDialog(
                             _localizationService.GetString("WorkshopUnlocked"),
                             _localizationService.GetString(workshop.Type.GetLocalizationKey()),
-                            "OK");
+                            _localizationService.GetString("OK"));
                         CelebrationRequested?.Invoke();
                     }
                     else
@@ -1219,7 +1373,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                         ShowAlertDialog(
                             _localizationService.GetString("NotEnoughMoney"),
                             $"{_localizationService.GetString("Required")}: {costDisplay}",
-                            "OK");
+                            _localizationService.GetString("OK"));
                     }
                 }
             }
@@ -1232,7 +1386,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     ShowAlertDialog(
                         _localizationService.GetString("WorkshopUnlocked"),
                         _localizationService.GetString(workshop.Type.GetLocalizationKey()),
-                        "OK");
+                        _localizationService.GetString("OK"));
                     CelebrationRequested?.Invoke();
                 }
                 else
@@ -1240,7 +1394,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     ShowAlertDialog(
                         _localizationService.GetString("NotEnoughMoney"),
                         $"{_localizationService.GetString("Required")}: {costDisplay}",
-                        "OK");
+                        _localizationService.GetString("OK"));
                 }
             }
             return;
@@ -1558,16 +1712,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Tageslimit prüfen (verhindert Reward-Farming)
         if ((_quickJobService as QuickJobService)?.IsDailyLimitReached == true)
         {
+            int maxDaily = _quickJobService?.MaxDailyJobs ?? 20;
             var template = _localizationService.GetString("QuickJobDailyLimit");
             var limitText = !string.IsNullOrEmpty(template)
-                ? string.Format(template, QuickJobService.MaxQuickJobsPerDay)
-                : $"Tageslimit erreicht ({QuickJobService.MaxQuickJobsPerDay}/Tag)";
+                ? string.Format(template, maxDaily)
+                : $"Tageslimit erreicht ({maxDaily}/Tag)";
             FloatingTextRequested?.Invoke(limitText, "Warning");
             return;
         }
 
         _activeQuickJob = job;
         _quickJobMiniGamePlayed = false;
+        _gameStateService.State.ActiveQuickJob = job;
         var route = job.MiniGameType.GetRoute();
         DeactivateAllTabs();
         NavigateToMiniGame(route, "");
@@ -1619,7 +1775,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         var title = _localizationService.GetString("MasterTools") ?? "Meisterwerkzeuge";
-        ShowAlertDialog(title, sb.ToString().TrimEnd(), "OK");
+        ShowAlertDialog(title, sb.ToString().TrimEnd(), _localizationService.GetString("OK"));
     }
 
     /// <summary>
@@ -1674,7 +1830,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             ShowAlertDialog(
                 _localizationService.GetString("ChallengeRetried"),
                 challenge.DisplayDescription,
-                "OK");
+                _localizationService.GetString("OK"));
         }
     }
 
@@ -1714,7 +1870,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             ShowAlertDialog(
                 _localizationService.GetString("NotEnoughScrews"),
                 string.Format(_localizationService.GetString("RushCostScrews"), RushCostScrews),
-                "OK");
+                _localizationService.GetString("OK"));
         }
 
         UpdateRushDisplay();
@@ -1884,6 +2040,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 }
                 _activeQuickJob = null;
                 _quickJobMiniGamePlayed = false;
+                _gameStateService.State.ActiveQuickJob = null;
                 RefreshQuickJobs();
             }
 
@@ -2010,10 +2167,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // Phase 9: Smooth animierter Geld-Counter
         AnimateMoneyTo(e.NewAmount);
 
-        // Update affordability for all workshops
+        // Update affordability für alle Workshops (BulkBuyAmount berücksichtigen)
         foreach (var workshop in Workshops)
         {
-            workshop.CanAffordUpgrade = e.NewAmount >= workshop.UpgradeCost;
+            var ws = _gameStateService.State.Workshops.FirstOrDefault(w => w.Type == workshop.Type);
+            SetBulkUpgradeCost(workshop, ws, e.NewAmount);
             workshop.CanAffordWorker = e.NewAmount >= workshop.HireWorkerCost;
         }
     }
@@ -2072,6 +2230,30 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Story-Kapitel prüfen
         CheckForNewStoryChapter();
+
+        // Review-Milestone prüfen
+        _reviewService?.OnMilestone("level", e.NewLevel);
+        CheckReviewPrompt();
+
+        // Leaderboard-Score aktualisieren (fire-and-forget)
+        if (_playGamesService?.IsSignedIn == true)
+            _ = _playGamesService.SubmitScoreAsync("leaderboard_player_level", e.NewLevel);
+    }
+
+    private void OnPrestigeCompleted(object? sender, EventArgs e)
+    {
+        var prestigeCount = _gameStateService.State.Prestige.TotalPrestigeCount;
+        _reviewService?.OnMilestone("prestige", prestigeCount);
+        CheckReviewPrompt();
+    }
+
+    private void CheckReviewPrompt()
+    {
+        if (_reviewService?.ShouldPromptReview() == true)
+        {
+            _reviewService.MarkReviewPrompted();
+            App.ReviewPromptRequested?.Invoke();
+        }
     }
 
     private void OnXpGained(object? sender, XpGainedEventArgs e)
@@ -2096,15 +2278,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         // Workshop-Level-Milestone prüfen (nicht während Hold-to-Upgrade)
+        // Schwellen weiter auseinander damit nicht bei jedem frühen Level Benachrichtigungen kommen
         if (!IsHoldingUpgrade)
         {
-            int[] workshopMilestones = [10, 25, 50, 100, 250, 500, 1000];
-            if (workshopMilestones.Contains(e.NewLevel))
+            (int level, int screws)[] workshopMilestones =
+                [(50, 2), (100, 5), (250, 10), (500, 25), (1000, 50)];
+            foreach (var (level, screws) in workshopMilestones)
             {
-                var workshopName = _localizationService.GetString(e.WorkshopType.GetLocalizationKey());
-                FloatingTextRequested?.Invoke($"{workshopName} Lv.{e.NewLevel}!", "level");
-                CelebrationRequested?.Invoke();
-                _audioService.PlaySoundAsync(GameSound.LevelUp).FireAndForget();
+                if (e.NewLevel == level)
+                {
+                    _gameStateService.AddGoldenScrews(screws);
+                    var workshopName = _localizationService.GetString(e.WorkshopType.GetLocalizationKey());
+                    FloatingTextRequested?.Invoke(
+                        $"{workshopName} Lv.{e.NewLevel}! +{screws} 🔩", "level");
+                    CelebrationRequested?.Invoke();
+                    _audioService.PlaySoundAsync(GameSound.LevelUp).FireAndForget();
+                    break;
+                }
             }
 
             // Story-Kapitel prüfen
@@ -2133,6 +2323,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Story-Kapitel prüfen
         CheckForNewStoryChapter();
+
+        // Review-Milestone prüfen
+        _reviewService?.OnMilestone("orders", _gameStateService.State.TotalOrdersCompleted);
+        CheckReviewPrompt();
     }
 
     /// <summary>
@@ -2445,6 +2639,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (_gameLoopService.IsRunning)
             _gameLoopService.Pause();
+
+        // Benachrichtigungen planen wenn aktiviert
+        if (_gameStateService.State.NotificationsEnabled)
+            _notificationService?.ScheduleGameNotifications(_gameStateService.State);
     }
 
     /// <summary>
@@ -2452,6 +2650,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public void ResumeGameLoop()
     {
+        // Geplante Benachrichtigungen stornieren
+        _notificationService?.CancelAllNotifications();
+
         if (!_gameLoopService.IsRunning)
             _gameLoopService.Resume();
     }
@@ -2518,6 +2719,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _eventService.EventStarted -= OnEventStarted;
         _eventService.EventEnded -= OnEventEnded;
         _dailyChallengeService.ChallengeProgressChanged -= OnChallengeProgressChanged;
+
+        if (_tutorialService != null)
+        {
+            _tutorialService.StepChanged -= OnTutorialStep;
+            _tutorialService.TutorialCompleted -= OnTutorialDone;
+        }
+
+        _prestigeService.PrestigeCompleted -= OnPrestigeCompleted;
 
         _disposed = true;
         GC.SuppressFinalize(this);
@@ -2610,7 +2819,7 @@ public partial class WorkshopDisplayModel : ObservableObject
     public bool IsAlmostAffordable => !CanAffordUpgrade && IsUnlocked && UpgradeCost > 0;
 
     // Milestone-System: Naechstes Milestone-Level und Fortschritt
-    private static readonly int[] Milestones = [10, 25, 50, 100, 250, 500, 1000];
+    private static readonly int[] Milestones = [50, 100, 250, 500, 1000];
 
     public int NextMilestone
     {

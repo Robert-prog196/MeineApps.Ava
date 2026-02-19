@@ -450,7 +450,9 @@ public class GameStateService : IGameStateService
             order = _state.ActiveOrder;
             if (order == null || !order.IsCompleted) return;
 
-            moneyReward = order.FinalReward * _state.Prestige.PermanentMultiplier;
+            // Prestige-Multiplikator ist bereits in BaseReward enthalten
+            // (via NetIncomePerSecond in OrderGeneratorService), daher NICHT nochmal anwenden
+            moneyReward = order.FinalReward;
 
             // Research-RewardMultiplier anwenden
             decimal researchRewardBonus = _state.Researches
@@ -466,6 +468,27 @@ public class GameStateService : IGameStateService
 
             // Reputation-Multiplikator: Höhere Reputation → bessere Belohnungen
             moneyReward *= _state.Reputation.ReputationMultiplier;
+
+            // Event-RewardMultiplier (HighDemand 1.5x, EconomicDownturn 0.7x)
+            var activeEvent = _state.ActiveEvent;
+            if (activeEvent?.IsActive == true && activeEvent.Effect.RewardMultiplier != 1.0m)
+            {
+                // AffectedWorkshop: Nur anwenden wenn Workshop-Typ passt oder kein spezifischer Typ gesetzt
+                if (activeEvent.Effect.AffectedWorkshop == null ||
+                    activeEvent.Effect.AffectedWorkshop == order.WorkshopType)
+                {
+                    moneyReward *= activeEvent.Effect.RewardMultiplier;
+                }
+            }
+
+            // Stammkunden-Bonus
+            if (order.IsRegularCustomerOrder)
+            {
+                var customer = _state.Reputation.RegularCustomers
+                    .FirstOrDefault(c => c.Id == order.CustomerId);
+                if (customer != null)
+                    moneyReward *= customer.BonusMultiplier;
+            }
 
             xpReward = order.FinalXp;
 
@@ -491,6 +514,39 @@ public class GameStateService : IGameStateService
                 _ => 2
             };
             _state.Reputation.AddRating(stars);
+
+            // Stammkunden-Tracking bei Perfect Rating
+            if (avgRating == MiniGameRating.Perfect && !string.IsNullOrEmpty(order.CustomerName))
+            {
+                var existingCustomer = _state.Reputation.RegularCustomers
+                    .FirstOrDefault(c => c.Name == order.CustomerName);
+                if (existingCustomer != null)
+                {
+                    existingCustomer.PerfectOrderCount++;
+                    existingCustomer.LastOrder = DateTime.UtcNow;
+                    // BonusMultiplier: 1.1 Basis + 0.02 pro Perfect über 5 (Cap 1.5)
+                    if (existingCustomer.PerfectOrderCount > 5)
+                    {
+                        existingCustomer.BonusMultiplier = Math.Min(1.5m,
+                            1.1m + (existingCustomer.PerfectOrderCount - 5) * 0.02m);
+                    }
+                }
+                else
+                {
+                    // Neuen Stammkunden anlegen
+                    _state.Reputation.RegularCustomers.Add(new RegularCustomer
+                    {
+                        Name = order.CustomerName,
+                        PreferredWorkshop = order.WorkshopType,
+                        PerfectOrderCount = 1,
+                        LastOrder = DateTime.UtcNow,
+                        AvatarSeed = order.CustomerAvatarSeed
+                    });
+                    // Max 20 Stammkunden (älteste entfernen)
+                    while (_state.Reputation.RegularCustomers.Count > 20)
+                        _state.Reputation.RegularCustomers.RemoveAt(0);
+                }
+            }
 
             _state.ActiveOrder = null;
         }

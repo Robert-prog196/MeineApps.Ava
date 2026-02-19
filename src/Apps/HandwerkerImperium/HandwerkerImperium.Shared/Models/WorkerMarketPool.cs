@@ -66,7 +66,7 @@ public class WorkerMarketPool
         var availableTiers = Worker.GetAvailableTiers(playerLevel, prestigeLevel);
         if (availableTiers.Count == 0) return;
 
-        var random = new Random();
+        var random = Random.Shared;
         for (int i = 0; i < poolSize; i++)
         {
             // Weighted tier distribution: higher tiers are rarer

@@ -45,6 +45,13 @@ public class ResearchEffect
     public bool UnlocksAutoAssign { get; set; }
 
     /// <summary>
+    /// Reduziert den Workshop-Level-Anforderungsmalus auf Worker-Effizienz (0.0-0.5).
+    /// Stapelt mit der Tier-eigenen Resistenz.
+    /// </summary>
+    [JsonPropertyName("levelResistanceBonus")]
+    public decimal LevelResistanceBonus { get; set; }
+
+    /// <summary>
     /// Combines two research effects additively.
     /// </summary>
     public static ResearchEffect Combine(ResearchEffect a, ResearchEffect b)
@@ -62,7 +69,8 @@ public class ResearchEffect
             UnlocksAutoMaterial = a.UnlocksAutoMaterial || b.UnlocksAutoMaterial,
             UnlocksHeadhunter = a.UnlocksHeadhunter || b.UnlocksHeadhunter,
             UnlocksSTierWorkers = a.UnlocksSTierWorkers || b.UnlocksSTierWorkers,
-            UnlocksAutoAssign = a.UnlocksAutoAssign || b.UnlocksAutoAssign
+            UnlocksAutoAssign = a.UnlocksAutoAssign || b.UnlocksAutoAssign,
+            LevelResistanceBonus = a.LevelResistanceBonus + b.LevelResistanceBonus
         };
     }
 }

@@ -12,20 +12,47 @@ public class QuickJobService : IQuickJobService
 {
     private readonly IGameStateService _gameStateService;
     private readonly ILocalizationService _localizationService;
-    private static readonly TimeSpan RotationInterval = TimeSpan.FromMinutes(15);
+    /// <summary>
+    /// Rotations-Intervall skaliert mit Prestige (kürzere Rotation bei höherem Prestige).
+    /// </summary>
+    private TimeSpan GetRotationInterval()
+    {
+        int prestigeCount = _gameStateService.State.Prestige?.TotalPrestigeCount ?? 0;
+        return prestigeCount switch
+        {
+            0 => TimeSpan.FromMinutes(15),
+            1 => TimeSpan.FromMinutes(12),
+            2 => TimeSpan.FromMinutes(10),
+            _ => TimeSpan.FromMinutes(8)
+        };
+    }
 
     /// <summary>
-    /// Maximale Anzahl Quick Jobs pro Tag (verhindert Reward-Farming).
+    /// Maximale Anzahl Quick Jobs pro Tag skaliert mit Prestige.
     /// </summary>
-    public const int MaxQuickJobsPerDay = 20;
+    private int GetMaxQuickJobsPerDay()
+    {
+        int prestigeCount = _gameStateService.State.Prestige?.TotalPrestigeCount ?? 0;
+        return prestigeCount switch
+        {
+            0 => 20,
+            1 => 25,
+            2 => 30,
+            _ => 40
+        };
+    }
 
-    // Verfuegbare MiniGame-Typen fuer Quick Jobs (nur die 4 implementierten)
+    // Verfuegbare MiniGame-Typen fuer Quick Jobs (alle 8)
     private static readonly MiniGameType[] AvailableMiniGames =
     [
         MiniGameType.Sawing,
         MiniGameType.PipePuzzle,
         MiniGameType.WiringGame,
-        MiniGameType.PaintingGame
+        MiniGameType.PaintingGame,
+        MiniGameType.RoofTiling,
+        MiniGameType.Blueprint,
+        MiniGameType.DesignPuzzle,
+        MiniGameType.Inspection
     ];
 
     private static readonly string[] TitleKeys =
@@ -50,6 +77,8 @@ public class QuickJobService : IQuickJobService
         ["QuickCheck"]      = 1.30m,  // "Express-Prüfung" = teurer
     };
 
+    public int MaxDailyJobs => GetMaxQuickJobsPerDay();
+
     public event EventHandler<QuickJob>? QuickJobCompleted;
 
     public QuickJobService(IGameStateService gameStateService, ILocalizationService localizationService)
@@ -63,7 +92,7 @@ public class QuickJobService : IQuickJobService
         get
         {
             var lastRotation = _gameStateService.State.LastQuickJobRotation;
-            var nextRotation = lastRotation + RotationInterval;
+            var nextRotation = lastRotation + GetRotationInterval();
             var remaining = nextRotation - DateTime.UtcNow;
             return remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
         }
@@ -113,10 +142,13 @@ public class QuickJobService : IQuickJobService
             // Belohnung skaliert mit Level, Einkommen und Auftragstyp
             var (reward, xpReward) = CalculateQuickJobRewards(level, titleKey);
 
+            // Schwierigkeit basiert auf Workshop-Level (kein Expert bei QuickJobs)
+            int wsLevel = state.Workshops.FirstOrDefault(w => w.Type == workshopType)?.Level ?? 1;
+
             state.QuickJobs.Add(new QuickJob
             {
                 WorkshopType = workshopType,
-                Difficulty = OrderDifficulty.Easy,
+                Difficulty = GetQuickJobDifficulty(wsLevel),
                 MiniGameType = miniGameType,
                 Reward = reward,
                 XpReward = xpReward,
@@ -130,7 +162,7 @@ public class QuickJobService : IQuickJobService
 
     public bool NeedsRotation()
     {
-        return DateTime.UtcNow - _gameStateService.State.LastQuickJobRotation > RotationInterval;
+        return DateTime.UtcNow - _gameStateService.State.LastQuickJobRotation > GetRotationInterval();
     }
 
     public void RotateIfNeeded()
@@ -160,10 +192,13 @@ public class QuickJobService : IQuickJobService
                 var titleKey = TitleKeys[Random.Shared.Next(TitleKeys.Length)];
                 var (reward, xpReward) = CalculateQuickJobRewards(level, titleKey);
 
+                // Schwierigkeit basiert auf Workshop-Level (kein Expert bei QuickJobs)
+                int wsLevel = state.Workshops.FirstOrDefault(w => w.Type == workshopType)?.Level ?? 1;
+
                 state.QuickJobs.Add(new QuickJob
                 {
                     WorkshopType = workshopType,
-                    Difficulty = OrderDifficulty.Easy,
+                    Difficulty = GetQuickJobDifficulty(wsLevel),
                     MiniGameType = miniGameType,
                     Reward = reward,
                     XpReward = xpReward,
@@ -219,7 +254,7 @@ public class QuickJobService : IQuickJobService
         get
         {
             ResetDailyCounterIfNewDay();
-            return _gameStateService.State.QuickJobsCompletedToday >= MaxQuickJobsPerDay;
+            return _gameStateService.State.QuickJobsCompletedToday >= GetMaxQuickJobsPerDay();
         }
     }
 
@@ -231,7 +266,7 @@ public class QuickJobService : IQuickJobService
         get
         {
             ResetDailyCounterIfNewDay();
-            return Math.Max(0, MaxQuickJobsPerDay - _gameStateService.State.QuickJobsCompletedToday);
+            return Math.Max(0, GetMaxQuickJobsPerDay() - _gameStateService.State.QuickJobsCompletedToday);
         }
     }
 
@@ -247,12 +282,35 @@ public class QuickJobService : IQuickJobService
     }
 
     /// <summary>
+    /// Bestimmt QuickJob-Schwierigkeit basierend auf Workshop-Level.
+    /// Kein Expert bei QuickJobs (sollen locker bleiben).
+    /// </summary>
+    private static OrderDifficulty GetQuickJobDifficulty(int workshopLevel)
+    {
+        int roll = Random.Shared.Next(100);
+
+        return workshopLevel switch
+        {
+            <= 50  => OrderDifficulty.Easy,
+            <= 200 => roll < 50 ? OrderDifficulty.Easy : OrderDifficulty.Medium,
+            <= 500 => roll < 20 ? OrderDifficulty.Easy : roll < 75 ? OrderDifficulty.Medium : OrderDifficulty.Hard,
+            _      => roll < 5  ? OrderDifficulty.Easy : roll < 50 ? OrderDifficulty.Medium : OrderDifficulty.Hard
+        };
+    }
+
+    /// <summary>
     /// Setzt den Tages-Counter zurück wenn ein neuer Tag (UTC) begonnen hat.
     /// </summary>
     private void ResetDailyCounterIfNewDay()
     {
         var state = _gameStateService.State;
-        if (DateTime.UtcNow.Date > state.LastQuickJobDailyReset.Date)
+        var today = DateTime.UtcNow.Date;
+
+        // Zeitmanipulations-Schutz: Wenn LastReset in der Zukunft liegt, nicht resetten
+        if (state.LastQuickJobDailyReset.Date > today)
+            return;
+
+        if (today > state.LastQuickJobDailyReset.Date)
         {
             state.QuickJobsCompletedToday = 0;
             state.LastQuickJobDailyReset = DateTime.UtcNow;

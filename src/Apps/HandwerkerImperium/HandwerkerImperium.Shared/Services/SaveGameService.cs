@@ -12,7 +12,10 @@ namespace HandwerkerImperium.Services;
 public class SaveGameService : ISaveGameService
 {
     private readonly IGameStateService _gameStateService;
+    private readonly IPlayGamesService? _playGamesService;
     private readonly SemaphoreSlim _ioLock = new(1, 1);
+
+    public event Action<string, string>? ErrorOccurred;
     private readonly string _saveFileName = "handwerker_imperium_save.json";
     private readonly string _backupFileName = "handwerker_imperium_save.bak";
     private readonly JsonSerializerOptions _jsonOptions;
@@ -34,9 +37,10 @@ public class SaveGameService : ISaveGameService
     private string TempFilePath => SaveFilePath + ".tmp";
     public bool SaveExists => File.Exists(SaveFilePath);
 
-    public SaveGameService(IGameStateService gameStateService)
+    public SaveGameService(IGameStateService gameStateService, IPlayGamesService? playGamesService = null)
     {
         _gameStateService = gameStateService;
+        _playGamesService = playGamesService;
 
         _jsonOptions = new JsonSerializerOptions
         {
@@ -64,11 +68,18 @@ public class SaveGameService : ISaveGameService
             }
 
             File.Move(TempFilePath, SaveFilePath, overwrite: true);
+
+            // Cloud-Save parallel (fire-and-forget, blockiert lokales Save nie)
+            if (_playGamesService?.IsSignedIn == true && state.CloudSaveEnabled)
+            {
+                _ = Task.Run(() => _playGamesService.SaveToCloudAsync(json, $"Level {state.PlayerLevel}"));
+            }
         }
         catch
         {
             // Clean up temp file on failure
             try { if (File.Exists(TempFilePath)) File.Delete(TempFilePath); } catch { /* ignore */ }
+            ErrorOccurred?.Invoke("Error", "SaveErrorMessage");
         }
         finally
         {
@@ -131,6 +142,7 @@ public class SaveGameService : ISaveGameService
         }
         catch
         {
+            ErrorOccurred?.Invoke("Error", "LoadErrorMessage");
             return null;
         }
     }
@@ -146,7 +158,7 @@ public class SaveGameService : ISaveGameService
         }
         catch
         {
-            // Ignore delete errors
+            ErrorOccurred?.Invoke("Error", "DeleteSaveErrorMessage");
         }
         finally
         {
@@ -154,10 +166,18 @@ public class SaveGameService : ISaveGameService
         }
     }
 
-    public Task<string> ExportSaveAsync()
+    public async Task<string> ExportSaveAsync()
     {
-        var state = _gameStateService.State;
-        return Task.FromResult(JsonSerializer.Serialize(state, _jsonOptions));
+        await _ioLock.WaitAsync();
+        try
+        {
+            var state = _gameStateService.State;
+            return JsonSerializer.Serialize(state, _jsonOptions);
+        }
+        finally
+        {
+            _ioLock.Release();
+        }
     }
 
     public async Task<bool> ImportSaveAsync(string json)
@@ -174,6 +194,7 @@ public class SaveGameService : ISaveGameService
         }
         catch
         {
+            ErrorOccurred?.Invoke("Error", "ImportErrorMessage");
             return false;
         }
     }
@@ -184,11 +205,14 @@ public class SaveGameService : ISaveGameService
     /// </summary>
     private static void SanitizeState(GameState state)
     {
-        // Basis-Werte
+        // Basis-Werte mit Ober-Caps (Exploit-Schutz gegen Save-Editing)
         if (state.PlayerLevel < 1) state.PlayerLevel = 1;
+        if (state.PlayerLevel > 1500) state.PlayerLevel = 1500;
         if (state.Money < 0) state.Money = 0;
+        if (state.Money > 100_000_000_000m) state.Money = 100_000_000_000m;
         if (state.CurrentXp < 0) state.CurrentXp = 0;
         if (state.GoldenScrews < 0) state.GoldenScrews = 0;
+        if (state.GoldenScrews > 100_000) state.GoldenScrews = 100_000;
         if (state.TotalMoneyEarned < 0) state.TotalMoneyEarned = 0;
         if (state.TotalMoneySpent < 0) state.TotalMoneySpent = 0;
 
@@ -220,6 +244,9 @@ public class SaveGameService : ISaveGameService
         if (state.Prestige.PermanentMultiplier < 1.0m) state.Prestige.PermanentMultiplier = 1.0m;
         if (state.Prestige.PermanentMultiplier > 20.0m) state.Prestige.PermanentMultiplier = 20.0m;
         state.Prestige.PurchasedShopItems ??= [];
+        // Prestige-Shop-Items: Nur gültige IDs behalten (Exploit-Schutz)
+        var validShopIds = PrestigeShop.GetAllItems().Select(i => i.Id).ToHashSet();
+        state.Prestige.PurchasedShopItems.RemoveAll(id => !validShopIds.Contains(id));
 
         // Daily Reward Streak
         if (state.DailyRewardStreak < 0) state.DailyRewardStreak = 0;
@@ -227,21 +254,38 @@ public class SaveGameService : ISaveGameService
         // Worker-Daten validieren
         foreach (var ws in state.Workshops)
         {
+            // AdBonusWorkerSlots auf Cap begrenzen (Exploit-Schutz)
+            if (ws.AdBonusWorkerSlots > Workshop.MaxAdBonusWorkerSlots)
+                ws.AdBonusWorkerSlots = Workshop.MaxAdBonusWorkerSlots;
+
+            ws.Workers ??= [];
             foreach (var worker in ws.Workers)
             {
                 worker.Mood = Math.Clamp(worker.Mood, 0m, 100m);
                 worker.Fatigue = Math.Clamp(worker.Fatigue, 0m, 100m);
-                if (worker.ExperienceLevel < 0) worker.ExperienceLevel = 0;
+                if (worker.ExperienceLevel < 1) worker.ExperienceLevel = 1;
                 if (worker.ExperienceXp < 0) worker.ExperienceXp = 0;
                 // AssignedWorkshop muss zum Workshop passen, in dem der Worker steckt
                 if (worker.AssignedWorkshop != ws.Type)
                     worker.AssignedWorkshop = ws.Type;
+                // Löhne auf aktuellen Tier-Wert korrigieren (Balance-Update Migration)
+                worker.WagePerHour = worker.Tier.GetWagePerHour();
+                // Effizienz auf gültigen Tier-Bereich clampen (Balance-Update Migration)
+                var minEff = worker.Tier.GetMinEfficiency();
+                var maxEff = worker.Tier.GetMaxEfficiency();
+                if (worker.Efficiency < minEff || worker.Efficiency > maxEff)
+                    worker.Efficiency = Math.Clamp(worker.Efficiency, minEff, maxEff);
             }
         }
 
         // Reputation validieren
         state.Reputation ??= new CustomerReputation();
         state.Reputation.ReputationScore = Math.Clamp(state.Reputation.ReputationScore, 0, 100);
+
+        // Listen: null-Safety (VOR der Iteration!)
+        state.Buildings ??= [];
+        state.Researches ??= [];
+        state.AvailableOrders ??= [];
 
         // Building-Levels validieren
         foreach (var building in state.Buildings)
@@ -250,17 +294,17 @@ public class SaveGameService : ISaveGameService
             if (building.Level > building.Type.GetMaxLevel())
                 building.Level = building.Type.GetMaxLevel();
         }
-
-        // Listen: null-Safety
-        state.AvailableOrders ??= [];
-        state.Buildings ??= [];
-        state.Researches ??= [];
         state.UnlockedAchievements ??= [];
         state.QuickJobs ??= [];
         state.EventHistory ??= [];
         state.DailyChallengeState ??= new DailyChallengeState();
         state.CollectedMasterTools ??= [];
+        // MasterTools: Nur gültige IDs behalten (Exploit-Schutz)
+        var validToolIds = MasterTool.GetAllDefinitions().Select(t => t.Id).ToHashSet();
+        state.CollectedMasterTools.RemoveAll(id => !validToolIds.Contains(id));
         state.Tools ??= [];
+        state.ViewedStoryIds ??= [];
+        state.SeenMiniGameTutorials ??= [];
 
         // Lieferant: Abgelaufene Lieferung entfernen
         if (state.PendingDelivery?.IsExpired == true)
