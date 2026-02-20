@@ -25,17 +25,20 @@ public class PipePuzzleRenderer
     private static readonly SKColor WaterDark = new(0x03, 0x9B, 0xE5);
     private static readonly SKColor WaterLight = new(0x4F, 0xC3, 0xF7);
 
-    // Spezial-Indikator-Farben
-    private static readonly SKColor SourceColor = new(0x4C, 0xAF, 0x50);
-    private static readonly SKColor SourceDark = new(0x38, 0x8E, 0x3C);
-    private static readonly SKColor DrainColor = new(0x42, 0xA5, 0xF5);
-    private static readonly SKColor DrainDark = new(0x1E, 0x88, 0xE5);
+    // Spezial-Indikator-Farben (leuchtend für hohe Sichtbarkeit)
+    private static readonly SKColor SourceColor = new(0x00, 0xE6, 0x76);     // Leuchtend grün
+    private static readonly SKColor SourceDark = new(0x00, 0xC8, 0x53);
+    private static readonly SKColor DrainColor = new(0x44, 0x8A, 0xFF);      // Kräftiges blau
+    private static readonly SKColor DrainDark = new(0x29, 0x62, 0xFF);
     private static readonly SKColor LockColor = new(0xFF, 0xC1, 0x07);
 
     // Hintergrund
     private static readonly SKColor BackgroundColor = new(0x1A, 0x23, 0x27);
 
     private float _waterAnimTime;
+
+    // Gecachte Glow-Filter für Source/Drain (Dispose nicht nötig - leben so lang wie der Renderer)
+    private readonly SKMaskFilter _indicatorGlow = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
 
     // Rohr-Typen:
     // 0 = Straight (Links-Rechts bei Rotation 0)
@@ -272,49 +275,179 @@ public class PipePuzzleRenderer
     }
 
     /// <summary>
-    /// Zeichnet den Quell-Indikator: Gruenes Quadrat mit "S" Markierung.
+    /// Zeichnet den Quell-Indikator: Pulsierender grüner Glow-Ring + Wassertropfen-Symbol.
     /// </summary>
     private void DrawSourceIndicator(SKCanvas canvas, float tileX, float tileY, float tileSize, float center)
     {
-        float iconSize = tileSize * 0.32f;
-        float iconX = tileX + center - iconSize / 2;
-        float iconY = tileY + center - iconSize / 2;
+        float cx = tileX + center;
+        float cy = tileY + center;
 
-        // Gruener Hintergrund
-        using var bgPaint = new SKPaint { Color = SourceColor, IsAntialias = false };
-        canvas.DrawRect(iconX, iconY, iconSize, iconSize, bgPaint);
+        // Pulsierender Glow-Ring um die gesamte Kachel
+        DrawIndicatorGlow(canvas, tileX, tileY, tileSize, SourceColor, 0f);
 
-        // Dunklerer Rand
-        using var borderPaint = new SKPaint { Color = SourceDark, IsAntialias = false, Style = SKPaintStyle.Stroke, StrokeWidth = 1 };
-        canvas.DrawRect(iconX, iconY, iconSize, iconSize, borderPaint);
+        // Dicker grüner Rand um die Kachel (dauerhaft sichtbar)
+        using var tileBorderPaint = new SKPaint
+        {
+            Color = SourceColor, IsAntialias = true,
+            Style = SKPaintStyle.Stroke, StrokeWidth = 3
+        };
+        canvas.DrawRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2, tileBorderPaint);
 
-        // "S" Text
-        using var textPaint = new SKPaint { Color = SKColors.White, IsAntialias = false };
-        using var font = new SKFont(SKTypeface.Default, iconSize * 0.65f);
-        canvas.DrawText("S", tileX + center, tileY + center + iconSize * 0.2f, SKTextAlign.Center, font, textPaint);
+        // Grüner Kreis-Hintergrund mit hellerem Kern
+        float iconRadius = tileSize * 0.25f;
+        using var bgPaint = new SKPaint
+        {
+            IsAntialias = true,
+            Shader = SKShader.CreateRadialGradient(
+                new SKPoint(cx, cy), iconRadius,
+                [SourceColor.WithAlpha(220), SourceDark.WithAlpha(200)],
+                SKShaderTileMode.Clamp)
+        };
+        canvas.DrawCircle(cx, cy, iconRadius, bgPaint);
+
+        // Wassertropfen-Symbol (Oval unten + Spitze oben)
+        float dropH = iconRadius * 1.2f;
+        float dropW = iconRadius * 0.7f;
+        using var dropPaint = new SKPaint { Color = SKColors.White, IsAntialias = true };
+        using var dropPath = new SKPath();
+        dropPath.MoveTo(cx, cy - dropH * 0.5f);                         // Spitze oben
+        dropPath.CubicTo(cx - dropW, cy, cx - dropW * 0.6f, cy + dropH * 0.4f, cx, cy + dropH * 0.35f);
+        dropPath.CubicTo(cx + dropW * 0.6f, cy + dropH * 0.4f, cx + dropW, cy, cx, cy - dropH * 0.5f);
+        dropPath.Close();
+        canvas.DrawPath(dropPath, dropPaint);
+
+        // Kleiner Glanz-Punkt im Tropfen
+        using var glanzPaint = new SKPaint { Color = SourceColor.WithAlpha(180), IsAntialias = true };
+        canvas.DrawCircle(cx - dropW * 0.2f, cy - dropH * 0.1f, dropW * 0.2f, glanzPaint);
+
+        // Fließ-Pfeile nach außen (zeigen Wasser-Austritt an)
+        DrawFlowArrows(canvas, tileX, tileY, tileSize, center, SourceColor, true);
     }
 
     /// <summary>
-    /// Zeichnet den Abfluss-Indikator: Blaues Quadrat mit "Z" (Ziel) Markierung.
+    /// Zeichnet den Abfluss-Indikator: Pulsierender blauer Glow-Ring + Trichter-Symbol.
     /// </summary>
     private void DrawDrainIndicator(SKCanvas canvas, float tileX, float tileY, float tileSize, float center)
     {
-        float iconSize = tileSize * 0.32f;
-        float iconX = tileX + center - iconSize / 2;
-        float iconY = tileY + center - iconSize / 2;
+        float cx = tileX + center;
+        float cy = tileY + center;
 
-        // Blauer Hintergrund
-        using var bgPaint = new SKPaint { Color = DrainColor, IsAntialias = false };
-        canvas.DrawRect(iconX, iconY, iconSize, iconSize, bgPaint);
+        // Pulsierender Glow-Ring (phasenversetzt zur Source)
+        DrawIndicatorGlow(canvas, tileX, tileY, tileSize, DrainColor, MathF.PI);
 
-        // Dunklerer Rand
-        using var borderPaint = new SKPaint { Color = DrainDark, IsAntialias = false, Style = SKPaintStyle.Stroke, StrokeWidth = 1 };
-        canvas.DrawRect(iconX, iconY, iconSize, iconSize, borderPaint);
+        // Dicker blauer Rand um die Kachel
+        using var tileBorderPaint = new SKPaint
+        {
+            Color = DrainColor, IsAntialias = true,
+            Style = SKPaintStyle.Stroke, StrokeWidth = 3
+        };
+        canvas.DrawRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2, tileBorderPaint);
 
-        // "Z" Text (Ziel)
-        using var textPaint = new SKPaint { Color = SKColors.White, IsAntialias = false };
-        using var font = new SKFont(SKTypeface.Default, iconSize * 0.65f);
-        canvas.DrawText("Z", tileX + center, tileY + center + iconSize * 0.2f, SKTextAlign.Center, font, textPaint);
+        // Blauer Kreis-Hintergrund mit Gradient
+        float iconRadius = tileSize * 0.25f;
+        using var bgPaint = new SKPaint
+        {
+            IsAntialias = true,
+            Shader = SKShader.CreateRadialGradient(
+                new SKPoint(cx, cy), iconRadius,
+                [DrainColor.WithAlpha(220), DrainDark.WithAlpha(200)],
+                SKShaderTileMode.Clamp)
+        };
+        canvas.DrawCircle(cx, cy, iconRadius, bgPaint);
+
+        // Trichter-Symbol (oben breit, unten schmal + Kreis)
+        float funnelW = iconRadius * 0.8f;
+        float funnelH = iconRadius * 0.9f;
+        using var funnelPaint = new SKPaint { Color = SKColors.White, IsAntialias = true };
+        using var funnelPath = new SKPath();
+        // Oberer breiter Teil
+        funnelPath.MoveTo(cx - funnelW, cy - funnelH * 0.4f);
+        funnelPath.LineTo(cx + funnelW, cy - funnelH * 0.4f);
+        // Verengt sich nach unten
+        funnelPath.LineTo(cx + funnelW * 0.25f, cy + funnelH * 0.2f);
+        funnelPath.LineTo(cx + funnelW * 0.25f, cy + funnelH * 0.4f);
+        funnelPath.LineTo(cx - funnelW * 0.25f, cy + funnelH * 0.4f);
+        funnelPath.LineTo(cx - funnelW * 0.25f, cy + funnelH * 0.2f);
+        funnelPath.Close();
+        canvas.DrawPath(funnelPath, funnelPaint);
+
+        // Kleiner Kreis am Trichter-Ausgang
+        canvas.DrawCircle(cx, cy + funnelH * 0.55f, funnelW * 0.2f, funnelPaint);
+
+        // Fließ-Pfeile von außen zur Mitte (zeigen Wasser-Einlass an)
+        DrawFlowArrows(canvas, tileX, tileY, tileSize, center, DrainColor, false);
+    }
+
+    /// <summary>
+    /// Äußerer Glow um Source/Drain-Tiles via SKMaskFilter (Sinus-Pulsierung).
+    /// </summary>
+    private void DrawIndicatorGlow(SKCanvas canvas, float tileX, float tileY, float tileSize,
+        SKColor color, float phaseOffset)
+    {
+        float pulse = 0.16f + 0.3f * MathF.Sin(_waterAnimTime * 3.0f + phaseOffset);
+        byte alpha = (byte)(pulse * 255);
+
+        using var glowPaint = new SKPaint
+        {
+            Color = color.WithAlpha(alpha),
+            IsAntialias = true,
+            MaskFilter = _indicatorGlow
+        };
+        canvas.DrawRect(tileX - 2, tileY - 2, tileSize + 4, tileSize + 4, glowPaint);
+    }
+
+    /// <summary>
+    /// Animierte Fließ-Pfeile an Source/Drain-Kacheln.
+    /// outward=true: Pfeile zeigen von Mitte nach außen (Source).
+    /// outward=false: Pfeile zeigen von außen zur Mitte (Drain).
+    /// </summary>
+    private void DrawFlowArrows(SKCanvas canvas, float tileX, float tileY, float tileSize,
+        float center, SKColor color, bool outward)
+    {
+        float arrowAlpha = 0.4f + 0.4f * MathF.Sin(_waterAnimTime * 4.0f);
+        byte alpha = (byte)(arrowAlpha * 255);
+        float arrowSize = tileSize * 0.1f;
+        float offset = tileSize * 0.08f;
+        float cx = tileX + center;
+        float cy = tileY + center;
+
+        using var arrowPaint = new SKPaint
+        {
+            Color = color.WithAlpha(alpha),
+            IsAntialias = true,
+            Style = SKPaintStyle.Fill
+        };
+
+        // 4 Pfeilspitzen an den Kachel-Kanten
+        float[][] positions =
+        [
+            [cx, tileY + offset],                     // Oben
+            [cx, tileY + tileSize - offset],           // Unten
+            [tileX + offset, cy],                      // Links
+            [tileX + tileSize - offset, cy]            // Rechts
+        ];
+        float[][] dirs =
+        [
+            [0, outward ? -1 : 1],
+            [0, outward ? 1 : -1],
+            [outward ? -1 : 1, 0],
+            [outward ? 1 : -1, 0]
+        ];
+
+        for (int i = 0; i < 4; i++)
+        {
+            float px = positions[i][0];
+            float py = positions[i][1];
+            float dx = dirs[i][0];
+            float dy = dirs[i][1];
+
+            using var path = new SKPath();
+            path.MoveTo(px + dx * arrowSize, py + dy * arrowSize);     // Spitze
+            path.LineTo(px - dy * arrowSize * 0.5f, py + dx * arrowSize * 0.5f);
+            path.LineTo(px + dy * arrowSize * 0.5f, py - dx * arrowSize * 0.5f);
+            path.Close();
+            canvas.DrawPath(path, arrowPaint);
+        }
     }
 
     /// <summary>

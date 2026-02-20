@@ -134,6 +134,13 @@
                 </StackPanel>
               </Border>
             </Grid>
+
+            <!-- Hinweis: Belohnung hängt von Bewertung ab -->
+            <TextBlock Text="{Binding RewardHintText}"
+                       FontSize="11" FontStyle="Italic"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0,4,0,0" />
           </StackPanel>
         </Border>
 

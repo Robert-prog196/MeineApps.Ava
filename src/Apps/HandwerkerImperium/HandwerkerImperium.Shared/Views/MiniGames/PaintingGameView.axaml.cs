@@ -107,7 +107,8 @@ public partial class PaintingGameView : UserControl
             IsTarget = c.IsTarget,
             IsPainted = c.IsPainted,
             IsCorrect = c.IsPaintedCorrectly,
-            HasError = c.HasError
+            HasError = c.HasError,
+            PaintedAge = c.IsPainted ? (float)(now - c.PaintedAt).TotalSeconds : 0f
         }).ToArray();
 
         // Ausgewaehlte Farbe parsen (Fallback: CraftOrange)

@@ -447,9 +447,11 @@ public partial class SawingGameViewModel : ObservableObject, IDisposable
             // Teilbelohnung für diese Aufgabe anzeigen
             int taskCount = Math.Max(1, order.Tasks.Count);
             decimal basePerTask = order.BaseReward / taskCount;
-            RewardAmount = basePerTask * Result.GetRewardPercentage();
+            RewardAmount = basePerTask * Result.GetRewardPercentage()
+                * order.Difficulty.GetRewardMultiplier() * order.OrderType.GetRewardMultiplier();
             int baseXpPerTask = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage());
+            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage()
+                * order.Difficulty.GetXpMultiplier() * order.OrderType.GetXpMultiplier());
         }
         else
         {

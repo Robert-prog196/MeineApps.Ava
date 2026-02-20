@@ -51,6 +51,14 @@
     <Style Selector="Border.ConfirmSheet.Open">
       <Setter Property="RenderTransform" Value="translate(0px, 0px)" />
     </Style>
+
+    <!-- Tab-Bar: Aktiver Tab bekommt Craft-Farbe -->
+    <Style Selector="StackPanel.TabActive mi|MaterialIcon">
+      <Setter Property="Foreground" Value="{StaticResource CraftPrimaryLightBrush}" />
+    </Style>
+    <Style Selector="StackPanel.TabActive TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource CraftPrimaryLightBrush}" />
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto,Auto">
@@ -192,15 +200,10 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center"
+                      Classes.TabActive="{Binding IsDashboardActive}">
             <mi:MaterialIcon Kind="Home" Width="24" Height="24"
-                             Foreground="{DynamicResource TextMutedBrush}">
-              <mi:MaterialIcon.Styles>
-                <Style Selector="mi|MaterialIcon">
-                  <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
-                </Style>
-              </mi:MaterialIcon.Styles>
-            </mi:MaterialIcon>
+                             Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Home}"
                        FontSize="9" HorizontalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
@@ -218,7 +221,8 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center"
+                      Classes.TabActive="{Binding IsWorkerMarketActive}">
             <mi:MaterialIcon Kind="AccountGroup" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Workers}"
@@ -237,7 +241,8 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center"
+                      Classes.TabActive="{Binding IsResearchActive}">
             <mi:MaterialIcon Kind="FlaskOutline" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Research}"
@@ -256,7 +261,8 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center"
+                      Classes.TabActive="{Binding IsShopActive}">
             <mi:MaterialIcon Kind="Cart" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Shop}"
@@ -275,7 +281,8 @@
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
                 MinHeight="48">
-          <StackPanel Spacing="2" HorizontalAlignment="Center">
+          <StackPanel Spacing="2" HorizontalAlignment="Center"
+                      Classes.TabActive="{Binding IsSettingsActive}">
             <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
                              Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Text="{loc:Translate Settings}"

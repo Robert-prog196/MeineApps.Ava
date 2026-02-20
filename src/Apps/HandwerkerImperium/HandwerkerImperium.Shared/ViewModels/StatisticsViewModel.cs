@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HandwerkerImperium.Helpers;
@@ -138,6 +139,16 @@ public partial class StatisticsViewModel : ObservableObject
     private bool _isPlayGamesAvailable;
 
     // ═══════════════════════════════════════════════════════════════════════
+    // PRESTIGE SHOP
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private int _prestigePoints;
+
+    [ObservableProperty]
+    private ObservableCollection<PrestigeShopItemDisplay> _prestigeShopItems = [];
+
+    // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
     // ═══════════════════════════════════════════════════════════════════════
 
@@ -212,6 +223,31 @@ public partial class StatisticsViewModel : ObservableObject
                 IncomePerSecond = FormatMoneyPerSecond(w.IncomePerSecond)
             })
             .ToList();
+
+        // Prestige-Shop laden
+        RefreshPrestigeShop();
+    }
+
+    private void RefreshPrestigeShop()
+    {
+        var state = _gameStateService.State;
+        PrestigePoints = state.Prestige.PrestigePoints;
+
+        var shopItems = _prestigeService.GetShopItems();
+        PrestigeShopItems.Clear();
+        foreach (var item in shopItems)
+        {
+            PrestigeShopItems.Add(new PrestigeShopItemDisplay
+            {
+                Id = item.Id,
+                Icon = item.Icon,
+                Name = _localizationService.GetString(item.NameKey) ?? item.NameKey,
+                Description = _localizationService.GetString(item.DescriptionKey) ?? item.DescriptionKey,
+                Cost = item.Cost,
+                IsPurchased = item.IsPurchased,
+                CanAfford = !item.IsPurchased && PrestigePoints >= item.Cost
+            });
+        }
     }
 
     [RelayCommand]
@@ -231,6 +267,19 @@ public partial class StatisticsViewModel : ObservableObject
     private void RefreshStatistics()
     {
         LoadStatistics();
+    }
+
+    [RelayCommand]
+    private async Task BuyPrestigeItemAsync(PrestigeShopItemDisplay? item)
+    {
+        if (item == null || item.IsPurchased || !item.CanAfford) return;
+
+        var success = _prestigeService.BuyShopItem(item.Id);
+        if (success)
+        {
+            await _audioService.PlaySoundAsync(GameSound.Upgrade);
+            RefreshPrestigeShop();
+        }
     }
 
     /// <summary>
@@ -318,4 +367,38 @@ public class WorkshopStatistic
     public int Level { get; set; }
     public int Workers { get; set; }
     public string IncomePerSecond { get; set; } = "";
+}
+
+/// <summary>
+/// Display-Modell für Prestige-Shop-Items im UI.
+/// </summary>
+public class PrestigeShopItemDisplay
+{
+    public string Id { get; set; } = "";
+    public string Icon { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public int Cost { get; set; }
+    public bool IsPurchased { get; set; }
+    public bool CanAfford { get; set; }
+
+    /// <summary>
+    /// Kosten-Anzeige mit PP-Suffix.
+    /// </summary>
+    public string CostDisplay => $"{Cost} PP";
+
+    /// <summary>
+    /// Hintergrundfarbe: Gold-transparent für gekauft, grau für gesperrt.
+    /// </summary>
+    public string IconBackground => IsPurchased ? "#40FFD700" : "#20808080";
+
+    /// <summary>
+    /// Opacity: Gekaufte Items leicht gedimmt.
+    /// </summary>
+    public double DisplayOpacity => IsPurchased ? 0.6 : 1.0;
+
+    /// <summary>
+    /// Kosten-Farbe: Grün wenn leistbar, Rot wenn nicht, Grau wenn gekauft.
+    /// </summary>
+    public string CostColor => IsPurchased ? "#808080" : CanAfford ? "#22C55E" : "#EF4444";
 }

@@ -58,6 +58,9 @@ public partial class OrderViewModel : ObservableObject
     private string _xpRewardText = "";
 
     [ObservableProperty]
+    private string _rewardHintText = "";
+
+    [ObservableProperty]
     private string _difficultyText = "";
 
     [ObservableProperty]
@@ -138,10 +141,16 @@ public partial class OrderViewModel : ObservableObject
         WorkshopIcon = GetWorkshopIcon(order.WorkshopType);
         WorkshopName = GetWorkshopName(order.WorkshopType);
 
-        // Set rewards (use base reward * difficulty multiplier for display)
-        var displayReward = order.BaseReward * order.Difficulty.GetRewardMultiplier();
-        RewardText = FormatMoney(displayReward);
-        XpRewardText = $"+{order.BaseXp} XP";
+        // Korrekte Belohnungsanzeige inkl. OrderType (Rating=Good=100% als Referenz)
+        var displayReward = order.BaseReward * order.Difficulty.GetRewardMultiplier()
+            * order.OrderType.GetRewardMultiplier();
+        RewardText = $"~{FormatMoney(displayReward)}";
+
+        var displayXp = (int)(order.BaseXp * order.Difficulty.GetXpMultiplier()
+            * order.OrderType.GetXpMultiplier());
+        XpRewardText = $"~{displayXp} XP";
+
+        RewardHintText = _localizationService.GetString("RewardDependsOnRating");
 
         // Set difficulty
         DifficultyText = GetDifficultyText(order.Difficulty);

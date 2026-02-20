@@ -2885,5 +2885,35 @@
   <data name="CloudSyncFailed" xml:space="preserve">
     <value>Cloud sync failed. Your local save is still safe.</value>
   </data>
+  <data name="RushActive" xml:space="preserve">
+    <value>2x RUSH ACTIVE</value>
+  </data>
+  <data name="EfficiencyShort" xml:space="preserve">
+    <value>Eff:</value>
+  </data>
+  <data name="AchievementsCompleted" xml:space="preserve">
+    <value>{0} completed</value>
+  </data>
+  <data name="Built" xml:space="preserve">
+    <value>built</value>
+  </data>
+  <data name="Reputation" xml:space="preserve">
+    <value>Reputation</value>
+  </data>
+  <data name="PrestigeAvailable" xml:space="preserve">
+    <value>Prestige available!</value>
+  </data>
+  <data name="NoOrdersAvailable" xml:space="preserve">
+    <value>No orders available</value>
+  </data>
+  <data name="OrdersComingSoon" xml:space="preserve">
+    <value>New orders will appear soon</value>
+  </data>
+  <data name="AllQuickJobsDone" xml:space="preserve">
+    <value>All quick jobs done!</value>
+  </data>
+  <data name="RewardDependsOnRating" xml:space="preserve">
+    <value>Reward depends on your rating</value>
+  </data>
 
 </root>

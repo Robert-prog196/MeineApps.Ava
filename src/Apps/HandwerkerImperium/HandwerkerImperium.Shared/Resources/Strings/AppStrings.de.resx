@@ -2881,5 +2881,35 @@
   <data name="CloudSyncFailed" xml:space="preserve">
     <value>Cloud-Sync fehlgeschlagen. Dein lokaler Spielstand ist sicher.</value>
   </data>
+  <data name="RushActive" xml:space="preserve">
+    <value>2x RUSH AKTIV</value>
+  </data>
+  <data name="EfficiencyShort" xml:space="preserve">
+    <value>Eff:</value>
+  </data>
+  <data name="AchievementsCompleted" xml:space="preserve">
+    <value>{0} abgeschlossen</value>
+  </data>
+  <data name="Built" xml:space="preserve">
+    <value>gebaut</value>
+  </data>
+  <data name="Reputation" xml:space="preserve">
+    <value>Reputation</value>
+  </data>
+  <data name="PrestigeAvailable" xml:space="preserve">
+    <value>Prestige verfügbar!</value>
+  </data>
+  <data name="NoOrdersAvailable" xml:space="preserve">
+    <value>Keine Aufträge verfügbar</value>
+  </data>
+  <data name="OrdersComingSoon" xml:space="preserve">
+    <value>Neue Aufträge erscheinen bald</value>
+  </data>
+  <data name="AllQuickJobsDone" xml:space="preserve">
+    <value>Alle Quick Jobs erledigt!</value>
+  </data>
+  <data name="RewardDependsOnRating" xml:space="preserve">
+    <value>Belohnung hängt von deiner Bewertung ab</value>
+  </data>
 
 </root>

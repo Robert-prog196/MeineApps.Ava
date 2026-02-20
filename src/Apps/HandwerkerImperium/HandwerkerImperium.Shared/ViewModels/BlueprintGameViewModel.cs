@@ -350,13 +350,20 @@ public partial class BlueprintGameViewModel : ObservableObject, IDisposable
 
     private async void OnGameTimerTick(object? sender, EventArgs e)
     {
-        if (!IsPlaying || _isEnding) return;
-
-        TimeRemaining--;
-
-        if (TimeRemaining <= 0)
+        try
         {
-            await EndGameAsync();
+            if (!IsPlaying || _isEnding) return;
+
+            TimeRemaining--;
+
+            if (TimeRemaining <= 0)
+            {
+                await EndGameAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler in OnGameTimerTick: {ex}");
         }
     }
 
@@ -455,9 +462,11 @@ public partial class BlueprintGameViewModel : ObservableObject, IDisposable
             // Teilbelohnung für diese Aufgabe anzeigen
             int taskCount = Math.Max(1, order.Tasks.Count);
             decimal basePerTask = order.BaseReward / taskCount;
-            RewardAmount = basePerTask * Result.GetRewardPercentage();
+            RewardAmount = basePerTask * Result.GetRewardPercentage()
+                * order.Difficulty.GetRewardMultiplier() * order.OrderType.GetRewardMultiplier();
             int baseXpPerTask = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage());
+            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage()
+                * order.Difficulty.GetXpMultiplier() * order.OrderType.GetXpMultiplier());
         }
         else
         {

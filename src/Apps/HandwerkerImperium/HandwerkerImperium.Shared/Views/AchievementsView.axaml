@@ -72,7 +72,7 @@
                        Foreground="{StaticResource CraftPrimaryLightBrush}" />
             <labs:SKCanvasView Height="12"
                                  PaintSurface="OnPaintOverallProgress" />
-            <TextBlock Text="{Binding ProgressText, StringFormat='{}{0} completed'}"
+            <TextBlock Text="{Binding AchievementsCompletedText}"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />

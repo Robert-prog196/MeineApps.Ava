@@ -145,6 +145,18 @@
                                  PaintSurface="OnPaintLevelProgress" />
 
               <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                <!-- Reputation-Badge (antippbar für Details) -->
+                <Button Classes="Text" Padding="4,2"
+                        Command="{Binding ShowReputationInfoCommand}">
+                  <StackPanel Orientation="Horizontal" Spacing="2">
+                    <mi:MaterialIcon Kind="Star" Width="13" Height="13"
+                                     Foreground="{Binding ReputationColor}" />
+                    <TextBlock Text="{Binding ReputationScore}"
+                               FontSize="11" FontWeight="Bold"
+                               Foreground="{Binding ReputationColor}"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+                </Button>
                 <!-- Streak-Feuer (sichtbar ab Streak >= 2) -->
                 <StackPanel Orientation="Horizontal" Spacing="2"
                             IsVisible="{Binding HasLoginStreak}">
@@ -208,7 +220,7 @@
                 CornerRadius="10" Padding="10,6" Margin="0,0,0,4">
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
             <TextBlock Text="⚡" FontSize="16" />
-            <TextBlock Text="2x RUSH AKTIV" FontSize="13" FontWeight="Bold" Foreground="#FFD700" />
+            <TextBlock Text="{loc:Translate RushActive}" FontSize="13" FontWeight="Bold" Foreground="#FFD700" />
             <TextBlock Text="{Binding RushTimeRemaining}" FontSize="13" Foreground="#FFD700CC" />
           </StackPanel>
         </Border>
@@ -261,6 +273,37 @@
               <mi:MaterialIcon Kind="PackageDown" Width="20" Height="20" Foreground="#1B3D2C" />
             </Button>
           </Grid>
+        </Border>
+
+        <!-- ============================================================= -->
+        <!-- PRESTIGE-BANNER (wenn verfügbar)                             -->
+        <!-- ============================================================= -->
+        <Border IsVisible="{Binding IsPrestigeAvailable}"
+                CornerRadius="10" Padding="10,8" Margin="0,0,0,4"
+                Cursor="Hand">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+              <GradientStop Color="#92400E" Offset="0" />
+              <GradientStop Color="#FFD700" Offset="1" />
+            </LinearGradientBrush>
+          </Border.Background>
+          <Button Classes="Text" HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Stretch"
+                  Command="{Binding NavigateToPrestigeCommand}"
+                  Padding="0">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+              <mi:MaterialIcon Kind="Creation" Width="20" Height="20"
+                               Foreground="White" VerticalAlignment="Center" />
+              <StackPanel Grid.Column="1" Spacing="1">
+                <TextBlock Text="{loc:Translate PrestigeAvailable}"
+                           FontSize="13" FontWeight="Bold" Foreground="White" />
+                <TextBlock Text="{Binding PrestigePointsPreview}"
+                           FontSize="11" Foreground="#FFFFFFCC" />
+              </StackPanel>
+              <mi:MaterialIcon Grid.Column="2" Kind="ChevronRight" Width="20" Height="20"
+                               Foreground="#FFFFFF80" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
         </Border>
 
         <!-- ============================================================= -->
@@ -523,6 +566,22 @@
                                    TextTrimming="CharacterEllipsis" />
                       </Grid>
 
+                      <!-- Netto-Einkommen (Task #13): Grün bei Gewinn -->
+                      <StackPanel Orientation="Horizontal" Spacing="2"
+                                  HorizontalAlignment="Right"
+                                  IsVisible="{Binding HasCosts}">
+                        <TextBlock Text="{loc:Translate NetIncome}" FontSize="8"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <!-- Positiv: grün -->
+                        <TextBlock Text="{Binding NetIncomeDisplay}" FontSize="9"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   IsVisible="{Binding !IsNetNegative}" />
+                        <!-- Negativ: rot -->
+                        <TextBlock Text="{Binding NetIncomeDisplay}" FontSize="9"
+                                   Foreground="{DynamicResource ErrorBrush}"
+                                   IsVisible="{Binding IsNetNegative}" />
+                      </StackPanel>
+
                       <!-- Animierte Level-ProgressBar (SkiaSharp) -->
                       <skia:SKCanvasView Height="4"
                                          IsVisible="{Binding IsUnlocked}"
@@ -595,7 +654,7 @@
 
                     <!-- Row 3: Upgrade-Button (volle Breite, abgerundete untere Ecken) -->
                     <Button Grid.Row="3" Classes="Primary UpgradeBtn"
-                            Padding="0,6" MinHeight="28"
+                            Padding="0,4" MinHeight="28"
                             CornerRadius="0,0,16,16"
                             Background="{Binding Type, Converter={StaticResource WorkshopColor}}"
                             HorizontalAlignment="Stretch"
@@ -604,9 +663,16 @@
                             IsEnabled="{Binding CanAffordUpgrade}"
                             Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).UpgradeWorkshopCommand}"
                             CommandParameter="{Binding .}">
-                      <StackPanel Orientation="Horizontal" Spacing="4">
-                        <mi:MaterialIcon Kind="ChevronUp" Width="14" Height="14" />
-                        <TextBlock Text="{Binding UpgradeCostDisplay}" FontSize="12" />
+                      <StackPanel Spacing="0" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
+                          <mi:MaterialIcon Kind="ChevronUp" Width="14" Height="14" />
+                          <TextBlock Text="{Binding UpgradeCostDisplay}" FontSize="12" />
+                        </StackPanel>
+                        <!-- Upgrade Income Preview (Task #10) -->
+                        <TextBlock Text="{Binding UpgradeIncomePreview}"
+                                   FontSize="9" Opacity="0.8"
+                                   HorizontalAlignment="Center"
+                                   IsVisible="{Binding UpgradeIncomePreview, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                       </StackPanel>
                     </Button>
 
@@ -616,6 +682,36 @@
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <!-- ============================================================= -->
+        <!-- BUILDINGS BUTTON (Task #5)                                   -->
+        <!-- ============================================================= -->
+        <Button Classes="Text" HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                Command="{Binding NavigateToBuildingsCommand}"
+                Padding="0" Margin="0,8,0,0">
+          <Border Classes="CardElevated" Padding="12,10">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+              <Border Background="#20D97706" CornerRadius="10"
+                      Width="40" Height="40">
+                <mi:MaterialIcon Kind="OfficeBuildingOutline" Width="22" Height="22"
+                                 Foreground="{StaticResource CraftPrimaryBrush}"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{loc:Translate Buildings}"
+                           FontSize="15" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="{Binding BuildingsSummary}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+              <mi:MaterialIcon Grid.Column="2" Kind="ChevronRight" Width="20" Height="20"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+        </Button>
 
         <!-- ============================================================= -->
         <!-- ORDERS SECTION                                                -->
@@ -639,28 +735,80 @@
           </Button>
         </Grid>
 
+        <!-- Empty State: Keine Aufträge verfügbar (Task #8) -->
+        <Border Classes="Card" Padding="24"
+                IsVisible="{Binding HasNoOrders}"
+                HorizontalAlignment="Stretch">
+          <StackPanel Spacing="8" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="ClipboardTextOutline" Width="40" Height="40"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             Opacity="0.5"
+                             HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate NoOrdersAvailable}"
+                       FontSize="14" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:Translate OrdersComingSoon}"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
         <ItemsControl ItemsSource="{Binding AvailableOrders}">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Border Classes="Card" Margin="0,0,0,12" Padding="16">
                 <Grid ColumnDefinitions="*,Auto"
-                      RowDefinitions="Auto,Auto,Auto">
-                  <StackPanel Orientation="Horizontal" Spacing="8">
+                      RowDefinitions="Auto,Auto,Auto,Auto">
+
+                  <!-- Zeile 0: Titel + Workshop-Name -->
+                  <StackPanel Orientation="Horizontal" Spacing="6">
                     <TextBlock Text="{Binding DisplayTitle}"
                                FontSize="14" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <!-- Stammkunden-Badge (Task #12) -->
+                    <Border Background="#20FFD700" CornerRadius="4" Padding="4,1"
+                            IsVisible="{Binding IsRegularCustomerOrder}"
+                            VerticalAlignment="Center">
+                      <StackPanel Orientation="Horizontal" Spacing="2">
+                        <TextBlock Text="❤️" FontSize="9" />
+                        <TextBlock Text="{loc:Translate RegularCustomerBonus}"
+                                   FontSize="9" Foreground="#FFD700" />
+                      </StackPanel>
+                    </Border>
                   </StackPanel>
                   <TextBlock Grid.Column="1"
                              Text="{Binding DisplayWorkshopName}"
                              FontSize="12"
                              Foreground="{StaticResource CraftPrimaryLightBrush}"
                              VerticalAlignment="Center" />
-                  <TextBlock Grid.Row="1" Grid.ColumnSpan="2"
+
+                  <!-- Zeile 1: Order-Type-Badge (Task #3) -->
+                  <Border Grid.Row="1" Grid.ColumnSpan="2"
+                          IsVisible="{Binding ShowOrderTypeBadge}"
+                          Background="{Binding OrderTypeBadgeColor}"
+                          Opacity="0.9"
+                          CornerRadius="4" Padding="6,2"
+                          HorizontalAlignment="Left"
+                          Margin="0,4,0,0">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                      <TextBlock Text="{Binding OrderTypeIcon}" FontSize="11" />
+                      <TextBlock Text="{Binding DisplayOrderType}"
+                                 FontSize="11" FontWeight="SemiBold"
+                                 Foreground="White" />
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Zeile 2: MiniGame-Anzahl -->
+                  <TextBlock Grid.Row="2" Grid.ColumnSpan="2"
                              Text="{Binding Tasks.Count, StringFormat='{}{0} Mini-Games'}"
                              FontSize="12"
                              Foreground="{DynamicResource TextSecondaryBrush}"
                              Margin="0,4,0,8" />
-                  <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="4">
+
+                  <!-- Zeile 3: Belohnungen + Start-Button -->
+                  <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="4">
                     <mi:MaterialIcon Kind="CashMultiple" Width="18" Height="18"
                                      Foreground="{DynamicResource SuccessBrush}" />
                     <TextBlock Text="{Binding BaseReward, StringFormat='{}{0:N0}'}"
@@ -675,7 +823,7 @@
                                Foreground="#FFD700"
                                VerticalAlignment="Center" />
                   </StackPanel>
-                  <Button Grid.Row="2" Grid.Column="1"
+                  <Button Grid.Row="3" Grid.Column="1"
                           Content="{loc:Translate Start}"
                           Classes="Primary" Padding="16,8"
                           Background="{StaticResource CraftPrimaryBrush}"

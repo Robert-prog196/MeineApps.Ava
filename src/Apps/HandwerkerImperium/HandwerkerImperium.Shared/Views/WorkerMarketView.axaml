@@ -208,7 +208,7 @@
                                IsVisible="{Binding SpecializationDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     <TextBlock FontSize="12"
                                Foreground="{DynamicResource TextSecondaryBrush}">
-                      <Run Text="Eff:" />
+                      <Run Text="{loc:Translate EfficiencyShort}" />
                       <Run Text="{Binding Efficiency, StringFormat='{}{0:P0}'}" FontWeight="SemiBold" />
                     </TextBlock>
                     <TextBlock Text="{Binding IncomeContributionDisplay}"

@@ -54,13 +54,12 @@
       <ItemsControl ItemsSource="{Binding Buildings}" Margin="16">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
-            <WrapPanel Orientation="Horizontal" />
+            <UniformGrid Columns="2" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:BuildingDisplayItem">
             <Border Classes="Card"
-                    Width="170"
                     Margin="4"
                     Padding="12"
                     Opacity="{Binding DisplayOpacity}">

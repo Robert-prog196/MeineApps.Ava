@@ -96,6 +96,30 @@ public class Order
     [JsonIgnore]
     public string DisplayWorkshopName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Lokalisierter Auftragstyp-Name (z.B. "Großauftrag", "Wochenauftrag").
+    /// </summary>
+    [JsonIgnore]
+    public string DisplayOrderType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Icon für den Auftragstyp (z.B. ⚡, 📦, 📅, 🤝).
+    /// </summary>
+    [JsonIgnore]
+    public string OrderTypeIcon { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Badge-Farbe für den Auftragstyp (Large=Orange, Weekly=Gold, Cooperation=Teal, Standard/Quick=leer).
+    /// </summary>
+    [JsonIgnore]
+    public string OrderTypeBadgeColor { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Ob das Auftragstyp-Badge angezeigt werden soll (nur bei Large, Weekly, Cooperation).
+    /// </summary>
+    [JsonIgnore]
+    public bool ShowOrderTypeBadge { get; set; }
+
     [JsonIgnore]
     public bool IsCompleted => CurrentTaskIndex >= Tasks.Count;
 

@@ -2866,5 +2866,35 @@
   <data name="CloudSyncFailed" xml:space="preserve">
     <value>Synchronisation échouée. Votre sauvegarde locale est intacte.</value>
   </data>
+  <data name="RushActive" xml:space="preserve">
+    <value>2x RUSH ACTIF</value>
+  </data>
+  <data name="EfficiencyShort" xml:space="preserve">
+    <value>Eff:</value>
+  </data>
+  <data name="AchievementsCompleted" xml:space="preserve">
+    <value>{0} terminés</value>
+  </data>
+  <data name="Built" xml:space="preserve">
+    <value>construits</value>
+  </data>
+  <data name="Reputation" xml:space="preserve">
+    <value>Réputation</value>
+  </data>
+  <data name="PrestigeAvailable" xml:space="preserve">
+    <value>Prestige disponible !</value>
+  </data>
+  <data name="NoOrdersAvailable" xml:space="preserve">
+    <value>Aucune commande disponible</value>
+  </data>
+  <data name="OrdersComingSoon" xml:space="preserve">
+    <value>De nouvelles commandes arriveront bientôt</value>
+  </data>
+  <data name="AllQuickJobsDone" xml:space="preserve">
+    <value>Tous les jobs rapides terminés !</value>
+  </data>
+  <data name="RewardDependsOnRating" xml:space="preserve">
+    <value>La récompense dépend de ta note</value>
+  </data>
 
 </root>

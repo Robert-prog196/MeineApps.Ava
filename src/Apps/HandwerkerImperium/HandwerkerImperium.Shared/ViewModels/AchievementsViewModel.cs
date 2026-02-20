@@ -47,6 +47,9 @@ public partial class AchievementsViewModel : ObservableObject
     private string _progressText = "";
 
     [ObservableProperty]
+    private string _achievementsCompletedText = "";
+
+    [ObservableProperty]
     private double _overallProgress;
 
     [ObservableProperty]
@@ -73,6 +76,9 @@ public partial class AchievementsViewModel : ObservableObject
         UnlockedCount = _achievementService.UnlockedCount;
         TotalCount = _achievementService.TotalCount;
         ProgressText = $"{UnlockedCount}/{TotalCount}";
+        AchievementsCompletedText = string.Format(
+            _localizationService.GetString("AchievementsCompleted") ?? "{0} completed",
+            ProgressText);
         OverallProgress = TotalCount > 0 ? (double)UnlockedCount / TotalCount : 0;
 
         Achievements.Clear();

@@ -176,86 +176,104 @@ public class WorkshopSceneRenderer
     }
 
     /// <summary>
-    /// Zeichnet ein Strichmännchen mit Workshop-spezifischen Accessoires.
-    /// headColor = Farbe des Kopfes (Workshop-Akzent).
+    /// Zeichnet eine Worker-Figur mit Koerper, Kleidung, Gesicht und Workshop-spezifischen Accessoires.
+    /// Ersetzt das alte Strichmaennchen durch eine vollwertige Figur mit Charakter.
     /// </summary>
     private void DrawStickFigure(SKCanvas canvas, float x, float y, float scale,
         SKColor headColor, float armAngle = 0, float legPhase = 0,
         WorkshopType type = WorkshopType.Carpenter)
     {
-        float headR = 5 * scale;
-        float bodyLen = 12 * scale;
-        float armLen = 8 * scale;
-        float legLen = 10 * scale;
+        // Hautfarbe
+        var skinColor = new SKColor(0xFF, 0xDA, 0xB9);
+
+        // Masse (30% groesser als altes Strichmaennchen)
+        float headR = 6.5f * scale;
+        float bodyLen = 14 * scale;
+        float bodyW = 10 * scale;
+        float armLen = 9 * scale;
+        float legLen = 11 * scale;
 
         float headCY = y - bodyLen - headR;
+        float torsoTop = y - bodyLen;
+        float torsoBottom = y;
 
-        // Kopf
-        _fillPaint.Color = headColor;
-        canvas.DrawCircle(x, headCY, headR, _fillPaint);
+        // Workshop-spezifische Kleidungsfarbe
+        SKColor clothColor = type switch
+        {
+            WorkshopType.Carpenter => new SKColor(0x8B, 0x69, 0x14),       // Braune Schuerze
+            WorkshopType.Plumber => new SKColor(0x15, 0x65, 0xC0),         // Blaue Latzhose
+            WorkshopType.Electrician => new SKColor(0xFD, 0xD8, 0x35),     // Gelbe Sicherheitsweste
+            WorkshopType.Painter => new SKColor(0xE0, 0xE0, 0xE0),        // Weiss bespritzt
+            WorkshopType.Roofer => new SKColor(0xE6, 0x51, 0x00),         // Orange Weste
+            WorkshopType.Contractor => new SKColor(0x61, 0x61, 0x61),      // Graue Arbeitskleidung
+            WorkshopType.Architect => new SKColor(0xF5, 0xF5, 0xF5),       // Weisses Hemd
+            WorkshopType.GeneralContractor => new SKColor(0x21, 0x21, 0x21), // Schwarzer Anzug
+            _ => new SKColor(0x78, 0x78, 0x78)
+        };
 
-        // Workshop-spezifische Accessoires
+        // --- Beine (hinter Koerper) ---
+        float legSpread = MathF.Sin(legPhase) * 0.25f;
+        byte bootColor_R = 0x3E, bootColor_G = 0x27, bootColor_B = 0x23;
+        _strokePaint.Color = new SKColor(0x4A, 0x4A, 0x4A);
+        _strokePaint.StrokeWidth = 4 * scale;
+        _strokePaint.StrokeCap = SKStrokeCap.Round;
+
+        // Linkes Bein
+        float lLegEndX = x - legLen * MathF.Sin(0.25f + legSpread);
+        float lLegEndY = y + legLen * MathF.Cos(0.25f + legSpread);
+        canvas.DrawLine(x - 2 * scale, torsoBottom, lLegEndX, lLegEndY, _strokePaint);
+
+        // Rechtes Bein
+        float rLegEndX = x + legLen * MathF.Sin(0.25f - legSpread);
+        float rLegEndY = y + legLen * MathF.Cos(0.25f - legSpread);
+        canvas.DrawLine(x + 2 * scale, torsoBottom, rLegEndX, rLegEndY, _strokePaint);
+
+        // Stiefel (kleine Rechtecke an Beinenden)
+        _fillPaint.Color = new SKColor(bootColor_R, bootColor_G, bootColor_B);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(
+            lLegEndX - 3 * scale, lLegEndY - 1 * scale,
+            lLegEndX + 4 * scale, lLegEndY + 3 * scale), 1), _fillPaint);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(
+            rLegEndX - 3 * scale, rLegEndY - 1 * scale,
+            rLegEndX + 4 * scale, rLegEndY + 3 * scale), 1), _fillPaint);
+
+        // --- Torso (Arbeitskleidung) ---
+        _fillPaint.Color = clothColor;
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(
+            x - bodyW / 2, torsoTop, x + bodyW / 2, torsoBottom), 2 * scale), _fillPaint);
+
+        // Schatten am unteren Rand des Torsos
+        _fillPaint.Color = clothColor.WithAlpha(200);
+        canvas.DrawRect(x - bodyW / 2 + 1, torsoBottom - 3 * scale, bodyW - 2, 3 * scale, _fillPaint);
+
+        // Kleidungs-Details je nach Typ
         switch (type)
         {
-            case WorkshopType.Carpenter:
-                // Gelber Schutzhelm
-                _fillPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
-                canvas.DrawArc(new SKRect(x - headR - 1, headCY - headR - 2, x + headR + 1, headCY + 2), 180, 180, true, _fillPaint);
-                // Helmrand
-                _fillPaint.Color = new SKColor(0xF5, 0x9E, 0x0B);
-                canvas.DrawRect(x - headR - 2, headCY - 1, (headR + 2) * 2, 2 * scale, _fillPaint);
-                break;
-            case WorkshopType.Plumber:
-                // Blaue Kappe
-                _fillPaint.Color = new SKColor(0x15, 0x65, 0xC0);
-                canvas.DrawArc(new SKRect(x - headR, headCY - headR - 1, x + headR, headCY + 1), 180, 180, true, _fillPaint);
-                // Schirm
-                canvas.DrawRect(x - headR - 2, headCY - 1, headR + 2, 2 * scale, _fillPaint);
+            case WorkshopType.Painter:
+                // Farbflecken auf weisser Kleidung
+                _fillPaint.Color = new SKColor(0xEC, 0x48, 0x99, 140);
+                canvas.DrawCircle(x - 2 * scale, torsoTop + bodyLen * 0.3f, 2 * scale, _fillPaint);
+                _fillPaint.Color = new SKColor(0x42, 0xA5, 0xF5, 140);
+                canvas.DrawCircle(x + 3 * scale, torsoTop + bodyLen * 0.6f, 1.5f * scale, _fillPaint);
+                _fillPaint.Color = new SKColor(0x66, 0xBB, 0x6A, 120);
+                canvas.DrawCircle(x - 1 * scale, torsoTop + bodyLen * 0.7f, 1 * scale, _fillPaint);
                 break;
             case WorkshopType.Electrician:
-                // Oranges Sicherheitsband über Brust
-                _strokePaint.Color = new SKColor(0xF9, 0x73, 0x16);
-                _strokePaint.StrokeWidth = 2.5f * scale;
-                canvas.DrawLine(x - 3 * scale, y - bodyLen * 0.5f, x + 3 * scale, y - bodyLen * 0.65f, _strokePaint);
+                // Reflektierende Streifen auf gelber Weste
+                _fillPaint.Color = new SKColor(0xE0, 0xE0, 0xE0, 160);
+                canvas.DrawRect(x - bodyW / 2 + 1, torsoTop + bodyLen * 0.35f, bodyW - 2, 2 * scale, _fillPaint);
+                canvas.DrawRect(x - bodyW / 2 + 1, torsoTop + bodyLen * 0.55f, bodyW - 2, 2 * scale, _fillPaint);
                 break;
-            case WorkshopType.Painter:
-                // Beret (dreieckig oben auf dem Kopf)
-                _fillPaint.Color = new SKColor(0xEC, 0x48, 0x99);
-                using (var beretPath = new SKPath())
-                {
-                    beretPath.MoveTo(x - headR, headCY - headR * 0.5f);
-                    beretPath.LineTo(x + headR * 0.5f, headCY - headR * 1.8f);
-                    beretPath.LineTo(x + headR, headCY - headR * 0.5f);
-                    beretPath.Close();
-                    canvas.DrawPath(beretPath, _fillPaint);
-                }
-                break;
-            case WorkshopType.Roofer:
-                // Roter Helm
-                _fillPaint.Color = new SKColor(0xDC, 0x26, 0x26);
-                canvas.DrawArc(new SKRect(x - headR - 1, headCY - headR - 2, x + headR + 1, headCY + 2), 180, 180, true, _fillPaint);
-                _fillPaint.Color = new SKColor(0xBF, 0x20, 0x20);
-                canvas.DrawRect(x - headR - 2, headCY - 1, (headR + 2) * 2, 2 * scale, _fillPaint);
-                break;
-            case WorkshopType.Contractor:
-                // Oranger Helm
-                _fillPaint.Color = new SKColor(0xEA, 0x58, 0x0C);
-                canvas.DrawArc(new SKRect(x - headR - 1, headCY - headR - 2, x + headR + 1, headCY + 2), 180, 180, true, _fillPaint);
-                _fillPaint.Color = new SKColor(0xD2, 0x4B, 0x0A);
-                canvas.DrawRect(x - headR - 2, headCY - 1, (headR + 2) * 2, 2 * scale, _fillPaint);
-                break;
-            case WorkshopType.Architect:
-                // Brille (zwei kleine Kreise)
-                _strokePaint.Color = new SKColor(0x42, 0x42, 0x42);
-                _strokePaint.StrokeWidth = 1.5f * scale;
-                canvas.DrawCircle(x - 3 * scale, headCY, 2.5f * scale, _strokePaint);
-                canvas.DrawCircle(x + 3 * scale, headCY, 2.5f * scale, _strokePaint);
-                canvas.DrawLine(x - 0.5f * scale, headCY, x + 0.5f * scale, headCY, _strokePaint);
+            case WorkshopType.Plumber:
+                // Latzhose Traeger
+                _fillPaint.Color = new SKColor(0x0D, 0x47, 0xA1);
+                canvas.DrawRect(x - 3 * scale, torsoTop, 2 * scale, bodyLen * 0.4f, _fillPaint);
+                canvas.DrawRect(x + 1 * scale, torsoTop, 2 * scale, bodyLen * 0.4f, _fillPaint);
                 break;
             case WorkshopType.GeneralContractor:
-                // Goldene Krawatte
+                // Krawatte
                 _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00);
-                float tieTop = y - bodyLen + 1;
+                float tieTop = torsoTop + 2 * scale;
                 using (var tiePath = new SKPath())
                 {
                     tiePath.MoveTo(x, tieTop);
@@ -268,27 +286,119 @@ public class WorkshopSceneRenderer
                 break;
         }
 
-        // Körper (etwas breiter für mehr Präsenz)
-        _strokePaint.Color = headColor;
-        _strokePaint.StrokeWidth = 2.5f * scale;
+        // --- Arme (Hautfarbe, animiert) ---
+        _strokePaint.Color = skinColor;
+        _strokePaint.StrokeWidth = 4 * scale;
         _strokePaint.StrokeCap = SKStrokeCap.Round;
-        canvas.DrawLine(x, y - bodyLen, x, y, _strokePaint);
-
-        // Arme (animiert)
-        _strokePaint.StrokeWidth = 2 * scale;
-        float armY = y - bodyLen * 0.7f;
+        float armY = torsoTop + bodyLen * 0.2f;
         float aL = MathF.Sin(armAngle) * 0.3f;
-        canvas.DrawLine(x, armY,
-            x - armLen * MathF.Cos(0.6f + aL), armY + armLen * MathF.Sin(0.6f + aL), _strokePaint);
-        canvas.DrawLine(x, armY,
-            x + armLen * MathF.Cos(0.6f - aL), armY + armLen * MathF.Sin(0.6f - aL), _strokePaint);
+        canvas.DrawLine(x - bodyW / 2, armY,
+            x - bodyW / 2 - armLen * MathF.Cos(0.6f + aL), armY + armLen * MathF.Sin(0.6f + aL), _strokePaint);
+        canvas.DrawLine(x + bodyW / 2, armY,
+            x + bodyW / 2 + armLen * MathF.Cos(0.6f - aL), armY + armLen * MathF.Sin(0.6f - aL), _strokePaint);
 
-        // Beine (laufend animiert)
-        float legSpread = MathF.Sin(legPhase) * 0.25f;
-        canvas.DrawLine(x, y,
-            x - legLen * MathF.Sin(0.3f + legSpread), y + legLen * MathF.Cos(0.3f + legSpread), _strokePaint);
-        canvas.DrawLine(x, y,
-            x + legLen * MathF.Sin(0.3f - legSpread), y + legLen * MathF.Cos(0.3f - legSpread), _strokePaint);
+        // --- Kopf (ovaler Kreis, Hautfarbe) ---
+        _fillPaint.Color = skinColor;
+        canvas.DrawOval(x, headCY, headR, headR * 1.1f, _fillPaint);
+
+        // Gesicht: Augen
+        _fillPaint.Color = new SKColor(0x33, 0x33, 0x33);
+        canvas.DrawCircle(x - 2.5f * scale, headCY - 0.5f * scale, 1.2f * scale, _fillPaint);
+        canvas.DrawCircle(x + 2.5f * scale, headCY - 0.5f * scale, 1.2f * scale, _fillPaint);
+
+        // Gesicht: Mund (kleiner Strich)
+        _strokePaint.Color = new SKColor(0x66, 0x33, 0x33);
+        _strokePaint.StrokeWidth = 1 * scale;
+        canvas.DrawLine(x - 1.5f * scale, headCY + 2.5f * scale,
+            x + 1.5f * scale, headCY + 2.5f * scale, _strokePaint);
+
+        // --- Workshop-spezifische Accessoires (30% groesser) ---
+        float accScale = scale * 1.3f;
+        switch (type)
+        {
+            case WorkshopType.Carpenter:
+                // Gelber Schutzhelm (vergroessert)
+                _fillPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
+                canvas.DrawArc(new SKRect(x - headR - 2 * accScale, headCY - headR - 3 * accScale,
+                    x + headR + 2 * accScale, headCY + 2), 180, 180, true, _fillPaint);
+                // Helmrand
+                _fillPaint.Color = new SKColor(0xF5, 0x9E, 0x0B);
+                canvas.DrawRect(x - headR - 3 * accScale, headCY - 1, (headR + 3 * accScale) * 2, 2.5f * accScale, _fillPaint);
+                // Helm-Visier (weisser Streifen)
+                _fillPaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 60);
+                canvas.DrawRect(x - headR, headCY - headR - 1, headR * 2, 2 * accScale, _fillPaint);
+                break;
+            case WorkshopType.Plumber:
+                // Blaue Kappe (vergroessert)
+                _fillPaint.Color = new SKColor(0x15, 0x65, 0xC0);
+                canvas.DrawArc(new SKRect(x - headR - 1, headCY - headR - 2 * accScale,
+                    x + headR + 1, headCY + 1), 180, 180, true, _fillPaint);
+                // Schirm
+                _fillPaint.Color = new SKColor(0x0D, 0x47, 0xA1);
+                canvas.DrawRect(x - headR - 3 * accScale, headCY - 1, headR + 3 * accScale, 2.5f * accScale, _fillPaint);
+                break;
+            case WorkshopType.Electrician:
+                // Weisser Schutzhelm
+                _fillPaint.Color = new SKColor(0xF5, 0xF5, 0xF5);
+                canvas.DrawArc(new SKRect(x - headR - 2 * accScale, headCY - headR - 3 * accScale,
+                    x + headR + 2 * accScale, headCY + 2), 180, 180, true, _fillPaint);
+                _fillPaint.Color = new SKColor(0xE0, 0xE0, 0xE0);
+                canvas.DrawRect(x - headR - 3 * accScale, headCY - 1, (headR + 3 * accScale) * 2, 2.5f * accScale, _fillPaint);
+                break;
+            case WorkshopType.Painter:
+                // Beret (vergroessert)
+                _fillPaint.Color = new SKColor(0xEC, 0x48, 0x99);
+                using (var beretPath = new SKPath())
+                {
+                    beretPath.MoveTo(x - headR * 1.1f, headCY - headR * 0.5f);
+                    beretPath.LineTo(x + headR * 0.5f, headCY - headR * 2.2f);
+                    beretPath.LineTo(x + headR * 1.1f, headCY - headR * 0.5f);
+                    beretPath.Close();
+                    canvas.DrawPath(beretPath, _fillPaint);
+                }
+                // Beret-Pompon
+                _fillPaint.Color = new SKColor(0xD6, 0x33, 0x84);
+                canvas.DrawCircle(x + headR * 0.5f, headCY - headR * 2.2f, 2 * accScale, _fillPaint);
+                break;
+            case WorkshopType.Roofer:
+                // Roter Helm (vergroessert)
+                _fillPaint.Color = new SKColor(0xDC, 0x26, 0x26);
+                canvas.DrawArc(new SKRect(x - headR - 2 * accScale, headCY - headR - 3 * accScale,
+                    x + headR + 2 * accScale, headCY + 2), 180, 180, true, _fillPaint);
+                _fillPaint.Color = new SKColor(0xBF, 0x20, 0x20);
+                canvas.DrawRect(x - headR - 3 * accScale, headCY - 1, (headR + 3 * accScale) * 2, 2.5f * accScale, _fillPaint);
+                break;
+            case WorkshopType.Contractor:
+                // Oranger Helm (vergroessert)
+                _fillPaint.Color = new SKColor(0xEA, 0x58, 0x0C);
+                canvas.DrawArc(new SKRect(x - headR - 2 * accScale, headCY - headR - 3 * accScale,
+                    x + headR + 2 * accScale, headCY + 2), 180, 180, true, _fillPaint);
+                _fillPaint.Color = new SKColor(0xD2, 0x4B, 0x0A);
+                canvas.DrawRect(x - headR - 3 * accScale, headCY - 1, (headR + 3 * accScale) * 2, 2.5f * accScale, _fillPaint);
+                // Helm-Visier
+                _fillPaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 50);
+                canvas.DrawRect(x - headR, headCY - headR - 1, headR * 2, 2 * accScale, _fillPaint);
+                break;
+            case WorkshopType.Architect:
+                // Brille (vergroessert, mit Glasglanz)
+                _strokePaint.Color = new SKColor(0x33, 0x33, 0x33);
+                _strokePaint.StrokeWidth = 1.8f * accScale;
+                float glassR = 3.2f * accScale;
+                canvas.DrawCircle(x - 3 * scale, headCY, glassR, _strokePaint);
+                canvas.DrawCircle(x + 3 * scale, headCY, glassR, _strokePaint);
+                canvas.DrawLine(x - 3 * scale + glassR, headCY, x + 3 * scale - glassR, headCY, _strokePaint);
+                // Glasglanz
+                _fillPaint.Color = new SKColor(0xBB, 0xDE, 0xFB, 60);
+                canvas.DrawCircle(x - 3 * scale - 1, headCY - 1, glassR * 0.5f, _fillPaint);
+                canvas.DrawCircle(x + 3 * scale - 1, headCY - 1, glassR * 0.5f, _fillPaint);
+                break;
+            case WorkshopType.GeneralContractor:
+                // Kurze gepflegte Frisur (kein Helm)
+                _fillPaint.Color = new SKColor(0x33, 0x33, 0x33);
+                canvas.DrawArc(new SKRect(x - headR * 0.9f, headCY - headR * 1.3f,
+                    x + headR * 0.9f, headCY - headR * 0.2f), 180, 180, true, _fillPaint);
+                break;
+        }
     }
 
     /// <summary>
@@ -321,25 +431,25 @@ public class WorkshopSceneRenderer
     {
         if (level < 50) return;
 
-        // Level 250+: Pulsierende goldene Sterne in den Ecken
+        // Level 250+: Pulsierende goldene Sterne in den Ecken (groesser, heller)
         if (level >= 250)
         {
-            float starPulse = 0.5f + MathF.Sin(phase * 2.5f) * 0.3f;
-            _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00, (byte)(starPulse * 120));
-            float starSize = 4 + starPulse * 2;
-            // 3 Sterne
+            float starPulse = 0.5f + MathF.Sin(phase * 2.5f) * 0.4f;
+            float starSize = 5 + starPulse * 3;
+            // 4 Sterne in allen Ecken
             DrawMiniStar(canvas, bounds.Left + 14, bounds.Top + 12, starSize, phase);
             DrawMiniStar(canvas, bounds.Right - 14, bounds.Top + 12, starSize, phase * 1.3f);
+            DrawMiniStar(canvas, bounds.Left + 14, bounds.Bottom - 12, starSize, phase * 0.7f);
             if (level >= 500)
                 DrawMiniStar(canvas, bounds.Right - 14, bounds.Bottom - 12, starSize, phase * 0.8f);
         }
 
-        // Level 500+: Premium-Gold-Aura (GPU-Shader)
+        // Level 500+: Premium-Gold-Aura (GPU-Shader, staerker sichtbar)
         if (level >= 500)
         {
             SkiaGlowEffect.DrawEdgeGlow(canvas, bounds, phase,
-                new SKColor(0xFF, 0xD7, 0x00, 60),
-                pulseSpeed: 1.5f, pulseMin: 0.01f, pulseMax: 0.05f);
+                new SKColor(0xFF, 0xD7, 0x00, 80),
+                pulseSpeed: 1.5f, pulseMin: 0.02f, pulseMax: 0.07f);
         }
 
         // Level 1000: Gold-Shimmer über gesamte Szene
@@ -350,18 +460,25 @@ public class WorkshopSceneRenderer
     }
 
     /// <summary>
-    /// Zeichnet einen kleinen pulsierenden Stern.
+    /// Zeichnet einen kleinen pulsierenden Stern mit 8 Strahlen und hellem Kern.
     /// </summary>
     private void DrawMiniStar(SKCanvas canvas, float cx, float cy, float size, float phase)
     {
-        _strokePaint.Color = new SKColor(0xFF, 0xD7, 0x00, 140);
+        // Pulsierender Kern-Glow
+        float kernPulse = 0.6f + MathF.Sin(phase * 3f) * 0.4f;
+        _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00, (byte)(kernPulse * 100));
+        canvas.DrawCircle(cx, cy, size * 0.5f, _fillPaint);
+
+        // 8 Strahlen statt 4
+        _strokePaint.Color = new SKColor(0xFF, 0xD7, 0x00, 180);
         _strokePaint.StrokeWidth = 1.5f;
         _strokePaint.StrokeCap = SKStrokeCap.Round;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 8; i++)
         {
             float a = phase * 0.5f + i * MathF.PI / 4;
+            float rayLen = (i % 2 == 0) ? size : size * 0.6f; // Abwechselnd lang/kurz
             canvas.DrawLine(cx, cy,
-                cx + MathF.Cos(a) * size, cy + MathF.Sin(a) * size, _strokePaint);
+                cx + MathF.Cos(a) * rayLen, cy + MathF.Sin(a) * rayLen, _strokePaint);
         }
     }
 
@@ -472,14 +589,18 @@ public class WorkshopSceneRenderer
 
         _fillPaint.Color = new SKColor(0xBC, 0x8A, 0x5F);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(boardX, boardY, boardX + boardW, boardY + boardH), 2), _fillPaint);
-        // Maserung
-        _strokePaint.Color = new SKColor(0xA0, 0x72, 0x3C, 120);
-        _strokePaint.StrokeWidth = 1;
-        for (int m = 0; m < 3; m++)
+        // Maserung (mehr Linien fuer realistischeren Look)
+        _strokePaint.Color = new SKColor(0xA0, 0x72, 0x3C, 100);
+        _strokePaint.StrokeWidth = 0.8f;
+        for (int m = 0; m < 5; m++)
         {
-            float my = boardY + 2 + m * 3;
+            float my = boardY + 1.5f + m * 2;
             canvas.DrawLine(boardX + 4, my, boardX + boardW - 4, my, _strokePaint);
         }
+        // Astloecher (2 kleine dunkle Ovale)
+        _fillPaint.Color = new SKColor(0x7A, 0x52, 0x2A, 140);
+        canvas.DrawOval(boardX + boardW * 0.25f, boardY + boardH * 0.5f, 3, 2, _fillPaint);
+        canvas.DrawOval(boardX + boardW * 0.7f, boardY + boardH * 0.4f, 2.5f, 1.8f, _fillPaint);
 
         // --- Kreissäge (rotierendes Sägeblatt) ---
         float sawX = tableX + tableW * 0.5f;
@@ -496,9 +617,19 @@ public class WorkshopSceneRenderer
         // Innerer Ring
         _fillPaint.Color = new SKColor(0x90, 0x90, 0x90);
         canvas.DrawCircle(sawX, sawY, sawRadius * 0.6f, _fillPaint);
+        // Metallglanz-Streifen (diagonaler Highlight auf dem Blatt)
+        _fillPaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 50);
+        canvas.Save();
+        canvas.ClipRect(new SKRect(sawX - sawRadius, sawY - sawRadius, sawX + sawRadius, sawY + sawRadius));
+        canvas.DrawRect(sawX - sawRadius * 0.3f, sawY - sawRadius, sawRadius * 0.4f, sawRadius * 2, _fillPaint);
+        canvas.Restore();
+
         // Mittelachse
         _fillPaint.Color = new SKColor(0x60, 0x60, 0x60);
         canvas.DrawCircle(sawX, sawY, 4, _fillPaint);
+        // Achsen-Glanz
+        _fillPaint.Color = new SKColor(0x90, 0x90, 0x90);
+        canvas.DrawCircle(sawX - 1, sawY - 1, 2, _fillPaint);
 
         // Sägezähne (8 Zacken, rotierend)
         _strokePaint.Color = new SKColor(0x78, 0x78, 0x78);
@@ -521,12 +652,12 @@ public class WorkshopSceneRenderer
         float cutX = Math.Min(sawX, boardX + boardW);
         canvas.DrawLine(boardX, boardY + boardH / 2, cutX, boardY + boardH / 2, _strokePaint);
 
-        // --- Sägespäne-Partikel ---
+        // --- Sägespäne-Partikel (mehr, goldener) ---
         float emitPhase = (phase * 4) % MathF.Tau;
         if (emitPhase > MathF.PI - 0.5f && emitPhase < MathF.PI + 0.5f)
         {
-            for (int p = 0; p < particleRate; p++)
-                addWorkParticle(sawX, tableY + tableH + 2, new SKColor(0xD2, 0xB4, 0x8C));
+            for (int p = 0; p < particleRate + 3; p++)
+                addWorkParticle(sawX, tableY + tableH + 2, new SKColor(0xDA, 0xC0, 0x8F));
         }
 
         // --- Fertige Bretter rechts ---
@@ -581,6 +712,11 @@ public class WorkshopSceneRenderer
         _strokePaint.StrokeWidth = 1;
         canvas.DrawLine(sinkX + 6, sinkY + 2, sinkX + sinkW - 6, sinkY + 2, _strokePaint);
 
+        // Keramik-Glanz (weisser Bogen innen)
+        _strokePaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 60);
+        _strokePaint.StrokeWidth = 2;
+        canvas.DrawArc(new SKRect(sinkX + 8, sinkY + 6, sinkX + sinkW - 8, sinkY + sinkH - 4), 200, 140, false, _strokePaint);
+
         // --- Wasserhahn ---
         float faucetX = cx;
         float faucetY = sinkY - 2;
@@ -613,9 +749,12 @@ public class WorkshopSceneRenderer
 
         _fillPaint.Color = new SKColor(0x78, 0x90, 0x9C);
         canvas.DrawRect(pipeX - 4, pipeTopY, 8, pipeBottomY - pipeTopY, _fillPaint);
-        // Rohr-Highlight
-        _fillPaint.Color = new SKColor(0x90, 0xA4, 0xAE);
-        canvas.DrawRect(pipeX - 4, pipeTopY, 3, pipeBottomY - pipeTopY, _fillPaint);
+        // Chrome-Highlight (heller Streifen links)
+        _fillPaint.Color = new SKColor(0xB0, 0xBE, 0xC5);
+        canvas.DrawRect(pipeX - 4, pipeTopY, 2, pipeBottomY - pipeTopY, _fillPaint);
+        // Chrome-Reflexion (weisser Streifen)
+        _fillPaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 40);
+        canvas.DrawRect(pipeX - 3, pipeTopY, 1, pipeBottomY - pipeTopY, _fillPaint);
 
         // Flansch-Verbindung
         _fillPaint.Color = new SKColor(0x60, 0x7D, 0x8B);
@@ -740,13 +879,10 @@ public class WorkshopSceneRenderer
             _fillPaint.Color = on ? new SKColor(0x00, 0xE6, 0x76, 240) : new SKColor(0x33, 0x55, 0x33, 120);
             canvas.DrawCircle(lx, ly, 3, _fillPaint);
 
-            // LED-Glow wenn an
+            // LED-Glow-Ring wenn an (gecachter Filter)
             if (on)
             {
-                _glowPaint.Color = new SKColor(0x00, 0xE6, 0x76, 50);
-                _glowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 4);
-                canvas.DrawCircle(lx, ly, 6, _glowPaint);
-                _glowPaint.MaskFilter = null;
+                DrawGlow(canvas, lx, ly, 8, new SKColor(0x00, 0xE6, 0x76, 60), _glowSmall);
             }
         }
 
@@ -776,12 +912,10 @@ public class WorkshopSceneRenderer
             // Strom-Puls wandert auf Kabel
             float pulsePos = ((phase * 2 + c * 1.2f) % 1.0f);
             float pulseY = cableStartY + pulsePos * (cableEndY - cableStartY);
+            float pulseXOff = MathF.Sin(phase * 0.8f + c) * 4 * (1 - pulsePos);
             _fillPaint.Color = new SKColor(0xFF, 0xFF, 0x80, 200);
-            _glowPaint.Color = new SKColor(0xFF, 0xFF, 0x80, 80);
-            _glowPaint.MaskFilter = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 5);
-            canvas.DrawCircle(cableX + MathF.Sin(phase * 0.8f + c) * 4 * (1 - pulsePos), pulseY, 4, _fillPaint);
-            canvas.DrawCircle(cableX + MathF.Sin(phase * 0.8f + c) * 4 * (1 - pulsePos), pulseY, 8, _glowPaint);
-            _glowPaint.MaskFilter = null;
+            canvas.DrawCircle(cableX + pulseXOff, pulseY, 4, _fillPaint);
+            DrawGlow(canvas, cableX + pulseXOff, pulseY, 10, new SKColor(0xFF, 0xFF, 0x80, 80), _glowMedium);
         }
 
         // --- Worker mit Schraubendreher am Kasten ---
@@ -986,13 +1120,36 @@ public class WorkshopSceneRenderer
         // Hauswand
         _fillPaint.Color = new SKColor(0xE8, 0xE0, 0xD4);
         canvas.DrawRect(houseX + 10, roofBaseY, houseW - 20, wallBaseY - roofBaseY, _fillPaint);
-        // Fenster
+        // Fenster mit Rahmen
         _fillPaint.Color = new SKColor(0x87, 0xCE, 0xEB, 180);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(houseX + 20, roofBaseY + 8, houseX + 38, roofBaseY + 22), 2), _fillPaint);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(houseX + houseW - 48, roofBaseY + 8, houseX + houseW - 30, roofBaseY + 22), 2), _fillPaint);
-        // Tür
+        // Fensterrahmen (weiss)
+        _strokePaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 160);
+        _strokePaint.StrokeWidth = 1.5f;
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(houseX + 20, roofBaseY + 8, houseX + 38, roofBaseY + 22), 2), _strokePaint);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(houseX + houseW - 48, roofBaseY + 8, houseX + houseW - 30, roofBaseY + 22), 2), _strokePaint);
+        // Fensterkreuz
+        canvas.DrawLine(houseX + 29, roofBaseY + 8, houseX + 29, roofBaseY + 22, _strokePaint);
+        canvas.DrawLine(houseX + 20, roofBaseY + 15, houseX + 38, roofBaseY + 15, _strokePaint);
+        canvas.DrawLine(houseX + houseW - 39, roofBaseY + 8, houseX + houseW - 39, roofBaseY + 22, _strokePaint);
+        canvas.DrawLine(houseX + houseW - 48, roofBaseY + 15, houseX + houseW - 30, roofBaseY + 15, _strokePaint);
+        // Tuer
         _fillPaint.Color = new SKColor(0x6D, 0x4C, 0x41);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(cx - 8, roofBaseY + 6, cx + 8, wallBaseY), 2, 2), _fillPaint);
+        // Tuerklinke
+        _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00, 180);
+        canvas.DrawCircle(cx + 5, roofBaseY + (wallBaseY - roofBaseY) * 0.55f, 1.5f, _fillPaint);
+
+        // --- Schornstein ---
+        float chimX = cx + houseW * 0.2f;
+        float chimTopY = roofPeakY + (roofBaseY - roofPeakY) * 0.15f;
+        float chimBotY = roofPeakY + (roofBaseY - roofPeakY) * 0.45f;
+        _fillPaint.Color = new SKColor(0x8D, 0x6E, 0x63);
+        canvas.DrawRect(chimX - 5, chimTopY - 12, 10, chimBotY - chimTopY + 12, _fillPaint);
+        // Schornstein-Abschluss
+        _fillPaint.Color = new SKColor(0x6D, 0x4C, 0x41);
+        canvas.DrawRect(chimX - 7, chimTopY - 14, 14, 4, _fillPaint);
 
         // --- Dach-Dreieck (Holzunterlage) ---
         using var roofPath = new SKPath();
@@ -1038,12 +1195,14 @@ public class WorkshopSceneRenderer
 
                 _fillPaint.Color = new SKColor(0xDC, 0x26, 0x26);
                 canvas.DrawRoundRect(new SKRoundRect(new SKRect(tx, rowY, tx + tileW, rowY + tileH), 1.5f), _fillPaint);
-                // Schatten
-                _fillPaint.Color = new SKColor(0xBF, 0x20, 0x20);
-                canvas.DrawRect(tx, rowY + tileH - 2, tileW, 2, _fillPaint);
-                // Glanz
-                _fillPaint.Color = new SKColor(0xEF, 0x53, 0x50, 80);
-                canvas.DrawRect(tx + 1, rowY + 1, tileW - 2, 2, _fillPaint);
+                // Staerkerer 3D-Effekt: Dunklerer Schatten unten + seitlich
+                _fillPaint.Color = new SKColor(0xA0, 0x18, 0x18);
+                canvas.DrawRect(tx, rowY + tileH - 2.5f, tileW, 2.5f, _fillPaint);
+                _fillPaint.Color = new SKColor(0xBF, 0x20, 0x20, 120);
+                canvas.DrawRect(tx + tileW - 2, rowY + 1, 2, tileH - 2, _fillPaint);
+                // Heller Glanz oben (breiter)
+                _fillPaint.Color = new SKColor(0xEF, 0x53, 0x50, 100);
+                canvas.DrawRect(tx + 1, rowY + 1, tileW - 3, 2.5f, _fillPaint);
             }
         }
 
@@ -1065,10 +1224,20 @@ public class WorkshopSceneRenderer
         if (hammerHit > MathF.PI - 0.3f && hammerHit < MathF.PI + 0.3f)
             DrawGlow(canvas, hammerX, hammerBaseY, 10, new SKColor(0xFF, 0xFF, 0xFF, 60), _glowSmall);
 
-        _fillPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-        canvas.DrawRoundRect(new SKRoundRect(new SKRect(hammerX - 2, hammerY, hammerX + 2, hammerY + 14), 1), _fillPaint);
+        // Hammer-Griff (Holz mit Maserung)
+        _fillPaint.Color = new SKColor(0x8D, 0x6E, 0x63);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(hammerX - 2.5f, hammerY, hammerX + 2.5f, hammerY + 16), 1), _fillPaint);
+        // Holz-Maserung auf Griff
+        _strokePaint.Color = new SKColor(0x6D, 0x4C, 0x41, 100);
+        _strokePaint.StrokeWidth = 0.5f;
+        canvas.DrawLine(hammerX - 1, hammerY + 2, hammerX - 1, hammerY + 14, _strokePaint);
+        canvas.DrawLine(hammerX + 1, hammerY + 3, hammerX + 1, hammerY + 13, _strokePaint);
+        // Hammerkopf (Metall mit Highlight)
         _fillPaint.Color = new SKColor(0x78, 0x78, 0x78);
-        canvas.DrawRoundRect(new SKRoundRect(new SKRect(hammerX - 6, hammerY - 5, hammerX + 6, hammerY + 1), 2), _fillPaint);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(hammerX - 7, hammerY - 6, hammerX + 7, hammerY + 1), 2), _fillPaint);
+        // Metall-Glanz
+        _fillPaint.Color = new SKColor(0xA0, 0xA0, 0xA0, 120);
+        canvas.DrawRect(hammerX - 6, hammerY - 5, 12, 2, _fillPaint);
 
         // Staub-Partikel
         float hitPhase = hammerPhase % MathF.Tau;
@@ -1165,11 +1334,18 @@ public class WorkshopSceneRenderer
         _fillPaint.Color = new SKColor(0xBD, 0xBD, 0xBD, 150);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(wallX, topRowY - mortarGap - 1, kelleX + 6, topRowY), 1), _fillPaint);
 
-        // Kelle
-        _fillPaint.Color = new SKColor(0x90, 0x90, 0x90);
-        canvas.DrawRoundRect(new SKRoundRect(new SKRect(kelleX - 6, topRowY - mortarGap - 4, kelleX + 8, topRowY - mortarGap), 1), _fillPaint);
-        _fillPaint.Color = new SKColor(0x5D, 0x40, 0x37);
-        canvas.DrawRoundRect(new SKRoundRect(new SKRect(kelleX, topRowY - mortarGap - 12, kelleX + 4, topRowY - mortarGap - 3), 1), _fillPaint);
+        // Kelle (Metallblatt)
+        _fillPaint.Color = new SKColor(0xA0, 0xA0, 0xA0);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(kelleX - 7, topRowY - mortarGap - 4, kelleX + 9, topRowY - mortarGap), 1), _fillPaint);
+        // Metall-Glanz
+        _fillPaint.Color = new SKColor(0xC0, 0xC0, 0xC0, 100);
+        canvas.DrawRect(kelleX - 5, topRowY - mortarGap - 3, 12, 1.5f, _fillPaint);
+        // Moertel-Klecks auf der Kelle
+        _fillPaint.Color = new SKColor(0xBD, 0xBD, 0xBD, 180);
+        canvas.DrawOval(kelleX + 2, topRowY - mortarGap - 2, 5, 2.5f, _fillPaint);
+        // Holzgriff
+        _fillPaint.Color = new SKColor(0x6D, 0x4C, 0x41);
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(kelleX, topRowY - mortarGap - 14, kelleX + 4, topRowY - mortarGap - 3), 1), _fillPaint);
 
         // --- Neuer Stein schwebt ein ---
         float stoneFloat = MathF.Abs(MathF.Sin(phase * 2)) * 16;
@@ -1189,14 +1365,20 @@ public class WorkshopSceneRenderer
         canvas.DrawLine(craneX, craneBaseY, craneX, craneTopY, _strokePaint);
         // Kran-Ausleger
         canvas.DrawLine(craneX, craneTopY + 4, craneX - 30, craneTopY + 4, _strokePaint);
-        // Seil
-        _strokePaint.Color = new SKColor(0x60, 0x60, 0x60);
-        _strokePaint.StrokeWidth = 1;
+        // Seil mit Textur (gestrichelt fuer Seil-Look)
+        _strokePaint.Color = new SKColor(0x50, 0x50, 0x50);
+        _strokePaint.StrokeWidth = 1.5f;
+        _strokePaint.PathEffect = SKPathEffect.CreateDash([3, 2], 0);
         float seilLen = 15 + MathF.Sin(phase * 1.5f) * 8;
         canvas.DrawLine(craneX - 20, craneTopY + 4, craneX - 20, craneTopY + 4 + seilLen, _strokePaint);
-        // Haken
+        _strokePaint.PathEffect = null;
+        // Haken (detaillierter)
         _fillPaint.Color = new SKColor(0x78, 0x78, 0x78);
-        canvas.DrawCircle(craneX - 20, craneTopY + 4 + seilLen + 3, 3, _fillPaint);
+        canvas.DrawCircle(craneX - 20, craneTopY + 4 + seilLen + 3, 3.5f, _fillPaint);
+        // Haken-Oeffnung
+        _strokePaint.Color = new SKColor(0x60, 0x60, 0x60);
+        _strokePaint.StrokeWidth = 1.5f;
+        canvas.DrawArc(new SKRect(craneX - 24, craneTopY + 4 + seilLen + 1, craneX - 16, craneTopY + 4 + seilLen + 9), 0, 200, false, _strokePaint);
 
         // --- Worker mit Kelle ---
         DrawStickFigure(canvas, wallX - 14, wallBottom - 10, 0.9f,
@@ -1482,15 +1664,20 @@ public class WorkshopSceneRenderer
         _fillPaint.Color = new SKColor(0xFF, 0xB3, 0x00);
         canvas.DrawRoundRect(new SKRoundRect(new SKRect(stampX - 8, stampY, stampX + 8, stampY + 5), 2), _fillPaint);
 
-        // Gold-Abdruck
+        // Roter Stempel-Abdruck (realistischer)
         if (stampCycle > 0.45f)
         {
-            byte abdAlpha = (byte)Math.Clamp((stampCycle - 0.45f) * 300, 0, 180);
-            _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00, abdAlpha);
-            canvas.DrawCircle(stampX, stampBaseY + 2, 6, _fillPaint);
+            byte abdAlpha = (byte)Math.Clamp((stampCycle - 0.45f) * 300, 0, 200);
+            // Roter Abdruck-Kreis
+            _fillPaint.Color = new SKColor(0xE5, 0x3E, 0x3E, abdAlpha);
+            canvas.DrawCircle(stampX, stampBaseY + 2, 7, _fillPaint);
+            // Innerer Ring
+            _strokePaint.Color = new SKColor(0xCC, 0x22, 0x22, abdAlpha);
+            _strokePaint.StrokeWidth = 1.5f;
+            canvas.DrawCircle(stampX, stampBaseY + 2, 5, _strokePaint);
 
-            // Glow um Abdruck (verstärkt)
-            DrawGlow(canvas, stampX, stampBaseY + 2, 12, new SKColor(0xFF, 0xD7, 0x00, (byte)(abdAlpha / 2)), _glowMedium);
+            // Glow um Abdruck (gold)
+            DrawGlow(canvas, stampX, stampBaseY + 2, 14, new SKColor(0xFF, 0xD7, 0x00, (byte)(abdAlpha / 3)), _glowMedium);
         }
 
         // Gold-Partikel bei Stempel-Aufschlag
@@ -1528,19 +1715,31 @@ public class WorkshopSceneRenderer
         DrawStickFigure(canvas, deskX + deskW / 2, deskY + 22, 0.85f,
             new SKColor(0xFF, 0xB3, 0x00), phase * 1.5f, 0, type);
 
-        // --- Goldmünzen rechts ---
+        // --- Goldmuenzen rechts (mit Praegung + Glanz) ---
         for (int c = 0; c < productCount; c++)
         {
             float coinX = left + w * 0.88f;
             float coinY = top + h * 0.5f - c * 10;
+            // Muenz-Schatten
+            _fillPaint.Color = new SKColor(0xCC, 0x99, 0x00, 60);
+            canvas.DrawCircle(coinX + 1, coinY + 1, 7.5f, _fillPaint);
+            // Muenze
             _fillPaint.Color = new SKColor(0xFF, 0xD7, 0x00);
             canvas.DrawCircle(coinX, coinY, 7, _fillPaint);
-            _fillPaint.Color = new SKColor(0xFF, 0xB3, 0x00);
-            canvas.DrawCircle(coinX, coinY, 4, _fillPaint);
-            // $ Symbol
+            // Praege-Ring
+            _strokePaint.Color = new SKColor(0xCC, 0x99, 0x00);
+            _strokePaint.StrokeWidth = 1;
+            canvas.DrawCircle(coinX, coinY, 5.5f, _strokePaint);
+            // Innerer Bereich
+            _fillPaint.Color = new SKColor(0xFF, 0xC1, 0x07);
+            canvas.DrawCircle(coinX, coinY, 4.5f, _fillPaint);
+            // Euro-Symbol
             _strokePaint.Color = new SKColor(0xCC, 0x99, 0x00);
             _strokePaint.StrokeWidth = 1.5f;
-            canvas.DrawLine(coinX, coinY - 4, coinX, coinY + 4, _strokePaint);
+            canvas.DrawArc(new SKRect(coinX - 3, coinY - 3, coinX + 3, coinY + 3), 40, 280, false, _strokePaint);
+            // Glanz-Highlight oben links
+            _fillPaint.Color = new SKColor(0xFF, 0xFF, 0xFF, 60);
+            canvas.DrawCircle(coinX - 2, coinY - 2, 2.5f, _fillPaint);
         }
 
         // --- 4+ Worker: Gold-Regen + Stern ---

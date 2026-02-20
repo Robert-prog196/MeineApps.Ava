@@ -420,13 +420,20 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
 
     private async void OnTimerTick(object? sender, EventArgs e)
     {
-        if (!IsPlaying || _isEnding) return;
-
-        TimeRemaining--;
-
-        if (TimeRemaining <= 0)
+        try
         {
-            await EndGameAsync();
+            if (!IsPlaying || _isEnding) return;
+
+            TimeRemaining--;
+
+            if (TimeRemaining <= 0)
+            {
+                await EndGameAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler in OnTimerTick: {ex}");
         }
     }
 
@@ -437,6 +444,7 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
 
         // Paint the cell
         cell.IsPainted = true;
+        cell.PaintedAt = DateTime.UtcNow;
         cell.PaintColor = SelectedColor;
 
         if (cell.IsTarget)
@@ -545,9 +553,11 @@ public partial class PaintingGameViewModel : ObservableObject, IDisposable
             // Teilbelohnung für diese Aufgabe anzeigen
             int taskCount = Math.Max(1, order.Tasks.Count);
             decimal basePerTask = order.BaseReward / taskCount;
-            RewardAmount = basePerTask * Result.GetRewardPercentage();
+            RewardAmount = basePerTask * Result.GetRewardPercentage()
+                * order.Difficulty.GetRewardMultiplier() * order.OrderType.GetRewardMultiplier();
             int baseXpPerTask = order.BaseXp / taskCount;
-            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage());
+            XpAmount = (int)(baseXpPerTask * Result.GetXpPercentage()
+                * order.Difficulty.GetXpMultiplier() * order.OrderType.GetXpMultiplier());
         }
         else
         {
@@ -738,6 +748,9 @@ public partial class PaintCell : ObservableObject
 
     [ObservableProperty]
     private bool _isPainted;
+
+    /// <summary>Zeitpunkt des Streichens (fuer Frisch-Effekt im Renderer).</summary>
+    public DateTime PaintedAt { get; set; }
 
     [ObservableProperty]
     private string _paintColor = "Transparent";

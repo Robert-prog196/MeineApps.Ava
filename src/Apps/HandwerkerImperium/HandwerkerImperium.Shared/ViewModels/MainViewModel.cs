@@ -181,6 +181,43 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _challengesExpandIconKind = "ChevronUp";
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // REPUTATION (Task #6)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private int _reputationScore;
+
+    [ObservableProperty]
+    private string _reputationColor = "#808080";
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // EMPTY STATES (Task #8)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _hasNoOrders;
+
+    [ObservableProperty]
+    private bool _allQuickJobsDone;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PRESTIGE-BANNER (Task #14)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private bool _isPrestigeAvailable;
+
+    [ObservableProperty]
+    private string _prestigePointsPreview = "";
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BUILDINGS-ZUSAMMENFASSUNG (Task #5)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    [ObservableProperty]
+    private string _buildingsSummary = "";
+
     // Bulk Buy Multiplikator (1, 10, 100, 0=Max)
     [ObservableProperty]
     private int _bulkBuyAmount = 1;
@@ -707,6 +744,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public async void Initialize()
     {
+        try
+        {
         // Load saved game first
         if (!_gameStateService.IsInitialized)
         {
@@ -781,6 +820,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         // Start the game loop for idle earnings
         _gameLoopService.Start();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler in Initialize: {ex}");
+            IsLoading = false;
+        }
     }
 
     /// <summary>
@@ -1154,14 +1199,24 @@ public partial class MainViewModel : ObservableObject, IDisposable
             {
                 Workshops.Add(CreateWorkshopDisplay(state, type));
             }
-            return;
+        }
+        else
+        {
+            // Update: Bestehende Items aktualisieren (kein Clear/Add → weniger UI-Churn)
+            for (int i = 0; i < _workshopTypes.Length && i < Workshops.Count; i++)
+            {
+                UpdateWorkshopDisplay(Workshops[i], state, _workshopTypes[i]);
+            }
         }
 
-        // Update: Bestehende Items aktualisieren (kein Clear/Add → weniger UI-Churn)
-        for (int i = 0; i < _workshopTypes.Length && i < Workshops.Count; i++)
-        {
-            UpdateWorkshopDisplay(Workshops[i], state, _workshopTypes[i]);
-        }
+        // Gebäude-Zusammenfassung aktualisieren (Task #5)
+        RefreshBuildingsSummary(state);
+
+        // Reputation aktualisieren (Task #6)
+        RefreshReputation(state);
+
+        // Prestige-Banner aktualisieren (Task #14)
+        RefreshPrestigeBanner(state);
     }
 
     /// <summary>
@@ -1209,6 +1264,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
         };
         // BulkBuy-Kosten berechnen
         SetBulkUpgradeCost(model, workshop, state.Money);
+
+        // Upgrade-Preview + Net-Income berechnen (Task #10, #13)
+        SetWorkshopFinancials(model, workshop);
+
         return model;
     }
 
@@ -1245,6 +1304,93 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Berechnet Upgrade-Income-Preview und Netto-Einkommen für eine Workshop-Anzeige (Task #10, #13).
+    /// </summary>
+    private void SetWorkshopFinancials(WorkshopDisplayModel model, Workshop? workshop)
+    {
+        if (workshop == null || !model.IsUnlocked)
+        {
+            model.UpgradeIncomePreview = "";
+            model.NetIncomeDisplay = "";
+            model.IsNetNegative = false;
+            model.HasCosts = false;
+            return;
+        }
+
+        // Netto-Einkommen (Brutto - Kosten)
+        var netIncome = workshop.NetIncomePerSecond;
+        model.NetIncomeDisplay = MoneyFormatter.FormatPerSecond(netIncome, 1);
+        model.IsNetNegative = netIncome < 0;
+        model.HasCosts = workshop.TotalCostsPerHour > 0;
+
+        // Upgrade-Preview: Einkommensdifferenz nach Bulk-Upgrade berechnen
+        if (workshop.CanUpgrade && workshop.Level < Workshop.MaxLevel)
+        {
+            int upgradeCount = BulkBuyAmount == 0 ? 10 : BulkBuyAmount; // Max → zeige Preview für ~10 Level
+            int targetLevel = Math.Min(workshop.Level + upgradeCount, Workshop.MaxLevel);
+            // Einkommen bei Ziel-Level basierend auf Base-Income-Formel berechnen
+            decimal currentBase = (decimal)Math.Pow(1.025, workshop.Level - 1) * workshop.Type.GetBaseIncomeMultiplier();
+            decimal targetBase = (decimal)Math.Pow(1.025, targetLevel - 1) * workshop.Type.GetBaseIncomeMultiplier();
+            // Differenz berücksichtigt nur die Basis (Worker-Effekte skalieren proportional)
+            decimal diff = (targetBase - currentBase) * Math.Max(1, workshop.Workers.Count);
+            model.UpgradeIncomePreview = diff > 0 ? $"+{MoneyFormatter.FormatPerSecond(diff, 1)}" : "";
+        }
+        else
+        {
+            model.UpgradeIncomePreview = "";
+        }
+    }
+
+    /// <summary>
+    /// Aktualisiert die Gebäude-Zusammenfassung (Task #5).
+    /// </summary>
+    private void RefreshBuildingsSummary(GameState state)
+    {
+        int totalBuildings = Enum.GetValues<BuildingType>().Length;
+        int builtCount = state.Buildings.Count(b => b.IsBuilt);
+        var builtLabel = _localizationService.GetString("Built") ?? "gebaut";
+        var buildingsLabel = _localizationService.GetString("Buildings") ?? "Gebäude";
+        BuildingsSummary = $"{totalBuildings} {buildingsLabel}, {builtCount} {builtLabel}";
+    }
+
+    /// <summary>
+    /// Aktualisiert Reputation-Anzeige (Task #6).
+    /// </summary>
+    private void RefreshReputation(GameState state)
+    {
+        var score = state.Reputation.ReputationScore;
+        ReputationScore = score;
+        ReputationColor = score switch
+        {
+            < 30 => "#EF4444",  // Rot
+            < 60 => "#F59E0B",  // Gelb
+            < 80 => "#22C55E",  // Grün
+            _ => "#FFD700"      // Gold
+        };
+    }
+
+    /// <summary>
+    /// Aktualisiert Prestige-Banner-Anzeige (Task #14).
+    /// </summary>
+    private void RefreshPrestigeBanner(GameState state)
+    {
+        var highestTier = state.Prestige.GetHighestAvailableTier(state.PlayerLevel);
+        IsPrestigeAvailable = highestTier != PrestigeTier.None;
+
+        if (IsPrestigeAvailable)
+        {
+            var potentialPoints = _prestigeService.GetPrestigePoints(state.TotalMoneyEarned);
+            int tierPoints = (int)(potentialPoints * highestTier.GetPointMultiplier());
+            var pointsLabel = _localizationService.GetString("PrestigePoints") ?? "Prestige-Punkte";
+            PrestigePointsPreview = $"+{tierPoints} {pointsLabel}";
+        }
+        else
+        {
+            PrestigePointsPreview = "";
+        }
+    }
+
     private void UpdateWorkshopDisplay(WorkshopDisplayModel model, GameState state, WorkshopType type)
     {
         var workshop = state.Workshops.FirstOrDefault(w => w.Type == type);
@@ -1273,6 +1419,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         // BulkBuy-Kosten aktualisieren
         SetBulkUpgradeCost(model, workshop, state.Money);
 
+        // Upgrade-Preview + Net-Income berechnen (Task #10, #13)
+        SetWorkshopFinancials(model, workshop);
+
         model.NotifyAllChanged();
     }
 
@@ -1283,12 +1432,29 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         foreach (var order in state.AvailableOrders)
         {
-            // Populate localized display fields
+            // Lokalisierte Display-Felder befüllen
             var localizedTitle = _localizationService.GetString(order.TitleKey);
             order.DisplayTitle = string.IsNullOrEmpty(localizedTitle) ? order.TitleFallback : localizedTitle;
             order.DisplayWorkshopName = _localizationService.GetString(order.WorkshopType.GetLocalizationKey());
+
+            // Auftragstyp Display-Properties (Task #3)
+            order.DisplayOrderType = _localizationService.GetString(order.OrderType.GetLocalizationKey())
+                                     ?? order.OrderType.ToString();
+            order.OrderTypeIcon = order.OrderType.GetIcon();
+            order.OrderTypeBadgeColor = order.OrderType switch
+            {
+                OrderType.Large => "#EA580C",
+                OrderType.Weekly => "#FFD700",
+                OrderType.Cooperation => "#0E7490",
+                _ => ""
+            };
+            order.ShowOrderTypeBadge = order.OrderType != OrderType.Standard && order.OrderType != OrderType.Quick;
+
             AvailableOrders.Add(order);
         }
+
+        // Empty State (Task #8)
+        HasNoOrders = AvailableOrders.Count == 0;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1543,6 +1709,40 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void NavigateToAchievements()
     {
         SelectAchievementsTab();
+    }
+
+    /// <summary>
+    /// Navigiert zur Gebäude-Detail-Ansicht.
+    /// </summary>
+    [RelayCommand]
+    private void NavigateToBuildings()
+    {
+        SelectBuildingsTab();
+    }
+
+    /// <summary>
+    /// Navigiert zum Prestige (Statistik-Tab wo Prestige angezeigt wird).
+    /// </summary>
+    [RelayCommand]
+    private void NavigateToPrestige()
+    {
+        SelectStatisticsTab();
+    }
+
+    /// <summary>
+    /// Zeigt Reputations-Info-Dialog mit Level und Multiplikator.
+    /// </summary>
+    [RelayCommand]
+    private void ShowReputationInfo()
+    {
+        var rep = _gameStateService.State.Reputation;
+        var level = _localizationService.GetString(rep.ReputationLevelKey)
+                    ?? rep.ReputationLevelKey;
+        var multiplier = rep.ReputationMultiplier;
+        AlertDialogTitle = _localizationService.GetString("Reputation") ?? "Reputation";
+        AlertDialogMessage = $"{level} ({rep.ReputationScore}/100)\n\u00d7{multiplier:F1} {_localizationService.GetString("IncomeBonus") ?? "Einkommensbonus"}";
+        AlertDialogButtonText = "OK";
+        IsAlertDialogVisible = true;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -1988,6 +2188,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void RefreshQuickJobs()
     {
         QuickJobs = _quickJobService.GetAvailableJobs();
+        // Empty State für Quick Jobs (Task #8)
+        AllQuickJobsDone = QuickJobs.Count == 0 || QuickJobs.All(j => j.IsCompleted);
     }
 
     private void RefreshChallenges()
@@ -2533,6 +2735,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             // DailyChallenge-Fortschritt aktualisieren (Service trackt intern, UI muss refreshen)
             RefreshChallenges();
+
+            // Reputation + Prestige-Banner periodisch aktualisieren (Task #6, #14)
+            var state = _gameStateService.State;
+            RefreshReputation(state);
+            RefreshPrestigeBanner(state);
         }
         else if (HasActiveEvent)
         {
@@ -2782,6 +2989,26 @@ public partial class WorkshopDisplayModel : ObservableObject
     /// </summary>
     public string BulkUpgradeLabel { get; set; } = "";
 
+    /// <summary>
+    /// Vorschau der Einkommens-Steigerung nach Upgrade (z.B. "+1,5 €/s").
+    /// </summary>
+    public string UpgradeIncomePreview { get; set; } = "";
+
+    /// <summary>
+    /// Netto-Einkommen pro Sekunde (Brutto - Kosten), formatiert.
+    /// </summary>
+    public string NetIncomeDisplay { get; set; } = "";
+
+    /// <summary>
+    /// Ob das Netto-Einkommen negativ ist (Verlust).
+    /// </summary>
+    public bool IsNetNegative { get; set; }
+
+    /// <summary>
+    /// Ob der Workshop laufende Kosten hat (Worker vorhanden oder Level > 1).
+    /// </summary>
+    public bool HasCosts { get; set; }
+
     public string WorkerDisplay => $"👷×{WorkerCount}";
     public string IncomeDisplay => IncomePerSecond > 0 ? MoneyFormatter.FormatPerSecond(IncomePerSecond, 1) : "-";
     public string UpgradeCostDisplay => MoneyFormatter.FormatCompact(BulkUpgradeCost > 0 ? BulkUpgradeCost : UpgradeCost);
@@ -2885,5 +3112,9 @@ public partial class WorkshopDisplayModel : ObservableObject
         OnPropertyChanged(nameof(ShowMilestone));
         OnPropertyChanged(nameof(BulkUpgradeCost));
         OnPropertyChanged(nameof(BulkUpgradeLabel));
+        OnPropertyChanged(nameof(UpgradeIncomePreview));
+        OnPropertyChanged(nameof(NetIncomeDisplay));
+        OnPropertyChanged(nameof(IsNetNegative));
+        OnPropertyChanged(nameof(HasCosts));
     }
 }

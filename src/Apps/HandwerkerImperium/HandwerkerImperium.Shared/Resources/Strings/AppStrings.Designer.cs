@@ -101,6 +101,8 @@ namespace HandwerkerImperium.Resources.Strings {
 
         public static string Reward => ResourceManager.GetString("Reward", resourceCulture) ?? "";
 
+        public static string RewardDependsOnRating => ResourceManager.GetString("RewardDependsOnRating", resourceCulture) ?? "";
+
         public static string Difficulty => ResourceManager.GetString("Difficulty", resourceCulture) ?? "";
 
         public static string Sawing => ResourceManager.GetString("Sawing", resourceCulture) ?? "";
@@ -1237,5 +1239,23 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string TaskProgress => ResourceManager.GetString("TaskProgress", resourceCulture) ?? "";
 
         public static string NextTask => ResourceManager.GetString("NextTask", resourceCulture) ?? "";
+
+        public static string RushActive => ResourceManager.GetString("RushActive", resourceCulture) ?? "";
+
+        public static string EfficiencyShort => ResourceManager.GetString("EfficiencyShort", resourceCulture) ?? "";
+
+        public static string AchievementsCompleted => ResourceManager.GetString("AchievementsCompleted", resourceCulture) ?? "";
+
+        public static string Built => ResourceManager.GetString("Built", resourceCulture) ?? "";
+
+        public static string Reputation => ResourceManager.GetString("Reputation", resourceCulture) ?? "";
+
+        public static string PrestigeAvailable => ResourceManager.GetString("PrestigeAvailable", resourceCulture) ?? "";
+
+        public static string NoOrdersAvailable => ResourceManager.GetString("NoOrdersAvailable", resourceCulture) ?? "";
+
+        public static string OrdersComingSoon => ResourceManager.GetString("OrdersComingSoon", resourceCulture) ?? "";
+
+        public static string AllQuickJobsDone => ResourceManager.GetString("AllQuickJobsDone", resourceCulture) ?? "";
     }
 }

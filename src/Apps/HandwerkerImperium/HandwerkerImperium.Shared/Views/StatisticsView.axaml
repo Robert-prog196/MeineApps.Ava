@@ -282,6 +282,102 @@
           </StackPanel>
         </Border>
 
+        <!-- PRESTIGE SHOP -->
+        <Border Classes="Card StatsCard">
+          <StackPanel Spacing="12">
+            <!-- Header mit PP-Balance -->
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="StorefrontOutline" Width="20" Height="20"
+                                 Foreground="Gold" />
+                <TextBlock Text="{loc:Translate PrestigeShop}"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </StackPanel>
+
+              <!-- PP-Balance Badge -->
+              <Border Grid.Column="1"
+                      CornerRadius="8"
+                      Padding="10,4">
+                <Border.Background>
+                  <SolidColorBrush Color="#D97706" Opacity="0.3" />
+                </Border.Background>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                  <mi:MaterialIcon Kind="Creation" Width="14" Height="14"
+                                   Foreground="Gold" />
+                  <TextBlock Text="{Binding PrestigePoints}"
+                             FontSize="14" FontWeight="Bold"
+                             Foreground="Gold" />
+                  <TextBlock Text="PP" FontSize="12"
+                             Foreground="Gold" Opacity="0.7"
+                             VerticalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <!-- Shop Items -->
+            <ItemsControl ItemsSource="{Binding PrestigeShopItems}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:PrestigeShopItemDisplay">
+                  <Border Background="{DynamicResource SurfaceBrush}"
+                          CornerRadius="8"
+                          Padding="12,8"
+                          Margin="0,3"
+                          Opacity="{Binding DisplayOpacity}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                      <!-- Icon -->
+                      <Border Background="{Binding IconBackground}"
+                              CornerRadius="8"
+                              Width="40" Height="40"
+                              VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Icon}"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                      </Border>
+
+                      <!-- Name + Beschreibung -->
+                      <StackPanel Grid.Column="1" Spacing="2"
+                                  VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" MaxLines="2" />
+                      </StackPanel>
+
+                      <!-- Kauf-Button oder Check -->
+                      <Button Grid.Column="2"
+                              Classes="Primary"
+                              Padding="10,6"
+                              MinWidth="60"
+                              IsVisible="{Binding !IsPurchased}"
+                              IsEnabled="{Binding CanAfford}"
+                              Command="{Binding $parent[ItemsControl].((vm:StatisticsViewModel)DataContext).BuyPrestigeItemCommand}"
+                              CommandParameter="{Binding .}"
+                              VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="3">
+                          <mi:MaterialIcon Kind="Creation" Width="12" Height="12" />
+                          <TextBlock Text="{Binding CostDisplay}"
+                                     FontSize="11" FontWeight="Bold" />
+                        </StackPanel>
+                      </Button>
+
+                      <mi:MaterialIcon Grid.Column="2"
+                                       Kind="CheckCircle" Width="24" Height="24"
+                                       Foreground="{DynamicResource SuccessBrush}"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding IsPurchased}" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
         <!-- WORKSHOP SUMMARY -->
         <Border Classes="Card StatsCard">
           <StackPanel Spacing="12">

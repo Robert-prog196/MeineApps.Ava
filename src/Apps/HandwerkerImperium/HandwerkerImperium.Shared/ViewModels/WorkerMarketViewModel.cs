@@ -189,6 +189,11 @@ public partial class WorkerMarketViewModel : ObservableObject
                 ? _localizationService.GetString(worker.Specialization.Value.GetLocalizationKey())
                 : "";
         }
+        // Sortierung: Beste Worker zuerst (Tier absteigend, dann Effizienz absteigend)
+        workers = workers
+            .OrderByDescending(w => (int)w.Tier)
+            .ThenByDescending(w => w.Efficiency)
+            .ToList();
         AvailableWorkers = workers;
 
         if (!HasAvailableSlots)
