@@ -179,16 +179,16 @@ public partial class App : Application
         else
             services.AddSingleton<IHapticService, NoOpHapticService>();
 
-        // ViewModels (child VMs are Transient, MainVM is Singleton since it holds them)
-        services.AddTransient<WeekOverviewViewModel>();
-        services.AddTransient<CalendarViewModel>();
-        services.AddTransient<StatisticsViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<DayDetailViewModel>();
-        services.AddTransient<MonthOverviewViewModel>();
-        services.AddTransient<YearOverviewViewModel>();
-        services.AddTransient<VacationViewModel>();
-        services.AddTransient<ShiftPlanViewModel>();
+        // ViewModels (alle Singleton - MainVM hält Child-VMs per Constructor Injection)
+        services.AddSingleton<WeekOverviewViewModel>();
+        services.AddSingleton<CalendarViewModel>();
+        services.AddSingleton<StatisticsViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<DayDetailViewModel>();
+        services.AddSingleton<MonthOverviewViewModel>();
+        services.AddSingleton<YearOverviewViewModel>();
+        services.AddSingleton<VacationViewModel>();
+        services.AddSingleton<ShiftPlanViewModel>();
         services.AddSingleton<MainViewModel>();
     }
 }

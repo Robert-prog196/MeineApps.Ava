@@ -99,12 +99,12 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<MainViewModel>();
-        services.AddTransient<TimerViewModel>();
-        services.AddTransient<StopwatchViewModel>();
-        services.AddTransient<PomodoroViewModel>();
-        services.AddTransient<AlarmViewModel>();
-        services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<TimerViewModel>();
+        services.AddSingleton<StopwatchViewModel>();
+        services.AddSingleton<PomodoroViewModel>();
+        services.AddSingleton<AlarmViewModel>();
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<AlarmOverlayViewModel>();
-        services.AddTransient<ShiftScheduleViewModel>();
+        services.AddSingleton<ShiftScheduleViewModel>();
     }
 }

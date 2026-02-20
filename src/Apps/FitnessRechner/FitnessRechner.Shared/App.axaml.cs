@@ -165,18 +165,18 @@ public partial class App : Application
 
         // ViewModels
         services.AddSingleton<MainViewModel>();
-        services.AddTransient<ProgressViewModel>();
-        services.AddTransient<FoodSearchViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<TrackingViewModel>();
-        services.AddTransient<HistoryViewModel>();
-        services.AddTransient<BarcodeScannerViewModel>();
+        services.AddSingleton<ProgressViewModel>();
+        services.AddSingleton<FoodSearchViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<TrackingViewModel>();
+        services.AddSingleton<HistoryViewModel>();
+        services.AddSingleton<BarcodeScannerViewModel>();
 
         // Calculator ViewModels
-        services.AddTransient<BmiViewModel>();
-        services.AddTransient<CaloriesViewModel>();
-        services.AddTransient<WaterViewModel>();
-        services.AddTransient<IdealWeightViewModel>();
-        services.AddTransient<BodyFatViewModel>();
+        services.AddSingleton<BmiViewModel>();
+        services.AddSingleton<CaloriesViewModel>();
+        services.AddSingleton<WaterViewModel>();
+        services.AddSingleton<IdealWeightViewModel>();
+        services.AddSingleton<BodyFatViewModel>();
     }
 }

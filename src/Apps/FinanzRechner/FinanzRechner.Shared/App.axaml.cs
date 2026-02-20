@@ -124,17 +124,17 @@ public partial class App : Application
         services.AddSingleton<FinanceEngine>();
 
         // ViewModels
-        services.AddTransient<ExpenseTrackerViewModel>();
-        services.AddTransient<StatisticsViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<BudgetsViewModel>();
-        services.AddTransient<RecurringTransactionsViewModel>();
-        services.AddTransient<LoanViewModel>();
-        services.AddTransient<CompoundInterestViewModel>();
-        services.AddTransient<SavingsPlanViewModel>();
-        services.AddTransient<AmortizationViewModel>();
-        services.AddTransient<YieldViewModel>();
-        services.AddTransient<InflationViewModel>();
+        services.AddSingleton<ExpenseTrackerViewModel>();
+        services.AddSingleton<StatisticsViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<BudgetsViewModel>();
+        services.AddSingleton<RecurringTransactionsViewModel>();
+        services.AddSingleton<LoanViewModel>();
+        services.AddSingleton<CompoundInterestViewModel>();
+        services.AddSingleton<SavingsPlanViewModel>();
+        services.AddSingleton<AmortizationViewModel>();
+        services.AddSingleton<YieldViewModel>();
+        services.AddSingleton<InflationViewModel>();
         services.AddSingleton<MainViewModel>();
     }
 }

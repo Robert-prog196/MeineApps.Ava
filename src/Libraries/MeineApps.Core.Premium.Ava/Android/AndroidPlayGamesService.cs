@@ -26,6 +26,12 @@ public class AndroidPlayGamesService : IPlayGamesService
     public bool IsSignedIn => _isSignedIn;
     public string? PlayerName => _playerName;
 
+    /// <summary>
+    /// Prüft ob die Activity noch in einem gültigen Zustand ist.
+    /// Verhindert native Java-Exceptions bei GPGS-Aufrufen nach Activity-Lifecycle-Ende.
+    /// </summary>
+    private bool IsActivityValid => !_activity.IsFinishing && !_activity.IsDestroyed;
+
     public bool IsEnabled
     {
         get => _preferences.Get(PREF_ENABLED, true);
@@ -66,9 +72,9 @@ public class AndroidPlayGamesService : IPlayGamesService
 
     public Task<bool> SignInAsync()
     {
-        if (!IsEnabled)
+        if (!IsEnabled || !IsActivityValid)
         {
-            Android.Util.Log.Info(Tag, "GPGS deaktiviert - Sign-In übersprungen");
+            Android.Util.Log.Info(Tag, "GPGS deaktiviert oder Activity ungültig - Sign-In übersprungen");
             return Task.FromResult(false);
         }
 
@@ -139,6 +145,10 @@ public class AndroidPlayGamesService : IPlayGamesService
         if (leaderboardId.StartsWith("TODO_"))
             return Task.CompletedTask;
 
+        // Activity-Lifecycle prüfen → verhindert native Java-Exception
+        if (!IsActivityValid)
+            return Task.CompletedTask;
+
         try
         {
             var leaderboardsClient = PlayGames.GetLeaderboardsClient(_activity);
@@ -155,7 +165,7 @@ public class AndroidPlayGamesService : IPlayGamesService
 
     public Task ShowLeaderboardsAsync()
     {
-        if (!_isSignedIn || !IsEnabled)
+        if (!_isSignedIn || !IsEnabled || !IsActivityValid)
             return Task.CompletedTask;
 
         var tcs = new TaskCompletionSource<bool>();
@@ -203,6 +213,10 @@ public class AndroidPlayGamesService : IPlayGamesService
         if (achievementId.StartsWith("TODO_"))
             return Task.CompletedTask;
 
+        // Activity-Lifecycle prüfen → verhindert native Java-Exception
+        if (!IsActivityValid)
+            return Task.CompletedTask;
+
         try
         {
             var achievementsClient = PlayGames.GetAchievementsClient(_activity);
@@ -226,6 +240,9 @@ public class AndroidPlayGamesService : IPlayGamesService
         if (achievementId.StartsWith("TODO_"))
             return Task.CompletedTask;
 
+        if (!IsActivityValid)
+            return Task.CompletedTask;
+
         try
         {
             var achievementsClient = PlayGames.GetAchievementsClient(_activity);
@@ -242,7 +259,7 @@ public class AndroidPlayGamesService : IPlayGamesService
 
     public Task ShowAchievementsAsync()
     {
-        if (!_isSignedIn || !IsEnabled)
+        if (!_isSignedIn || !IsEnabled || !IsActivityValid)
             return Task.CompletedTask;
 
         var tcs = new TaskCompletionSource<bool>();

@@ -218,25 +218,32 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     private async void HandleNavigation(string route)
     {
-        // Zurück-Navigation
-        if (route == ".." || route.Contains("back", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            GoBack();
-            return;
-        }
-
-        // DayDetail-Navigation (z.B. "DayDetailPage?date=2026-02-13")
-        if (route.StartsWith("DayDetailPage", StringComparison.OrdinalIgnoreCase))
-        {
-            var dateParam = route.Split("date=", StringSplitOptions.RemoveEmptyEntries);
-            if (dateParam.Length > 1 && DateTime.TryParse(dateParam[1], out var date))
+            // Zurück-Navigation
+            if (route == ".." || route.Contains("back", StringComparison.OrdinalIgnoreCase))
             {
-                DayDetailVm.SelectedDate = date;
+                GoBack();
+                return;
             }
-            CloseAllSubPages();
-            IsDayDetailActive = true;
-            OnPropertyChanged(nameof(IsSubPageActive));
-            await DayDetailVm.LoadDataAsync();
+
+            // DayDetail-Navigation (z.B. "DayDetailPage?date=2026-02-13")
+            if (route.StartsWith("DayDetailPage", StringComparison.OrdinalIgnoreCase))
+            {
+                var dateParam = route.Split("date=", StringSplitOptions.RemoveEmptyEntries);
+                if (dateParam.Length > 1 && DateTime.TryParse(dateParam[1], out var date))
+                {
+                    DayDetailVm.SelectedDate = date;
+                }
+                CloseAllSubPages();
+                IsDayDetailActive = true;
+                OnPropertyChanged(nameof(IsSubPageActive));
+                await DayDetailVm.LoadDataAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler in HandleNavigation: {ex}");
         }
     }
 
@@ -907,7 +914,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private async void OnUpdateTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        await UpdateLiveDataAsync();
+        try
+        {
+            await UpdateLiveDataAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Fehler in OnUpdateTimerElapsed: {ex}");
+        }
     }
 
     public void Dispose()
