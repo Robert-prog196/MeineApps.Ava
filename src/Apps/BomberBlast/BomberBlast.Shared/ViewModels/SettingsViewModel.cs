@@ -54,6 +54,9 @@ public partial class SettingsViewModel : ObservableObject
     private bool _joystickFixed; // false=schwebend, true=fixiert
 
     [ObservableProperty]
+    private bool _reducedEffects; // Reduzierte visuelle Effekte
+
+    [ObservableProperty]
     private double _joystickSize = 120;
 
     [ObservableProperty]
@@ -212,6 +215,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         // Input-Einstellungen aus InputManager laden
         JoystickFixed = _inputManager.JoystickFixed;
+        ReducedEffects = _inputManager.ReducedEffects;
         JoystickSize = _inputManager.JoystickSize;
         JoystickOpacity = _inputManager.JoystickOpacity;
         HapticEnabled = _inputManager.HapticEnabled;
@@ -253,6 +257,14 @@ public partial class SettingsViewModel : ObservableObject
         if (_isInitializing) return;
 
         _inputManager.JoystickFixed = value;
+        _inputManager.SaveSettings();
+    }
+
+    partial void OnReducedEffectsChanged(bool value)
+    {
+        if (_isInitializing) return;
+
+        _inputManager.ReducedEffects = value;
         _inputManager.SaveSettings();
     }
 

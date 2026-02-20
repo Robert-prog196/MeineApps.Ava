@@ -61,9 +61,9 @@ public class KeyboardHandler : IInputHandler
     }
 
     // Touch methods are no-ops for keyboard handler
-    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight) { }
-    public void OnTouchMove(float x, float y) { }
-    public void OnTouchEnd() { }
+    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight, long pointerId = 0) { }
+    public void OnTouchMove(float x, float y, long pointerId = 0) { }
+    public void OnTouchEnd(long pointerId = 0) { }
 
     public void Update(float deltaTime)
     {

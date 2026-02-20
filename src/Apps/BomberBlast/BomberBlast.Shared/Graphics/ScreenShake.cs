@@ -20,6 +20,9 @@ public class ScreenShake
     /// <summary>Ob der Shake-Effekt aktiv ist</summary>
     public bool IsActive => _timer > 0;
 
+    /// <summary>Wenn false, werden Trigger-Aufrufe ignoriert (ReducedEffects)</summary>
+    public bool Enabled { get; set; } = true;
+
     /// <summary>
     /// Shake auslösen
     /// </summary>
@@ -27,6 +30,7 @@ public class ScreenShake
     /// <param name="duration">Dauer in Sekunden</param>
     public void Trigger(float intensity, float duration)
     {
+        if (!Enabled) return;
         // Nur überschreiben wenn stärker als aktueller Shake
         // _duration == 0 beim ersten Aufruf → Division by Zero vermeiden
         if (_duration <= 0 || intensity > _intensity * (_timer / _duration))

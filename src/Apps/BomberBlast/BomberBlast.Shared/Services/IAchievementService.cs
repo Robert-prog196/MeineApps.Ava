@@ -49,4 +49,7 @@ public interface IAchievementService
 
     /// <summary>Daily Challenge abgeschlossen - prüft Daily-Challenge-Achievements</summary>
     Achievement? OnDailyChallengeCompleted(int totalCompleted, int currentStreak);
+
+    /// <summary>Erzwingt Speichern aller gepufferten Änderungen (Debounce-Flush)</summary>
+    void FlushIfDirty();
 }

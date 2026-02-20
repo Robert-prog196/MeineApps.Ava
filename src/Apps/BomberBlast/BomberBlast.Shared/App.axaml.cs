@@ -132,19 +132,19 @@ public partial class App : Application
         services.AddSingleton<GameRenderer>();
         services.AddSingleton<GameEngine>();
 
-        // ViewModels
+        // ViewModels (alle Singleton: werden von MainViewModel gehalten, dürfen nicht doppelt existieren)
         services.AddSingleton<MainViewModel>();
-        services.AddTransient<MainMenuViewModel>();
-        services.AddTransient<GameViewModel>();
-        services.AddTransient<LevelSelectViewModel>();
-        services.AddTransient<SettingsViewModel>();
-        services.AddTransient<HighScoresViewModel>();
-        services.AddTransient<GameOverViewModel>();
-        services.AddTransient<PauseViewModel>();
-        services.AddTransient<HelpViewModel>();
-        services.AddTransient<ShopViewModel>();
-        services.AddTransient<AchievementsViewModel>();
-        services.AddTransient<DailyChallengeViewModel>();
-        services.AddTransient<VictoryViewModel>();
+        services.AddSingleton<MainMenuViewModel>();
+        services.AddSingleton<GameViewModel>();
+        services.AddSingleton<LevelSelectViewModel>();
+        services.AddSingleton<SettingsViewModel>();
+        services.AddSingleton<HighScoresViewModel>();
+        services.AddSingleton<GameOverViewModel>();
+        services.AddSingleton<PauseViewModel>();
+        services.AddSingleton<HelpViewModel>();
+        services.AddSingleton<ShopViewModel>();
+        services.AddSingleton<AchievementsViewModel>();
+        services.AddSingleton<DailyChallengeViewModel>();
+        services.AddSingleton<VictoryViewModel>();
     }
 }

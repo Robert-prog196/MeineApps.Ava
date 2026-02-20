@@ -23,7 +23,7 @@ public partial class AchievementsViewModel : ObservableObject
     [ObservableProperty]
     private string _progressText = "0/0";
 
-    public ObservableCollection<AchievementItem> Items { get; } = [];
+    public ObservableCollection<AchievementCategoryGroup> CategoryGroups { get; } = [];
 
     public AchievementsViewModel(IAchievementService achievementService, ILocalizationService localizationService)
     {
@@ -36,36 +36,88 @@ public partial class AchievementsViewModel : ObservableObject
         TitleText = _localizationService.GetString("AchievementsTitle") ?? "Achievements";
         ProgressText = $"{_achievementService.UnlockedCount}/{_achievementService.TotalCount}";
 
-        Items.Clear();
-        foreach (var achievement in _achievementService.Achievements)
+        CategoryGroups.Clear();
+
+        // Nach Kategorie gruppieren
+        var grouped = _achievementService.Achievements
+            .GroupBy(a => a.Category)
+            .OrderBy(g => (int)g.Key);
+
+        foreach (var group in grouped)
         {
-            Items.Add(new AchievementItem
+            var categoryGroup = new AchievementCategoryGroup
             {
-                Name = _localizationService.GetString(achievement.NameKey) ?? achievement.Id,
-                Description = _localizationService.GetString(achievement.DescriptionKey) ?? "",
-                IsUnlocked = achievement.IsUnlocked,
-                Progress = achievement.Progress,
-                Target = achievement.Target,
-                ProgressText = achievement.Target > 1
-                    ? $"{achievement.Progress}/{achievement.Target}"
-                    : (achievement.IsUnlocked ? "✓" : ""),
-                IconName = achievement.IconName,
-                CategoryName = achievement.Category.ToString(),
-                CategoryIndex = (int)achievement.Category,
-                ProgressFraction = achievement.Target > 0
-                    ? (float)achievement.Progress / achievement.Target
-                    : 0f,
-                CoinReward = achievement.CoinReward,
-                HasCoinReward = achievement.CoinReward > 0,
-                CoinRewardText = achievement.CoinReward > 0
-                    ? $"+{achievement.CoinReward:N0} Coins"
-                    : ""
-            });
+                CategoryName = GetCategoryName(group.Key),
+                CategoryIndex = (int)group.Key,
+            };
+
+            foreach (var achievement in group)
+            {
+                categoryGroup.Items.Add(new AchievementItem
+                {
+                    Name = _localizationService.GetString(achievement.NameKey) ?? achievement.Id,
+                    Description = _localizationService.GetString(achievement.DescriptionKey) ?? "",
+                    IsUnlocked = achievement.IsUnlocked,
+                    Progress = achievement.Progress,
+                    Target = achievement.Target,
+                    ProgressText = achievement.Target > 1
+                        ? $"{achievement.Progress}/{achievement.Target}"
+                        : (achievement.IsUnlocked ? "\u2713" : ""),
+                    IconName = achievement.IconName,
+                    CategoryName = achievement.Category.ToString(),
+                    CategoryIndex = (int)achievement.Category,
+                    ProgressFraction = achievement.Target > 0
+                        ? (float)achievement.Progress / achievement.Target
+                        : 0f,
+                    CoinReward = achievement.CoinReward,
+                    HasCoinReward = achievement.CoinReward > 0,
+                    CoinRewardText = achievement.CoinReward > 0
+                        ? $"+{achievement.CoinReward:N0} Coins"
+                        : ""
+                });
+            }
+
+            int unlocked = categoryGroup.Items.Count(i => i.IsUnlocked);
+            categoryGroup.ProgressText = $"{unlocked}/{categoryGroup.Items.Count}";
+            CategoryGroups.Add(categoryGroup);
         }
     }
 
+    /// <summary>Lokalisierter Kategorie-Name</summary>
+    private string GetCategoryName(AchievementCategory category) => category switch
+    {
+        AchievementCategory.Progress => _localizationService.GetString("CategoryProgress") ?? "Progress",
+        AchievementCategory.Mastery => _localizationService.GetString("CategoryMastery") ?? "Mastery",
+        AchievementCategory.Combat => _localizationService.GetString("CategoryCombat") ?? "Combat",
+        AchievementCategory.Skill => _localizationService.GetString("CategorySkill") ?? "Skill",
+        AchievementCategory.Arcade => _localizationService.GetString("CategoryArcade") ?? "Arcade",
+        _ => category.ToString()
+    };
+
     [RelayCommand]
     private void Back() => NavigationRequested?.Invoke("..");
+}
+
+/// <summary>
+/// Gruppierung von Achievements nach Kategorie (fuer Section-Headers)
+/// </summary>
+public class AchievementCategoryGroup
+{
+    public string CategoryName { get; set; } = "";
+    public int CategoryIndex { get; set; }
+    public string ProgressText { get; set; } = "";
+    public ObservableCollection<AchievementItem> Items { get; } = [];
+
+    /// <summary>Kategorie-Farbe (konsistent mit AchievementIconRenderer)</summary>
+    public string CategoryColor => CategoryIndex switch
+    {
+        0 => "#4CAF50", // Progress - Grün
+        1 => "#FFD700", // Mastery - Gold
+        2 => "#F44336", // Combat - Rot
+        3 => "#2196F3", // Skill - Blau
+        4 => "#FF9800", // Arcade - Orange
+        _ => "#888888"
+    };
 }
 
 /// <summary>

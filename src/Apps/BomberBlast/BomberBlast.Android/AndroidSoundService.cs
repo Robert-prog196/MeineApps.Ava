@@ -24,6 +24,7 @@ public class AndroidSoundService : ISoundService
     // Aktuell laufender Musik-Key
     private string? _currentMusicKey;
     private bool _disposed;
+    private readonly object _musicLock = new();
 
     // Maximale gleichzeitige SFX-Streams
     private const int MaxStreams = 8;
@@ -102,52 +103,77 @@ public class AndroidSoundService : ISoundService
 
     public void PlayMusic(string musicKey, float volume)
     {
-        // Gleiche Musik bereits aktiv → nur Lautstärke anpassen
-        if (_currentMusicKey == musicKey && _musicPlayer != null)
+        lock (_musicLock)
         {
-            var v = Math.Clamp(volume, 0f, 1f);
-            _musicPlayer.SetVolume(v, v);
-            return;
-        }
+            // Gleiche Musik bereits aktiv → nur Lautstärke anpassen
+            if (_currentMusicKey == musicKey && _musicPlayer != null)
+            {
+                try
+                {
+                    var v = Math.Clamp(volume, 0f, 1f);
+                    _musicPlayer.SetVolume(v, v);
+                }
+                catch { /* MediaPlayer im ungültigen State */ }
+                return;
+            }
 
-        StopMusic();
+            StopMusicInternal();
 
-        // Versucht .ogg, dann .wav
-        AssetFileDescriptor? afd = null;
-        foreach (var ext in new[] { ".ogg", ".wav" })
-        {
-            try { afd = _assets.OpenFd($"Sounds/music_{musicKey}{ext}"); break; }
-            catch (Java.IO.IOException) { }
-        }
-        if (afd == null) return;
+            // Versucht .ogg, dann .wav
+            AssetFileDescriptor? afd = null;
+            foreach (var ext in new[] { ".ogg", ".wav" })
+            {
+                try { afd = _assets.OpenFd($"Sounds/music_{musicKey}{ext}"); break; }
+                catch (Java.IO.IOException) { }
+            }
+            if (afd == null) return;
 
-        try
-        {
+            try
+            {
+                var player = new MediaPlayer();
+                player.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
+                player.Looping = true;
+                var vol = Math.Clamp(volume, 0f, 1f);
+                player.SetVolume(vol, vol);
 
-            _musicPlayer = new MediaPlayer();
-            _musicPlayer.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
-            _musicPlayer.Looping = true;
-            var vol = Math.Clamp(volume, 0f, 1f);
-            _musicPlayer.SetVolume(vol, vol);
-            _musicPlayer.Prepare();
-            _musicPlayer.Start();
-            _currentMusicKey = musicKey;
-            afd.Close();
-        }
-        catch (Java.IO.IOException)
-        {
-            // Musik-Datei nicht vorhanden → ignorieren
-        }
-        catch (Exception)
-        {
-            // MediaPlayer-Fehler → ignorieren
-            _musicPlayer?.Release();
-            _musicPlayer = null;
-            _currentMusicKey = null;
+                // PrepareAsync statt Prepare → blockiert UI-Thread nicht (ANR-Fix)
+                player.Prepared += (_, _) =>
+                {
+                    try { player.Start(); }
+                    catch { /* Player bereits disposed/gestoppt */ }
+                };
+                player.PrepareAsync();
+
+                _musicPlayer = player;
+                _currentMusicKey = musicKey;
+                afd.Close();
+            }
+            catch (Java.IO.IOException)
+            {
+                // Musik-Datei nicht vorhanden → ignorieren
+            }
+            catch (Exception)
+            {
+                // MediaPlayer-Fehler → aufräumen
+                _musicPlayer?.Release();
+                _musicPlayer = null;
+                _currentMusicKey = null;
+            }
         }
     }
 
     public void StopMusic()
+    {
+        lock (_musicLock)
+        {
+            StopMusicInternal();
+        }
+    }
+
+    /// <summary>
+    /// Interne StopMusic-Logik ohne Lock (wird von PlayMusic innerhalb des Locks aufgerufen).
+    /// </summary>
+    private void StopMusicInternal()
     {
         if (_musicPlayer != null)
         {
@@ -158,7 +184,9 @@ public class AndroidSoundService : ISoundService
             }
             catch { /* Bereits gestoppt */ }
 
-            _musicPlayer.Release();
+            try { _musicPlayer.Release(); }
+            catch { /* Bereits released */ }
+
             _musicPlayer = null;
         }
         _currentMusicKey = null;
@@ -166,35 +194,44 @@ public class AndroidSoundService : ISoundService
 
     public void PauseMusic()
     {
-        try
+        lock (_musicLock)
         {
-            if (_musicPlayer is { IsPlaying: true })
-                _musicPlayer.Pause();
+            try
+            {
+                if (_musicPlayer is { IsPlaying: true })
+                    _musicPlayer.Pause();
+            }
+            catch { /* Bereits pausiert */ }
         }
-        catch { /* Bereits pausiert */ }
     }
 
     public void ResumeMusic()
     {
-        try
+        lock (_musicLock)
         {
-            if (_musicPlayer != null && !_musicPlayer.IsPlaying)
-                _musicPlayer.Start();
+            try
+            {
+                if (_musicPlayer != null && !_musicPlayer.IsPlaying)
+                    _musicPlayer.Start();
+            }
+            catch { /* Kann nicht fortgesetzt werden */ }
         }
-        catch { /* Kann nicht fortgesetzt werden */ }
     }
 
     public void SetMusicVolume(float volume)
     {
-        try
+        lock (_musicLock)
         {
-            if (_musicPlayer != null)
+            try
             {
-                var v = Math.Clamp(volume, 0f, 1f);
-                _musicPlayer.SetVolume(v, v);
+                if (_musicPlayer != null)
+                {
+                    var v = Math.Clamp(volume, 0f, 1f);
+                    _musicPlayer.SetVolume(v, v);
+                }
             }
+            catch { /* Volume-Änderung fehlgeschlagen */ }
         }
-        catch { /* Volume-Änderung fehlgeschlagen */ }
     }
 
     public void Dispose()
@@ -202,7 +239,10 @@ public class AndroidSoundService : ISoundService
         if (_disposed) return;
         _disposed = true;
 
-        StopMusic();
+        lock (_musicLock)
+        {
+            StopMusicInternal();
+        }
 
         _soundPool?.Release();
         _soundPool = null;

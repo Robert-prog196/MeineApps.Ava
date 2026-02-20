@@ -1,3 +1,4 @@
+using BomberBlast.Core;
 using BomberBlast.Resources.Strings;
 using BomberBlast.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -129,6 +130,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IRewardedAdService _rewardedAdService;
     private readonly IAchievementService _achievementService;
     private readonly ICoinService _coinService;
+    private readonly SoundManager _soundManager;
 
     /// <summary>
     /// Zeitpunkt des letzten Back-Presses (für Double-Back-to-Exit)
@@ -162,7 +164,8 @@ public partial class MainViewModel : ObservableObject
         IPurchaseService purchaseService,
         IRewardedAdService rewardedAdService,
         IAchievementService achievementService,
-        ICoinService coinService)
+        ICoinService coinService,
+        SoundManager soundManager)
     {
         MenuVm = menuVm;
         GameVm = gameVm;
@@ -181,12 +184,15 @@ public partial class MainViewModel : ObservableObject
         _rewardedAdService = rewardedAdService;
         _achievementService = achievementService;
         _coinService = coinService;
+        _soundManager = soundManager;
 
         // Game Juice Events weiterleiten
         GameOverVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
+        GameOverVm.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
         MenuVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
         MenuVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
         LevelSelectVm.CelebrationRequested += () => CelebrationRequested?.Invoke();
+        LevelSelectVm.FloatingTextRequested += (text, cat) => FloatingTextRequested?.Invoke(text, cat);
 
         // Achievement-Toast bei Unlock (mit Coin-Belohnung)
         _achievementService.AchievementUnlocked += (_, achievement) =>
@@ -247,6 +253,7 @@ public partial class MainViewModel : ObservableObject
         settingsVm.AlertRequested += (t, m, b) => ShowAlertDialog(t, m, b);
         settingsVm.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
         shopVm.MessageRequested += (t, m) => ShowAlertDialog(t, m, "OK");
+        shopVm.ConfirmationRequested += (t, m, a, c) => ShowConfirmDialog(t, m, a, c);
 
         localization.LanguageChanged += (_, _) =>
         {
@@ -279,6 +286,8 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     public async void NavigateTo(string route)
     {
+        try
+        {
         // Handle compound routes (e.g., "//MainMenu/Game?mode=arcade")
         if (route.StartsWith("//"))
         {
@@ -302,6 +311,10 @@ public partial class MainViewModel : ObservableObject
         }
 
         HideAll();
+
+        // Navigations-Sound (nicht beim Game-Start, das hat eigene Sounds)
+        if (baseRoute != "Game")
+            _soundManager.PlaySound(SoundManager.SFX_MENU_SELECT);
 
         switch (baseRoute)
         {
@@ -513,6 +526,20 @@ public partial class MainViewModel : ObservableObject
                 IsAdBannerVisible = _adService.BannerVisible;
                 MenuVm.OnAppearing();
                 break;
+        }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"NavigateTo Fehler bei Route '{route}': {ex.Message}");
+            // Fallback: Zurück zum Hauptmenü damit die App nicht hängt
+            try
+            {
+                HideAll();
+                IsMainMenuActive = true;
+                IsAdBannerVisible = _adService.BannerVisible;
+                MenuVm.OnAppearing();
+            }
+            catch { /* Letzter Ausweg - App lebt weiter */ }
         }
     }
 

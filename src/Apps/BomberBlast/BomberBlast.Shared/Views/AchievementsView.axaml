@@ -55,47 +55,81 @@
         </Grid>
       </Border>
 
-      <!-- Achievement List -->
+      <!-- Achievement List (nach Kategorie gruppiert) -->
       <ScrollViewer Grid.Row="1"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding Items}" Margin="12,12,12,80">
+        <ItemsControl ItemsSource="{Binding CategoryGroups}" Margin="12,8,12,80">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="12" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:AchievementItem">
-              <Border Classes="Card" Margin="0,4"
-                      Opacity="{Binding IsUnlocked, Converter={x:Static conv:BoolToOpacityConverter.Instance}}">
-                <Grid ColumnDefinitions="48,*,Auto" Margin="8">
-                  <!-- SkiaSharp Achievement-Icon (Kategorie-Farbe, Trophy/Schloss+Ring) -->
-                  <ctrl:AchievementIconCanvas Width="40" Height="40"
-                          CategoryIndex="{Binding CategoryIndex}"
-                          IsAchievementUnlocked="{Binding IsUnlocked}"
-                          ProgressFraction="{Binding ProgressFraction}"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center" />
-
-                  <!-- Name + Description + Coin-Belohnung -->
-                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0">
-                    <TextBlock Text="{Binding Name}"
-                               FontSize="16" FontWeight="Bold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <TextBlock Text="{Binding Description}"
-                               FontSize="12"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap" />
-                    <TextBlock IsVisible="{Binding HasCoinReward}"
-                               Text="{Binding CoinRewardText}"
-                               FontSize="11" FontWeight="SemiBold"
-                               Foreground="#FFD700" />
-                  </StackPanel>
-
-                  <!-- Progress -->
+            <DataTemplate x:DataType="vm:AchievementCategoryGroup">
+              <StackPanel Spacing="4">
+                <!-- Kategorie-Header -->
+                <Grid ColumnDefinitions="4,*,Auto" Margin="0,4,0,2">
+                  <!-- Farbiger Akzent-Streifen -->
+                  <Border Grid.Column="0" CornerRadius="2" Width="4">
+                    <Border.Background>
+                      <SolidColorBrush Color="{Binding CategoryColor}" />
+                    </Border.Background>
+                  </Border>
+                  <TextBlock Grid.Column="1"
+                             Text="{Binding CategoryName}"
+                             FontSize="15" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             Margin="8,0" VerticalAlignment="Center" />
                   <TextBlock Grid.Column="2"
                              Text="{Binding ProgressText}"
-                             FontSize="14" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
                              VerticalAlignment="Center" />
                 </Grid>
-              </Border>
+
+                <!-- Achievements in dieser Kategorie -->
+                <ItemsControl ItemsSource="{Binding Items}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AchievementItem">
+                      <Border Classes="Card" Margin="0,2"
+                              Opacity="{Binding IsUnlocked, Converter={x:Static conv:BoolToOpacityConverter.Instance}}">
+                        <Grid ColumnDefinitions="48,*,Auto" Margin="8">
+                          <!-- SkiaSharp Achievement-Icon -->
+                          <ctrl:AchievementIconCanvas Width="40" Height="40"
+                                  CategoryIndex="{Binding CategoryIndex}"
+                                  IsAchievementUnlocked="{Binding IsUnlocked}"
+                                  ProgressFraction="{Binding ProgressFraction}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+
+                          <!-- Name + Description + Coin-Belohnung -->
+                          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0">
+                            <TextBlock Text="{Binding Name}"
+                                       FontSize="15" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="{Binding Description}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock IsVisible="{Binding HasCoinReward}"
+                                       Text="{Binding CoinRewardText}"
+                                       FontSize="11" FontWeight="SemiBold"
+                                       Foreground="#FFD700" />
+                          </StackPanel>
+
+                          <!-- Progress -->
+                          <TextBlock Grid.Column="2"
+                                     Text="{Binding ProgressText}"
+                                     FontSize="14" FontWeight="Bold"
+                                     Foreground="{DynamicResource AccentBrush}"
+                                     VerticalAlignment="Center" />
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

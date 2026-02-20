@@ -215,7 +215,7 @@
     <value>✓ Premium Actif - Sans Pubs !</value>
   </data>
   <data name="BuyPremium" xml:space="preserve">
-    <value>Acheter Premium - 3,99 €</value>
+    <value>Acheter Premium - 1,99 €</value>
   </data>
   <data name="RestorePurchases" xml:space="preserve">
     <value>Restaurer les Achats</value>
@@ -1180,5 +1180,67 @@
   </data>
   <data name="ShowGpgsAchievements" xml:space="preserve">
     <value>Succès</value>
+  </data>
+
+  <!-- New Keys -->
+  <data name="LevelLocked" xml:space="preserve">
+    <value>Termine d'abord le Niveau {0} !</value>
+  </data>
+  <data name="CategoryProgress" xml:space="preserve">
+    <value>Progression</value>
+  </data>
+  <data name="CategoryMastery" xml:space="preserve">
+    <value>Maîtrise</value>
+  </data>
+  <data name="CategoryCombat" xml:space="preserve">
+    <value>Combat</value>
+  </data>
+  <data name="CategorySkill" xml:space="preserve">
+    <value>Habileté</value>
+  </data>
+  <data name="CategoryArcade" xml:space="preserve">
+    <value>Arcade</value>
+  </data>
+  <data name="ReducedEffects" xml:space="preserve">
+    <value>Effets réduits</value>
+  </data>
+  <data name="ConfirmPurchaseTitle" xml:space="preserve">
+    <value>Confirmer l'achat</value>
+  </data>
+  <data name="ConfirmPurchaseMessage" xml:space="preserve">
+    <value>Dépenser {0} Coins ?</value>
+  </data>
+  <data name="ConfirmPaidContinue" xml:space="preserve">
+    <value>Dépenser {0} Coins pour continuer ?</value>
+  </data>
+  <data name="MotivationKeepGoing" xml:space="preserve">
+    <value>Continue comme ça !</value>
+  </data>
+  <data name="MotivationTryAgain" xml:space="preserve">
+    <value>Réessaie, tu peux y arriver !</value>
+  </data>
+  <data name="PremiumFeature3xCoins" xml:space="preserve">
+    <value>3x Pièces en fin de niveau</value>
+  </data>
+  <data name="PremiumFeatureAutoDouble" xml:space="preserve">
+    <value>Doublement automatique du score</value>
+  </data>
+  <data name="PremiumFeatureFreeBoost" xml:space="preserve">
+    <value>Boost PowerUp gratuit</value>
+  </data>
+  <data name="PremiumFeatureFreeSkip" xml:space="preserve">
+    <value>Passer 1 niveau par session</value>
+  </data>
+  <data name="PremiumFeatureFreeContinue" xml:space="preserve">
+    <value>Continuer gratuitement</value>
+  </data>
+  <data name="SkipLevelFree" xml:space="preserve">
+    <value>Passer le niveau</value>
+  </data>
+  <data name="BoostFree" xml:space="preserve">
+    <value>Activer le boost</value>
+  </data>
+  <data name="ContinueFree" xml:space="preserve">
+    <value>Continuer</value>
   </data>
 </root>

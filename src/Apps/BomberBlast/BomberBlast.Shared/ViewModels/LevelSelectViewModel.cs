@@ -29,6 +29,7 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
 
     public event Action<string>? NavigationRequested;
     public event Action? CelebrationRequested;
+    public event Action<string, string>? FloatingTextRequested;
 
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
@@ -67,6 +68,9 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _boostDeclineText = "";
+
+    [ObservableProperty]
+    private string _boostAcceptText = "";
 
     private string _pendingBoostType = "";
 
@@ -188,6 +192,7 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
                         ? new string('\u2605', stars) + new string('\u2606', 3 - stars)
                         : "",
                     BestScore = bestScore,
+                    BestScoreText = bestScore > 0 ? bestScore.ToString("N0") : "",
                     IsWorldLocked = isWorldLocked,
                     WorldNumber = w,
                 };
@@ -227,11 +232,32 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void SelectLevel(LevelDisplayItem? level)
     {
-        if (level == null || !level.IsUnlocked)
-            return;
+        if (level == null) return;
 
-        // Ab Level 20: Boost-Overlay anbieten (nur fuer Free User)
-        if (level.LevelNumber >= 20 && !_purchaseService.IsPremium && _rewardedAdService.IsAvailable)
+        // Gesperrtes Level → Feedback an User
+        if (!level.IsUnlocked)
+        {
+            if (level.IsWorldLocked)
+            {
+                int starsRequired = _progressService.GetWorldStarsRequired(level.LevelNumber);
+                var msg = string.Format(
+                    _localizationService.GetString("WorldLocked"),
+                    starsRequired);
+                FloatingTextRequested?.Invoke(msg, "error");
+            }
+            else
+            {
+                var msg = string.Format(
+                    _localizationService.GetString("LevelLocked") ?? "Complete Level {0} first!",
+                    level.LevelNumber - 1);
+                FloatingTextRequested?.Invoke(msg, "error");
+            }
+            return;
+        }
+
+        // Ab Level 20: Boost-Overlay anbieten
+        bool showBoost = level.LevelNumber >= 20;
+        if (showBoost && (_purchaseService.IsPremium || _rewardedAdService.IsAvailable))
         {
             PendingLevel = level.LevelNumber;
             PickRandomBoost();
@@ -258,6 +284,9 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
         BoostTitleText = _localizationService.GetString("PowerUpBoost");
         BoostDescText = _localizationService.GetString("PowerUpBoostDesc");
         BoostDeclineText = _localizationService.GetString("WithoutBoost");
+        BoostAcceptText = _purchaseService.IsPremium
+            ? _localizationService.GetString("BoostFree") ?? "Boost aktivieren"
+            : _localizationService.GetString("WatchVideo");
 
         BoostPowerUpName = _pendingBoostType switch
         {
@@ -272,6 +301,15 @@ public partial class LevelSelectViewModel : ObservableObject, IDisposable
     private async Task AcceptBoostAsync()
     {
         ShowBoostOverlay = false;
+
+        // Premium: Boost kostenlos (kein Ad nötig)
+        if (_purchaseService.IsPremium)
+        {
+            NavigationRequested?.Invoke($"Game?mode=story&level={PendingLevel}&boost={_pendingBoostType}");
+            return;
+        }
+
+        // Free: Rewarded Ad
         var success = await _rewardedAdService.ShowAdAsync("power_up");
         if (success)
         {
@@ -358,6 +396,8 @@ public class LevelDisplayItem
     public int BestScore { get; set; }
     public int WorldNumber { get; set; }
     public bool IsWorldLocked { get; set; }
+
+    public string BestScoreText { get; set; } = "";
 
     public IRelayCommand? SelectCommand { get; set; }
     public bool IsLocked => !IsUnlocked;

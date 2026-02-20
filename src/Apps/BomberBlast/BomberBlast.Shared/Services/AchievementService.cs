@@ -20,6 +20,11 @@ public class AchievementService : IAchievementService
     private readonly List<Achievement> _achievements;
     private AchievementData _data;
 
+    // Dirty-Flag + Debounce: Verhindert JSON-Serialize + Preferences-Write bei jedem einzelnen Kill
+    private bool _isDirty;
+    private DateTime _lastSaveTime = DateTime.MinValue;
+    private const int SaveDebounceMs = 500;
+
     public event EventHandler<Achievement>? AchievementUnlocked;
 
     public IReadOnlyList<Achievement> Achievements => _achievements;
@@ -71,7 +76,7 @@ public class AchievementService : IAchievementService
     {
         // Kampf-Achievements: kumulativer Kill-Zähler
         _data.TotalEnemyKills = totalKills;
-        Save();
+        MarkDirty();
 
         Achievement? newUnlock = null;
 
@@ -136,7 +141,7 @@ public class AchievementService : IAchievementService
     public Achievement? OnBombKicked()
     {
         _data.TotalBombsKicked++;
-        Save();
+        MarkDirty();
 
         UpdateProgress("kick_master", _data.TotalBombsKicked);
         if (_data.TotalBombsKicked >= 25) return TryUnlock("kick_master");
@@ -146,7 +151,7 @@ public class AchievementService : IAchievementService
     public Achievement? OnPowerBombUsed()
     {
         _data.TotalPowerBombs++;
-        Save();
+        MarkDirty();
 
         UpdateProgress("power_bomber", _data.TotalPowerBombs);
         if (_data.TotalPowerBombs >= 10) return TryUnlock("power_bomber");
@@ -168,7 +173,7 @@ public class AchievementService : IAchievementService
         if (curseFlag == 0) return null;
 
         _data.CurseTypesSurvived |= curseFlag;
-        Save();
+        MarkDirty();
 
         // Zähle gesetzte Bits
         int survived = 0;
@@ -334,12 +339,35 @@ public class AchievementService : IAchievementService
         return new AchievementData();
     }
 
+    /// <summary>
+    /// Markiert Daten als geändert. Speichert nur wenn das Debounce-Intervall überschritten ist.
+    /// Verhindert Dutzende JSON-Serializes + Preferences-Writes pro Sekunde bei Kettenreaktionen.
+    /// </summary>
+    private void MarkDirty()
+    {
+        _isDirty = true;
+        var now = DateTime.UtcNow;
+        if ((now - _lastSaveTime).TotalMilliseconds >= SaveDebounceMs)
+            Save();
+    }
+
+    /// <summary>
+    /// Erzwingt das Speichern falls Dirty-Flag gesetzt (z.B. am Ende eines Levels).
+    /// Wird vom AchievementService selbst bei TryUnlock aufgerufen.
+    /// </summary>
+    public void FlushIfDirty()
+    {
+        if (_isDirty) Save();
+    }
+
     private void Save()
     {
         try
         {
             string json = JsonSerializer.Serialize(_data, JsonOptions);
             _preferences.Set(ACHIEVEMENTS_KEY, json);
+            _isDirty = false;
+            _lastSaveTime = DateTime.UtcNow;
         }
         catch { /* Speichern fehlgeschlagen */ }
     }

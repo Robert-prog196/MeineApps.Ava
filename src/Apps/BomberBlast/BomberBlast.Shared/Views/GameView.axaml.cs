@@ -143,8 +143,9 @@ public partial class GameView : UserControl
         var point = e.GetPosition(GameCanvas);
         float x = (float)(point.X * _touchScaleX);
         float y = (float)(point.Y * _touchScaleY);
+        long pointerId = e.Pointer.Id;
 
-        ViewModel.OnPointerPressed(x, y, _renderWidth, _renderHeight);
+        ViewModel.OnPointerPressed(x, y, _renderWidth, _renderHeight, pointerId);
         e.Handled = true;
     }
 
@@ -155,16 +156,18 @@ public partial class GameView : UserControl
         var point = e.GetPosition(GameCanvas);
         float x = (float)(point.X * _touchScaleX);
         float y = (float)(point.Y * _touchScaleY);
+        long pointerId = e.Pointer.Id;
 
-        ViewModel.OnPointerMoved(x, y);
+        ViewModel.OnPointerMoved(x, y, pointerId);
         e.Handled = true;
     }
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (ViewModel is null) return;
+        long pointerId = e.Pointer.Id;
 
-        ViewModel.OnPointerReleased();
+        ViewModel.OnPointerReleased(pointerId);
         e.Handled = true;
     }
 

@@ -25,6 +25,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
     private readonly IProgressService _progressService;
     private readonly IReviewService _reviewService;
     private readonly Stopwatch _frameStopwatch = new();
+    private CancellationTokenSource _gameEventCts = new();
     private bool _isInitialized;
     private bool _disposed;
     private bool _isGameLoopRunning;
@@ -134,6 +135,11 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// </summary>
     public async Task OnAppearingAsync()
     {
+        // Alten CancellationToken abbrechen, neuen erstellen
+        _gameEventCts.Cancel();
+        _gameEventCts.Dispose();
+        _gameEventCts = new CancellationTokenSource();
+
         // Erst Unsubscribe (idempotent), dann Subscribe → verhindert doppelte Subscriptions
         _gameEngine.OnGameOver -= HandleGameOver;
         _gameEngine.OnLevelComplete -= HandleLevelComplete;
@@ -172,6 +178,9 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// </summary>
     public void OnDisappearing()
     {
+        // Laufende Delays (HandleGameOver/HandleLevelComplete) abbrechen
+        _gameEventCts.Cancel();
+
         StopGameLoop();
         _gameEngine.Pause();
 
@@ -284,7 +293,7 @@ public partial class GameViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Handle touch/pointer press.
     /// </summary>
-    public void OnPointerPressed(float x, float y, float screenWidth, float screenHeight)
+    public void OnPointerPressed(float x, float y, float screenWidth, float screenHeight, long pointerId = 0)
     {
         // GameOver: Nicht auf Taps reagieren → HandleGameOver navigiert automatisch nach Delay
         // Verhindert Race Condition (Tap während 2s-Delay → doppelte Navigation)
@@ -304,29 +313,29 @@ public partial class GameViewModel : ObservableObject, IDisposable
         // Forward touch to input manager via game engine
         if (_gameEngine.State == GameState.Playing)
         {
-            _gameEngine.OnTouchStart(x, y, screenWidth, screenHeight);
+            _gameEngine.OnTouchStart(x, y, screenWidth, screenHeight, pointerId);
         }
     }
 
     /// <summary>
     /// Handle touch/pointer move.
     /// </summary>
-    public void OnPointerMoved(float x, float y)
+    public void OnPointerMoved(float x, float y, long pointerId = 0)
     {
         if (_gameEngine.State == GameState.Playing)
         {
-            _gameEngine.OnTouchMove(x, y);
+            _gameEngine.OnTouchMove(x, y, pointerId);
         }
     }
 
     /// <summary>
     /// Handle touch/pointer release.
     /// </summary>
-    public void OnPointerReleased()
+    public void OnPointerReleased(long pointerId = 0)
     {
         if (_gameEngine.State == GameState.Playing)
         {
-            _gameEngine.OnTouchEnd();
+            _gameEngine.OnTouchEnd(pointerId);
         }
     }
 
@@ -497,9 +506,15 @@ public partial class GameViewModel : ObservableObject, IDisposable
     {
         try
         {
+            // Token VOR dem Delay erfassen, damit Cancel in OnDisappearing wirkt
+            var ct = _gameEventCts.Token;
+
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                await Task.Delay(2000);
+                await Task.Delay(2000, ct);
+
+                // Nach Delay prüfen ob Navigation noch gewünscht (nicht disposed/navigiert)
+                if (ct.IsCancellationRequested || _disposed) return;
 
                 var score = _gameEngine.Score;
                 var level = _gameEngine.IsArcadeMode ? _gameEngine.ArcadeWave : _gameEngine.CurrentLevel;
@@ -512,6 +527,10 @@ public partial class GameViewModel : ObservableObject, IDisposable
                     $"GameOver?score={score}&level={level}&highscore={isHighScore}&mode={mode}" +
                     $"&coins={coins}&levelcomplete=false&cancontinue={canContinue}");
             });
+        }
+        catch (OperationCanceledException)
+        {
+            // Erwarteter Abbruch bei Navigation während Delay → ignorieren
         }
         catch (Exception ex)
         {
@@ -526,14 +545,24 @@ public partial class GameViewModel : ObservableObject, IDisposable
             // Review-Service informieren
             _reviewService.OnLevelCompleted(_gameEngine.CurrentLevel);
 
+            // Token VOR dem Delay erfassen
+            var ct = _gameEventCts.Token;
+
             await Dispatcher.UIThread.InvokeAsync(async () =>
             {
-                await Task.Delay(1000);
+                await Task.Delay(1000, ct);
 
-                // Score-Verdopplung anbieten (nur fuer Free User mit verfuegbarer Ad)
-                bool canDouble = !_purchaseService.IsPremium && _rewardedAdService.IsAvailable;
+                // Nach Delay prüfen ob Navigation noch gewünscht
+                if (ct.IsCancellationRequested || _disposed) return;
 
-                if (canDouble)
+                // Premium: Score automatisch verdoppeln (kein Dialog, kein Ad)
+                if (_purchaseService.IsPremium)
+                {
+                    _gameEngine.DoubleScore();
+                    await ProceedToNextLevel();
+                }
+                // Free User: Score-Verdopplung per Rewarded Ad anbieten
+                else if (_rewardedAdService.IsAvailable)
                 {
                     // Game-Loop stoppen waehrend Overlay sichtbar
                     StopGameLoop();
@@ -550,6 +579,10 @@ public partial class GameViewModel : ObservableObject, IDisposable
                 }
             });
         }
+        catch (OperationCanceledException)
+        {
+            // Erwarteter Abbruch bei Navigation während Delay → ignorieren
+        }
         catch (Exception ex)
         {
             Debug.WriteLine($"HandleLevelComplete Fehler: {ex.Message}");
@@ -564,6 +597,8 @@ public partial class GameViewModel : ObservableObject, IDisposable
     {
         if (_disposed) return;
 
+        _gameEventCts.Cancel();
+        _gameEventCts.Dispose();
         StopGameLoop();
 
         _gameEngine.OnGameOver -= HandleGameOver;

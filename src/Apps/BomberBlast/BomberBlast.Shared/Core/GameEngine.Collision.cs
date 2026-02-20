@@ -253,7 +253,7 @@ public partial class GameEngine
                 break;
             }
         }
-        if (isLastEnemy || _comboCount >= 4)
+        if ((isLastEnemy || _comboCount >= 4) && !_inputManager.ReducedEffects)
         {
             _slowMotionTimer = SLOW_MOTION_DURATION;
         }

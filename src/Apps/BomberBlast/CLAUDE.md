@@ -65,7 +65,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 ## Premium & Ads
 
 ### Premium-Modell
-- **Preis**: 3,99 EUR (`remove_ads`)
+- **Preis**: 1,99 EUR (`remove_ads`)
 - Kostenlos spielbar, Upgrades grindbar, Ads optional
 
 ### Fullscreen/Immersive Mode (Android)
@@ -116,7 +116,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **Touch-Koordinaten**: Proportionale Skalierung (Render-Bounds / Control-Bounds Ratio) fuer DPI-korrektes Mapping
 - **Invalidierung**: IMMER `InvalidateSurface()` (InvalidateVisual feuert NICHT PaintSurface bei SKCanvasView)
 - **Keyboard Input**: Window-Level KeyDown/KeyUp in MainWindow.axaml.cs → GameViewModel
-- **DI**: 11 ViewModels, 16 Services, GameEngine + GameRenderer in App.axaml.cs (GameRenderer + IAchievementService + IDiscoveryService + IPlayGamesService per DI in GameEngine injiziert)
+- **DI**: 11 ViewModels (alle Singleton), 16 Services, GameEngine + GameRenderer in App.axaml.cs (GameRenderer + IAchievementService + IDiscoveryService + IPlayGamesService per DI in GameEngine injiziert)
 - **GameEngine Partial Classes**: GameEngine.cs (Kern), .Collision.cs, .Explosion.cs, .Level.cs, .Render.cs
 - **12 PowerUp-Typen**: BombUp, Fire, Speed, Wallpass, Detonator, Bombpass, Flamepass, Mystery, Kick, LineBomb, PowerBomb, Skull
 - **PowerUp-Freischaltung**: Level-basiert via `GetUnlockLevel()` Extension. Story-Mode filtert gesperrte PowerUps. Arcade/DailyChallenge: Alle verfügbar
@@ -233,6 +233,7 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 - **ISoundService.SetMusicVolume(float)**: Für Crossfade-Steuerung (AndroidSoundService: MediaPlayer.SetVolume)
 - **SoundServiceFactory** in App.axaml.cs (analog RewardedAdServiceFactory)
 - **Sound-Assets**: CC0 Lizenz, Juhani Junkala (OpenGameArt.org), ~8.5 MB gesamt
+- **AndroidSoundService Thread-Safety**: Alle MediaPlayer-Operationen per `lock(_musicLock)` synchronisiert. `PrepareAsync()` statt `Prepare()` (blockiert UI-Thread nicht)
 
 ## Architektur-Details
 
@@ -323,6 +324,9 @@ Landscape-only auf Android. Grid: 15x10. Zwei Visual Styles: Classic HD + Neon/C
 
 ## Changelog Highlights
 
+- **20.02.2026 (3)**: Premium-Redesign + Steuerungs-Optimierung: Premium-Preis 3,99€→1,99€ in allen 6 Sprachen. 8 neue RESX-Keys (PremiumFeature3xCoins/AutoDouble/FreeBoost/FreeSkip/FreeContinue, SkipLevelFree, BoostFree, ContinueFree) in 6 Sprachen. Premium-Feature-Liste im Shop (5 Vorteile: 3x Coins, Auto-Score-Double, Free Boost/Skip/Continue). Kostenlose Premium-Aktionen (SkipLevel/Boost/Continue ohne Ad für Premium-User). Joystick-Steuerung: Deadzone 0.08→0.15, Richtungswechsel-Hysterese (~10° Toleranz), Bomb-Button Hitzone 1.5x→1.15x, Stuck-Detection 167ms→417ms, Corner-Assist konstant 4px, Multi-Touch Pointer-ID Tracking (kein Joystick-Verlust bei Zweit-Finger), haptisches Feedback bei Richtungswechsel (15ms Tick).
+- **20.02.2026 (2)**: UX-Optimierung (7 Bereiche): (1) Bestätigungsdialoge für teure Shop-Käufe (≥3000 Coins) und Paid-Continue via ConfirmationRequested Event (TaskCompletionSource<bool>). (2) GameOver Button-Hierarchie: "Try Again" als Primary CTA (grün, 56px, oben), Motivations-Texte je nach Ergebnis. (3) Gesperrte Level: Feedback-Text bei Tipp auf gesperrtes Level + Best-Score-Anzeige pro Level in LevelSelect. (4) MainMenu asymmetrisch umstrukturiert (Spielmodi 3* links, Menü 2* rechts). (5) Achievement-Kategorien (5 Gruppen mit Fortschrittsanzeige, farbige Akzent-Bars). Premium-Preis (3,99€) direkt am Button sichtbar. (6) ReducedEffects-Toggle: Deaktiviert ScreenShake, ParticleSystem, Hit-Pause, Slow-Motion via Enabled-Properties + InputManager-Persistenz. (7) Navigations-Sounds: SoundManager in MainViewModel injiziert, SFX_MENU_SELECT bei View-Wechsel. 12 neue RESX-Keys in 6 Sprachen.
+- **20.02.2026**: Stabilitäts-Fix (6 Crash-Ursachen): (1) CancellationToken in HandleGameOver/HandleLevelComplete gegen Race Condition bei Back-Button während Delay, (2) try-catch um NavigateTo mit Fallback zum Hauptmenü, (3) Activity-Lifecycle-Check (`IsFinishing`/`IsDestroyed`) in AndroidPlayGamesService vor allen GPGS-Client-Aufrufen, (4) `MediaPlayer.PrepareAsync()` statt `Prepare()` + `lock(_musicLock)` Thread-Safety in AndroidSoundService (ANR-Fix), (5) AchievementService Save-Debounce (Dirty-Flag + 500ms Intervall + FlushIfDirty bei GameOver/LevelComplete), (6) Alle ViewModels auf Singleton umgestellt (waren Transient, aber effektiv Singleton da von MainViewModel gehalten).
 - **19.02.2026 (5)**: Google Play Games Services v2 Integration: IPlayGamesService Interface + NullPlayGamesService (Desktop) + AndroidPlayGamesService (Linked File in Premium.Ava). PlayGamesIds.cs mit Mapping für 24 Achievements + 2 Leaderboards (TODO-Platzhalter). Auto-Sign-In bei App-Start (GPGS v2 Standard). Achievement-Sync: AchievementService sendet bei TryUnlock() automatisch an GPGS. Leaderboard-Sync: Arcade-Score + Total-Stars an Leaderboards. SettingsView: Google Play Games Sektion (Toggle, Status, Leaderboards/Achievements Buttons). NuGet: Xamarin.GooglePlayServices.Games.V2 121.0.0.2. AndroidManifest: com.google.android.gms.games.APP_ID meta-data. Resources/values/games.xml für Game Services Project-ID. 4 neue RESX-Keys (PlayGamesSection/Enabled/ShowLeaderboards/ShowGpgsAchievements) in 6 Sprachen.
 - **19.02.2026 (4)**: UI-Polish + Achievements-Erweiterung: 8 neue Achievements (24 total): first_victory (Progress), combo3/combo5 (Skill), daily_streak7/daily_complete30 (Progress), kick_master/power_bomber (Combat), curse_survivor (Skill). Neue IAchievementService-Methoden: OnComboReached, OnBombKicked, OnPowerBombUsed, OnCurseSurvived, OnDailyChallengeCompleted. AchievementData erweitert: TotalBombsKicked, TotalPowerBombs, CurseTypesSurvived (Bit-Flags). GameEngine-Hooks: Combo nach Bonus, Kick in TryKickBomb, PowerBomb in PlacePowerBomb, Curse-Ende in UpdatePlayer (curseBeforeUpdate/nach Update). DailyChallengeViewModel: IAchievementService injiziert für Daily-Achievement-Tracking. Skin-Auswahl im Shop (ICustomizationService). AchievementIconCanvas (bindbare SKCanvasView für DataTemplates). MedalCanvas (Gold/Silber/Bronze im GameOver). Victory-Screen für Level 50. Daily Reward 7-Tage-Popup. Premium Feature-Liste. SettingsView Icon-Fix: AdOff→AdsOff. 25 neue RESX-Keys in 6 Sprachen.
 - **19.02.2026 (3)**: Final Polish + Balancing: Arcade "NEW HIGH SCORE!" Celebration (goldener pulsierender Text + Confetti + goldene Partikel bei neuem Highscore). ShieldStart Preis 15.000→8.000 Coins. Daily Challenge "Neu!"-Badge im MainMenu (IDailyChallengeService + IsDailyChallengeNew Property). TotalEarned-Anzeige im MainMenu (CoinService.TotalEarned). Pontan-Spawn-Warnung (pulsierendes rotes "!" 1.5s vor Spawn, vorberechnete Position, PreCalculateNextPontanSpawn + SpawnPontanAtWarningPosition). Flammen-Zungen Clamp-Fix (min 1 statt 3, Divisor 12→15). 2 neue RESX-Keys (TotalEarned, DailyChallengeNew) in 6 Sprachen.

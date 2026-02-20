@@ -215,7 +215,7 @@
     <value>✓ Premium Active - No Ads!</value>
   </data>
   <data name="BuyPremium" xml:space="preserve">
-    <value>Buy Premium - €3.99</value>
+    <value>Buy Premium - €1.99</value>
   </data>
   <data name="RestorePurchases" xml:space="preserve">
     <value>Restore Purchases</value>
@@ -1180,5 +1180,65 @@
   </data>
   <data name="ShowGpgsAchievements" xml:space="preserve">
     <value>Achievements</value>
+  </data>
+  <data name="LevelLocked" xml:space="preserve">
+    <value>Complete Level {0} first!</value>
+  </data>
+  <data name="CategoryProgress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="CategoryMastery" xml:space="preserve">
+    <value>Mastery</value>
+  </data>
+  <data name="CategoryCombat" xml:space="preserve">
+    <value>Combat</value>
+  </data>
+  <data name="CategorySkill" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="CategoryArcade" xml:space="preserve">
+    <value>Arcade</value>
+  </data>
+  <data name="ReducedEffects" xml:space="preserve">
+    <value>Reduced Effects</value>
+  </data>
+  <data name="ConfirmPurchaseTitle" xml:space="preserve">
+    <value>Confirm Purchase</value>
+  </data>
+  <data name="ConfirmPurchaseMessage" xml:space="preserve">
+    <value>Spend {0} Coins?</value>
+  </data>
+  <data name="ConfirmPaidContinue" xml:space="preserve">
+    <value>Spend {0} Coins to continue?</value>
+  </data>
+  <data name="MotivationKeepGoing" xml:space="preserve">
+    <value>Keep going!</value>
+  </data>
+  <data name="MotivationTryAgain" xml:space="preserve">
+    <value>Try again, you can do it!</value>
+  </data>
+  <data name="PremiumFeature3xCoins" xml:space="preserve">
+    <value>3x Coins on level completion</value>
+  </data>
+  <data name="PremiumFeatureAutoDouble" xml:space="preserve">
+    <value>Automatic score doubling</value>
+  </data>
+  <data name="PremiumFeatureFreeBoost" xml:space="preserve">
+    <value>Free PowerUp boost</value>
+  </data>
+  <data name="PremiumFeatureFreeSkip" xml:space="preserve">
+    <value>Skip 1 level per session</value>
+  </data>
+  <data name="PremiumFeatureFreeContinue" xml:space="preserve">
+    <value>Free continue</value>
+  </data>
+  <data name="SkipLevelFree" xml:space="preserve">
+    <value>Skip Level</value>
+  </data>
+  <data name="BoostFree" xml:space="preserve">
+    <value>Activate boost</value>
+  </data>
+  <data name="ContinueFree" xml:space="preserve">
+    <value>Continue</value>
   </data>
 </root>

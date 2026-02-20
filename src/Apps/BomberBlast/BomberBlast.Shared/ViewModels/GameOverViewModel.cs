@@ -31,6 +31,9 @@ public partial class GameOverViewModel : ObservableObject
     public event Action<string>? NavigationRequested;
     public event Action<string, string>? FloatingTextRequested;
 
+    /// <summary>Bestätigungsdialog anfordern (Titel, Nachricht, Akzeptieren, Abbrechen)</summary>
+    public event Func<string, string, string, string, Task<bool>>? ConfirmationRequested;
+
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -145,6 +148,13 @@ public partial class GameOverViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasNearMiss;
 
+    // Motivationstext (kontextbezogen statt nur "GAME OVER")
+    [ObservableProperty]
+    private string _motivationText = "";
+
+    [ObservableProperty]
+    private bool _hasMotivation;
+
     // Paid Continue (199 Coins als Alternative zur Ad)
     [ObservableProperty]
     private bool _canPaidContinue;
@@ -153,6 +163,9 @@ public partial class GameOverViewModel : ObservableObject
     private string _paidContinueText = "";
 
     private const int PAID_CONTINUE_COST = 199;
+
+    // Premium: Kostenloser Level-Skip (1x pro Session)
+    private static bool _premiumSkipUsed;
 
     // ═══════════════════════════════════════════════════════════════════════
     // CONSTRUCTOR
@@ -206,11 +219,15 @@ public partial class GameOverViewModel : ObservableObject
         HasContinued = false;
         _coinsClaimed = false;
         CanDoubleCoins = coins > 0 && _rewardedAdService.IsAvailable;
-        CanContinue = canContinue && _rewardedAdService.IsAvailable;
+        CanContinue = canContinue && (_rewardedAdService.IsAvailable || _purchaseService.IsPremium);
 
-        // Level-Skip: Ab 2 Fehlversuchen im Story-Mode
-        CanSkipLevel = !isLevelComplete && !IsArcadeMode && fails >= 2 && _rewardedAdService.IsAvailable;
-        SkipLevelText = _localizationService.GetString("SkipLevel");
+        // Level-Skip: Ab 2 Fehlversuchen (Free: Rewarded Ad, Premium: 1x kostenlos pro Session)
+        bool hasFreeSkip = _purchaseService.IsPremium && !_premiumSkipUsed;
+        CanSkipLevel = !isLevelComplete && !IsArcadeMode &&
+            (fails >= 2 && _rewardedAdService.IsAvailable || hasFreeSkip);
+        SkipLevelText = hasFreeSkip
+            ? _localizationService.GetString("SkipLevelFree") ?? "Level überspringen"
+            : _localizationService.GetString("SkipLevel");
         SkipLevelInfoText = _localizationService.GetString("SkipLevelInfo");
 
         // Paid Continue: Alternative zur Ad wenn Coins vorhanden
@@ -221,7 +238,9 @@ public partial class GameOverViewModel : ObservableObject
 
         // Lokalisierte Button-Texte
         DoubleCoinsButtonText = _localizationService.GetString("DoubleCoins");
-        ContinueButtonText = _localizationService.GetString("ContinueGame");
+        ContinueButtonText = _purchaseService.IsPremium
+            ? _localizationService.GetString("ContinueFree") ?? "Weiterspielen"
+            : _localizationService.GetString("ContinueGame");
 
         // Score-Aufschlüsselung (nur bei Level-Complete)
         HasSummary = isLevelComplete && !IsArcadeMode;
@@ -256,6 +275,16 @@ public partial class GameOverViewModel : ObservableObject
                 }
             }
         }
+
+        // Motivationstext (kontextbezogen)
+        HasMotivation = !isLevelComplete;
+        if (!isLevelComplete)
+        {
+            if (score > 0 && fails >= 2)
+                MotivationText = _localizationService.GetString("MotivationKeepGoing") ?? "Don't give up!";
+            else
+                MotivationText = _localizationService.GetString("MotivationTryAgain") ?? "Give it another shot!";
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -284,6 +313,14 @@ public partial class GameOverViewModel : ObservableObject
     {
         if (HasContinued || IsArcadeMode) return;
 
+        // Premium: Kostenloser Continue (kein Ad)
+        if (_purchaseService.IsPremium)
+        {
+            PerformContinue();
+            return;
+        }
+
+        // Free: Rewarded Ad
         bool rewarded = await _rewardedAdService.ShowAdAsync("revival");
         if (rewarded)
         {
@@ -292,9 +329,24 @@ public partial class GameOverViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void PaidContinue()
+    private async Task PaidContinueAsync()
     {
         if (HasContinued || IsArcadeMode) return;
+
+        // Bestätigungsdialog vor Coin-Ausgabe
+        if (ConfirmationRequested != null)
+        {
+            var msg = string.Format(
+                _localizationService.GetString("ConfirmPaidContinue") ?? "{0} Coins ausgeben um weiterzuspielen?",
+                PAID_CONTINUE_COST);
+            var confirmed = await ConfirmationRequested.Invoke(
+                _localizationService.GetString("ContinueGame"),
+                msg,
+                _localizationService.GetString("Continue"),
+                _localizationService.GetString("Cancel"));
+            if (!confirmed) return;
+        }
+
         if (!_coinService.TrySpendCoins(PAID_CONTINUE_COST)) return;
 
         PerformContinue();
@@ -325,17 +377,31 @@ public partial class GameOverViewModel : ObservableObject
     {
         if (!CanSkipLevel) return;
 
+        // Premium: Kostenloser Skip (1x pro Session)
+        if (_purchaseService.IsPremium && !_premiumSkipUsed)
+        {
+            _premiumSkipUsed = true;
+            PerformSkip();
+            return;
+        }
+
+        // Free: Rewarded Ad
         var success = await _rewardedAdService.ShowAdAsync("level_skip");
         if (success)
         {
-            CanSkipLevel = false;
-            // Level als bestanden markieren (minimaler Score fuer 1 Stern)
-            _progressService.CompleteLevel(Level);
-            _progressService.SetLevelBestScore(Level, 100);
-
-            ClaimCoins();
-            NavigationRequested?.Invoke("LevelSelect");
+            PerformSkip();
         }
+    }
+
+    private void PerformSkip()
+    {
+        CanSkipLevel = false;
+        // Level als bestanden markieren (minimaler Score fuer 1 Stern)
+        _progressService.CompleteLevel(Level);
+        _progressService.SetLevelBestScore(Level, 100);
+
+        ClaimCoins();
+        NavigationRequested?.Invoke("LevelSelect");
     }
 
     [RelayCommand]

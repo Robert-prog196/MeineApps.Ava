@@ -25,17 +25,17 @@ public interface IInputHandler
     /// <summary>
     /// Handle touch start event
     /// </summary>
-    void OnTouchStart(float x, float y, float screenWidth, float screenHeight);
+    void OnTouchStart(float x, float y, float screenWidth, float screenHeight, long pointerId = 0);
 
     /// <summary>
     /// Handle touch move event
     /// </summary>
-    void OnTouchMove(float x, float y);
+    void OnTouchMove(float x, float y, long pointerId = 0);
 
     /// <summary>
     /// Handle touch end event
     /// </summary>
-    void OnTouchEnd();
+    void OnTouchEnd(long pointerId = 0);
 
     /// <summary>
     /// Update input state (call every frame)

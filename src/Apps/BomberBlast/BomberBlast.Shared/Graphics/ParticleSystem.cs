@@ -22,12 +22,16 @@ public class ParticleSystem : IDisposable
     /// <summary>Ob aktive Partikel vorhanden sind</summary>
     public bool HasActiveParticles => _activeCount > 0;
 
+    /// <summary>Wenn false, werden Emit-Aufrufe ignoriert (ReducedEffects)</summary>
+    public bool Enabled { get; set; } = true;
+
     /// <summary>
     /// Partikel emittieren (Basis-Methode, Standard-Rechtecke)
     /// </summary>
     public void Emit(float x, float y, int count, SKColor color, float speed = 80f,
         float lifetime = 0.6f, float size = 2.5f)
     {
+        if (!Enabled) return;
         EmitShaped(x, y, count, color, ParticleShape.Rectangle, speed, lifetime, size);
     }
 
@@ -38,6 +42,7 @@ public class ParticleSystem : IDisposable
         ParticleShape shape, float speed = 80f, float lifetime = 0.6f, float size = 2.5f,
         bool hasGlow = false, float airResistance = 0f)
     {
+        if (!Enabled) return;
         for (int i = 0; i < count && _activeCount < MAX_PARTICLES; i++)
         {
             float angle = (float)(_random.NextDouble() * Math.PI * 2);

@@ -120,7 +120,6 @@
                                   BorderThickness="1"
                                   MinHeight="52">
                             <Button Command="{Binding SelectCommand}"
-                                    IsEnabled="{Binding IsUnlocked}"
                                     Classes="GameButton"
                                     Padding="0"
                                     Background="Transparent"
@@ -128,11 +127,11 @@
                                     VerticalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
                                     VerticalContentAlignment="Stretch">
-                              <Grid RowDefinitions="*,Auto">
+                              <Grid RowDefinitions="*,Auto,Auto">
                                 <!-- Level-Nummer -->
                                 <TextBlock Grid.Row="0"
                                            Text="{Binding LevelNumber}"
-                                           FontSize="20"
+                                           FontSize="18"
                                            FontWeight="Bold"
                                            Foreground="{Binding TextBrush}"
                                            HorizontalAlignment="Center"
@@ -144,7 +143,6 @@
                                            FontSize="10"
                                            Foreground="Gold"
                                            HorizontalAlignment="Center"
-                                           Margin="0,0,0,2"
                                            IsVisible="{Binding IsCompleted}" />
 
                                 <mi:MaterialIcon Grid.Row="1"
@@ -152,8 +150,16 @@
                                                  Width="12" Height="12"
                                                  Foreground="{DynamicResource TextMutedBrush}"
                                                  HorizontalAlignment="Center"
-                                                 Margin="0,0,0,2"
                                                  IsVisible="{Binding IsLocked}" />
+
+                                <!-- Best Score (klein, unter den Sternen) -->
+                                <TextBlock Grid.Row="2"
+                                           Text="{Binding BestScoreText}"
+                                           FontSize="8"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,1"
+                                           IsVisible="{Binding IsCompleted}" />
                               </Grid>
                             </Button>
                           </Border>
@@ -246,8 +252,8 @@
                     HorizontalContentAlignment="Center"
                     Padding="16,12">
               <StackPanel Orientation="Horizontal" Spacing="8">
-                <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
-                <TextBlock Text="{loc:Translate WatchVideo}"
+                <mi:MaterialIcon Kind="Flash" Width="20" Height="20" />
+                <TextBlock Text="{Binding BoostAcceptText}"
                            FontSize="15" FontWeight="SemiBold" />
               </StackPanel>
             </Button>

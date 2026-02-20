@@ -523,7 +523,7 @@ public partial class GameEngine
         }
 
         if (_purchaseService.IsPremium)
-            coins *= 2;
+            coins *= 3;
         OnCoinsEarned?.Invoke(coins, _player.Score, true);
 
         // Coin-Floating-Text über dem Exit (gold, groß)
@@ -566,6 +566,7 @@ public partial class GameEngine
                 _progressService.CompleteLevel(_currentLevelNumber);
             }
 
+            _achievementService.FlushIfDirty();
             OnLevelComplete?.Invoke();
         }
     }

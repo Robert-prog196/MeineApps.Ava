@@ -38,6 +38,9 @@ public partial class ShopViewModel : ObservableObject, IDisposable
     /// <summary>Zu wenig Coins</summary>
     public event Action? InsufficientFunds;
 
+    /// <summary>Bestätigungsdialog anfordern (Titel, Nachricht, Akzeptieren, Abbrechen)</summary>
+    public event Func<string, string, string, string, Task<bool>>? ConfirmationRequested;
+
     // ═══════════════════════════════════════════════════════════════════════
     // OBSERVABLE PROPERTIES
     // ═══════════════════════════════════════════════════════════════════════
@@ -243,7 +246,7 @@ public partial class ShopViewModel : ObservableObject, IDisposable
     // ═══════════════════════════════════════════════════════════════════════
 
     [RelayCommand]
-    private void Purchase(ShopDisplayItem? item)
+    private async Task PurchaseAsync(ShopDisplayItem? item)
     {
         if (item == null || item.IsMaxed) return;
 
@@ -251,6 +254,21 @@ public partial class ShopViewModel : ObservableObject, IDisposable
         {
             InsufficientFunds?.Invoke();
             return;
+        }
+
+        // Bestätigungsdialog bei teureren Käufen (ab 3000 Coins)
+        if (item.NextPrice >= 3000 && ConfirmationRequested != null)
+        {
+            var upgradeName = _localizationService.GetString(item.NameKey) ?? item.NameKey;
+            var msg = string.Format(
+                _localizationService.GetString("ConfirmPurchaseMessage") ?? "{0} Coins für {1} ausgeben?",
+                item.NextPrice.ToString("N0"), upgradeName);
+            var confirmed = await ConfirmationRequested.Invoke(
+                _localizationService.GetString("ConfirmPurchaseTitle") ?? "Kauf bestätigen",
+                msg,
+                _localizationService.GetString("Buy") ?? "Kaufen",
+                _localizationService.GetString("Cancel"));
+            if (!confirmed) return;
         }
 
         if (_shopService.TryPurchase(item.Type))

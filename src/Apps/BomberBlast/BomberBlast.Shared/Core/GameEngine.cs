@@ -166,6 +166,8 @@ public partial class GameEngine : IDisposable
     public event Action<int, int, bool>? OnCoinsEarned;
     /// <summary>Arcade Wave-Milestone erreicht: (wave, bonusCoins)</summary>
     public event Action<int, int>? OnWaveMilestone;
+    /// <summary>Joystick-Richtungswechsel (für haptisches Feedback auf Android)</summary>
+    public event Action? OnDirectionChanged;
 
     // ═══════════════════════════════════════════════════════════════════════
     // PROPERTIES
@@ -195,7 +197,7 @@ public partial class GameEngine : IDisposable
     // INPUT FORWARDING
     // ═══════════════════════════════════════════════════════════════════════
 
-    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
+    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight, long pointerId = 0)
     {
         // Pause-Button prüfen (oben-links, nur wenn Android / Touch)
         if (_state == GameState.Playing && OperatingSystem.IsAndroid())
@@ -235,14 +237,14 @@ public partial class GameEngine : IDisposable
             }
         }
 
-        _inputManager.OnTouchStart(x, y, screenWidth, screenHeight);
+        _inputManager.OnTouchStart(x, y, screenWidth, screenHeight, pointerId);
     }
 
-    public void OnTouchMove(float x, float y)
-        => _inputManager.OnTouchMove(x, y);
+    public void OnTouchMove(float x, float y, long pointerId = 0)
+        => _inputManager.OnTouchMove(x, y, pointerId);
 
-    public void OnTouchEnd()
-        => _inputManager.OnTouchEnd();
+    public void OnTouchEnd(long pointerId = 0)
+        => _inputManager.OnTouchEnd(pointerId);
 
     public void OnKeyDown(Avalonia.Input.Key key)
         => _inputManager.OnKeyDown(key);
@@ -293,6 +295,9 @@ public partial class GameEngine : IDisposable
         // Timer-Events abonnieren
         _timer.OnWarning += OnTimeWarning;
         _timer.OnExpired += OnTimeExpired;
+
+        // Haptisches Feedback bei Richtungswechsel weiterleiten
+        _inputManager.DirectionChanged += () => OnDirectionChanged?.Invoke();
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -367,17 +372,24 @@ public partial class GameEngine : IDisposable
     public void Update(float deltaTime)
     {
         _renderer.Update(deltaTime);
+
+        // ReducedEffects: ScreenShake + Partikel deaktivieren
+        bool reducedFx = _inputManager.ReducedEffects;
+        _screenShake.Enabled = !reducedFx;
+        _particleSystem.Enabled = !reducedFx;
+
         _screenShake.Update(deltaTime);
         _particleSystem.Update(deltaTime);
         _floatingText.Update(deltaTime);
         _soundManager.Update(deltaTime);
 
         // Hit-Pause: Update wird übersprungen, Rendering läuft weiter (Freeze-Effekt)
-        if (_hitPauseTimer > 0)
+        if (_hitPauseTimer > 0 && !reducedFx)
         {
             _hitPauseTimer -= deltaTime;
             return;
         }
+        _hitPauseTimer = 0;
 
         switch (_state)
         {
@@ -636,11 +648,14 @@ public partial class GameEngine : IDisposable
 
                 // Trost-Coins (Level-Score ÷ 6, abgerundet)
                 int coins = (_player.Score - _scoreAtLevelStart) / 6;
+                if (_purchaseService.IsPremium)
+                    coins *= 3;
                 if (coins > 0)
                 {
                     OnCoinsEarned?.Invoke(coins, _player.Score, false);
                 }
 
+                _achievementService.FlushIfDirty();
                 OnGameOver?.Invoke();
             }
             else

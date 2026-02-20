@@ -1290,5 +1290,125 @@ namespace BomberBlast.Resources.Strings {
                 return ResourceManager.GetString("ReplayTutorial", resourceCulture);
             }
         }
+
+        internal static string LevelLocked {
+            get {
+                return ResourceManager.GetString("LevelLocked", resourceCulture);
+            }
+        }
+
+        internal static string CategoryProgress {
+            get {
+                return ResourceManager.GetString("CategoryProgress", resourceCulture);
+            }
+        }
+
+        internal static string CategoryMastery {
+            get {
+                return ResourceManager.GetString("CategoryMastery", resourceCulture);
+            }
+        }
+
+        internal static string CategoryCombat {
+            get {
+                return ResourceManager.GetString("CategoryCombat", resourceCulture);
+            }
+        }
+
+        internal static string CategorySkill {
+            get {
+                return ResourceManager.GetString("CategorySkill", resourceCulture);
+            }
+        }
+
+        internal static string CategoryArcade {
+            get {
+                return ResourceManager.GetString("CategoryArcade", resourceCulture);
+            }
+        }
+
+        internal static string ReducedEffects {
+            get {
+                return ResourceManager.GetString("ReducedEffects", resourceCulture);
+            }
+        }
+
+        internal static string ConfirmPurchaseTitle {
+            get {
+                return ResourceManager.GetString("ConfirmPurchaseTitle", resourceCulture);
+            }
+        }
+
+        internal static string ConfirmPurchaseMessage {
+            get {
+                return ResourceManager.GetString("ConfirmPurchaseMessage", resourceCulture);
+            }
+        }
+
+        internal static string ConfirmPaidContinue {
+            get {
+                return ResourceManager.GetString("ConfirmPaidContinue", resourceCulture);
+            }
+        }
+
+        internal static string MotivationKeepGoing {
+            get {
+                return ResourceManager.GetString("MotivationKeepGoing", resourceCulture);
+            }
+        }
+
+        internal static string MotivationTryAgain {
+            get {
+                return ResourceManager.GetString("MotivationTryAgain", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeature3xCoins {
+            get {
+                return ResourceManager.GetString("PremiumFeature3xCoins", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeatureAutoDouble {
+            get {
+                return ResourceManager.GetString("PremiumFeatureAutoDouble", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeatureFreeBoost {
+            get {
+                return ResourceManager.GetString("PremiumFeatureFreeBoost", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeatureFreeSkip {
+            get {
+                return ResourceManager.GetString("PremiumFeatureFreeSkip", resourceCulture);
+            }
+        }
+
+        internal static string PremiumFeatureFreeContinue {
+            get {
+                return ResourceManager.GetString("PremiumFeatureFreeContinue", resourceCulture);
+            }
+        }
+
+        internal static string SkipLevelFree {
+            get {
+                return ResourceManager.GetString("SkipLevelFree", resourceCulture);
+            }
+        }
+
+        internal static string BoostFree {
+            get {
+                return ResourceManager.GetString("BoostFree", resourceCulture);
+            }
+        }
+
+        internal static string ContinueFree {
+            get {
+                return ResourceManager.GetString("ContinueFree", resourceCulture);
+            }
+        }
     }
 }

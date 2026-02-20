@@ -27,9 +27,13 @@ public class FloatingJoystick : IInputHandler, IDisposable
     private bool _detonatePressed;
     private bool _detonateConsumed;
 
+    // Multi-Touch Pointer-ID Tracking
+    private long _joystickPointerId = -1;
+    private long _bombPointerId = -1;
+
     // Konfiguration
     private float _joystickRadius = 60f;
-    private float _deadZone = 0.08f;
+    private float _deadZone = 0.15f;
     private float _bombButtonRadius = 50f;
     private float _detonatorButtonRadius = 40f;
     private float _opacity = 0.7f;
@@ -53,6 +57,9 @@ public class FloatingJoystick : IInputHandler, IDisposable
     public bool BombPressed => _bombPressed && !_bombConsumed;
     public bool DetonatePressed => _detonatePressed && !_detonateConsumed;
     public bool IsActive => _isPressed;
+
+    /// <summary>Event bei Richtungswechsel (für haptisches Feedback)</summary>
+    public event Action? DirectionChanged;
 
     /// <summary>Ob der Detonator-Button angezeigt wird</summary>
     public bool HasDetonator { get; set; }
@@ -90,7 +97,7 @@ public class FloatingJoystick : IInputHandler, IDisposable
         }
     }
 
-    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
+    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight, long pointerId = 0)
     {
         UpdateBombButtonPosition(screenWidth, screenHeight);
 
@@ -99,11 +106,12 @@ public class FloatingJoystick : IInputHandler, IDisposable
         {
             float ddx = x - _detonatorButtonX;
             float ddy = y - _detonatorButtonY;
-            if (ddx * ddx + ddy * ddy <= _detonatorButtonRadius * _detonatorButtonRadius * 1.5f)
+            if (ddx * ddx + ddy * ddy <= _detonatorButtonRadius * _detonatorButtonRadius * 1.15f)
             {
                 _detonatorButtonPressed = true;
                 _detonatePressed = true;
                 _detonateConsumed = false;
+                _bombPointerId = pointerId;
                 return;
             }
         }
@@ -111,11 +119,12 @@ public class FloatingJoystick : IInputHandler, IDisposable
         // Bomb-Button pruefen (rechte Seite)
         float dx = x - _bombButtonX;
         float dy = y - _bombButtonY;
-        if (dx * dx + dy * dy <= _bombButtonRadius * _bombButtonRadius * 1.5f)
+        if (dx * dx + dy * dy <= _bombButtonRadius * _bombButtonRadius * 1.15f)
         {
             _bombButtonPressed = true;
             _bombPressed = true;
             _bombConsumed = false;
+            _bombPointerId = pointerId;
             return;
         }
 
@@ -128,6 +137,7 @@ public class FloatingJoystick : IInputHandler, IDisposable
             if (jdx * jdx + jdy * jdy <= (_joystickRadius * 1.5f) * (_joystickRadius * 1.5f))
             {
                 _isPressed = true;
+                _joystickPointerId = pointerId;
                 _stickX = x;
                 _stickY = y;
                 ClampStick();
@@ -140,6 +150,7 @@ public class FloatingJoystick : IInputHandler, IDisposable
             if (x < screenWidth * 0.6f)
             {
                 _isPressed = true;
+                _joystickPointerId = pointerId;
                 _baseX = x;
                 _baseY = y;
                 _stickX = x;
@@ -149,9 +160,10 @@ public class FloatingJoystick : IInputHandler, IDisposable
         }
     }
 
-    public void OnTouchMove(float x, float y)
+    public void OnTouchMove(float x, float y, long pointerId = 0)
     {
-        if (!_isPressed)
+        // Nur auf Joystick-Finger reagieren
+        if (!_isPressed || (pointerId != 0 && pointerId != _joystickPointerId))
             return;
 
         _stickX = x;
@@ -177,14 +189,25 @@ public class FloatingJoystick : IInputHandler, IDisposable
         }
     }
 
-    public void OnTouchEnd()
+    public void OnTouchEnd(long pointerId = 0)
     {
-        _isPressed = false;
-        _stickX = _baseX;
-        _stickY = _baseY;
-        _currentDirection = Direction.None;
-        _bombButtonPressed = false;
-        _detonatorButtonPressed = false;
+        // Joystick-Finger losgelassen
+        if (pointerId == 0 || pointerId == _joystickPointerId)
+        {
+            _isPressed = false;
+            _stickX = _baseX;
+            _stickY = _baseY;
+            _currentDirection = Direction.None;
+            _joystickPointerId = -1;
+        }
+
+        // Bomb/Detonator-Finger losgelassen
+        if (pointerId == 0 || pointerId == _bombPointerId)
+        {
+            _bombButtonPressed = false;
+            _detonatorButtonPressed = false;
+            _bombPointerId = -1;
+        }
     }
 
     public void Update(float deltaTime)
@@ -212,7 +235,12 @@ public class FloatingJoystick : IInputHandler, IDisposable
         _detonatePressed = false;
         _detonateConsumed = false;
         _detonatorButtonPressed = false;
+        _joystickPointerId = -1;
+        _bombPointerId = -1;
     }
+
+    // Hysterese: Richtung erst wechseln wenn Winkel deutlich abweicht (~10°)
+    private const float DIRECTION_HYSTERESIS = 0.17f; // ~10° in Radiant
 
     private void UpdateDirection()
     {
@@ -227,15 +255,49 @@ public class FloatingJoystick : IInputHandler, IDisposable
         }
 
         float angle = MathF.Atan2(dy, dx);
+        Direction newDir = GetDirectionFromAngle(angle);
 
+        // Hysterese: Richtung nur wechseln wenn genug Abstand zur aktuellen
+        if (newDir != _currentDirection && _currentDirection != Direction.None)
+        {
+            float currentAngle = GetAngleForDirection(_currentDirection);
+            float angleDiff = MathF.Abs(NormalizeAngle(angle - currentAngle));
+            if (angleDiff < MathF.PI / 4 + DIRECTION_HYSTERESIS)
+                return; // Alte Richtung beibehalten
+        }
+
+        if (newDir != _currentDirection)
+        {
+            _currentDirection = newDir;
+            DirectionChanged?.Invoke();
+        }
+    }
+
+    private static Direction GetDirectionFromAngle(float angle)
+    {
         if (angle >= -MathF.PI / 4 && angle < MathF.PI / 4)
-            _currentDirection = Direction.Right;
-        else if (angle >= MathF.PI / 4 && angle < 3 * MathF.PI / 4)
-            _currentDirection = Direction.Down;
-        else if (angle >= -3 * MathF.PI / 4 && angle < -MathF.PI / 4)
-            _currentDirection = Direction.Up;
-        else
-            _currentDirection = Direction.Left;
+            return Direction.Right;
+        if (angle >= MathF.PI / 4 && angle < 3 * MathF.PI / 4)
+            return Direction.Down;
+        if (angle >= -3 * MathF.PI / 4 && angle < -MathF.PI / 4)
+            return Direction.Up;
+        return Direction.Left;
+    }
+
+    private static float GetAngleForDirection(Direction dir) => dir switch
+    {
+        Direction.Right => 0f,
+        Direction.Down => MathF.PI / 2,
+        Direction.Left => MathF.PI,
+        Direction.Up => -MathF.PI / 2,
+        _ => 0f
+    };
+
+    private static float NormalizeAngle(float angle)
+    {
+        while (angle > MathF.PI) angle -= 2 * MathF.PI;
+        while (angle < -MathF.PI) angle += 2 * MathF.PI;
+        return angle;
     }
 
     private void UpdateBombButtonPosition(float screenWidth, float screenHeight)

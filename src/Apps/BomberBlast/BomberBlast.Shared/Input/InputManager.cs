@@ -21,6 +21,7 @@ public class InputManager : IDisposable
     private float _joystickOpacity = 0.7f;
     private bool _hapticEnabled = true;
     private bool _joystickFixed; // Fixed-Modus
+    private bool _reducedEffects; // Reduzierte visuelle Effekte
 
     public InputType CurrentInputType
     {
@@ -83,13 +84,31 @@ public class InputManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Reduzierte Effekte: Deaktiviert ScreenShake, Partikel, Hit-Pause, Slow-Motion
+    /// </summary>
+    public bool ReducedEffects
+    {
+        get => _reducedEffects;
+        set => _reducedEffects = value;
+    }
+
+    /// <summary>Event bei Richtungswechsel im Joystick (für haptisches Feedback)</summary>
+    public event Action? DirectionChanged;
+
     public InputManager(IPreferencesService preferences)
     {
         _preferences = preferences;
 
+        var joystick = new FloatingJoystick();
+        joystick.DirectionChanged += () =>
+        {
+            if (_hapticEnabled) DirectionChanged?.Invoke();
+        };
+
         _handlers = new Dictionary<InputType, IInputHandler>
         {
-            { InputType.FloatingJoystick, new FloatingJoystick() },
+            { InputType.FloatingJoystick, joystick },
             { InputType.Keyboard, new KeyboardHandler() }
         };
 
@@ -117,6 +136,7 @@ public class InputManager : IDisposable
         _joystickOpacity = (float)_preferences.Get("JoystickOpacity", 0.7);
         _hapticEnabled = _preferences.Get("HapticEnabled", true);
         _joystickFixed = _preferences.Get("JoystickFixed", false);
+        _reducedEffects = _preferences.Get("ReducedEffects", false);
     }
 
     /// <summary>
@@ -129,6 +149,7 @@ public class InputManager : IDisposable
         _preferences.Set("JoystickOpacity", (double)_joystickOpacity);
         _preferences.Set("HapticEnabled", _hapticEnabled);
         _preferences.Set("JoystickFixed", _joystickFixed);
+        _preferences.Set("ReducedEffects", _reducedEffects);
     }
 
     /// <summary>
@@ -159,19 +180,19 @@ public class InputManager : IDisposable
         }
     }
 
-    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight)
+    public void OnTouchStart(float x, float y, float screenWidth, float screenHeight, long pointerId = 0)
     {
-        _activeHandler.OnTouchStart(x, y, screenWidth, screenHeight);
+        _activeHandler.OnTouchStart(x, y, screenWidth, screenHeight, pointerId);
     }
 
-    public void OnTouchMove(float x, float y)
+    public void OnTouchMove(float x, float y, long pointerId = 0)
     {
-        _activeHandler.OnTouchMove(x, y);
+        _activeHandler.OnTouchMove(x, y, pointerId);
     }
 
-    public void OnTouchEnd()
+    public void OnTouchEnd(long pointerId = 0)
     {
-        _activeHandler.OnTouchEnd();
+        _activeHandler.OnTouchEnd(pointerId);
     }
 
     public void Update(float deltaTime)

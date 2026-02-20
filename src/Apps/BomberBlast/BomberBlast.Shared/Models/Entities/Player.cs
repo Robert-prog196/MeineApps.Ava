@@ -165,7 +165,7 @@ public class Player : Entity
 
     // Stuck-Detection: Zählt Frames in denen sich der Spieler trotz Input nicht bewegt
     private int _stuckFrames;
-    private const int STUCK_THRESHOLD = 10; // Nach 10 Frames ohne Bewegung → Recovery
+    private const int STUCK_THRESHOLD = 25; // Nach 25 Frames (~417ms) ohne Bewegung → Recovery
 
     /// <summary>
     /// Bewege Spieler in aktuelle Richtung mit automatischem Grid-Alignment.
@@ -333,7 +333,7 @@ public class Player : Entity
 
             // Prüfe ob Ausrichten nach oben oder unten die Blockade löst
             float targetX = X + dx;
-            float nudgeSpeed = Speed * 0.04f; // Stärkerer Nudge als vorher (4% statt 1.6%)
+            float nudgeSpeed = 4.0f; // Konstanter Nudge (unabhängig von Speed-Level)
 
             if (MathF.Abs(offset) < GameGrid.CELL_SIZE * 0.5f)
             {
@@ -361,7 +361,7 @@ public class Player : Entity
             offset = X - cellCenter;
 
             float targetY = Y + dy;
-            float nudgeSpeed = Speed * 0.04f;
+            float nudgeSpeed = 4.0f; // Konstanter Nudge (unabhängig von Speed-Level)
 
             if (MathF.Abs(offset) < GameGrid.CELL_SIZE * 0.5f)
             {

@@ -126,6 +126,17 @@
                                 OnContent="" OffContent=""
                                 IsChecked="{Binding HapticEnabled}" />
                 </Grid>
+
+                <!-- Reduzierte Effekte (ScreenShake, Partikel, Hit-Pause) -->
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{loc:Translate ReducedEffects}"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             VerticalAlignment="Center" />
+                  <ToggleSwitch Grid.Column="1"
+                                OnContent="" OffContent=""
+                                IsChecked="{Binding ReducedEffects}" />
+                </Grid>
               </StackPanel>
             </Border>
 
@@ -417,7 +428,27 @@
                   </StackPanel>
                   <StackPanel Orientation="Horizontal" Spacing="6">
                     <mi:MaterialIcon Kind="CircleMultiple" Width="14" Height="14" Foreground="#FFD700" />
-                    <TextBlock Text="{loc:Translate PremiumFeatureDoubleCoins}"
+                    <TextBlock Text="{loc:Translate PremiumFeature3xCoins}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="ChevronDoubleUp" Width="14" Height="14" Foreground="#F59E0B" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureAutoDouble}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="Flash" Width="14" Height="14" Foreground="#3B82F6" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureFreeBoost}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="SkipNext" Width="14" Height="14" Foreground="#8B5CF6" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureFreeSkip}"
+                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <mi:MaterialIcon Kind="HeartPulse" Width="14" Height="14" Foreground="#EF4444" />
+                    <TextBlock Text="{loc:Translate PremiumFeatureFreeContinue}"
                                FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
                   </StackPanel>
                   <StackPanel Orientation="Horizontal" Spacing="6">
@@ -425,21 +456,29 @@
                     <TextBlock Text="{loc:Translate PremiumFeatureSkins}"
                                FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
                   </StackPanel>
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <mi:MaterialIcon Kind="Heart" Width="14" Height="14" Foreground="#EF4444" />
-                    <TextBlock Text="{loc:Translate PremiumFeatureSupport}"
-                               FontSize="11" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  </StackPanel>
                 </StackPanel>
 
-                <!-- Buy Premium -->
-                <Button Content="{loc:Translate BuyPremium}"
-                        Classes="Primary"
+                <!-- Buy Premium (mit Preis) -->
+                <Button Classes="Primary"
                         Background="Gold"
                         Command="{Binding BuyPremiumCommand}"
                         IsVisible="{Binding !IsPremium}"
                         HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center" />
+                        HorizontalContentAlignment="Center"
+                        Padding="12,10">
+                  <StackPanel Orientation="Horizontal" Spacing="8"
+                              HorizontalAlignment="Center">
+                    <mi:MaterialIcon Kind="Crown" Width="20" Height="20"
+                                     Foreground="#1A1A2A" />
+                    <TextBlock Text="{loc:Translate BuyPremium}"
+                               FontSize="16" FontWeight="Bold"
+                               Foreground="#1A1A2A" />
+                    <TextBlock Text="1,99 €"
+                               FontSize="14" FontWeight="SemiBold"
+                               Foreground="#1A1A2A"
+                               Opacity="0.7" />
+                  </StackPanel>
+                </Button>
 
                 <!-- Restore Purchases -->
                 <Button Content="{loc:Translate RestorePurchases}"

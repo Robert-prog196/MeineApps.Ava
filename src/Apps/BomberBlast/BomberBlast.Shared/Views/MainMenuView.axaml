@@ -68,23 +68,27 @@
                      Margin="0,8,0,0" />
         </StackPanel>
 
-        <!-- Rechts: Button Grid (2 Spalten) -->
+        <!-- Rechts: Button Grid (2 Spalten - Spielmodi links, Menü rechts) -->
         <Grid Grid.Column="1"
-              ColumnDefinitions="*,*"
-              RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+              ColumnDefinitions="3*,2*"
+              RowDefinitions="Auto,Auto,Auto,Auto"
               Margin="24,0,0,0"
               VerticalAlignment="Center">
 
-          <!-- Primaere Buttons (Linke Spalte) -->
+          <!-- ═══ Spielmodi (Linke Spalte, groesser) ═══ -->
+
+          <!-- Story Mode = Primary CTA -->
           <Button Grid.Row="0" Grid.Column="0"
                   Content="{loc:Translate StoryMode}"
                   Classes="Primary GameButton"
                   Command="{Binding StoryModeCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
+                  FontSize="18"
                   Margin="0,0,6,6"
-                  Height="48" />
+                  Height="56" />
 
+          <!-- Continue (nur wenn Fortschritt) -->
           <Button Grid.Row="1" Grid.Column="0"
                   Content="{loc:Translate Continue}"
                   Classes="Primary GameButton"
@@ -94,85 +98,48 @@
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
                   Margin="0,0,6,6"
-                  Height="48" />
+                  Height="44" />
 
-          <Button Grid.Row="2" Grid.Column="0"
-                  Content="{loc:Translate ArcadeMode}"
-                  Classes="Primary GameButton"
-                  Background="{DynamicResource ErrorBrush}"
-                  Command="{Binding ArcadeModeCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="0,0,6,6"
-                  Height="48" />
+          <!-- Arcade + QuickPlay nebeneinander -->
+          <Grid Grid.Row="2" Grid.Column="0"
+                ColumnDefinitions="*,*"
+                Margin="0,0,6,6">
+            <Button Grid.Column="0"
+                    Content="{loc:Translate ArcadeMode}"
+                    Classes="Primary GameButton"
+                    Background="{DynamicResource ErrorBrush}"
+                    Command="{Binding ArcadeModeCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    FontSize="13"
+                    Margin="0,0,3,0"
+                    Height="44" />
+            <Button Grid.Column="1"
+                    Content="{loc:Translate QuickPlay}"
+                    Classes="Primary GameButton"
+                    Background="{DynamicResource WarningBrush}"
+                    Command="{Binding QuickPlayCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    FontSize="13"
+                    Margin="3,0,0,0"
+                    Height="44" />
+          </Grid>
 
-          <Button Grid.Row="3" Grid.Column="0"
-                  Content="{loc:Translate QuickPlay}"
-                  Classes="Primary GameButton"
-                  Background="{DynamicResource WarningBrush}"
-                  Command="{Binding QuickPlayCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="0,0,6,6"
-                  Height="48" />
-
-          <!-- Sekundaere Buttons (Rechte Spalte) -->
-          <Button Grid.Row="0" Grid.Column="1"
-                  Classes="Secondary GameButton"
-                  Command="{Binding ShopCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="6,0,0,6"
-                  Height="48">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <mi:MaterialIcon Kind="Store" Width="18" Height="18"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBlock Text="{loc:Translate ShopTitle}"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-          </Button>
-
-          <Button Grid.Row="1" Grid.Column="1"
-                  Content="{loc:Translate HighScores}"
-                  Classes="Secondary GameButton"
-                  Command="{Binding HighScoresCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="6,0,0,6"
-                  Height="48" />
-
-          <Button Grid.Row="2" Grid.Column="1"
-                  Content="{loc:Translate Help}"
-                  Classes="Secondary GameButton"
-                  Command="{Binding HelpCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="6,0,0,6"
-                  Height="48" />
-
-          <Button Grid.Row="3" Grid.Column="1"
-                  Content="{loc:Translate Settings}"
-                  Classes="Secondary GameButton"
-                  Command="{Binding SettingsCommand}"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Center"
-                  Margin="6,0,0,6"
-                  Height="48" />
-
-          <!-- Daily Challenge (Links) -->
-          <Panel Grid.Row="4" Grid.Column="0" Margin="0,6,6,0">
+          <!-- Daily Challenge -->
+          <Panel Grid.Row="3" Grid.Column="0" Margin="0,0,6,0">
             <Button Classes="Primary GameButton"
                     Background="#FF6B00"
                     Command="{Binding DailyChallengeCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Height="48">
+                    Height="44">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Sword" Width="18" Height="18"
                                  Foreground="White" />
                 <TextBlock Text="{loc:Translate DailyChallengeTitle}"
                            Foreground="White"
-                           FontSize="13" />
+                           FontSize="14" />
               </StackPanel>
             </Button>
             <!-- "Neu!" Badge -->
@@ -189,22 +156,87 @@
             </Border>
           </Panel>
 
-          <!-- Achievements (Rechts) -->
-          <Button Grid.Row="4" Grid.Column="1"
+          <!-- ═══ Menü (Rechte Spalte, kompakter) ═══ -->
+
+          <!-- Shop -->
+          <Button Grid.Row="0" Grid.Column="1"
+                  Classes="Secondary GameButton"
+                  Command="{Binding ShopCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Margin="6,0,0,6"
+                  Height="44">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Store" Width="18" Height="18"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{loc:Translate ShopTitle}"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </Button>
+
+          <!-- Achievements -->
+          <Button Grid.Row="1" Grid.Column="1"
                   Classes="Secondary GameButton"
                   Command="{Binding AchievementsCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Margin="6,6,0,0"
-                  Height="48">
+                  Margin="6,0,0,6"
+                  Height="44">
             <StackPanel Orientation="Horizontal" Spacing="8">
-              <mi:MaterialIcon Kind="Trophy" Width="18" Height="18"
+              <mi:MaterialIcon Kind="Trophy" Width="16" Height="16"
                                Foreground="#FFD700" />
               <TextBlock Text="{loc:Translate AchievementsTitle}"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          FontSize="13" />
             </StackPanel>
           </Button>
+
+          <!-- High Scores -->
+          <Button Grid.Row="2" Grid.Column="1"
+                  Content="{loc:Translate HighScores}"
+                  Classes="Secondary GameButton"
+                  Command="{Binding HighScoresCommand}"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  FontSize="13"
+                  Margin="6,0,0,6"
+                  Height="40" />
+
+          <!-- Help + Settings nebeneinander (kompakt) -->
+          <Grid Grid.Row="3" Grid.Column="1"
+                ColumnDefinitions="*,*"
+                Margin="6,0,0,0">
+            <Button Grid.Column="0"
+                    Classes="Secondary GameButton"
+                    Command="{Binding HelpCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Margin="0,0,3,0"
+                    Height="40">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="HelpCircleOutline" Width="16" Height="16"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{loc:Translate Help}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </Button>
+            <Button Grid.Column="1"
+                    Classes="Secondary GameButton"
+                    Command="{Binding SettingsCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Margin="3,0,0,0"
+                    Height="40">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <mi:MaterialIcon Kind="Cog" Width="16" Height="16"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="{loc:Translate Settings}"
+                           FontSize="12"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+              </StackPanel>
+            </Button>
+          </Grid>
 
         </Grid>
       </Grid>

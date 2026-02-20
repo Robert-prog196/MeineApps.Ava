@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using Avalonia;
 using Avalonia.Android;
+using BomberBlast.Core;
 using BomberBlast.Droid;
 using BomberBlast.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +68,21 @@ public class MainActivity : AvaloniaMainActivity<App>
             _mainVm.ExitHintRequested += msg =>
                 RunOnUiThread(() =>
                     Toast.MakeText(this, msg, ToastLength.Short)?.Show());
+        }
+
+        // Haptisches Feedback bei Joystick-Richtungswechsel (15ms Tick)
+        var gameEngine = App.Services.GetService<GameEngine>();
+        if (gameEngine != null)
+        {
+            var vibrator = (Vibrator?)GetSystemService(VibratorService);
+            if (vibrator != null)
+            {
+                gameEngine.OnDirectionChanged += () =>
+                {
+                    if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+                        vibrator.Vibrate(VibrationEffect.CreateOneShot(15, VibrationEffect.DefaultAmplitude));
+                };
+            }
         }
 
         // Google Play Games Services initialisieren + Auto-Sign-In
