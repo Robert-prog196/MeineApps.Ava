@@ -573,6 +573,81 @@
   <data name="PrestigeNotAvailableDesc" xml:space="preserve">
     <value>Vous avez besoin d'au moins le Niveau {0} pour prestigier. Vous êtes actuellement au Niveau {1}.</value>
   </data>
+  <data name="PrestigeWarning" xml:space="preserve">
+    <value>Votre progression sera réinitialisée !</value>
+  </data>
+  <data name="PrestigeKeeps" xml:space="preserve">
+    <value>Conservé :</value>
+  </data>
+  <data name="PrestigeConfirm" xml:space="preserve">
+    <value>Prestigier maintenant</value>
+  </data>
+  <data name="CloudSave" xml:space="preserve">
+    <value>Sauvegarde cloud</value>
+  </data>
+  <data name="CloudSaveDesc" xml:space="preserve">
+    <value>Sauvegardez votre progression dans Google Play Games</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="SignedIn" xml:space="preserve">
+    <value>Connecté</value>
+  </data>
+  <data name="NotSignedIn" xml:space="preserve">
+    <value>Non connecté</value>
+  </data>
+  <data name="SaveToCloud" xml:space="preserve">
+    <value>Sauvegarder dans le cloud</value>
+  </data>
+  <data name="RestoreFromCloud" xml:space="preserve">
+    <value>Restaurer depuis le cloud</value>
+  </data>
+  <data name="CloudSaveSuccess" xml:space="preserve">
+    <value>Jeu sauvegardé dans le cloud avec succès !</value>
+  </data>
+  <data name="CloudRestoreSuccess" xml:space="preserve">
+    <value>Jeu restauré depuis le cloud avec succès !</value>
+  </data>
+  <data name="CloudRestoreConfirm" xml:space="preserve">
+    <value>Restaurer la sauvegarde cloud ? Votre progression actuelle sera écrasée !</value>
+  </data>
+  <data name="CloudSaveFailed" xml:space="preserve">
+    <value>Échec de la sauvegarde cloud. Veuillez réessayer.</value>
+  </data>
+  <data name="LastCloudSave" xml:space="preserve">
+    <value>Dernière sauvegarde : {0}</value>
+  </data>
+  <data name="AutoCollectDesc" xml:space="preserve">
+    <value>Collecter les livraisons automatiquement</value>
+  </data>
+  <data name="AutoAcceptDesc" xml:space="preserve">
+    <value>Accepter la meilleure commande automatiquement</value>
+  </data>
+  <data name="AutoAssignDesc" xml:space="preserve">
+    <value>Assigner les travailleurs libres automatiquement</value>
+  </data>
+  <data name="AutoClaimDailyDesc" xml:space="preserve">
+    <value>Réclamer la récompense quotidienne automatiquement</value>
+  </data>
+  <data name="GuildLeaderboard" xml:space="preserve">
+    <value>Classement de la guilde</value>
+  </data>
+  <data name="GuildContribute" xml:space="preserve">
+    <value>Contribuer</value>
+  </data>
+  <data name="GuildSignInRequired" xml:space="preserve">
+    <value>Connectez-vous à Google Play Games pour rejoindre une guilde</value>
+  </data>
+  <data name="GuildWeeklyGoal" xml:space="preserve">
+    <value>Objectif hebdomadaire</value>
+  </data>
+  <data name="GuildMembers" xml:space="preserve">
+    <value>Membres</value>
+  </data>
+  <data name="Restore" xml:space="preserve">
+    <value>Restaurer</value>
+  </data>
   <data name="ConfirmCancelOrder" xml:space="preserve">
     <value>Annuler la commande</value>
   </data>
@@ -1929,6 +2004,18 @@
   <data name="ToolMaxLevel" xml:space="preserve">
     <value>Niveau max</value>
   </data>
+  <data name="ToolCompass" xml:space="preserve">
+    <value>Compas</value>
+  </data>
+  <data name="ToolHammer" xml:space="preserve">
+    <value>Marteau</value>
+  </data>
+  <data name="ToolMagnifier" xml:space="preserve">
+    <value>Loupe</value>
+  </data>
+  <data name="ToolSpiritLevel" xml:space="preserve">
+    <value>Niveau &#224; bulle</value>
+  </data>
   <data name="GoldenScrews" xml:space="preserve">
     <value>Vis dor&#233;es</value>
   </data>
@@ -2814,14 +2901,6 @@
     <value>Impossible d'importer la sauvegarde.</value>
   </data>
 
-  <!-- Phase 3: Tutorial -->
-  <data name="TutorialSkip" xml:space="preserve">
-    <value>Passer</value>
-  </data>
-  <data name="TutorialNext" xml:space="preserve">
-    <value>Suivant</value>
-  </data>
-
   <!-- Phase 5: Notifications -->
   <data name="Notifications" xml:space="preserve">
     <value>Notifications</value>
@@ -2895,6 +2974,304 @@
   </data>
   <data name="RewardDependsOnRating" xml:space="preserve">
     <value>La récompense dépend de ta note</value>
+  </data>
+  <data name="RoomKitchen" xml:space="preserve">
+    <value>Cuisine</value>
+  </data>
+  <data name="RoomBathroom" xml:space="preserve">
+    <value>Salle de bain</value>
+  </data>
+  <data name="RoomBedroom" xml:space="preserve">
+    <value>Chambre</value>
+  </data>
+  <data name="RoomLiving" xml:space="preserve">
+    <value>Salon</value>
+  </data>
+  <data name="RoomOffice" xml:space="preserve">
+    <value>Bureau</value>
+  </data>
+  <data name="RoomGarage" xml:space="preserve">
+    <value>Garage</value>
+  </data>
+  <data name="RoomLaundry" xml:space="preserve">
+    <value>Buanderie</value>
+  </data>
+  <data name="RoomDining" xml:space="preserve">
+    <value>Salle à manger</value>
+  </data>
+  <data name="RoomBasement" xml:space="preserve">
+    <value>Sous-sol</value>
+  </data>
+  <data name="RoomHallway" xml:space="preserve">
+    <value>Couloir</value>
+  </data>
+
+  <!-- New Feature Keys (Welle 1-8) -->
+  <data name="Managers" xml:space="preserve">
+    <value>Contremaîtres</value>
+  </data>
+  <data name="AllWorkshops" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="AbilityAutoCollect" xml:space="preserve">
+    <value>Auto-Collecte</value>
+  </data>
+  <data name="AbilityEfficiency" xml:space="preserve">
+    <value>Efficacité</value>
+  </data>
+  <data name="AbilityFatigue" xml:space="preserve">
+    <value>Fatigue</value>
+  </data>
+  <data name="AbilityMood" xml:space="preserve">
+    <value>Humeur</value>
+  </data>
+  <data name="AbilityIncome" xml:space="preserve">
+    <value>Revenus</value>
+  </data>
+  <data name="AbilityTraining" xml:space="preserve">
+    <value>Formation</value>
+  </data>
+  <data name="Tournament" xml:space="preserve">
+    <value>Tournoi</value>
+  </data>
+  <data name="TournamentFull" xml:space="preserve">
+    <value>Tournoi</value>
+  </data>
+  <data name="TournamentNoEntries" xml:space="preserve">
+    <value>Plus de participations disponibles.</value>
+  </data>
+  <data name="TournamentReward" xml:space="preserve">
+    <value>Récompense du tournoi</value>
+  </data>
+  <data name="Free" xml:space="preserve">
+    <value>Gratuit</value>
+  </data>
+  <data name="MiniGameSawing" xml:space="preserve">
+    <value>Sciage</value>
+  </data>
+  <data name="MiniGamePipePuzzle" xml:space="preserve">
+    <value>Puzzle de tuyaux</value>
+  </data>
+  <data name="MiniGameWiring" xml:space="preserve">
+    <value>Câblage</value>
+  </data>
+  <data name="MiniGamePainting" xml:space="preserve">
+    <value>Peinture</value>
+  </data>
+  <data name="MiniGameRoofTiling" xml:space="preserve">
+    <value>Couverture</value>
+  </data>
+  <data name="MiniGameBlueprint" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="MiniGameDesignPuzzle" xml:space="preserve">
+    <value>Conception</value>
+  </data>
+  <data name="MiniGameInspection" xml:space="preserve">
+    <value>Inspection</value>
+  </data>
+  <data name="BattlePass" xml:space="preserve">
+    <value>Battle Pass</value>
+  </data>
+  <data name="PremiumPass" xml:space="preserve">
+    <value>Pass Premium</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Jours</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>Jour</value>
+  </data>
+  <data name="Expired" xml:space="preserve">
+    <value>Expiré</value>
+  </data>
+  <data name="SeasonalEvent" xml:space="preserve">
+    <value>Événement saisonnier</value>
+  </data>
+  <data name="NoEventActive" xml:space="preserve">
+    <value>Aucun événement actif</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>Guilde</value>
+  </data>
+  <data name="GuildIncomeBonus" xml:space="preserve">
+    <value>Bonus de revenus</value>
+  </data>
+  <data name="GuildMember" xml:space="preserve">
+    <value>Membre</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>Membres</value>
+  </data>
+  <data name="You" xml:space="preserve">
+    <value>Vous</value>
+  </data>
+  <data name="Crafting" xml:space="preserve">
+    <value>Artisanat</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Prêt</value>
+  </data>
+  <data name="NoInputRequired" xml:space="preserve">
+    <value>Aucun matériau requis</value>
+  </data>
+  <!-- Missions Hebdomadaires -->
+  <data name="WeeklyMissionsTitle" xml:space="preserve"><value>Missions Hebdomadaires</value></data>
+  <data name="WeeklyMissionReset" xml:space="preserve"><value>Se réinitialise dans {0} jours</value></data>
+  <data name="ClaimWeeklyBonus" xml:space="preserve"><value>Tout récupérer</value></data>
+  <data name="AllWeeklyMissionsComplete" xml:space="preserve"><value>Toutes les missions terminées !</value></data>
+  <data name="WeeklyMission_CompleteOrders" xml:space="preserve"><value>Terminer {0} commandes</value></data>
+  <data name="WeeklyMission_EarnMoney" xml:space="preserve"><value>Gagner {0}</value></data>
+  <data name="WeeklyMission_UpgradeWorkshops" xml:space="preserve"><value>Améliorer les ateliers {0} fois</value></data>
+  <data name="WeeklyMission_HireWorkers" xml:space="preserve"><value>Embaucher {0} ouvriers</value></data>
+  <data name="WeeklyMission_PlayMiniGames" xml:space="preserve"><value>Jouer {0} mini-jeux</value></data>
+  <data name="WeeklyMission_CompleteDailyChallenges" xml:space="preserve"><value>Terminer {0} défis quotidiens</value></data>
+  <data name="WeeklyMission_AchievePerfectRatings" xml:space="preserve"><value>Obtenir {0} notes parfaites</value></data>
+  <data name="AutomationTitle" xml:space="preserve"><value>Automatisation</value></data>
+  <data name="AutoCollectDelivery" xml:space="preserve"><value>Collecter les livraisons automatiquement</value></data>
+  <data name="AutoAcceptOrder" xml:space="preserve"><value>Accepter les commandes automatiquement</value></data>
+  <data name="AutoAssignWorkers" xml:space="preserve"><value>Assigner les ouvriers automatiquement</value></data>
+  <data name="AutoClaimDaily" xml:space="preserve"><value>Collecter la récompense quotidienne automatiquement</value></data>
+  <data name="RequiresLevelShort" xml:space="preserve"><value>Nécessite Nv. {0}</value></data>
+  <data name="PremiumOnly" xml:space="preserve"><value>Premium uniquement</value></data>
+  <data name="AutomationLocked" xml:space="preserve"><value>Verrouillé</value></data>
+  <data name="WelcomeBackTitle" xml:space="preserve"><value>Bon retour !</value></data>
+  <data name="WelcomeBackStandard" xml:space="preserve"><value>Tu nous as manqué ! Voici un petit cadeau de bienvenue.</value></data>
+  <data name="WelcomeBackPremium" xml:space="preserve"><value>Ça fait longtemps ! Voici un bonus spécial pour toi.</value></data>
+  <data name="StarterPackTitle" xml:space="preserve"><value>Pack de démarrage</value></data>
+  <data name="StarterPackDescription" xml:space="preserve"><value>Un petit coup de pouce pour commencer !</value></data>
+  <data name="ClaimOffer" xml:space="preserve"><value>Récupérer</value></data>
+  <data name="DismissOffer" xml:space="preserve"><value>Peut-être plus tard</value></data>
+  <data name="OfferExpiresIn" xml:space="preserve"><value>Expire dans {0}h</value></data>
+  <data name="LuckyWheelTitle" xml:space="preserve"><value>Roue de la chance</value></data>
+  <data name="SpinFree" xml:space="preserve"><value>Tour gratuit !</value></data>
+  <data name="SpinCost" xml:space="preserve"><value>Tourner ({0} vis)</value></data>
+  <data name="YourPrize" xml:space="preserve"><value>Ton prix</value></data>
+  <data name="Prize_MoneySmall" xml:space="preserve"><value>Petite monnaie</value></data>
+  <data name="Prize_MoneyMedium" xml:space="preserve"><value>Argent</value></data>
+  <data name="Prize_MoneyLarge" xml:space="preserve"><value>Gros gain</value></data>
+  <data name="Prize_XpBoost" xml:space="preserve"><value>Boost XP</value></data>
+  <data name="Prize_Screws" xml:space="preserve"><value>Vis dorées</value></data>
+  <data name="Prize_Speed" xml:space="preserve"><value>Boost de vitesse</value></data>
+  <data name="Prize_Tool" xml:space="preserve"><value>Amélioration d'outil</value></data>
+  <data name="Prize_Jackpot" xml:space="preserve"><value>JACKPOT !</value></data>
+  <data name="SpinAgain" xml:space="preserve"><value>Tourner encore</value></data>
+  <data name="EquipmentTitle" xml:space="preserve"><value>Équipement</value></data>
+  <data name="Helmet" xml:space="preserve"><value>Casque</value></data>
+  <data name="Gloves" xml:space="preserve"><value>Gants</value></data>
+  <data name="Boots" xml:space="preserve"><value>Bottes</value></data>
+  <data name="Belt" xml:space="preserve"><value>Ceinture</value></data>
+  <data name="EquipmentEmpty" xml:space="preserve"><value>Vide</value></data>
+  <data name="Unequip" xml:space="preserve"><value>Retirer</value></data>
+  <data name="EquipmentBonus" xml:space="preserve"><value>Bonus</value></data>
+  <data name="Equipment_Helmet_Common" xml:space="preserve"><value>Casque simple</value></data>
+  <data name="Equipment_Helmet_Uncommon" xml:space="preserve"><value>Casque renforcé</value></data>
+  <data name="Equipment_Helmet_Rare" xml:space="preserve"><value>Casque en acier</value></data>
+  <data name="Equipment_Helmet_Epic" xml:space="preserve"><value>Casque de maître</value></data>
+  <data name="Equipment_Gloves_Common" xml:space="preserve"><value>Gants de travail</value></data>
+  <data name="Equipment_Gloves_Uncommon" xml:space="preserve"><value>Gants en cuir</value></data>
+  <data name="Equipment_Gloves_Rare" xml:space="preserve"><value>Gants de précision</value></data>
+  <data name="Equipment_Gloves_Epic" xml:space="preserve"><value>Gants de maître</value></data>
+  <data name="Equipment_Boots_Common" xml:space="preserve"><value>Bottes de travail</value></data>
+  <data name="Equipment_Boots_Uncommon" xml:space="preserve"><value>Bottes renforcées</value></data>
+  <data name="Equipment_Boots_Rare" xml:space="preserve"><value>Bottes en acier</value></data>
+  <data name="Equipment_Boots_Epic" xml:space="preserve"><value>Bottes de maître</value></data>
+  <data name="Equipment_Belt_Common" xml:space="preserve"><value>Ceinture d'outils</value></data>
+  <data name="Equipment_Belt_Uncommon" xml:space="preserve"><value>Ceinture lourde</value></data>
+  <data name="Equipment_Belt_Rare" xml:space="preserve"><value>Ceinture multifonction</value></data>
+  <data name="Equipment_Belt_Epic" xml:space="preserve"><value>Ceinture de maître</value></data>
+  <data name="EquipmentShop" xml:space="preserve"><value>Boutique d'équipement</value></data>
+  <data name="RescueStreak" xml:space="preserve"><value>Sauver la série ({0} vis)</value></data>
+  <data name="StreakInDanger" xml:space="preserve"><value>Ta série de {0} jours est en danger !</value></data>
+  <data name="StreakRescued" xml:space="preserve"><value>Série sauvée !</value></data>
+  <data name="StreakRescueCost" xml:space="preserve"><value>5 Vis dorées</value></data>
+  <data name="CloudSaveNotAvailable" xml:space="preserve"><value>Sauvegarde cloud non disponible sur cet appareil</value></data>
+  <data name="CloudRestoreFailed" xml:space="preserve"><value>Impossible de restaurer depuis le cloud</value></data>
+  <data name="RestoreFromCloudConfirmation" xml:space="preserve"><value>Cela remplacera votre sauvegarde actuelle par celle du cloud. Êtes-vous sûr ?</value></data>
+  <data name="YesRestore" xml:space="preserve"><value>Oui, restaurer</value></data>
+  <data name="SignedInAs" xml:space="preserve"><value>Connecté en tant que {0}</value></data>
+  <data name="SignInFailed" xml:space="preserve"><value>Échec de la connexion</value></data>
+
+  <data name="PlayGamesMembersInfo" xml:space="preserve">
+    <value>Joueurs Play Games</value>
+  </data>
+
+  <data name="LuckySpin" xml:space="preserve">
+    <value>Roue de la chance</value>
+  </data>
+  <data name="LuckySpinFree" xml:space="preserve">
+    <value>Tour gratuit !</value>
+  </data>
+  <data name="LuckySpinCost" xml:space="preserve">
+    <value>Tourner ({0} 🔩)</value>
+  </data>
+  <data name="LuckySpinYourPrize" xml:space="preserve">
+    <value>Ton prix :</value>
+  </data>
+  <data name="LuckySpinSpeedBoost" xml:space="preserve">
+    <value>2x Vitesse 30min</value>
+  </data>
+  <data name="LuckySpinToolUpgrade" xml:space="preserve">
+    <value>Amélioration d'outil !</value>
+  </data>
+
+  <data name="TutorialPlaningTitle" xml:space="preserve">
+    <value>Rabotage</value>
+  </data>
+  <data name="TutorialPlaningText" xml:space="preserve">
+    <value>Appuie quand le marqueur est dans la zone verte. Plus c'est précis, mieux c'est !</value>
+  </data>
+  <data name="TutorialTileLayingTitle" xml:space="preserve">
+    <value>Pose de carrelage</value>
+  </data>
+  <data name="TutorialTileLayingText" xml:space="preserve">
+    <value>Appuie quand le marqueur est dans la zone verte. Plus c'est précis, mieux c'est !</value>
+  </data>
+  <data name="TutorialMeasuringTitle" xml:space="preserve">
+    <value>Mesure</value>
+  </data>
+  <data name="TutorialMeasuringText" xml:space="preserve">
+    <value>Appuie quand le marqueur est dans la zone verte. Plus c'est précis, mieux c'est !</value>
+  </data>
+
+  <data name="AutoCollectLocked" xml:space="preserve">
+    <value>Disponible à partir du niveau 15</value>
+  </data>
+  <data name="AutoAcceptLocked" xml:space="preserve">
+    <value>Disponible à partir du niveau 25</value>
+  </data>
+  <data name="AutoAssignLocked" xml:space="preserve">
+    <value>Disponible à partir du niveau 50</value>
+  </data>
+  <data name="AutoClaimDailyLocked" xml:space="preserve">
+    <value>Premium uniquement</value>
+  </data>
+
+  <data name="CooperationOrderHint" xml:space="preserve">
+    <value>Tâches de différents ateliers</value>
+  </data>
+
+  <data name="ManagerTitle" xml:space="preserve">
+    <value>Contremaître</value>
+  </data>
+  <data name="TournamentTitle" xml:space="preserve">
+    <value>Tournoi</value>
+  </data>
+  <data name="SeasonalEventTitle" xml:space="preserve">
+    <value>Événement saisonnier</value>
+  </data>
+  <data name="BattlePassTitle" xml:space="preserve">
+    <value>Pass saisonnier</value>
+  </data>
+  <data name="GuildTitle" xml:space="preserve">
+    <value>Guilde</value>
+  </data>
+  <data name="CraftingTitle" xml:space="preserve">
+    <value>Production</value>
+  </data>
+
+  <data name="FeaturesTitle" xml:space="preserve">
+    <value>Fonctionnalités</value>
   </data>
 
 </root>

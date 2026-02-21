@@ -906,6 +906,14 @@ namespace HandwerkerImperium.Resources.Strings {
 
         public static string ToolPaintbrush => ResourceManager.GetString("ToolPaintbrush", resourceCulture) ?? "";
 
+        public static string ToolHammer => ResourceManager.GetString("ToolHammer", resourceCulture) ?? "";
+
+        public static string ToolSpiritLevel => ResourceManager.GetString("ToolSpiritLevel", resourceCulture) ?? "";
+
+        public static string ToolMagnifier => ResourceManager.GetString("ToolMagnifier", resourceCulture) ?? "";
+
+        public static string ToolCompass => ResourceManager.GetString("ToolCompass", resourceCulture) ?? "";
+
         public static string ToolEffectZone => ResourceManager.GetString("ToolEffectZone", resourceCulture) ?? "";
 
         public static string ToolEffectTime => ResourceManager.GetString("ToolEffectTime", resourceCulture) ?? "";
@@ -1257,5 +1265,109 @@ namespace HandwerkerImperium.Resources.Strings {
         public static string OrdersComingSoon => ResourceManager.GetString("OrdersComingSoon", resourceCulture) ?? "";
 
         public static string AllQuickJobsDone => ResourceManager.GetString("AllQuickJobsDone", resourceCulture) ?? "";
+
+        public static string RoomKitchen => ResourceManager.GetString("RoomKitchen", resourceCulture) ?? "";
+
+        public static string RoomBathroom => ResourceManager.GetString("RoomBathroom", resourceCulture) ?? "";
+
+        public static string RoomBedroom => ResourceManager.GetString("RoomBedroom", resourceCulture) ?? "";
+
+        public static string RoomLiving => ResourceManager.GetString("RoomLiving", resourceCulture) ?? "";
+
+        public static string RoomOffice => ResourceManager.GetString("RoomOffice", resourceCulture) ?? "";
+
+        public static string RoomGarage => ResourceManager.GetString("RoomGarage", resourceCulture) ?? "";
+
+        public static string RoomLaundry => ResourceManager.GetString("RoomLaundry", resourceCulture) ?? "";
+
+        public static string RoomDining => ResourceManager.GetString("RoomDining", resourceCulture) ?? "";
+
+        public static string RoomHallway => ResourceManager.GetString("RoomHallway", resourceCulture) ?? "";
+
+        public static string RoomBasement => ResourceManager.GetString("RoomBasement", resourceCulture) ?? "";
+
+        // Manager
+        public static string Managers => ResourceManager.GetString("Managers", resourceCulture) ?? "";
+        public static string AllWorkshops => ResourceManager.GetString("AllWorkshops", resourceCulture) ?? "";
+        public static string AbilityAutoCollect => ResourceManager.GetString("AbilityAutoCollect", resourceCulture) ?? "";
+        public static string AbilityEfficiency => ResourceManager.GetString("AbilityEfficiency", resourceCulture) ?? "";
+        public static string AbilityFatigue => ResourceManager.GetString("AbilityFatigue", resourceCulture) ?? "";
+        public static string AbilityMood => ResourceManager.GetString("AbilityMood", resourceCulture) ?? "";
+        public static string AbilityIncome => ResourceManager.GetString("AbilityIncome", resourceCulture) ?? "";
+        public static string AbilityTraining => ResourceManager.GetString("AbilityTraining", resourceCulture) ?? "";
+
+        // Tournament
+        public static string Tournament => ResourceManager.GetString("Tournament", resourceCulture) ?? "";
+        public static string TournamentFull => ResourceManager.GetString("TournamentFull", resourceCulture) ?? "";
+        public static string TournamentNoEntries => ResourceManager.GetString("TournamentNoEntries", resourceCulture) ?? "";
+        public static string TournamentReward => ResourceManager.GetString("TournamentReward", resourceCulture) ?? "";
+        public static string Free => ResourceManager.GetString("Free", resourceCulture) ?? "";
+        public static string MiniGameSawing => ResourceManager.GetString("MiniGameSawing", resourceCulture) ?? "";
+        public static string MiniGamePipePuzzle => ResourceManager.GetString("MiniGamePipePuzzle", resourceCulture) ?? "";
+        public static string MiniGameWiring => ResourceManager.GetString("MiniGameWiring", resourceCulture) ?? "";
+        public static string MiniGamePainting => ResourceManager.GetString("MiniGamePainting", resourceCulture) ?? "";
+        public static string MiniGameRoofTiling => ResourceManager.GetString("MiniGameRoofTiling", resourceCulture) ?? "";
+        public static string MiniGameBlueprint => ResourceManager.GetString("MiniGameBlueprint", resourceCulture) ?? "";
+        public static string MiniGameDesignPuzzle => ResourceManager.GetString("MiniGameDesignPuzzle", resourceCulture) ?? "";
+        public static string MiniGameInspection => ResourceManager.GetString("MiniGameInspection", resourceCulture) ?? "";
+
+        // BattlePass
+        public static string BattlePass => ResourceManager.GetString("BattlePass", resourceCulture) ?? "";
+        public static string PremiumPass => ResourceManager.GetString("PremiumPass", resourceCulture) ?? "";
+        public static string Days => ResourceManager.GetString("Days", resourceCulture) ?? "";
+        public static string Day => ResourceManager.GetString("Day", resourceCulture) ?? "";
+        public static string Expired => ResourceManager.GetString("Expired", resourceCulture) ?? "";
+
+        // SeasonalEvent
+        public static string SeasonalEvent => ResourceManager.GetString("SeasonalEvent", resourceCulture) ?? "";
+        public static string NoEventActive => ResourceManager.GetString("NoEventActive", resourceCulture) ?? "";
+
+        // Guild
+        public static string Guild => ResourceManager.GetString("Guild", resourceCulture) ?? "";
+        public static string GuildIncomeBonus => ResourceManager.GetString("GuildIncomeBonus", resourceCulture) ?? "";
+        public static string GuildMember => ResourceManager.GetString("GuildMember", resourceCulture) ?? "";
+        public static string Members => ResourceManager.GetString("Members", resourceCulture) ?? "";
+        public static string You => ResourceManager.GetString("You", resourceCulture) ?? "";
+
+        // Crafting
+        public static string Crafting => ResourceManager.GetString("Crafting", resourceCulture) ?? "";
+        public static string Ready => ResourceManager.GetString("Ready", resourceCulture) ?? "";
+        public static string NoInputRequired => ResourceManager.GetString("NoInputRequired", resourceCulture) ?? "";
+
+        // LuckySpin
+        public static string LuckySpin => ResourceManager.GetString("LuckySpin", resourceCulture) ?? "";
+        public static string LuckySpinFree => ResourceManager.GetString("LuckySpinFree", resourceCulture) ?? "";
+        public static string LuckySpinCost => ResourceManager.GetString("LuckySpinCost", resourceCulture) ?? "";
+        public static string LuckySpinYourPrize => ResourceManager.GetString("LuckySpinYourPrize", resourceCulture) ?? "";
+        public static string LuckySpinSpeedBoost => ResourceManager.GetString("LuckySpinSpeedBoost", resourceCulture) ?? "";
+        public static string LuckySpinToolUpgrade => ResourceManager.GetString("LuckySpinToolUpgrade", resourceCulture) ?? "";
+
+        // Tutorial Varianten
+        public static string TutorialPlaningTitle => ResourceManager.GetString("TutorialPlaningTitle", resourceCulture) ?? "";
+        public static string TutorialPlaningText => ResourceManager.GetString("TutorialPlaningText", resourceCulture) ?? "";
+        public static string TutorialTileLayingTitle => ResourceManager.GetString("TutorialTileLayingTitle", resourceCulture) ?? "";
+        public static string TutorialTileLayingText => ResourceManager.GetString("TutorialTileLayingText", resourceCulture) ?? "";
+        public static string TutorialMeasuringTitle => ResourceManager.GetString("TutorialMeasuringTitle", resourceCulture) ?? "";
+        public static string TutorialMeasuringText => ResourceManager.GetString("TutorialMeasuringText", resourceCulture) ?? "";
+
+        // Automation Locked
+        public static string AutoCollectLocked => ResourceManager.GetString("AutoCollectLocked", resourceCulture) ?? "";
+        public static string AutoAcceptLocked => ResourceManager.GetString("AutoAcceptLocked", resourceCulture) ?? "";
+        public static string AutoAssignLocked => ResourceManager.GetString("AutoAssignLocked", resourceCulture) ?? "";
+        public static string AutoClaimDailyLocked => ResourceManager.GetString("AutoClaimDailyLocked", resourceCulture) ?? "";
+
+        // Cooperation Order
+        public static string CooperationOrderHint => ResourceManager.GetString("CooperationOrderHint", resourceCulture) ?? "";
+
+        // Feature Labels
+        public static string ManagerTitle => ResourceManager.GetString("ManagerTitle", resourceCulture) ?? "";
+        public static string TournamentTitle => ResourceManager.GetString("TournamentTitle", resourceCulture) ?? "";
+        public static string SeasonalEventTitle => ResourceManager.GetString("SeasonalEventTitle", resourceCulture) ?? "";
+        public static string BattlePassTitle => ResourceManager.GetString("BattlePassTitle", resourceCulture) ?? "";
+        public static string GuildTitle => ResourceManager.GetString("GuildTitle", resourceCulture) ?? "";
+        public static string CraftingTitle => ResourceManager.GetString("CraftingTitle", resourceCulture) ?? "";
+
+        // Features
+        public static string FeaturesTitle => ResourceManager.GetString("FeaturesTitle", resourceCulture) ?? "";
     }
 }
