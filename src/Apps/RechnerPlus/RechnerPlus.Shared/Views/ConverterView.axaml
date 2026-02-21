@@ -5,39 +5,45 @@
              x:Class="RechnerPlus.Views.ConverterView"
              x:DataType="vm:ConverterViewModel">
 
-  <ScrollViewer>
-    <StackPanel Margin="16" Spacing="16">
+  <ScrollViewer AutomationProperties.AutomationId="Conv_ScrollViewer">
+    <StackPanel AutomationProperties.AutomationId="Conv_RootPanel" Margin="16" Spacing="16">
 
       <!-- Header -->
       <TextBlock Text="{Binding TitleText}"
+                 AutomationProperties.AutomationId="Conv_Title"
                  Classes="HeadlineMedium" />
 
       <!-- Category Selection -->
-      <Border Classes="Card StatsCard">
+      <Border AutomationProperties.AutomationId="Conv_CategoryCard" Classes="Card StatsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <mi:MaterialIcon Kind="Shape"
                              Width="24" Height="24"
                              Foreground="{DynamicResource PrimaryBrush}" />
             <TextBlock Text="{Binding CategoryText}"
+                       AutomationProperties.AutomationId="Conv_CategoryLabel"
                        Classes="TitleMedium"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <ComboBox ItemsSource="{Binding Categories}"
+          <ComboBox AutomationProperties.AutomationId="Conv_CategoryComboBox"
+                    ItemsSource="{Binding Categories}"
                     SelectedItem="{Binding SelectedCategory}"
                     HorizontalAlignment="Stretch" />
         </StackPanel>
       </Border>
 
       <!-- From Section -->
-      <Border Classes="Card StatsCard">
+      <Border AutomationProperties.AutomationId="Conv_FromCard" Classes="Card StatsCard">
         <StackPanel Spacing="12">
           <TextBlock Text="{Binding FromText}"
+                     AutomationProperties.AutomationId="Conv_FromLabel"
                      Classes="LabelLarge" />
-          <ComboBox ItemsSource="{Binding AvailableUnits}"
+          <ComboBox AutomationProperties.AutomationId="Conv_FromUnitComboBox"
+                    ItemsSource="{Binding AvailableUnits}"
                     SelectedItem="{Binding FromUnit}"
                     HorizontalAlignment="Stretch" />
-          <TextBox Text="{Binding InputValue}"
+          <TextBox AutomationProperties.AutomationId="Conv_InputValue"
+                   Text="{Binding InputValue}"
                    Watermark="{Binding EnterValueText}"
                    FontSize="18"
                    HorizontalAlignment="Stretch" />
@@ -47,6 +53,7 @@
       <!-- Swap Button (mit Rotations-Animation) -->
       <Button Classes="FAB Mini"
               x:Name="SwapButton"
+              AutomationProperties.AutomationId="Conv_BtnSwap"
               HorizontalAlignment="Center"
               Command="{Binding SwapUnitsCommand}"
               ToolTip.Tip="{Binding SwapUnitsText}"
@@ -63,11 +70,13 @@
       </Button>
 
       <!-- To Section -->
-      <Border Classes="Card StatsCard">
+      <Border AutomationProperties.AutomationId="Conv_ToCard" Classes="Card StatsCard">
         <StackPanel Spacing="12">
           <TextBlock Text="{Binding ToText}"
+                     AutomationProperties.AutomationId="Conv_ToLabel"
                      Classes="LabelLarge" />
-          <ComboBox ItemsSource="{Binding AvailableUnits}"
+          <ComboBox AutomationProperties.AutomationId="Conv_ToUnitComboBox"
+                    ItemsSource="{Binding AvailableUnits}"
                     SelectedItem="{Binding ToUnit}"
                     HorizontalAlignment="Stretch" />
 
@@ -75,6 +84,7 @@
           <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,4">
             <TextBlock Grid.Column="0"
                        x:Name="ResultText"
+                       AutomationProperties.AutomationId="Conv_ResultText"
                        Text="{Binding OutputValue}"
                        FontSize="32"
                        FontWeight="Bold"
@@ -88,6 +98,7 @@
               </TextBlock.Transitions>
             </TextBlock>
             <Button Grid.Column="1"
+                    AutomationProperties.AutomationId="Conv_BtnCopyResult"
                     Classes="Text"
                     Padding="8,4"
                     MinWidth="0"

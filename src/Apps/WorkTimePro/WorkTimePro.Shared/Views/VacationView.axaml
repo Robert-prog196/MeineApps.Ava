@@ -8,30 +8,35 @@
              x:DataType="vm:VacationViewModel"
              Background="{DynamicResource BackgroundBrush}">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*" AutomationProperties.AutomationId="Vacation_RootPanel">
 
     <!-- Year Navigation Header -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Vacation_Header"
             Background="{DynamicResource SurfaceBrush}"
             Padding="8,4">
       <Grid ColumnDefinitions="Auto,Auto,*,Auto">
         <Button Grid.Column="0" Classes="Text"
+                AutomationProperties.AutomationId="Vacation_BtnBack"
                 Command="{Binding GoBackCommand}">
           <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
         <Button Grid.Column="1" Classes="Text"
+                AutomationProperties.AutomationId="Vacation_BtnPrevYear"
                 Command="{Binding PreviousYearCommand}">
           <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
         <TextBlock Grid.Column="2"
+                   AutomationProperties.AutomationId="Vacation_TxtYear"
                    Text="{Binding SelectedYear}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
         <Button Grid.Column="3" Classes="Text"
+                AutomationProperties.AutomationId="Vacation_BtnNextYear"
                 Command="{Binding NextYearCommand}">
           <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
@@ -39,11 +44,11 @@
       </Grid>
     </Border>
 
-    <ScrollViewer Grid.Row="1">
+    <ScrollViewer Grid.Row="1" AutomationProperties.AutomationId="Vacation_ScrollViewer">
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Quota Card ==================== -->
-        <Border Classes="CardElevated StatsCard">
+        <Border Classes="CardElevated StatsCard" AutomationProperties.AutomationId="Vacation_QuotaCard">
           <Grid RowDefinitions="Auto,Auto,Auto"
                 ColumnDefinitions="*,Auto" RowSpacing="8">
             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -51,20 +56,24 @@
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
             <TextBlock Grid.Row="0" Grid.Column="1"
+                       AutomationProperties.AutomationId="Vacation_TxtQuota"
                        Text="{Binding QuotaDisplay}"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource PrimaryBrush}" />
 
             <ProgressBar Grid.Row="1" Grid.ColumnSpan="2"
+                         AutomationProperties.AutomationId="Vacation_QuotaProgress"
                          Value="{Binding ProgressPercent}"
                          Maximum="1"
                          Foreground="{DynamicResource PrimaryBrush}" />
 
             <TextBlock Grid.Row="2" Grid.Column="0"
+                       AutomationProperties.AutomationId="Vacation_TxtProgressDisplay"
                        Text="{Binding ProgressDisplay}"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <Button Grid.Row="2" Grid.Column="1"
+                    AutomationProperties.AutomationId="Vacation_BtnEditQuota"
                     Content="{loc:Translate Edit}"
                     Classes="Outlined Small"
                     Command="{Binding EditQuotaCommand}"
@@ -74,9 +83,11 @@
 
         <!-- ==================== Add New Vacation ==================== -->
         <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Vacation_AddCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate AddNewVacation}"
+                       AutomationProperties.AutomationId="Vacation_TxtAddTitle"
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -87,6 +98,7 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <CalendarDatePicker SelectedDate="{Binding NewStartDate}"
+                                    AutomationProperties.AutomationId="Vacation_PickerStartDate"
                                     HorizontalAlignment="Stretch" />
               </StackPanel>
 
@@ -104,10 +116,12 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <CalendarDatePicker SelectedDate="{Binding NewEndDate}"
+                                    AutomationProperties.AutomationId="Vacation_PickerEndDate"
                                     HorizontalAlignment="Stretch" />
               </StackPanel>
 
               <TextBlock Grid.Row="1" Grid.ColumnSpan="3"
+                         AutomationProperties.AutomationId="Vacation_TxtCalculatedDays"
                          Text="{Binding CalculatedDaysDisplay}"
                          FontSize="14" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
@@ -117,6 +131,7 @@
 
             <!-- Type -->
             <ComboBox ItemsSource="{Binding VacationTypes}"
+                      AutomationProperties.AutomationId="Vacation_CbxType"
                       SelectedItem="{Binding NewType}"
                       HorizontalAlignment="Stretch">
               <ComboBox.ItemTemplate>
@@ -128,10 +143,12 @@
 
             <!-- Note -->
             <TextBox Watermark="{loc:Translate NoteOptional}"
+                     AutomationProperties.AutomationId="Vacation_TxtNote"
                      Text="{Binding NewNote}" />
 
             <!-- Add Button -->
             <Button Content="{loc:Translate AddVacation}"
+                    AutomationProperties.AutomationId="Vacation_BtnAdd"
                     Classes="Primary"
                     Command="{Binding AddVacationCommand}"
                     HorizontalAlignment="Stretch"
@@ -141,6 +158,7 @@
 
         <!-- ==================== Premium Notice ==================== -->
         <Border Classes="CardElevated StatsCard"
+                AutomationProperties.AutomationId="Vacation_PremiumNotice"
                 IsVisible="{Binding !IsPremium}">
           <StackPanel Spacing="8" HorizontalAlignment="Center">
             <mi:MaterialIcon Kind="Crown" Width="36" Height="36"
@@ -156,6 +174,7 @@
                        HorizontalAlignment="Center"
                        TextAlignment="Center" />
             <Button Content="{loc:Translate UnlockPremium}"
+                    AutomationProperties.AutomationId="Vacation_BtnUnlockPremium"
                     Classes="Primary"
                     Command="{Binding GoBackCommand}"
                     Margin="0,8,0,0"
@@ -165,10 +184,11 @@
 
         <!-- ==================== Vacation List ==================== -->
         <TextBlock Text="{loc:Translate RegisteredVacations}"
+                   AutomationProperties.AutomationId="Vacation_TxtListTitle"
                    FontSize="18" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}" />
 
-        <ItemsControl ItemsSource="{Binding VacationEntries}">
+        <ItemsControl ItemsSource="{Binding VacationEntries}" AutomationProperties.AutomationId="Vacation_EntryList">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:VacationEntry">
               <Border Classes="Card" Padding="12" Margin="0,2">
@@ -206,6 +226,7 @@
 
         <!-- Empty State for Vacations -->
         <StackPanel IsVisible="{Binding HasNoVacations}"
+                    AutomationProperties.AutomationId="Vacation_EmptyState"
                     HorizontalAlignment="Center" Margin="0,16">
           <mi:MaterialIcon Kind="Beach" Width="48" Height="48"
                            Foreground="{DynamicResource TextSecondaryBrush}"
@@ -219,10 +240,11 @@
 
         <!-- ==================== Holidays ==================== -->
         <TextBlock Text="{loc:Translate Holidays}"
+                   AutomationProperties.AutomationId="Vacation_TxtHolidaysTitle"
                    FontSize="18" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}" />
 
-        <ItemsControl ItemsSource="{Binding Holidays}">
+        <ItemsControl ItemsSource="{Binding Holidays}" AutomationProperties.AutomationId="Vacation_HolidayList">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:HolidayEntry">
               <Border Classes="Card" Padding="12" Margin="0,2">
@@ -260,10 +282,12 @@
 
     <!-- ==================== Quota Edit Overlay ==================== -->
     <Border IsVisible="{Binding IsEditingQuota}"
+            AutomationProperties.AutomationId="Vacation_QuotaOverlay"
             Background="#CC000000"
             ZIndex="99"
             Grid.RowSpan="2">
       <Border Background="{DynamicResource CardBrush}"
+              AutomationProperties.AutomationId="Vacation_QuotaOverlayCard"
               CornerRadius="16"
               Padding="24"
               MaxWidth="360"
@@ -281,6 +305,7 @@
                        FontSize="13"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <NumericUpDown Value="{Binding EditTotalDays}"
+                           AutomationProperties.AutomationId="Vacation_NumTotalDays"
                            Minimum="0" Maximum="365"
                            FormatString="0"
                            HorizontalAlignment="Stretch" />
@@ -292,6 +317,7 @@
                        FontSize="13"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <NumericUpDown Value="{Binding EditCarryOverDays}"
+                           AutomationProperties.AutomationId="Vacation_NumCarryOver"
                            Minimum="0" Maximum="365"
                            FormatString="0"
                            HorizontalAlignment="Stretch" />
@@ -300,12 +326,14 @@
           <!-- Buttons -->
           <Grid ColumnDefinitions="*,8,*">
             <Button Grid.Column="0"
+                    AutomationProperties.AutomationId="Vacation_BtnCancelQuota"
                     Content="{loc:Translate Cancel}"
                     Classes="Outlined"
                     Command="{Binding CancelEditQuotaCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center" />
             <Button Grid.Column="2"
+                    AutomationProperties.AutomationId="Vacation_BtnSaveQuota"
                     Content="{loc:Translate Save}"
                     Classes="Primary"
                     Command="{Binding SaveQuotaCommand}"
@@ -318,10 +346,12 @@
 
     <!-- ==================== Rewarded Ad Overlay ==================== -->
     <Border IsVisible="{Binding ShowRewardedAdOverlay}"
+            AutomationProperties.AutomationId="Vacation_AdOverlay"
             Background="#CC000000"
             ZIndex="100"
             Grid.RowSpan="2">
       <Border Background="{DynamicResource CardBrush}"
+              AutomationProperties.AutomationId="Vacation_AdOverlayCard"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
@@ -329,6 +359,7 @@
               VerticalAlignment="Center">
         <StackPanel Spacing="16" HorizontalAlignment="Center">
           <TextBlock Text="{loc:Translate PremiumFeatureTitle}"
+                     AutomationProperties.AutomationId="Vacation_TxtAdTitle"
                      FontSize="22" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
@@ -340,12 +371,14 @@
                              Foreground="{DynamicResource AccentBrush}" />
           </Border>
           <TextBlock Text="{loc:Translate PremiumFeatureDesc}"
+                     AutomationProperties.AutomationId="Vacation_TxtAdDesc"
                      FontSize="14"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      HorizontalAlignment="Center"
                      TextWrapping="Wrap" TextAlignment="Center" />
           <StackPanel Spacing="8">
             <Button Classes="Filled"
+                    AutomationProperties.AutomationId="Vacation_BtnWatchAd"
                     Command="{Binding WatchAdCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -357,6 +390,7 @@
               </StackPanel>
             </Button>
             <Button Classes="Text"
+                    AutomationProperties.AutomationId="Vacation_BtnCancelAd"
                     Command="{Binding CancelAdOverlayCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"

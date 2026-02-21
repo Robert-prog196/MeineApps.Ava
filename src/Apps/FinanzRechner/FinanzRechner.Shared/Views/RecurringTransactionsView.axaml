@@ -7,18 +7,22 @@
              x:Class="FinanzRechner.Views.RecurringTransactionsView"
              x:DataType="vm:RecurringTransactionsViewModel">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*" AutomationProperties.AutomationId="Recurring_Root">
 
     <!-- Header -->
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="16,0,16,16">
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="16,0,16,16"
+          AutomationProperties.AutomationId="Recurring_Panel_Header">
       <!-- Back Button -->
       <Button Grid.Column="0" Classes="Text"
+              AutomationProperties.AutomationId="Recurring_BtnBack"
               Command="{Binding GoBackCommand}"
               Width="48" Height="48" Padding="0">
         <mi:MaterialIcon Kind="ArrowLeft" Width="20" Height="20"
+                         AutomationProperties.AutomationId="Recurring_Icon_Back"
                          Foreground="{DynamicResource PrimaryBrush}" />
       </Button>
       <TextBlock Grid.Column="1"
+                 AutomationProperties.AutomationId="Recurring_TxtTitle"
                  Text="{Binding RecurringTransactionsTitleText}"
                  Classes="PageTitle"
                  VerticalAlignment="Center" />
@@ -29,28 +33,34 @@
 
       <!-- Empty State -->
       <StackPanel IsVisible="{Binding !HasTransactions}"
+                  AutomationProperties.AutomationId="Recurring_PanelEmpty"
                   HorizontalAlignment="Center" VerticalAlignment="Center"
                   Spacing="8">
         <mi:MaterialIcon Kind="CalendarClock" Width="48" Height="48"
+                         AutomationProperties.AutomationId="Recurring_Icon_Empty"
                          Foreground="{DynamicResource TextMutedBrush}"
                          HorizontalAlignment="Center" />
         <TextBlock Text="{Binding NoRecurringText}"
+                   AutomationProperties.AutomationId="Recurring_TxtEmptyTitle"
                    FontSize="16" FontWeight="Bold"
                    Foreground="{DynamicResource TextSecondaryBrush}"
                    HorizontalAlignment="Center" />
         <TextBlock Text="{Binding NoRecurringHintText}"
+                   AutomationProperties.AutomationId="Recurring_TxtEmptyHint"
                    FontSize="13"
                    Foreground="{DynamicResource TextMutedBrush}"
                    HorizontalAlignment="Center" />
       </StackPanel>
 
       <!-- Recurring Transactions List (mit farbigem Seitenstreifen + Countdown) -->
-      <ScrollViewer IsVisible="{Binding HasTransactions}">
+      <ScrollViewer IsVisible="{Binding HasTransactions}" AutomationProperties.AutomationId="Recurring_ScrollViewer">
         <StackPanel Spacing="12" Margin="16,0">
-          <ItemsControl ItemsSource="{Binding DisplayItems}">
+          <ItemsControl ItemsSource="{Binding DisplayItems}"
+                        AutomationProperties.AutomationId="Recurring_Items_TransactionList">
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Background="{DynamicResource CardBrush}"
+                        AutomationProperties.AutomationId="Recurring_Border_TransactionItem"
                         CornerRadius="12"
                         Padding="0"
                         Margin="0,0,0,8"
@@ -59,6 +69,7 @@
                   <Grid ColumnDefinitions="4,*">
                     <!-- Farbiger Seitenstreifen (Kategorie-Farbe) -->
                     <Border Grid.Column="0"
+                            AutomationProperties.AutomationId="Recurring_Border_ColorStripe"
                             CornerRadius="12,0,0,12"
                             Background="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}" />
 
@@ -67,6 +78,7 @@
                           ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
                       <!-- Farbiges Kategorie-Icon -->
                       <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                              AutomationProperties.AutomationId="Recurring_Border_CategoryIcon"
                               Background="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
                               CornerRadius="10"
                               Width="40" Height="40"
@@ -74,17 +86,21 @@
                               Margin="0,0,12,0">
                         <mi:MaterialIcon Kind="{Binding Transaction.Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
                                          Width="20" Height="20"
+                                         AutomationProperties.AutomationId="Recurring_Icon_Category"
                                          Foreground="{Binding Transaction.Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
 
                       <!-- Beschreibung (durchgestrichen bei inaktiv) -->
-                      <Panel Grid.Row="0" Grid.Column="1">
+                      <Panel Grid.Row="0" Grid.Column="1"
+                             AutomationProperties.AutomationId="Recurring_Panel_Description">
                         <TextBlock Text="{Binding Transaction.Description}"
+                                   AutomationProperties.AutomationId="Recurring_Txt_DescriptionActive"
                                    FontSize="15" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                    IsVisible="{Binding Transaction.IsActive}" />
                         <TextBlock Text="{Binding Transaction.Description}"
+                                   AutomationProperties.AutomationId="Recurring_Txt_DescriptionInactive"
                                    FontSize="15" FontWeight="Bold"
                                    Foreground="{DynamicResource TextMutedBrush}"
                                    TextDecorations="Strikethrough"
@@ -92,31 +108,39 @@
                       </Panel>
 
                       <!-- Pattern & Category -->
-                      <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                      <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4"
+                                  AutomationProperties.AutomationId="Recurring_Panel_PatternCategory">
                         <TextBlock Text="{Binding Transaction.Pattern, Converter={x:Static conv:PatternToStringConverter.Instance}}"
+                                   AutomationProperties.AutomationId="Recurring_Txt_Pattern"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
                         <TextBlock Text="·" FontSize="12"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
                         <TextBlock Text="{Binding Transaction.Category, Converter={x:Static conv:CategoryToStringConverter.Instance}}"
+                                   AutomationProperties.AutomationId="Recurring_Txt_Category"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
                       </StackPanel>
 
                       <!-- Fälligkeits-Countdown -->
                       <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4"
+                                  AutomationProperties.AutomationId="Recurring_Panel_DueDate"
                                   IsVisible="{Binding Transaction.IsActive}">
                         <mi:MaterialIcon Kind="CalendarClock" Width="12" Height="12"
+                                         AutomationProperties.AutomationId="Recurring_Icon_DueDate"
                                          Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding DueDateDisplay}"
+                                   AutomationProperties.AutomationId="Recurring_Txt_DueDate"
                                    FontSize="11" FontWeight="SemiBold"
                                    Foreground="{DynamicResource AccentBrush}" />
                       </StackPanel>
 
                       <!-- Betrag (rot für Ausgaben, grün für Einnahmen) -->
                       <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+                                  AutomationProperties.AutomationId="Recurring_Panel_AmountBadge"
                                   VerticalAlignment="Top" Spacing="4">
                         <TextBlock FontSize="16" FontWeight="Bold"
+                                   AutomationProperties.AutomationId="Recurring_Txt_Amount"
                                    TextAlignment="Right"
                                    Foreground="{Binding Transaction.Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
                           <TextBlock.Text>
@@ -128,17 +152,22 @@
                         </TextBlock>
 
                         <!-- Aktiv/Inaktiv Badge -->
-                        <Panel HorizontalAlignment="Right">
+                        <Panel HorizontalAlignment="Right"
+                               AutomationProperties.AutomationId="Recurring_Panel_StatusBadge">
                           <Border Background="{DynamicResource IncomeBrush}"
+                                  AutomationProperties.AutomationId="Recurring_Border_ActiveBadge"
                                   CornerRadius="4" Padding="6,2"
                                   IsVisible="{Binding Transaction.IsActive}">
                             <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ActiveText}"
+                                       AutomationProperties.AutomationId="Recurring_Txt_Active"
                                        FontSize="10" FontWeight="Bold" Foreground="White" />
                           </Border>
                           <Border Background="{DynamicResource TextMutedBrush}"
+                                  AutomationProperties.AutomationId="Recurring_Border_InactiveBadge"
                                   CornerRadius="4" Padding="6,2"
                                   IsVisible="{Binding !Transaction.IsActive}">
                             <TextBlock Text="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).InactiveText}"
+                                       AutomationProperties.AutomationId="Recurring_Txt_Inactive"
                                        FontSize="10" FontWeight="Bold" Foreground="White" />
                           </Border>
                         </Panel>
@@ -146,25 +175,32 @@
 
                       <!-- Action Buttons -->
                       <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                                  AutomationProperties.AutomationId="Recurring_Panel_Actions"
                                   HorizontalAlignment="Right">
                         <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                AutomationProperties.AutomationId="Recurring_Btn_Edit"
                                 Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTransactionCommand}"
                                 CommandParameter="{Binding Transaction}"
                                 ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).EditTooltipText}">
                           <mi:MaterialIcon Kind="Pencil" Width="16" Height="16"
+                                           AutomationProperties.AutomationId="Recurring_Icon_Edit"
                                            Foreground="{DynamicResource TextSecondaryBrush}" />
                         </Button>
                         <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                AutomationProperties.AutomationId="Recurring_Btn_Delete"
                                 Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTransactionCommand}"
                                 CommandParameter="{Binding Transaction}"
                                 ToolTip.Tip="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).DeleteTooltipText}">
                           <mi:MaterialIcon Kind="Delete" Width="16" Height="16"
+                                           AutomationProperties.AutomationId="Recurring_Icon_Delete"
                                            Foreground="{DynamicResource ExpenseBrush}" />
                         </Button>
                         <Button Classes="Text" Padding="6" Width="32" Height="32"
+                                AutomationProperties.AutomationId="Recurring_Btn_ToggleActive"
                                 Command="{Binding $parent[UserControl].((vm:RecurringTransactionsViewModel)DataContext).ToggleActiveCommand}"
                                 CommandParameter="{Binding Transaction}">
                           <mi:MaterialIcon Kind="ToggleSwitch" Width="16" Height="16"
+                                           AutomationProperties.AutomationId="Recurring_Icon_Toggle"
                                            Foreground="{DynamicResource PrimaryBrush}" />
                         </Button>
                       </StackPanel>
@@ -182,6 +218,7 @@
 
       <!-- FAB (Add Button) -->
       <Button Background="{DynamicResource PrimaryBrush}"
+              AutomationProperties.AutomationId="Recurring_FabAdd"
               CornerRadius="28"
               Width="56" Height="56"
               HorizontalAlignment="Right"
@@ -191,14 +228,17 @@
               Command="{Binding ShowAddFormCommand}"
               Padding="0">
         <mi:MaterialIcon Kind="Plus" Width="24" Height="24"
+                         AutomationProperties.AutomationId="Recurring_Icon_Add"
                          Foreground="White"
                          HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Button>
 
       <!-- Add/Edit Dialog Overlay -->
       <Border IsVisible="{Binding ShowAddDialog}"
+              AutomationProperties.AutomationId="Recurring_OverlayAddEdit"
               Background="#80000000">
         <Border Classes="DialogOverlay"
+                AutomationProperties.AutomationId="Recurring_Border_Dialog"
                 Background="{DynamicResource CardBrush}"
                 CornerRadius="16"
                 Padding="24"
@@ -208,13 +248,16 @@
           <ScrollViewer>
             <StackPanel Spacing="16">
               <TextBlock Text="{Binding RecurringTransactionText}"
+                         AutomationProperties.AutomationId="Recurring_TxtDialogTitle"
                          Classes="SectionHeader" />
 
               <!-- Transaction Type Toggle -->
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="8"
+                    AutomationProperties.AutomationId="Recurring_Panel_TypeToggle">
                 <!-- Ausgabe -->
                 <Panel Grid.Column="0">
                   <Button Command="{Binding SetTransactionTypeExpenseCommand}"
+                          AutomationProperties.AutomationId="Recurring_BtnExpenseSelected"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,14"
                           Background="#33EF4444" BorderBrush="#EF4444" BorderThickness="2"
@@ -226,6 +269,7 @@
                     </StackPanel>
                   </Button>
                   <Button Command="{Binding SetTransactionTypeExpenseCommand}"
+                          AutomationProperties.AutomationId="Recurring_BtnExpenseUnselected"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,14"
                           Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
@@ -244,6 +288,7 @@
                 <!-- Einnahme -->
                 <Panel Grid.Column="1">
                   <Button Command="{Binding SetTransactionTypeIncomeCommand}"
+                          AutomationProperties.AutomationId="Recurring_BtnIncomeSelected"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,14"
                           Background="#3322C55E" BorderBrush="#22C55E" BorderThickness="2"
@@ -255,6 +300,7 @@
                     </StackPanel>
                   </Button>
                   <Button Command="{Binding SetTransactionTypeIncomeCommand}"
+                          AutomationProperties.AutomationId="Recurring_BtnIncomeUnselected"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,14"
                           Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
@@ -272,15 +318,18 @@
               </Grid>
 
               <TextBox Watermark="{Binding DescriptionWatermarkText}"
+                       AutomationProperties.AutomationId="Recurring_InputDescription"
                        Text="{Binding Description}"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
               <TextBox Watermark="{Binding AmountWatermarkText}"
+                       AutomationProperties.AutomationId="Recurring_InputAmount"
                        Text="{Binding Amount}"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
               <!-- Kategorie-Chips mit farbigem Hintergrund -->
-              <ItemsControl ItemsSource="{Binding CategoryItems}">
+              <ItemsControl ItemsSource="{Binding CategoryItems}"
+                            AutomationProperties.AutomationId="Recurring_Items_Categories">
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <WrapPanel />
@@ -321,6 +370,7 @@
               </ItemsControl>
 
               <ComboBox ItemsSource="{Binding Patterns}"
+                        AutomationProperties.AutomationId="Recurring_ComboPattern"
                         SelectedItem="{Binding SelectedPattern}"
                         PlaceholderText="{Binding PatternLabelText}"
                         Foreground="{DynamicResource TextPrimaryBrush}"
@@ -333,31 +383,39 @@
               </ComboBox>
 
               <CalendarDatePicker SelectedDate="{Binding StartDate}"
+                                  AutomationProperties.AutomationId="Recurring_DateStart"
                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                   HorizontalAlignment="Stretch" />
 
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <CheckBox IsChecked="{Binding HasEndDate}" />
+              <StackPanel Orientation="Horizontal" Spacing="12"
+                          AutomationProperties.AutomationId="Recurring_Panel_EndDateToggle">
+                <CheckBox IsChecked="{Binding HasEndDate}" AutomationProperties.AutomationId="Recurring_CheckEndDate" />
                 <TextBlock Text="{Binding SetEndDateText}"
+                           AutomationProperties.AutomationId="Recurring_TxtEndDateLabel"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
               </StackPanel>
 
               <CalendarDatePicker SelectedDate="{Binding EndDate}"
+                                  AutomationProperties.AutomationId="Recurring_DateEnd"
                                   IsVisible="{Binding HasEndDate}"
                                   Foreground="{DynamicResource TextPrimaryBrush}"
                                   HorizontalAlignment="Stretch" />
 
               <TextBox Watermark="{Binding NoteWatermarkText}"
+                       AutomationProperties.AutomationId="Recurring_InputNote"
                        Text="{Binding Note}"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="12"
+                    AutomationProperties.AutomationId="Recurring_Panel_DialogButtons">
                 <Button Grid.Column="0"
+                        AutomationProperties.AutomationId="Recurring_BtnCancel"
                         Content="{Binding CancelText}"
                         Classes="Secondary"
                         Command="{Binding CancelAddDialogCommand}" />
                 <Button Grid.Column="1"
+                        AutomationProperties.AutomationId="Recurring_BtnSave"
                         Content="{Binding SaveText}"
                         Classes="Primary"
                         Command="{Binding SaveTransactionCommand}" />
@@ -369,6 +427,7 @@
 
       <!-- Undo Delete Snackbar mit Countdown-Balken -->
       <Border IsVisible="{Binding ShowUndoDelete}"
+              AutomationProperties.AutomationId="Recurring_SnackbarUndo"
               Background="{DynamicResource CardBrush}"
               CornerRadius="12"
               Padding="16,12"
@@ -379,25 +438,30 @@
         <StackPanel Spacing="8">
           <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
             <TextBlock Grid.Column="0"
+                       AutomationProperties.AutomationId="Recurring_TxtUndoMessage"
                        Text="{Binding UndoMessage}"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        FontSize="14"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis" />
             <Button Grid.Column="1"
+                    AutomationProperties.AutomationId="Recurring_BtnUndo"
                     Content="{Binding UndoText}"
                     Command="{Binding UndoDeleteCommand}"
                     Classes="Primary"
                     Padding="16,8" />
             <Button Grid.Column="2" Classes="Text"
+                    AutomationProperties.AutomationId="Recurring_BtnDismissUndo"
                     Command="{Binding DismissUndoCommand}"
                     Width="36" Height="36" Padding="0">
               <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                               AutomationProperties.AutomationId="Recurring_Icon_DismissUndo"
                                Foreground="{DynamicResource TextMutedBrush}" />
             </Button>
           </Grid>
           <!-- Undo-Countdown-Balken -->
           <Border Classes="UndoTimer" Height="3" CornerRadius="2"
+                  AutomationProperties.AutomationId="Recurring_Border_UndoTimer"
                   Background="{DynamicResource AccentBrush}" />
         </StackPanel>
       </Border>

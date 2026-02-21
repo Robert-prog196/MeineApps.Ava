@@ -8,6 +8,7 @@
              xmlns:calcViews="using:FinanzRechner.Views.Calculators"
              x:Class="FinanzRechner.Views.MainView"
              x:DataType="vm:MainViewModel"
+             AutomationProperties.AutomationId="Main_Root"
              Background="{DynamicResource BackgroundBrush}">
 
   <UserControl.Styles>
@@ -178,68 +179,85 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="*,Auto,Auto">
+  <Grid RowDefinitions="*,Auto,Auto"
+        AutomationProperties.AutomationId="Main_LayoutRoot">
 
     <!-- Content Area -->
-    <Panel Grid.Row="0">
+    <Panel Grid.Row="0"
+           AutomationProperties.AutomationId="Main_ContentArea">
       <Border Classes="TabContent"
+              AutomationProperties.AutomationId="Main_TabHome"
               Classes.Active="{Binding IsHomeActive}">
-        <views:HomeView DataContext="{Binding}" />
+        <views:HomeView AutomationProperties.AutomationId="Main_View_Home" DataContext="{Binding}" />
       </Border>
       <Border Classes="TabContent"
+              AutomationProperties.AutomationId="Main_TabTracker"
               Classes.Active="{Binding IsTrackerActive}">
-        <views:ExpenseTrackerView DataContext="{Binding ExpenseTrackerViewModel}" />
+        <views:ExpenseTrackerView AutomationProperties.AutomationId="Main_View_ExpenseTracker" DataContext="{Binding ExpenseTrackerViewModel}" />
       </Border>
       <Border Classes="TabContent"
+              AutomationProperties.AutomationId="Main_TabStats"
               Classes.Active="{Binding IsStatsActive}">
-        <views:StatisticsView DataContext="{Binding StatisticsViewModel}" />
+        <views:StatisticsView AutomationProperties.AutomationId="Main_View_Statistics" DataContext="{Binding StatisticsViewModel}" />
       </Border>
       <Border Classes="TabContent"
+              AutomationProperties.AutomationId="Main_TabSettings"
               Classes.Active="{Binding IsSettingsActive}">
-        <views:SettingsView DataContext="{Binding SettingsViewModel}" />
+        <views:SettingsView AutomationProperties.AutomationId="Main_View_Settings" DataContext="{Binding SettingsViewModel}" />
       </Border>
     </Panel>
 
     <!-- Calculator Overlay -->
     <Panel Grid.Row="0"
+           AutomationProperties.AutomationId="Main_OverlayCalculator"
            IsVisible="{Binding IsCalculatorOpen}"
            ZIndex="50"
            Background="{DynamicResource BackgroundBrush}">
-      <Border IsVisible="{Binding IsCompoundInterestActive}">
-        <calcViews:CompoundInterestView DataContext="{Binding CompoundInterestViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcCompoundInterest"
+              IsVisible="{Binding IsCompoundInterestActive}">
+        <calcViews:CompoundInterestView AutomationProperties.AutomationId="Main_View_CompoundInterest" DataContext="{Binding CompoundInterestViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsSavingsPlanActive}">
-        <calcViews:SavingsPlanView DataContext="{Binding SavingsPlanViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcSavingsPlan"
+              IsVisible="{Binding IsSavingsPlanActive}">
+        <calcViews:SavingsPlanView AutomationProperties.AutomationId="Main_View_SavingsPlan" DataContext="{Binding SavingsPlanViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsLoanActive}">
-        <calcViews:LoanView DataContext="{Binding LoanViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcLoan"
+              IsVisible="{Binding IsLoanActive}">
+        <calcViews:LoanView AutomationProperties.AutomationId="Main_View_Loan" DataContext="{Binding LoanViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsAmortizationActive}">
-        <calcViews:AmortizationView DataContext="{Binding AmortizationViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcAmortization"
+              IsVisible="{Binding IsAmortizationActive}">
+        <calcViews:AmortizationView AutomationProperties.AutomationId="Main_View_Amortization" DataContext="{Binding AmortizationViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsYieldActive}">
-        <calcViews:YieldView DataContext="{Binding YieldViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcYield"
+              IsVisible="{Binding IsYieldActive}">
+        <calcViews:YieldView AutomationProperties.AutomationId="Main_View_Yield" DataContext="{Binding YieldViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsInflationActive}">
-        <calcViews:InflationView DataContext="{Binding InflationViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_CalcInflation"
+              IsVisible="{Binding IsInflationActive}">
+        <calcViews:InflationView AutomationProperties.AutomationId="Main_View_Inflation" DataContext="{Binding InflationViewModel}" />
       </Border>
     </Panel>
 
     <!-- Sub-Page Overlay (Budgets, Recurring Transactions) -->
     <Panel Grid.Row="0"
+           AutomationProperties.AutomationId="Main_OverlaySubPage"
            IsVisible="{Binding IsSubPageOpen}"
            ZIndex="60"
            Background="{DynamicResource BackgroundBrush}">
-      <Border IsVisible="{Binding IsBudgetsPageActive}">
-        <views:BudgetsView DataContext="{Binding BudgetsViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_SubPageBudgets"
+              IsVisible="{Binding IsBudgetsPageActive}">
+        <views:BudgetsView AutomationProperties.AutomationId="Main_View_Budgets" DataContext="{Binding BudgetsViewModel}" />
       </Border>
-      <Border IsVisible="{Binding IsRecurringPageActive}">
-        <views:RecurringTransactionsView DataContext="{Binding RecurringTransactionsViewModel}" />
+      <Border AutomationProperties.AutomationId="Main_SubPageRecurring"
+              IsVisible="{Binding IsRecurringPageActive}">
+        <views:RecurringTransactionsView AutomationProperties.AutomationId="Main_View_RecurringTransactions" DataContext="{Binding RecurringTransactionsViewModel}" />
       </Border>
     </Panel>
 
     <!-- Quick-Add FAB (rechts unten ueber Tab-Bar) -->
     <Button Grid.Row="0"
+            AutomationProperties.AutomationId="Main_FabQuickAdd"
             Classes="BouncingFab"
             ZIndex="40"
             Width="56" Height="56"
@@ -252,15 +270,17 @@
             RenderTransformOrigin="50%,50%"
             Command="{Binding ToggleQuickAddCommand}"
             IsVisible="{Binding IsHomeActive}">
-      <mi:MaterialIcon Kind="Plus" Width="28" Height="28" Foreground="White" />
+      <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_FabPlus" Kind="Plus" Width="28" Height="28" Foreground="White" />
     </Button>
 
     <!-- Quick-Add Overlay -->
     <Panel Grid.Row="0"
+           AutomationProperties.AutomationId="Main_OverlayQuickAdd"
            ZIndex="45"
            IsVisible="{Binding ShowQuickAdd}">
       <!-- Backdrop -->
-      <Button Background="#80000000"
+      <Button AutomationProperties.AutomationId="Main_BtnQuickAddBackdrop"
+              Background="#80000000"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"
               CornerRadius="0"
@@ -268,6 +288,7 @@
 
       <!-- Dialog -->
       <Border Classes="DialogOverlay"
+              AutomationProperties.AutomationId="Main_CardQuickAddDialog"
               Background="{DynamicResource CardBrush}"
               CornerRadius="16"
               Padding="20"
@@ -275,26 +296,29 @@
               VerticalAlignment="Center"
               HorizontalAlignment="Center"
               Margin="24">
-        <StackPanel Spacing="16">
-          <TextBlock Text="{Binding QuickAddTitleText}"
+        <StackPanel AutomationProperties.AutomationId="Main_Panel_QuickAddContent" Spacing="16">
+          <TextBlock AutomationProperties.AutomationId="Main_TxtQuickAddTitle"
+                     Text="{Binding QuickAddTitleText}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
           <!-- Typ: Ausgabe / Einnahme -->
-          <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+          <Grid AutomationProperties.AutomationId="Main_Grid_QuickTypeSelector" ColumnDefinitions="*,*" ColumnSpacing="8">
             <Panel Grid.Column="0">
-              <Button Command="{Binding SetQuickTypeExpenseCommand}"
+              <Button AutomationProperties.AutomationId="Main_BtnQuickExpenseSelected"
+                      Command="{Binding SetQuickTypeExpenseCommand}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Padding="12,18"
                       Background="#33EF4444" BorderBrush="#EF4444" BorderThickness="2"
                       CornerRadius="12"
                       IsVisible="{Binding IsQuickExpenseSelected}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                  <mi:MaterialIcon Kind="ArrowDownBold" Width="20" Height="20" Foreground="#EF4444" />
-                  <TextBlock Text="{Binding QuickExpenseText}" FontSize="15" FontWeight="Bold" Foreground="#EF4444" />
+                  <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_QuickExpenseSelected" Kind="ArrowDownBold" Width="20" Height="20" Foreground="#EF4444" />
+                  <TextBlock AutomationProperties.AutomationId="Main_Txt_QuickExpenseSelected" Text="{Binding QuickExpenseText}" FontSize="15" FontWeight="Bold" Foreground="#EF4444" />
                 </StackPanel>
               </Button>
-              <Button Command="{Binding SetQuickTypeExpenseCommand}"
+              <Button AutomationProperties.AutomationId="Main_BtnQuickExpenseUnselected"
+                      Command="{Binding SetQuickTypeExpenseCommand}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Padding="12,18"
                       Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
@@ -302,26 +326,28 @@
                       CornerRadius="12"
                       IsVisible="{Binding !IsQuickExpenseSelected}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                  <mi:MaterialIcon Kind="ArrowDownBold" Width="20" Height="20"
+                  <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_QuickExpenseUnselected" Kind="ArrowDownBold" Width="20" Height="20"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBlock Text="{Binding QuickExpenseText}" FontSize="15"
+                  <TextBlock AutomationProperties.AutomationId="Main_Txt_QuickExpenseUnselected" Text="{Binding QuickExpenseText}" FontSize="15"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                 </StackPanel>
               </Button>
             </Panel>
             <Panel Grid.Column="1">
-              <Button Command="{Binding SetQuickTypeIncomeCommand}"
+              <Button AutomationProperties.AutomationId="Main_BtnQuickIncomeSelected"
+                      Command="{Binding SetQuickTypeIncomeCommand}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Padding="12,18"
                       Background="#3322C55E" BorderBrush="#22C55E" BorderThickness="2"
                       CornerRadius="12"
                       IsVisible="{Binding IsQuickIncomeSelected}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                  <mi:MaterialIcon Kind="ArrowUpBold" Width="20" Height="20" Foreground="#22C55E" />
-                  <TextBlock Text="{Binding QuickIncomeText}" FontSize="15" FontWeight="Bold" Foreground="#22C55E" />
+                  <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_QuickIncomeSelected" Kind="ArrowUpBold" Width="20" Height="20" Foreground="#22C55E" />
+                  <TextBlock AutomationProperties.AutomationId="Main_Txt_QuickIncomeSelected" Text="{Binding QuickIncomeText}" FontSize="15" FontWeight="Bold" Foreground="#22C55E" />
                 </StackPanel>
               </Button>
-              <Button Command="{Binding SetQuickTypeIncomeCommand}"
+              <Button AutomationProperties.AutomationId="Main_BtnQuickIncomeUnselected"
+                      Command="{Binding SetQuickTypeIncomeCommand}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Padding="12,18"
                       Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
@@ -329,9 +355,9 @@
                       CornerRadius="12"
                       IsVisible="{Binding !IsQuickIncomeSelected}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                  <mi:MaterialIcon Kind="ArrowUpBold" Width="20" Height="20"
+                  <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_QuickIncomeUnselected" Kind="ArrowUpBold" Width="20" Height="20"
                                    Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBlock Text="{Binding QuickIncomeText}" FontSize="15"
+                  <TextBlock AutomationProperties.AutomationId="Main_Txt_QuickIncomeUnselected" Text="{Binding QuickIncomeText}" FontSize="15"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                 </StackPanel>
               </Button>
@@ -339,16 +365,19 @@
           </Grid>
 
           <!-- Betrag -->
-          <TextBox Text="{Binding QuickAddAmount}"
+          <TextBox AutomationProperties.AutomationId="Main_InputQuickAmount"
+                   Text="{Binding QuickAddAmount}"
                    Watermark="{Binding QuickAddAmountPlaceholder}"
                    FontSize="18" />
 
           <!-- Beschreibung -->
-          <TextBox Text="{Binding QuickAddDescription}"
+          <TextBox AutomationProperties.AutomationId="Main_InputQuickDescription"
+                   Text="{Binding QuickAddDescription}"
                    Watermark="{Binding QuickAddDescriptionPlaceholder}" />
 
           <!-- Kategorie-Chips mit farbigem Hintergrund -->
-          <ItemsControl ItemsSource="{Binding QuickCategoryItems}">
+          <ItemsControl AutomationProperties.AutomationId="Main_QuickCategoryChips"
+                        ItemsSource="{Binding QuickCategoryItems}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
@@ -356,9 +385,9 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <Panel Margin="0,0,6,6">
+                <Panel AutomationProperties.AutomationId="Main_Panel_CategoryChipItem" Margin="0,0,6,6">
                   <!-- Selected: Volle Kategorie-Farbe -->
-                  <Button CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
+                  <Button AutomationProperties.AutomationId="Main_Btn_CategoryChipSelected" CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
                           Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                           BorderBrush="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                           BorderThickness="2"
@@ -366,20 +395,20 @@
                           Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectQuickCategoryCommand}"
                           CommandParameter="{Binding}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                      <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" Foreground="White" />
-                      <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" />
+                      <TextBlock AutomationProperties.AutomationId="Main_Txt_CategoryChipIconSelected" Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" Foreground="White" />
+                      <TextBlock AutomationProperties.AutomationId="Main_Txt_CategoryChipNameSelected" Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" />
                     </StackPanel>
                   </Button>
                   <!-- Unselected: Transparenter Kategorie-Hintergrund -->
-                  <Button CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
+                  <Button AutomationProperties.AutomationId="Main_Btn_CategoryChipUnselected" CornerRadius="16" Padding="10,6" MinHeight="40" Cursor="Hand"
                           Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.15}"
                           BorderThickness="0"
                           IsVisible="{Binding !IsSelected}"
                           Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectQuickCategoryCommand}"
                           CommandParameter="{Binding}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                      <TextBlock Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" />
-                      <TextBlock Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center"
+                      <TextBlock AutomationProperties.AutomationId="Main_Txt_CategoryChipIconUnselected" Text="{Binding CategoryDisplay}" FontSize="16" VerticalAlignment="Center" />
+                      <TextBlock AutomationProperties.AutomationId="Main_Txt_CategoryChipNameUnselected" Text="{Binding CategoryName}" FontSize="13" VerticalAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                   </Button>
@@ -389,11 +418,13 @@
           </ItemsControl>
 
           <!-- Buttons -->
-          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
-            <Button Classes="Outlined"
+          <StackPanel AutomationProperties.AutomationId="Main_Panel_QuickAddActions" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+            <Button AutomationProperties.AutomationId="Main_BtnQuickCancel"
+                    Classes="Outlined"
                     Content="{Binding CancelText}"
                     Command="{Binding CancelQuickAddCommand}" />
-            <Button Classes="Primary"
+            <Button AutomationProperties.AutomationId="Main_BtnQuickSave"
+                    Classes="Primary"
                     Content="{Binding SaveText}"
                     Command="{Binding SaveQuickExpenseCommand}" />
           </StackPanel>
@@ -403,27 +434,32 @@
 
     <!-- Game Juice Overlays -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   AutomationProperties.AutomationId="Main_OverlayFloatingText"
                                    Grid.RowSpan="99"
                                    ZIndex="15"
                                    IsHitTestVisible="False" />
     <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                      AutomationProperties.AutomationId="Main_OverlayCelebration"
                                       Grid.RowSpan="99"
                                       ZIndex="16"
                                       IsHitTestVisible="False" />
 
     <!-- Ad Banner Spacer (64dp fuer adaptive Banner) -->
     <Border Grid.Row="1" Height="64"
+            AutomationProperties.AutomationId="Main_AdSpacer"
             IsVisible="{Binding IsAdBannerVisible}" />
 
     <!-- Bottom Navigation Bar -->
     <Border Grid.Row="2"
+            AutomationProperties.AutomationId="Main_NavBar"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             BorderThickness="0,1,0,0">
-      <Grid ColumnDefinitions="*,*,*,*" Margin="0,2">
+      <Grid AutomationProperties.AutomationId="Main_Grid_NavBar" ColumnDefinitions="*,*,*,*" Margin="0,2">
 
         <!-- Home Tab -->
         <Button Grid.Column="0"
+                AutomationProperties.AutomationId="Main_NavHome"
                 Classes="Text"
                 Command="{Binding NavigateToHomeCommand}"
                 HorizontalAlignment="Stretch"
@@ -432,28 +468,30 @@
                 Padding="0"
                 Height="56">
           <StackPanel Spacing="2">
-            <Border Height="3" CornerRadius="2" Margin="12,0"
+            <Border AutomationProperties.AutomationId="Main_Border_NavHomeIndicator" Height="3" CornerRadius="2" Margin="12,0"
                     IsVisible="{Binding IsHomeActive}">
               <Border.Background>
                 <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
               </Border.Background>
             </Border>
-            <Border Height="3" IsVisible="{Binding !IsHomeActive}" />
+            <Border AutomationProperties.AutomationId="Main_Border_NavHomeSpacer" Height="3" IsVisible="{Binding !IsHomeActive}" />
             <Panel>
-              <mi:MaterialIcon Kind="Home" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavHomeActive" Kind="Home" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}"
                                IsVisible="{Binding IsHomeActive}" />
-              <mi:MaterialIcon Kind="HomeOutline" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavHomeInactive" Kind="HomeOutline" Width="24" Height="24"
                                Foreground="{DynamicResource TextMutedBrush}"
                                IsVisible="{Binding !IsHomeActive}" />
             </Panel>
             <Panel>
-              <TextBlock Text="{Binding NavHomeText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavHomeActive"
+                         Text="{Binding NavHomeText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource PrimaryBrush}"
                          FontWeight="Medium"
                          IsVisible="{Binding IsHomeActive}" />
-              <TextBlock Text="{Binding NavHomeText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavHomeInactive"
+                         Text="{Binding NavHomeText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}"
                          IsVisible="{Binding !IsHomeActive}" />
@@ -463,6 +501,7 @@
 
         <!-- Tracker Tab -->
         <Button Grid.Column="1"
+                AutomationProperties.AutomationId="Main_NavTracker"
                 Classes="Text"
                 Command="{Binding NavigateToTrackerCommand}"
                 HorizontalAlignment="Stretch"
@@ -471,28 +510,30 @@
                 Padding="0"
                 Height="56">
           <StackPanel Spacing="2">
-            <Border Height="3" CornerRadius="2" Margin="12,0"
+            <Border AutomationProperties.AutomationId="Main_Border_NavTrackerIndicator" Height="3" CornerRadius="2" Margin="12,0"
                     IsVisible="{Binding IsTrackerActive}">
               <Border.Background>
                 <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
               </Border.Background>
             </Border>
-            <Border Height="3" IsVisible="{Binding !IsTrackerActive}" />
+            <Border AutomationProperties.AutomationId="Main_Border_NavTrackerSpacer" Height="3" IsVisible="{Binding !IsTrackerActive}" />
             <Panel>
-              <mi:MaterialIcon Kind="WalletOutline" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavTrackerActive" Kind="WalletOutline" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}"
                                IsVisible="{Binding IsTrackerActive}" />
-              <mi:MaterialIcon Kind="WalletOutline" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavTrackerInactive" Kind="WalletOutline" Width="24" Height="24"
                                Foreground="{DynamicResource TextMutedBrush}"
                                IsVisible="{Binding !IsTrackerActive}" />
             </Panel>
             <Panel>
-              <TextBlock Text="{Binding NavTrackerText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavTrackerActive"
+                         Text="{Binding NavTrackerText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource PrimaryBrush}"
                          FontWeight="Medium"
                          IsVisible="{Binding IsTrackerActive}" />
-              <TextBlock Text="{Binding NavTrackerText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavTrackerInactive"
+                         Text="{Binding NavTrackerText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}"
                          IsVisible="{Binding !IsTrackerActive}" />
@@ -502,6 +543,7 @@
 
         <!-- Stats Tab -->
         <Button Grid.Column="2"
+                AutomationProperties.AutomationId="Main_NavStats"
                 Classes="Text"
                 Command="{Binding NavigateToStatsCommand}"
                 HorizontalAlignment="Stretch"
@@ -510,28 +552,30 @@
                 Padding="0"
                 Height="56">
           <StackPanel Spacing="2">
-            <Border Height="3" CornerRadius="2" Margin="12,0"
+            <Border AutomationProperties.AutomationId="Main_Border_NavStatsIndicator" Height="3" CornerRadius="2" Margin="12,0"
                     IsVisible="{Binding IsStatsActive}">
               <Border.Background>
                 <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
               </Border.Background>
             </Border>
-            <Border Height="3" IsVisible="{Binding !IsStatsActive}" />
+            <Border AutomationProperties.AutomationId="Main_Border_NavStatsSpacer" Height="3" IsVisible="{Binding !IsStatsActive}" />
             <Panel>
-              <mi:MaterialIcon Kind="ChartBar" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavStatsActive" Kind="ChartBar" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}"
                                IsVisible="{Binding IsStatsActive}" />
-              <mi:MaterialIcon Kind="ChartBarStacked" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavStatsInactive" Kind="ChartBarStacked" Width="24" Height="24"
                                Foreground="{DynamicResource TextMutedBrush}"
                                IsVisible="{Binding !IsStatsActive}" />
             </Panel>
             <Panel>
-              <TextBlock Text="{Binding NavStatsText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavStatsActive"
+                         Text="{Binding NavStatsText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource PrimaryBrush}"
                          FontWeight="Medium"
                          IsVisible="{Binding IsStatsActive}" />
-              <TextBlock Text="{Binding NavStatsText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavStatsInactive"
+                         Text="{Binding NavStatsText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}"
                          IsVisible="{Binding !IsStatsActive}" />
@@ -541,6 +585,7 @@
 
         <!-- Settings Tab -->
         <Button Grid.Column="3"
+                AutomationProperties.AutomationId="Main_NavSettings"
                 Classes="Text"
                 Command="{Binding NavigateToSettingsCommand}"
                 HorizontalAlignment="Stretch"
@@ -549,28 +594,30 @@
                 Padding="0"
                 Height="56">
           <StackPanel Spacing="2">
-            <Border Height="3" CornerRadius="2" Margin="12,0"
+            <Border AutomationProperties.AutomationId="Main_Border_NavSettingsIndicator" Height="3" CornerRadius="2" Margin="12,0"
                     IsVisible="{Binding IsSettingsActive}">
               <Border.Background>
                 <SolidColorBrush Color="{DynamicResource PrimaryColor}" />
               </Border.Background>
             </Border>
-            <Border Height="3" IsVisible="{Binding !IsSettingsActive}" />
+            <Border AutomationProperties.AutomationId="Main_Border_NavSettingsSpacer" Height="3" IsVisible="{Binding !IsSettingsActive}" />
             <Panel>
-              <mi:MaterialIcon Kind="Cog" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavSettingsActive" Kind="Cog" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}"
                                IsVisible="{Binding IsSettingsActive}" />
-              <mi:MaterialIcon Kind="CogOutline" Width="24" Height="24"
+              <mi:MaterialIcon AutomationProperties.AutomationId="Main_Icon_NavSettingsInactive" Kind="CogOutline" Width="24" Height="24"
                                Foreground="{DynamicResource TextMutedBrush}"
                                IsVisible="{Binding !IsSettingsActive}" />
             </Panel>
             <Panel>
-              <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavSettingsActive"
+                         Text="{Binding NavSettingsText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource PrimaryBrush}"
                          FontWeight="Medium"
                          IsVisible="{Binding IsSettingsActive}" />
-              <TextBlock Text="{Binding NavSettingsText}" FontSize="11"
+              <TextBlock AutomationProperties.AutomationId="Main_TxtNavSettingsInactive"
+                         Text="{Binding NavSettingsText}" FontSize="11"
                          HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}"
                          IsVisible="{Binding !IsSettingsActive}" />

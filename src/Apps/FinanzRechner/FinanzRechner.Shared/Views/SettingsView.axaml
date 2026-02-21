@@ -4,38 +4,51 @@
              xmlns:services="using:MeineApps.Core.Ava.Services"
              xmlns:mi="using:Material.Icons.Avalonia"
              x:Class="FinanzRechner.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel">
+             x:DataType="vm:SettingsViewModel"
+             AutomationProperties.AutomationId="Settings_Root">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Settings_Panel_RootGrid">
 
     <!-- Header -->
     <TextBlock Grid.Row="0"
+               AutomationProperties.AutomationId="Settings_TxtTitle"
                Text="{Binding SettingsTitleText}"
                FontSize="22" FontWeight="Bold"
                Foreground="{DynamicResource TextPrimaryBrush}"
                Margin="16,12,16,4" />
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1">
-      <StackPanel Spacing="12" Margin="16">
+    <ScrollViewer Grid.Row="1"
+                  AutomationProperties.AutomationId="Settings_ScrollContent">
+      <StackPanel Spacing="12" Margin="16"
+                  AutomationProperties.AutomationId="Settings_Panel_Content">
 
         <!-- ==================== Theme Selection Card ==================== -->
-        <Border Classes="SettingsCard">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
+        <Border Classes="SettingsCard"
+                AutomationProperties.AutomationId="Settings_CardTheme">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Settings_Panel_ThemeContent">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Settings_Panel_ThemeHeader">
               <mi:MaterialIcon Kind="Palette" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               AutomationProperties.AutomationId="Settings_Icon_Palette" />
               <TextBlock Text="{Binding ChooseDesignText}"
+                         AutomationProperties.AutomationId="Settings_TxtChooseDesign"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8"
+                  AutomationProperties.AutomationId="Settings_Panel_ThemeGrid">
 
               <!-- Midnight Theme -->
-              <Panel Grid.Row="0" Grid.Column="0">
+              <Panel Grid.Row="0" Grid.Column="0"
+                     AutomationProperties.AutomationId="Settings_Panel_ThemeMidnight">
                 <Button IsVisible="{Binding IsMidnightSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeMidnightSelected"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Midnight"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -48,7 +61,8 @@
                       <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
                                        Foreground="#6366F1"
                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
+                                       Margin="0,-2,-2,0"
+                                       AutomationProperties.AutomationId="Settings_Icon_MidnightCheck" />
                       <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                           <Ellipse Width="20" Height="20" Fill="#6366F1" />
@@ -56,14 +70,17 @@
                           <Ellipse Width="20" Height="20" Fill="#22D3EE" />
                         </StackPanel>
                         <TextBlock Text="{Binding ThemeMidnightName}" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                                   FontWeight="Medium" FontSize="13" Foreground="#E2E8F0"
+                                   AutomationProperties.AutomationId="Settings_Txt_MidnightNameSelected" />
                         <TextBlock Text="{Binding ThemeMidnightDescText}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#94A3B8" />
+                                   FontSize="11" Foreground="#94A3B8"
+                                   AutomationProperties.AutomationId="Settings_Txt_MidnightDescSelected" />
                       </StackPanel>
                     </Grid>
                   </Border>
                 </Button>
                 <Button IsVisible="{Binding !IsMidnightSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeMidnight"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Midnight"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -79,17 +96,21 @@
                         <Ellipse Width="20" Height="20" Fill="#22D3EE" />
                       </StackPanel>
                       <TextBlock Text="{Binding ThemeMidnightName}" HorizontalAlignment="Center"
-                                 FontWeight="Medium" FontSize="13" Foreground="#E2E8F0" />
+                                 FontWeight="Medium" FontSize="13" Foreground="#E2E8F0"
+                                 AutomationProperties.AutomationId="Settings_Txt_MidnightName" />
                       <TextBlock Text="{Binding ThemeMidnightDescText}" HorizontalAlignment="Center"
-                                 FontSize="11" Foreground="#94A3B8" />
+                                 FontSize="11" Foreground="#94A3B8"
+                                 AutomationProperties.AutomationId="Settings_Txt_MidnightDesc" />
                     </StackPanel>
                   </Border>
                 </Button>
               </Panel>
 
               <!-- Aurora Theme -->
-              <Panel Grid.Row="0" Grid.Column="1">
+              <Panel Grid.Row="0" Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_Panel_ThemeAurora">
                 <Button IsVisible="{Binding IsAuroraSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeAuroraSelected"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Aurora"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -102,7 +123,8 @@
                       <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
                                        Foreground="#EC4899"
                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
+                                       Margin="0,-2,-2,0"
+                                       AutomationProperties.AutomationId="Settings_Icon_AuroraCheck" />
                       <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                           <Ellipse Width="20" Height="20" Fill="#EC4899" />
@@ -110,14 +132,17 @@
                           <Ellipse Width="20" Height="20" Fill="#06B6D4" />
                         </StackPanel>
                         <TextBlock Text="{Binding ThemeAuroraName}" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                                   FontWeight="Medium" FontSize="13" Foreground="#E4E4E7"
+                                   AutomationProperties.AutomationId="Settings_Txt_AuroraNameSelected" />
                         <TextBlock Text="{Binding ThemeAuroraDescText}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#A1A1AA" />
+                                   FontSize="11" Foreground="#A1A1AA"
+                                   AutomationProperties.AutomationId="Settings_Txt_AuroraDescSelected" />
                       </StackPanel>
                     </Grid>
                   </Border>
                 </Button>
                 <Button IsVisible="{Binding !IsAuroraSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeAurora"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Aurora"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -133,17 +158,21 @@
                         <Ellipse Width="20" Height="20" Fill="#06B6D4" />
                       </StackPanel>
                       <TextBlock Text="{Binding ThemeAuroraName}" HorizontalAlignment="Center"
-                                 FontWeight="Medium" FontSize="13" Foreground="#E4E4E7" />
+                                 FontWeight="Medium" FontSize="13" Foreground="#E4E4E7"
+                                 AutomationProperties.AutomationId="Settings_Txt_AuroraName" />
                       <TextBlock Text="{Binding ThemeAuroraDescText}" HorizontalAlignment="Center"
-                                 FontSize="11" Foreground="#A1A1AA" />
+                                 FontSize="11" Foreground="#A1A1AA"
+                                 AutomationProperties.AutomationId="Settings_Txt_AuroraDesc" />
                     </StackPanel>
                   </Border>
                 </Button>
               </Panel>
 
               <!-- Daylight Theme -->
-              <Panel Grid.Row="1" Grid.Column="0">
+              <Panel Grid.Row="1" Grid.Column="0"
+                     AutomationProperties.AutomationId="Settings_Panel_ThemeDaylight">
                 <Button IsVisible="{Binding IsDaylightSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeDaylightSelected"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Daylight"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -156,7 +185,8 @@
                       <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
                                        Foreground="#2563EB"
                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
+                                       Margin="0,-2,-2,0"
+                                       AutomationProperties.AutomationId="Settings_Icon_DaylightCheck" />
                       <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                           <Ellipse Width="20" Height="20" Fill="#2563EB" />
@@ -164,14 +194,17 @@
                           <Ellipse Width="20" Height="20" Fill="#0891B2" />
                         </StackPanel>
                         <TextBlock Text="{Binding ThemeDaylightName}" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                                   FontWeight="Medium" FontSize="13" Foreground="#1E293B"
+                                   AutomationProperties.AutomationId="Settings_Txt_DaylightNameSelected" />
                         <TextBlock Text="{Binding ThemeDaylightDescText}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#64748B" />
+                                   FontSize="11" Foreground="#64748B"
+                                   AutomationProperties.AutomationId="Settings_Txt_DaylightDescSelected" />
                       </StackPanel>
                     </Grid>
                   </Border>
                 </Button>
                 <Button IsVisible="{Binding !IsDaylightSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeDaylight"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Daylight"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -187,17 +220,21 @@
                         <Ellipse Width="20" Height="20" Fill="#0891B2" />
                       </StackPanel>
                       <TextBlock Text="{Binding ThemeDaylightName}" HorizontalAlignment="Center"
-                                 FontWeight="Medium" FontSize="13" Foreground="#1E293B" />
+                                 FontWeight="Medium" FontSize="13" Foreground="#1E293B"
+                                 AutomationProperties.AutomationId="Settings_Txt_DaylightName" />
                       <TextBlock Text="{Binding ThemeDaylightDescText}" HorizontalAlignment="Center"
-                                 FontSize="11" Foreground="#64748B" />
+                                 FontSize="11" Foreground="#64748B"
+                                 AutomationProperties.AutomationId="Settings_Txt_DaylightDesc" />
                     </StackPanel>
                   </Border>
                 </Button>
               </Panel>
 
               <!-- Forest Theme -->
-              <Panel Grid.Row="1" Grid.Column="1">
+              <Panel Grid.Row="1" Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_Panel_ThemeForest">
                 <Button IsVisible="{Binding IsForestSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeForestSelected"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Forest"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -210,7 +247,8 @@
                       <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
                                        Foreground="#10B981"
                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                       Margin="0,-2,-2,0" />
+                                       Margin="0,-2,-2,0"
+                                       AutomationProperties.AutomationId="Settings_Icon_ForestCheck" />
                       <StackPanel Spacing="6">
                         <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                           <Ellipse Width="20" Height="20" Fill="#10B981" />
@@ -218,14 +256,17 @@
                           <Ellipse Width="20" Height="20" Fill="#F59E0B" />
                         </StackPanel>
                         <TextBlock Text="{Binding ThemeForestName}" HorizontalAlignment="Center"
-                                   FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                                   FontWeight="Medium" FontSize="13" Foreground="#D1FAE5"
+                                   AutomationProperties.AutomationId="Settings_Txt_ForestNameSelected" />
                         <TextBlock Text="{Binding ThemeForestDescText}" HorizontalAlignment="Center"
-                                   FontSize="11" Foreground="#6EE7B7" />
+                                   FontSize="11" Foreground="#6EE7B7"
+                                   AutomationProperties.AutomationId="Settings_Txt_ForestDescSelected" />
                       </StackPanel>
                     </Grid>
                   </Border>
                 </Button>
                 <Button IsVisible="{Binding !IsForestSelected}"
+                        AutomationProperties.AutomationId="Settings_BtnThemeForest"
                         Command="{Binding SelectThemeCommand}"
                         CommandParameter="Forest"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -241,9 +282,11 @@
                         <Ellipse Width="20" Height="20" Fill="#F59E0B" />
                       </StackPanel>
                       <TextBlock Text="{Binding ThemeForestName}" HorizontalAlignment="Center"
-                                 FontWeight="Medium" FontSize="13" Foreground="#D1FAE5" />
+                                 FontWeight="Medium" FontSize="13" Foreground="#D1FAE5"
+                                 AutomationProperties.AutomationId="Settings_Txt_ForestName" />
                       <TextBlock Text="{Binding ThemeForestDescText}" HorizontalAlignment="Center"
-                                 FontSize="11" Foreground="#6EE7B7" />
+                                 FontSize="11" Foreground="#6EE7B7"
+                                 AutomationProperties.AutomationId="Settings_Txt_ForestDesc" />
                     </StackPanel>
                   </Border>
                 </Button>
@@ -254,85 +297,103 @@
         </Border>
 
         <!-- ==================== Language Selection Card ==================== -->
-        <Border Classes="SettingsCard">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
+        <Border Classes="SettingsCard"
+                AutomationProperties.AutomationId="Settings_CardLanguage">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Settings_Panel_LanguageContent">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Settings_Panel_LanguageHeader">
               <mi:MaterialIcon Kind="Translate" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               AutomationProperties.AutomationId="Settings_Icon_Translate" />
               <TextBlock Text="{Binding LanguageText}"
+                         AutomationProperties.AutomationId="Settings_TxtLanguage"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal"
+                       AutomationProperties.AutomationId="Settings_Panel_LanguageButtons">
               <!-- Deutsch -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangDe">
                 <Button Classes="Primary Small" Content="Deutsch"
+                        AutomationProperties.AutomationId="Settings_BtnLangDeSelected"
                         IsVisible="{Binding IsGermanSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="Deutsch"
+                        AutomationProperties.AutomationId="Settings_BtnLangDe"
                         IsVisible="{Binding !IsGermanSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                         Margin="0,0,8,8" />
               </Panel>
 
               <!-- English -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangEn">
                 <Button Classes="Primary Small" Content="English"
+                        AutomationProperties.AutomationId="Settings_BtnLangEnSelected"
                         IsVisible="{Binding IsEnglishSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="English"
+                        AutomationProperties.AutomationId="Settings_BtnLangEn"
                         IsVisible="{Binding !IsEnglishSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                         Margin="0,0,8,8" />
               </Panel>
 
               <!-- Espanol -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangEs">
                 <Button Classes="Primary Small" Content="Espa&#241;ol"
+                        AutomationProperties.AutomationId="Settings_BtnLangEsSelected"
                         IsVisible="{Binding IsSpanishSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="Espa&#241;ol"
+                        AutomationProperties.AutomationId="Settings_BtnLangEs"
                         IsVisible="{Binding !IsSpanishSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                         Margin="0,0,8,8" />
               </Panel>
 
               <!-- Francais -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangFr">
                 <Button Classes="Primary Small" Content="Fran&#231;ais"
+                        AutomationProperties.AutomationId="Settings_BtnLangFrSelected"
                         IsVisible="{Binding IsFrenchSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="Fran&#231;ais"
+                        AutomationProperties.AutomationId="Settings_BtnLangFr"
                         IsVisible="{Binding !IsFrenchSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                         Margin="0,0,8,8" />
               </Panel>
 
               <!-- Italiano -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangIt">
                 <Button Classes="Primary Small" Content="Italiano"
+                        AutomationProperties.AutomationId="Settings_BtnLangItSelected"
                         IsVisible="{Binding IsItalianSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="Italiano"
+                        AutomationProperties.AutomationId="Settings_BtnLangIt"
                         IsVisible="{Binding !IsItalianSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                         Margin="0,0,8,8" />
               </Panel>
 
               <!-- Portugues -->
-              <Panel>
+              <Panel AutomationProperties.AutomationId="Settings_Panel_LangPt">
                 <Button Classes="Primary Small" Content="Portugu&#234;s"
+                        AutomationProperties.AutomationId="Settings_BtnLangPtSelected"
                         IsVisible="{Binding IsPortugueseSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                         Margin="0,0,8,8" />
                 <Button Classes="Outlined Small" Content="Portugu&#234;s"
+                        AutomationProperties.AutomationId="Settings_BtnLangPt"
                         IsVisible="{Binding !IsPortugueseSelected}"
                         Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                         Margin="0,0,8,8" />
@@ -343,26 +404,34 @@
 
         <!-- ==================== Premium Section (mit Shimmer) ==================== -->
         <Border Classes="SettingsCard PremiumShimmer"
+                AutomationProperties.AutomationId="Settings_CardPremium"
                 IsVisible="{Binding IsNotPremium}">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Settings_Panel_PremiumContent">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Settings_Panel_PremiumHeader">
               <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               AutomationProperties.AutomationId="Settings_Icon_Crown" />
               <TextBlock Text="{Binding PremiumText}"
+                         AutomationProperties.AutomationId="Settings_TxtPremiumTitle"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <TextBlock Text="{Binding PremiumDescriptionText}"
+                       AutomationProperties.AutomationId="Settings_TxtPremiumDesc"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
 
             <Button Content="{Binding PurchasePremiumText}"
+                    AutomationProperties.AutomationId="Settings_BtnPurchasePremium"
                     Command="{Binding PurchasePremiumCommand}"
                     Classes="Primary"
                     CornerRadius="8" />
 
             <Button Content="{Binding RestorePurchasesText}"
+                    AutomationProperties.AutomationId="Settings_BtnRestorePurchases"
                     Command="{Binding RestorePurchasesCommand}"
                     Classes="Secondary"
                     CornerRadius="8" />
@@ -370,28 +439,37 @@
         </Border>
 
         <!-- ==================== Backup & Restore Section ==================== -->
-        <Border Classes="SettingsCard">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
+        <Border Classes="SettingsCard"
+                AutomationProperties.AutomationId="Settings_CardBackup">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Settings_Panel_BackupContent">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Settings_Panel_BackupHeader">
               <mi:MaterialIcon Kind="CloudSync" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               AutomationProperties.AutomationId="Settings_Icon_CloudSync" />
               <TextBlock Text="{Binding BackupRestoreText}"
+                         AutomationProperties.AutomationId="Settings_TxtBackupTitle"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <TextBlock Text="{Binding BackupRestoreDescText}"
+                       AutomationProperties.AutomationId="Settings_TxtBackupDesc"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12"
+                  AutomationProperties.AutomationId="Settings_Panel_BackupButtons">
               <Button Grid.Column="0"
+                      AutomationProperties.AutomationId="Settings_BtnCreateBackup"
                       Content="{Binding CreateBackupText}"
                       Command="{Binding CreateBackupCommand}"
                       IsEnabled="{Binding !IsBackupInProgress}"
                       Classes="Primary"
                       CornerRadius="8" />
               <Button Grid.Column="1"
+                      AutomationProperties.AutomationId="Settings_BtnRestoreBackup"
                       Content="{Binding RestoreBackupText}"
                       Command="{Binding RestoreBackupCommand}"
                       IsEnabled="{Binding !IsBackupInProgress}"
@@ -400,30 +478,39 @@
             </Grid>
 
             <ProgressBar IsIndeterminate="True"
+                         AutomationProperties.AutomationId="Settings_ProgressBackup"
                          IsVisible="{Binding IsBackupInProgress}"
                          HorizontalAlignment="Center" />
           </StackPanel>
         </Border>
 
         <!-- ==================== About Section ==================== -->
-        <Border Classes="SettingsCard">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="12">
+        <Border Classes="SettingsCard"
+                AutomationProperties.AutomationId="Settings_CardAbout">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Settings_Panel_AboutContent">
+            <StackPanel Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Settings_Panel_AboutHeader">
               <mi:MaterialIcon Kind="InformationOutline" Width="24" Height="24"
-                               Foreground="{DynamicResource PrimaryBrush}" />
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               AutomationProperties.AutomationId="Settings_Icon_Info" />
               <TextBlock Text="{Binding AboutAppText}"
+                         AutomationProperties.AutomationId="Settings_TxtAboutTitle"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
 
             <TextBlock Text="FinanzRechner" FontSize="16" FontWeight="Bold"
+                       AutomationProperties.AutomationId="Settings_TxtAppName"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
             <TextBlock Text="{Binding AppVersion}"
+                       AutomationProperties.AutomationId="Settings_TxtVersion"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
 
             <Button Content="{Binding FeedbackText}"
+                    AutomationProperties.AutomationId="Settings_BtnFeedback"
                     Command="{Binding SendFeedbackCommand}"
                     Classes="Outlined"
                     HorizontalAlignment="Stretch"
@@ -433,49 +520,61 @@
         </Border>
 
         <!-- Bottom Spacer (60dp für Ad-Banner Overlay) -->
-        <Border Height="60" />
+        <Border Height="60"
+                AutomationProperties.AutomationId="Settings_Border_BottomSpacer" />
 
       </StackPanel>
     </ScrollViewer>
 
     <!-- ==================== Restore Merge/Replace Dialog Overlay ==================== -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="Settings_OverlayRestore"
             IsVisible="{Binding ShowRestoreConfirmation}"
             Background="#80000000">
       <Border Classes="DialogOverlay"
+              AutomationProperties.AutomationId="Settings_CardRestoreDialog"
               Background="{DynamicResource CardBrush}"
               CornerRadius="16"
               Padding="24"
               Margin="32"
               VerticalAlignment="Center">
-        <StackPanel Spacing="16">
+        <StackPanel Spacing="16"
+                    AutomationProperties.AutomationId="Settings_Panel_RestoreDialogContent">
           <!-- Titel -->
           <TextBlock Text="{Binding RestoreQuestionText}"
+                     AutomationProperties.AutomationId="Settings_TxtRestoreQuestion"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center"
                      TextWrapping="Wrap" />
 
           <!-- Merge/Replace Buttons nebeneinander -->
-          <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="12"
+                AutomationProperties.AutomationId="Settings_Panel_RestoreButtonsGrid">
 
             <!-- Merge -->
-            <StackPanel Grid.Column="0" Spacing="8">
+            <StackPanel Grid.Column="0" Spacing="8"
+                        AutomationProperties.AutomationId="Settings_Panel_MergeSection">
               <Button Command="{Binding RestoreMergeCommand}"
+                      AutomationProperties.AutomationId="Settings_BtnRestoreMerge"
                       Classes="Primary"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
                       CornerRadius="8"
                       Height="NaN"
                       Padding="12">
-                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                  <mi:MaterialIcon Kind="Merge" Width="20" Height="20" />
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center"
+                            AutomationProperties.AutomationId="Settings_Panel_MergeBtnContent">
+                  <mi:MaterialIcon Kind="Merge" Width="20" Height="20"
+                                   AutomationProperties.AutomationId="Settings_Icon_Merge" />
                   <TextBlock Text="{Binding RestoreMergeText}"
                              FontWeight="SemiBold" FontSize="14"
-                             VerticalAlignment="Center" />
+                             VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Settings_Txt_MergeLabel" />
                 </StackPanel>
               </Button>
               <TextBlock Text="{Binding RestoreMergeDescText}"
+                         AutomationProperties.AutomationId="Settings_TxtRestoreMergeDesc"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"
@@ -484,22 +583,28 @@
             </StackPanel>
 
             <!-- Replace -->
-            <StackPanel Grid.Column="1" Spacing="8">
+            <StackPanel Grid.Column="1" Spacing="8"
+                        AutomationProperties.AutomationId="Settings_Panel_ReplaceSection">
               <Button Command="{Binding RestoreReplaceCommand}"
+                      AutomationProperties.AutomationId="Settings_BtnRestoreReplace"
                       Classes="Secondary"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
                       CornerRadius="8"
                       Height="NaN"
                       Padding="12">
-                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                  <mi:MaterialIcon Kind="DatabaseRefresh" Width="20" Height="20" />
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center"
+                            AutomationProperties.AutomationId="Settings_Panel_ReplaceBtnContent">
+                  <mi:MaterialIcon Kind="DatabaseRefresh" Width="20" Height="20"
+                                   AutomationProperties.AutomationId="Settings_Icon_DatabaseRefresh" />
                   <TextBlock Text="{Binding RestoreReplaceText}"
                              FontWeight="SemiBold" FontSize="14"
-                             VerticalAlignment="Center" />
+                             VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Settings_Txt_ReplaceLabel" />
                 </StackPanel>
               </Button>
               <TextBlock Text="{Binding RestoreReplaceDescText}"
+                         AutomationProperties.AutomationId="Settings_TxtRestoreReplaceDesc"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"
@@ -511,6 +616,7 @@
 
           <!-- Cancel Button -->
           <Button Command="{Binding CancelRestoreCommand}"
+                  AutomationProperties.AutomationId="Settings_BtnRestoreCancel"
                   Classes="Outlined"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"

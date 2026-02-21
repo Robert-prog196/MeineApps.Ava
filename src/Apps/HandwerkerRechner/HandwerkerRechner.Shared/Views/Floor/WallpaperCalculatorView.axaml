@@ -7,17 +7,17 @@
              x:Class="HandwerkerRechner.Views.Floor.WallpaperCalculatorView"
              x:DataType="vm:WallpaperCalculatorViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid AutomationProperties.AutomationId="Wallpaper_RootGrid" RowDefinitions="Auto,*,Auto">
 
     <!-- ============================================ -->
     <!-- Row 0: Header with Back Button + Title       -->
     <!-- ============================================ -->
-    <Border Grid.Row="0"
+    <Border AutomationProperties.AutomationId="Wallpaper_Header" Grid.Row="0"
             Background="{DynamicResource WarningBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="Wallpaper_BtnBack" Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -31,7 +31,7 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcWallpaper}"
+          <TextBlock AutomationProperties.AutomationId="Wallpaper_TxtTitle" Text="{loc:Translate CalcWallpaper}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -41,11 +41,11 @@
     <!-- ============================================ -->
     <!-- Row 1: Scrollable Content                    -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer AutomationProperties.AutomationId="Wallpaper_ScrollContent" Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Input Section: Wall Dimensions -->
-        <Border Classes="Card StatsCard">
+        <Border AutomationProperties.AutomationId="Wallpaper_CardWallDimensions" Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate WallDimensions}"
                        FontSize="16" FontWeight="SemiBold"
@@ -56,7 +56,7 @@
               <TextBlock Text="{loc:Translate WallLength}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding WallLength}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxWallLength" Text="{Binding WallLength}"
                        Watermark="m"
                        Classes="Outlined" />
             </StackPanel>
@@ -66,7 +66,7 @@
               <TextBlock Text="{loc:Translate RoomHeight}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding RoomHeight}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxRoomHeight" Text="{Binding RoomHeight}"
                        Watermark="m"
                        Classes="Outlined" />
             </StackPanel>
@@ -74,7 +74,7 @@
         </Border>
 
         <!-- Input Section: Roll Dimensions -->
-        <Border Classes="Card StatsCard">
+        <Border AutomationProperties.AutomationId="Wallpaper_CardRollDimensions" Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate RollDimensions}"
                        FontSize="16" FontWeight="SemiBold"
@@ -85,7 +85,7 @@
               <TextBlock Text="{loc:Translate RollLength}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding RollLength}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxRollLength" Text="{Binding RollLength}"
                        Watermark="m"
                        Classes="Outlined" />
             </StackPanel>
@@ -95,7 +95,7 @@
               <TextBlock Text="{loc:Translate RollWidth}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding RollWidth}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxRollWidth" Text="{Binding RollWidth}"
                        Watermark="cm"
                        Classes="Outlined" />
             </StackPanel>
@@ -105,7 +105,7 @@
               <TextBlock Text="{loc:Translate PatternRepeat}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding PatternRepeat}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxPatternRepeat" Text="{Binding PatternRepeat}"
                        Watermark="cm"
                        Classes="Outlined" />
             </StackPanel>
@@ -113,7 +113,7 @@
         </Border>
 
         <!-- Input Section: Pricing -->
-        <Border Classes="Card StatsCard">
+        <Border AutomationProperties.AutomationId="Wallpaper_CardCost" Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate CostCalculation}"
                        FontSize="16" FontWeight="SemiBold"
@@ -124,7 +124,7 @@
               <TextBlock Text="{loc:Translate PricePerRoll}"
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding PricePerRoll}"
+              <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxPrice" Text="{Binding PricePerRoll}"
                        Watermark="EUR"
                        Classes="Outlined" />
             </StackPanel>
@@ -132,13 +132,13 @@
         </Border>
 
         <!-- Visualisierung -->
-        <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
+        <Border AutomationProperties.AutomationId="Wallpaper_CardVisualization" Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
                 IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="WallpaperCanvas" PaintSurface="OnPaintVisualization" />
+          <skia:SKCanvasView AutomationProperties.AutomationId="Wallpaper_Canvas" x:Name="WallpaperCanvas" PaintSurface="OnPaintVisualization" />
         </Border>
 
         <!-- Results Section -->
-        <Border Classes="Card Elevated StatsCard"
+        <Border AutomationProperties.AutomationId="Wallpaper_CardResult" Classes="Card Elevated StatsCard"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate Result}"
@@ -151,7 +151,7 @@
                          Text="{loc:Translate TotalArea}"
                          FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
+              <TextBlock AutomationProperties.AutomationId="Wallpaper_TxtArea" Grid.Column="1"
                          Text="{Binding AreaDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -163,7 +163,7 @@
                          Text="{loc:Translate StripsNeeded}"
                          FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
+              <TextBlock AutomationProperties.AutomationId="Wallpaper_TxtStripsNeeded" Grid.Column="1"
                          Text="{Binding StripsNeededDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -175,7 +175,7 @@
                          Text="{loc:Translate RollsNeeded}"
                          FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
+              <TextBlock AutomationProperties.AutomationId="Wallpaper_TxtRollsNeeded" Grid.Column="1"
                          Text="{Binding RollsNeededDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource AccentBrush}" />
@@ -188,14 +188,14 @@
                          Text="{loc:Translate TotalCost}"
                          FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1"
+              <TextBlock AutomationProperties.AutomationId="Wallpaper_TxtTotalCost" Grid.Column="1"
                          Text="{Binding TotalCostDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}" />
             </Grid>
             <!-- Aktions-Buttons: Share + PDF Export -->
             <Grid ColumnDefinitions="*,8,*" Margin="0,4,0,0">
-              <Button Grid.Column="0"
+              <Button AutomationProperties.AutomationId="Wallpaper_BtnShare" Grid.Column="0"
                       Command="{Binding ShareResultCommand}"
                       Classes="Outlined"
                       HorizontalAlignment="Stretch"
@@ -208,7 +208,7 @@
                              VerticalAlignment="Center" />
                 </StackPanel>
               </Button>
-              <Button Grid.Column="2"
+              <Button AutomationProperties.AutomationId="Wallpaper_BtnExport" Grid.Column="2"
                       Command="{Binding ExportMaterialListCommand}"
                       Classes="Outlined"
                       IsEnabled="{Binding !IsExporting}"
@@ -232,10 +232,10 @@
     <!-- ============================================ -->
     <!-- Row 2: Action Buttons                        -->
     <!-- ============================================ -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border AutomationProperties.AutomationId="Wallpaper_ActionBar" Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <!-- Reset -->
-        <Button Grid.Column="0"
+        <Button AutomationProperties.AutomationId="Wallpaper_BtnReset" Grid.Column="0"
                 Classes="Outlined"
                 Command="{Binding ResetCommand}"
                 HorizontalAlignment="Stretch"
@@ -250,7 +250,7 @@
         </Button>
 
         <!-- Calculate -->
-        <Button Grid.Column="2"
+        <Button AutomationProperties.AutomationId="Wallpaper_BtnCalculate" Grid.Column="2"
                 Classes="Primary"
                 Command="{Binding CalculateCommand}"
                 HorizontalAlignment="Stretch"
@@ -264,7 +264,7 @@
         </Button>
 
         <!-- Save Project -->
-        <Button Grid.Column="4"
+        <Button AutomationProperties.AutomationId="Wallpaper_BtnSave" Grid.Column="4"
                 Classes="Secondary"
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
@@ -281,7 +281,7 @@
     </Border>
 
     <!-- Save Project Dialog Overlay -->
-    <Border Grid.Row="0" Grid.RowSpan="3"
+    <Border AutomationProperties.AutomationId="Wallpaper_SaveOverlay" Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
             IsVisible="{Binding ShowSaveDialog}">
@@ -296,17 +296,17 @@
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
-          <TextBox Text="{Binding SaveProjectName}"
+          <TextBox AutomationProperties.AutomationId="Wallpaper_TxtBoxProjectName" Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
                    Classes="Outlined" />
           <Grid ColumnDefinitions="*,12,*">
-            <Button Grid.Column="0"
+            <Button AutomationProperties.AutomationId="Wallpaper_BtnCancelSave" Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     Content="{loc:Translate Cancel}" />
-            <Button Grid.Column="2"
+            <Button AutomationProperties.AutomationId="Wallpaper_BtnConfirmSave" Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"

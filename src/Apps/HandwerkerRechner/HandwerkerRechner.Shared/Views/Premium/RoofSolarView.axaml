@@ -12,19 +12,22 @@
     <conv:IntEqualsConverter x:Key="IntEquals" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="RoofSolar_RootGrid">
 
     <!-- Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
-            CornerRadius="0,0,24,24">
+            CornerRadius="0,0,24,24"
+            AutomationProperties.AutomationId="RoofSolar_HeaderBorder">
       <Grid ColumnDefinitions="Auto,*">
         <Button Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
-                Padding="0">
+                Padding="0"
+                AutomationProperties.AutomationId="RoofSolar_BtnBack">
           <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
@@ -36,26 +39,32 @@
           </Border>
           <TextBlock Text="{loc:Translate RoofSolarCalculator}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="RoofSolar_TxtTitle" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="RoofSolar_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Calculator Selector -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="RoofSolar_CardSelector">
           <ComboBox ItemsSource="{Binding Calculators}"
                     SelectedIndex="{Binding SelectedCalculator}"
-                    HorizontalAlignment="Stretch" />
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="RoofSolar_CmbCalculator" />
         </Border>
 
         <!-- Visualisierung -->
         <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
-                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="RoofSolarCanvas" PaintSurface="OnPaintVisualization" />
+                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12"
+                AutomationProperties.AutomationId="RoofSolar_CardVisualization">
+          <skia:SKCanvasView x:Name="RoofSolarCanvas" PaintSurface="OnPaintVisualization"
+                             AutomationProperties.AutomationId="RoofSolar_Canvas" />
         </Border>
 
         <!-- Calculator 0: Roof Pitch -->
@@ -63,7 +72,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="RoofSolar_CardPitchInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate RoofPitch}"
                            FontSize="16" FontWeight="SemiBold"
@@ -73,25 +83,29 @@
                   <TextBlock Text="{loc:Translate Run}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Run}" Watermark="m" />
+                  <TextBox Text="{Binding Run}" Watermark="m"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxRun" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Rise}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Rise}" Watermark="m" />
+                  <TextBox Text="{Binding Rise}" Watermark="m"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxRise" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="RoofSolar_CardPitchResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="RoofSolar_TxtPitchResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UnitDegrees}"
@@ -99,7 +113,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PitchResult.PitchDegrees}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtPitchDegrees" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -108,7 +123,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PitchResult.PitchPercent}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtPitchPercent" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -117,7 +133,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnSharePitch">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -131,7 +148,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnExportPitch">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -152,7 +170,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="RoofSolar_CardTilesInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate RoofTiles}"
                            FontSize="16" FontWeight="SemiBold"
@@ -162,14 +181,16 @@
                   <TextBlock Text="{loc:Translate UnitSquareMeters}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding RoofArea}" Watermark="m²" />
+                  <TextBox Text="{Binding RoofArea}" Watermark="m²"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxRoofArea" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate TilesPerSqm}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding TilesPerSqm}" Watermark="pcs/m²" />
+                  <TextBox Text="{Binding TilesPerSqm}" Watermark="pcs/m²"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxTilesPerSqm" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -177,18 +198,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding PricePerTile}"
-                           Watermark="EUR" />
+                           Watermark="EUR"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxPricePerTile" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="RoofSolar_CardTilesResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="RoofSolar_TxtTilesResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UnitPieces}"
@@ -196,7 +220,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding TilesResult.TilesNeeded}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtTilesNeeded" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -205,7 +230,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding TilesResult.TilesWithReserve}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtTilesWithReserve" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -215,7 +241,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding RoofTileCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtTileCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -224,7 +251,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnShareTiles">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -238,7 +266,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnExportTiles">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -259,7 +288,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="RoofSolar_CardSolarInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate SolarYield}"
                            FontSize="16" FontWeight="SemiBold"
@@ -269,14 +299,16 @@
                   <TextBlock Text="{loc:Translate UnitSquareMeters}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding SolarRoofArea}" Watermark="m²" />
+                  <TextBox Text="{Binding SolarRoofArea}" Watermark="m²"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxSolarRoofArea" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate PanelEfficiency}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PanelEfficiency}" Watermark="%" />
+                  <TextBox Text="{Binding PanelEfficiency}" Watermark="%"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxPanelEfficiency" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -285,14 +317,16 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <ComboBox ItemsSource="{Binding Orientations}"
                             SelectedIndex="{Binding SelectedOrientation}"
-                            HorizontalAlignment="Stretch" />
+                            HorizontalAlignment="Stretch"
+                            AutomationProperties.AutomationId="RoofSolar_CmbOrientation" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate TiltDegrees}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding TiltDegrees}" Watermark="°" />
+                  <TextBox Text="{Binding TiltDegrees}" Watermark="°"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxTiltDegrees" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -300,18 +334,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding SolarSystemCost}"
-                           Watermark="EUR" />
+                           Watermark="EUR"
+                           AutomationProperties.AutomationId="RoofSolar_TxtBoxSolarSystemCost" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="RoofSolar_CardSolarResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="RoofSolar_TxtSolarResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UsableArea}"
@@ -319,7 +356,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SolarResult.UsableArea}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtUsableArea" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -328,7 +366,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SolarResult.KwPeak}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtKwPeak" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -337,7 +376,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SolarResult.AnnualYieldKwh}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtAnnualYield" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -347,7 +387,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SolarCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtSolarCost" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -357,7 +398,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PaybackTimeDisplay}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="RoofSolar_TxtPaybackTime" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -366,7 +408,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnShareSolar">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -380,7 +423,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="RoofSolar_BtnExportSolar">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -400,13 +444,15 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="RoofSolar_BottomBar">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="RoofSolar_BtnReset">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -419,7 +465,8 @@
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="RoofSolar_BtnCalculate">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Calculator" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Calculate}"
@@ -433,7 +480,8 @@
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="RoofSolar_BtnSave">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Save}"
@@ -448,34 +496,40 @@
     <Border Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
-            IsVisible="{Binding ShowSaveDialog}">
+            IsVisible="{Binding ShowSaveDialog}"
+            AutomationProperties.AutomationId="RoofSolar_SaveDialogOverlay">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="RoofSolar_SaveDialogCard">
         <StackPanel Spacing="16">
           <TextBlock Text="{loc:Translate SaveProject}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="RoofSolar_TxtSaveDialogTitle" />
           <TextBox Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
-                   Classes="Outlined" />
+                   Classes="Outlined"
+                   AutomationProperties.AutomationId="RoofSolar_TxtBoxProjectName" />
           <Grid ColumnDefinitions="*,12,*">
             <Button Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Cancel}" />
+                    Content="{loc:Translate Cancel}"
+                    AutomationProperties.AutomationId="RoofSolar_BtnCancelSave" />
             <Button Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Save}" />
+                    Content="{loc:Translate Save}"
+                    AutomationProperties.AutomationId="RoofSolar_BtnConfirmSave" />
           </Grid>
         </StackPanel>
       </Border>

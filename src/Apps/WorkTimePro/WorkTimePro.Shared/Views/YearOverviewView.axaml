@@ -8,31 +8,37 @@
              x:DataType="vm:YearOverviewViewModel"
              Background="{DynamicResource BackgroundBrush}">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*" AutomationProperties.AutomationId="Year_RootPanel">
 
     <!-- Back + Year Navigation Header -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Year_Header"
             Background="{DynamicResource SurfaceBrush}"
             Padding="8,4">
       <Grid ColumnDefinitions="Auto,Auto,*,Auto">
         <Button Grid.Column="0" Classes="Text"
+                AutomationProperties.AutomationId="Year_BtnBack"
                 Command="{Binding GoBackCommand}">
           <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
         <Button Grid.Column="1" Classes="Text"
+                AutomationProperties.AutomationId="Year_BtnPrevious"
                 Command="{Binding PreviousYearCommand}">
           <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
         <Button Grid.Column="2" Classes="Text"
+                AutomationProperties.AutomationId="Year_BtnCurrentYear"
                 Command="{Binding GoToCurrentYearCommand}"
                 HorizontalAlignment="Center">
           <TextBlock Text="{Binding SelectedYear}"
+                     AutomationProperties.AutomationId="Year_TxtYear"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
         </Button>
         <Button Grid.Column="3" Classes="Text"
+                AutomationProperties.AutomationId="Year_BtnNext"
                 Command="{Binding NextYearCommand}">
           <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
@@ -42,16 +48,17 @@
 
     <!-- Loading Overlay -->
     <ProgressBar Grid.Row="1"
+                 AutomationProperties.AutomationId="Year_LoadingBar"
                  IsIndeterminate="True"
                  IsVisible="{Binding IsLoading}"
                  VerticalAlignment="Top"
                  ZIndex="100" />
 
-    <ScrollViewer Grid.Row="1">
+    <ScrollViewer Grid.Row="1" AutomationProperties.AutomationId="Year_ScrollViewer">
       <StackPanel Spacing="16" Margin="16">
 
         <!-- ==================== Year Summary Card ==================== -->
-        <Border Classes="CardElevated StatsCard">
+        <Border Classes="CardElevated StatsCard" AutomationProperties.AutomationId="Year_SummaryCard">
           <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                 ColumnDefinitions="*,*"
                 RowSpacing="12">
@@ -62,6 +69,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding TotalWorkTimeDisplay}"
+                         AutomationProperties.AutomationId="Year_TxtWorkTime"
                          FontSize="26" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -72,6 +80,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding TotalTargetTimeDisplay}"
+                         AutomationProperties.AutomationId="Year_TxtTargetTime"
                          FontSize="26" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -82,6 +91,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding TotalBalanceDisplay}"
+                         AutomationProperties.AutomationId="Year_TxtBalance"
                          FontSize="26" FontWeight="Bold"
                          Foreground="{Binding BalanceColor}" />
             </StackPanel>
@@ -92,6 +102,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding TotalWorkDays}"
+                         AutomationProperties.AutomationId="Year_TxtWorkDays"
                          FontSize="26" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -102,6 +113,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Text="{Binding AverageHoursPerDayDisplay}"
+                         AutomationProperties.AutomationId="Year_TxtAverage"
                          FontSize="18" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -117,6 +129,7 @@
                                    Foreground="{DynamicResource PrimaryBrush}"
                                    VerticalAlignment="Center" />
                   <TextBlock Text="{Binding VacationDaysTakenDisplay}"
+                             AutomationProperties.AutomationId="Year_TxtVacationDays"
                              FontSize="14"
                              Foreground="{DynamicResource TextPrimaryBrush}" />
                 </StackPanel>
@@ -130,6 +143,7 @@
                                    Foreground="{DynamicResource ErrorBrush}"
                                    VerticalAlignment="Center" />
                   <TextBlock Text="{Binding SickDaysDisplay}"
+                             AutomationProperties.AutomationId="Year_TxtSickDays"
                              FontSize="14"
                              Foreground="{DynamicResource TextPrimaryBrush}" />
                 </StackPanel>
@@ -138,6 +152,7 @@
 
             <!-- Export Button -->
             <Button Grid.Row="3" Grid.ColumnSpan="2"
+                    AutomationProperties.AutomationId="Year_BtnExportPdf"
                     Content="{loc:Translate PdfExport}"
                     Classes="Primary"
                     Command="{Binding ExportPdfCommand}"
@@ -150,13 +165,16 @@
 
         <!-- ==================== Chart: Monthly Work Hours ==================== -->
         <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Year_MonthlyChartCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel>
             <TextBlock Text="{loc:Translate WorkHoursPerMonth}"
+                       AutomationProperties.AutomationId="Year_TxtMonthlyChartTitle"
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8" />
             <skia:SKCanvasView x:Name="MonthlyChartCanvas"
+                                   AutomationProperties.AutomationId="Year_MonthlyChartCanvas"
                                    PaintSurface="OnPaintMonthlyChart"
                                    Height="200" />
           </StackPanel>
@@ -164,13 +182,16 @@
 
         <!-- ==================== Chart: Cumulative Balance ==================== -->
         <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Year_BalanceChartCard"
                 IsVisible="{Binding IsPremium}">
           <StackPanel>
             <TextBlock Text="{loc:Translate OvertimeDevelopment}"
+                       AutomationProperties.AutomationId="Year_TxtBalanceChartTitle"
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        Margin="0,0,0,8" />
             <skia:SKCanvasView x:Name="BalanceChartCanvas"
+                                   AutomationProperties.AutomationId="Year_BalanceChartCanvas"
                                    PaintSurface="OnPaintBalanceChart"
                                    Height="180" />
           </StackPanel>
@@ -178,10 +199,11 @@
 
         <!-- ==================== Months List (kompakt) ==================== -->
         <TextBlock Text="{loc:Translate MonthsOverviewTitle}"
+                   AutomationProperties.AutomationId="Year_TxtMonthsTitle"
                    FontSize="18" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}" />
 
-        <ItemsControl ItemsSource="{Binding Months}">
+        <ItemsControl ItemsSource="{Binding Months}" AutomationProperties.AutomationId="Year_MonthsList">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:MonthSummary">
               <Button Classes="Text"
@@ -220,10 +242,12 @@
 
     <!-- ==================== Rewarded Ad Overlay ==================== -->
     <Border IsVisible="{Binding ShowRewardedAdOverlay}"
+            AutomationProperties.AutomationId="Year_AdOverlay"
             Background="#CC000000"
             ZIndex="100"
             Grid.RowSpan="2">
       <Border Background="{DynamicResource CardBrush}"
+              AutomationProperties.AutomationId="Year_AdOverlayCard"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
@@ -231,6 +255,7 @@
               VerticalAlignment="Center">
         <StackPanel Spacing="16" HorizontalAlignment="Center">
           <TextBlock Text="{loc:Translate PremiumFeatureTitle}"
+                     AutomationProperties.AutomationId="Year_TxtAdTitle"
                      FontSize="22" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
@@ -242,12 +267,14 @@
                              Foreground="{DynamicResource AccentBrush}" />
           </Border>
           <TextBlock Text="{loc:Translate PremiumFeatureDesc}"
+                     AutomationProperties.AutomationId="Year_TxtAdDesc"
                      FontSize="14"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      HorizontalAlignment="Center"
                      TextWrapping="Wrap" TextAlignment="Center" />
           <StackPanel Spacing="8">
             <Button Classes="Filled"
+                    AutomationProperties.AutomationId="Year_BtnWatchAd"
                     Command="{Binding WatchAdCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -259,6 +286,7 @@
               </StackPanel>
             </Button>
             <Button Classes="Text"
+                    AutomationProperties.AutomationId="Year_BtnCancelAd"
                     Command="{Binding CancelAdOverlayCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"

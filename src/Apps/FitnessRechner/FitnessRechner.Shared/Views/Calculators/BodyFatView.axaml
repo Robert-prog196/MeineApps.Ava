@@ -9,15 +9,18 @@
              x:Class="FitnessRechner.Views.Calculators.BodyFatView"
              x:DataType="vm:BodyFatViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="BodyFat_RootPanel">
 
     <!-- ═══════ Header Banner ═══════ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="BodyFat_HeaderBanner"
             Background="{DynamicResource ExpenseBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="BodyFat_BtnBack"
+                Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -31,7 +34,8 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcBodyFat}"
+          <TextBlock AutomationProperties.AutomationId="BodyFat_TxtTitle"
+                     Text="{loc:Translate CalcBodyFat}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -39,11 +43,13 @@
     </Border>
 
     <!-- ═══════ Content ═══════ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="BodyFat_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,0">
 
         <!-- Input Card -->
-        <Border Classes="Card">
+        <Border Classes="Card"
+                AutomationProperties.AutomationId="BodyFat_CardInput">
           <StackPanel Spacing="14">
 
             <!-- Gender -->
@@ -56,10 +62,12 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
               <StackPanel Orientation="Horizontal" Spacing="16">
-                <RadioButton Content="{loc:Translate Male}"
+                <RadioButton AutomationProperties.AutomationId="BodyFat_RadioMale"
+                             Content="{loc:Translate Male}"
                              IsChecked="{Binding IsMale}"
                              GroupName="Gender" />
-                <RadioButton Content="{loc:Translate Female}"
+                <RadioButton AutomationProperties.AutomationId="BodyFat_RadioFemale"
+                             Content="{loc:Translate Female}"
                              IsChecked="{Binding IsMale, Converter={x:Static BoolConverters.Not}}"
                              GroupName="Gender" />
               </StackPanel>
@@ -74,7 +82,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Height}"
+              <TextBox AutomationProperties.AutomationId="BodyFat_TxtBoxHeight"
+                       Text="{Binding Height}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -90,7 +99,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Neck}"
+              <TextBox AutomationProperties.AutomationId="BodyFat_TxtBoxNeck"
+                       Text="{Binding Neck}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -106,7 +116,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Waist}"
+              <TextBox AutomationProperties.AutomationId="BodyFat_TxtBoxWaist"
+                       Text="{Binding Waist}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -123,7 +134,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Hip}"
+              <TextBox AutomationProperties.AutomationId="BodyFat_TxtBoxHip"
+                       Text="{Binding Hip}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -135,6 +147,7 @@
 
         <!-- Result Card -->
         <Border Classes="Card Elevated"
+                AutomationProperties.AutomationId="BodyFat_CardResult"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
 
@@ -142,19 +155,22 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
                                Foreground="{DynamicResource ExpenseBrush}" />
-              <TextBlock Text="{loc:Translate Result}"
+              <TextBlock AutomationProperties.AutomationId="BodyFat_TxtResultHeader"
+                         Text="{loc:Translate Result}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"/>
             </StackPanel>
 
             <!-- Primary Result Highlight -->
-            <Border Background="{DynamicResource ExpenseBrush}"
+            <Border AutomationProperties.AutomationId="BodyFat_CardValue"
+                    Background="{DynamicResource ExpenseBrush}"
                     CornerRadius="12"
                     Padding="16,12">
               <StackPanel HorizontalAlignment="Center">
                 <TextBlock Text="{loc:Translate CalcBodyFat}"
                            FontSize="12" Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
-                <TextBlock FontSize="28" FontWeight="Bold" Foreground="White"
+                <TextBlock AutomationProperties.AutomationId="BodyFat_TxtResult"
+                           FontSize="28" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center">
                   <i:Interaction.Behaviors>
                     <uiBehaviors:CountUpBehavior TargetValue="{Binding BodyFatValue}" Format="F1" Suffix=" %" Duration="500" />
@@ -166,7 +182,8 @@
             <!-- Körperfett-Visualisierung -->
             <Border Height="160" Margin="0,4,0,0" ClipToBounds="True" CornerRadius="8"
                     Background="{DynamicResource SurfaceBrush}">
-              <skia:SKCanvasView PaintSurface="OnPaintBodyFat" />
+              <skia:SKCanvasView AutomationProperties.AutomationId="BodyFat_CanvasVisualization"
+                                   PaintSurface="OnPaintBodyFat" />
             </Border>
 
             <!-- Secondary Results -->
@@ -176,6 +193,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="BodyFat_TxtCategory"
                            Text="{Binding CategoryDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -183,7 +201,8 @@
             </StackPanel>
 
             <!-- Save to Tracking -->
-            <Button Classes="Secondary"
+            <Button AutomationProperties.AutomationId="BodyFat_BtnSaveTracking"
+                    Classes="Secondary"
                     Command="{Binding SaveToTrackingCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -204,16 +223,19 @@
     </ScrollViewer>
 
     <!-- ═══════ Action Buttons ═══════ -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="BodyFat_ActionBar">
       <Grid ColumnDefinitions="*,12,*">
-        <Button Command="{Binding ResetCommand}" Classes="Outlined"
+        <Button AutomationProperties.AutomationId="BodyFat_BtnReset"
+                Command="{Binding ResetCommand}" Classes="Outlined"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
             <TextBlock Text="{loc:Translate Reset}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
-        <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+        <Button Grid.Column="2" AutomationProperties.AutomationId="BodyFat_BtnCalculate"
+                Command="{Binding CalculateCommand}" Classes="Primary"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />

@@ -13,9 +13,10 @@
         MinHeight="500"
         Background="{DynamicResource BackgroundBrush}">
 
-  <Panel>
-    <views:MainView />
-    <splash:SplashOverlay AppName="HandwerkerRechner"
+  <Panel AutomationProperties.AutomationId="MW_RootPanel">
+    <views:MainView AutomationProperties.AutomationId="MW_MainView" />
+    <splash:SplashOverlay AutomationProperties.AutomationId="MW_SplashOverlay"
+                          AppName="HandwerkerRechner"
                           IconSource="avares://HandwerkerRechner.Shared/Assets/icon.png" />
   </Panel>
 

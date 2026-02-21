@@ -8,13 +8,14 @@
              x:Class="WorkTimePro.Views.WeekOverviewView"
              x:DataType="vm:WeekOverviewViewModel">
 
-  <ScrollViewer>
-    <StackPanel Spacing="16" Margin="16">
+  <ScrollViewer AutomationProperties.AutomationId="Week_ScrollViewer">
+    <StackPanel Spacing="16" Margin="16" AutomationProperties.AutomationId="Week_RootPanel">
 
       <!-- ==================== Week Navigation ==================== -->
-      <Border Classes="CardElevated StatsCard" Padding="16">
+      <Border Classes="CardElevated StatsCard" Padding="16" AutomationProperties.AutomationId="Week_NavCard">
         <Grid ColumnDefinitions="Auto,*,Auto">
           <Button Grid.Column="0" Classes="Text"
+                  AutomationProperties.AutomationId="Week_BtnPrevious"
                   Command="{Binding PreviousWeekCommand}">
             <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
                              Foreground="{DynamicResource PrimaryBrush}" />
@@ -24,16 +25,19 @@
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center">
             <TextBlock Text="{Binding WeekDisplay}"
+                       AutomationProperties.AutomationId="Week_TxtWeekDisplay"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{Binding DateRangeDisplay}"
+                       AutomationProperties.AutomationId="Week_TxtDateRange"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
           </StackPanel>
 
           <Button Grid.Column="2" Classes="Text"
+                  AutomationProperties.AutomationId="Week_BtnNext"
                   Command="{Binding NextWeekCommand}">
             <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
                              Foreground="{DynamicResource PrimaryBrush}" />
@@ -43,12 +47,13 @@
 
       <!-- Today Button -->
       <Button Content="{Binding TodayButtonText}"
+              AutomationProperties.AutomationId="Week_BtnToday"
               Classes="Secondary"
               Command="{Binding GoToTodayCommand}"
               HorizontalAlignment="Center" />
 
       <!-- ==================== Week Summary ==================== -->
-      <Border Classes="Card StatsCard" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="Week_SummaryCard">
         <StackPanel Spacing="16">
 
           <!-- Progress Bar -->
@@ -60,10 +65,12 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1"
                          Text="{Binding ProgressText}"
+                         AutomationProperties.AutomationId="Week_TxtProgress"
                          FontSize="14" FontWeight="Bold"
                          Foreground="{DynamicResource AccentBrush}" />
             </Grid>
             <skia:SKCanvasView x:Name="WeekProgressCanvas"
+                                   AutomationProperties.AutomationId="Week_ProgressCanvas"
                                    PaintSurface="OnPaintWeekProgress"
                                    Height="16" />
           </StackPanel>
@@ -78,6 +85,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding WorkTimeDisplay}"
+                         AutomationProperties.AutomationId="Week_TxtWorkTime"
                          FontSize="22" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          HorizontalAlignment="Center" />
@@ -90,6 +98,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding TargetTimeDisplay}"
+                         AutomationProperties.AutomationId="Week_TxtTarget"
                          FontSize="22"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
@@ -102,6 +111,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding BalanceDisplay}"
+                         AutomationProperties.AutomationId="Week_TxtBalance"
                          FontSize="22" FontWeight="Bold"
                          Foreground="{Binding BalanceColor}"
                          HorizontalAlignment="Center" />
@@ -117,6 +127,7 @@
               <mi:MaterialIcon Kind="Briefcase" Width="16" Height="16"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
               <TextBlock Text="{Binding WorkedDays}" FontSize="14"
+                         AutomationProperties.AutomationId="Week_TxtWorkedDays"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <TextBlock Text="{loc:Translate Days}" FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}"
@@ -128,6 +139,7 @@
               <mi:MaterialIcon Kind="Beach" Width="16" Height="16"
                                Foreground="{DynamicResource InfoBrush}" />
               <TextBlock Text="{Binding VacationDays}" FontSize="14"
+                         AutomationProperties.AutomationId="Week_TxtVacationDays"
                          Foreground="{DynamicResource InfoBrush}" />
             </StackPanel>
 
@@ -136,6 +148,7 @@
               <mi:MaterialIcon Kind="Thermometer" Width="16" Height="16"
                                Foreground="{DynamicResource ErrorBrush}" />
               <TextBlock Text="{Binding SickDays}" FontSize="14"
+                         AutomationProperties.AutomationId="Week_TxtSickDays"
                          Foreground="{DynamicResource ErrorBrush}" />
             </StackPanel>
           </StackPanel>
@@ -144,18 +157,19 @@
       </Border>
 
       <!-- ==================== SkiaSharp Wochen-Balkendiagramm ==================== -->
-      <Border Classes="Card StatsCard" Padding="8" Height="200">
-        <skia:SKCanvasView x:Name="WeekBarCanvas" PaintSurface="OnPaintWeekBars" />
+      <Border Classes="Card StatsCard" Padding="8" Height="200" AutomationProperties.AutomationId="Week_ChartCard">
+        <skia:SKCanvasView x:Name="WeekBarCanvas" AutomationProperties.AutomationId="Week_ChartCanvas" PaintSurface="OnPaintWeekBars" />
       </Border>
 
       <!-- ==================== Days List ==================== -->
-      <Border Classes="Card StatsCard" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="Week_DaysListCard">
         <StackPanel Spacing="8">
           <TextBlock Text="{loc:Translate DaysThisWeek}"
+                     AutomationProperties.AutomationId="Week_TxtDaysTitle"
                      FontSize="16" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
-          <ItemsControl ItemsSource="{Binding Days}">
+          <ItemsControl ItemsSource="{Binding Days}" AutomationProperties.AutomationId="Week_DaysList">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="models:WorkDay">
                 <Button Classes="Text"

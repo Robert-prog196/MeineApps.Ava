@@ -8,15 +8,18 @@
              x:Class="FitnessRechner.Views.Calculators.IdealWeightView"
              x:DataType="vm:IdealWeightViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Ideal_RootPanel">
 
     <!-- ═══════ Header Banner ═══════ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Ideal_HeaderBanner"
             Background="{DynamicResource IncomeBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="Ideal_BtnBack"
+                Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -30,7 +33,8 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcIdealWeight}"
+          <TextBlock AutomationProperties.AutomationId="Ideal_TxtTitle"
+                     Text="{loc:Translate CalcIdealWeight}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -38,11 +42,13 @@
     </Border>
 
     <!-- ═══════ Content ═══════ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Ideal_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,0">
 
         <!-- Input Card -->
-        <Border Classes="Card">
+        <Border Classes="Card"
+                AutomationProperties.AutomationId="Ideal_CardInput">
           <StackPanel Spacing="14">
 
             <!-- Height -->
@@ -54,7 +60,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Height}"
+              <TextBox AutomationProperties.AutomationId="Ideal_TxtBoxHeight"
+                       Text="{Binding Height}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -70,7 +77,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Age}"
+              <TextBox AutomationProperties.AutomationId="Ideal_TxtBoxAge"
+                       Text="{Binding Age}"
                        Watermark="{loc:Translate Years}"
                        TextInputOptions.ContentType="Digits"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -87,10 +95,12 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
               <StackPanel Orientation="Horizontal" Spacing="16">
-                <RadioButton Content="{loc:Translate Male}"
+                <RadioButton AutomationProperties.AutomationId="Ideal_RadioMale"
+                             Content="{loc:Translate Male}"
                              IsChecked="{Binding IsMale}"
                              GroupName="Gender" />
-                <RadioButton Content="{loc:Translate Female}"
+                <RadioButton AutomationProperties.AutomationId="Ideal_RadioFemale"
+                             Content="{loc:Translate Female}"
                              IsChecked="{Binding IsMale, Converter={x:Static BoolConverters.Not}}"
                              GroupName="Gender" />
               </StackPanel>
@@ -101,6 +111,7 @@
 
         <!-- Result Card -->
         <Border Classes="Card Elevated"
+                AutomationProperties.AutomationId="Ideal_CardResult"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
 
@@ -108,19 +119,22 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
                                Foreground="{DynamicResource IncomeBrush}" />
-              <TextBlock Text="{loc:Translate Result}"
+              <TextBlock AutomationProperties.AutomationId="Ideal_TxtResultHeader"
+                         Text="{loc:Translate Result}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"/>
             </StackPanel>
 
             <!-- Primary Result Highlight -->
-            <Border Background="{DynamicResource IncomeBrush}"
+            <Border AutomationProperties.AutomationId="Ideal_CardValue"
+                    Background="{DynamicResource IncomeBrush}"
                     CornerRadius="12"
                     Padding="16,12">
               <StackPanel HorizontalAlignment="Center">
                 <TextBlock Text="{loc:Translate CalcIdealWeight}"
                            FontSize="12" Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
-                <TextBlock FontSize="28" FontWeight="Bold" Foreground="White"
+                <TextBlock AutomationProperties.AutomationId="Ideal_TxtResult"
+                           FontSize="28" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center">
                   <i:Interaction.Behaviors>
                     <uiBehaviors:CountUpBehavior TargetValue="{Binding AverageIdealValue}" Format="F1" Suffix=" kg" Duration="500" />
@@ -136,6 +150,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="Ideal_TxtBroca"
                            Text="{Binding BrocaDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -146,6 +161,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="Ideal_TxtCreff"
                            Text="{Binding CreffDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -156,6 +172,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="Ideal_TxtHealthyRange"
                            Text="{Binding HealthyRangeDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -171,16 +188,19 @@
     </ScrollViewer>
 
     <!-- ═══════ Action Buttons ═══════ -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Ideal_ActionBar">
       <Grid ColumnDefinitions="*,12,*">
-        <Button Command="{Binding ResetCommand}" Classes="Outlined"
+        <Button AutomationProperties.AutomationId="Ideal_BtnReset"
+                Command="{Binding ResetCommand}" Classes="Outlined"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
             <TextBlock Text="{loc:Translate Reset}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
-        <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+        <Button Grid.Column="2" AutomationProperties.AutomationId="Ideal_BtnCalculate"
+                Command="{Binding CalculateCommand}" Classes="Primary"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />

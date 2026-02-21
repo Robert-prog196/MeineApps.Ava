@@ -6,19 +6,15 @@
              x:DataType="vm:AlarmOverlayViewModel">
 
   <UserControl.Styles>
-    <!-- Pulsing animation for the icon circle -->
+    <!-- Pulsier-Animation fuer den Icon-Kreis (NUR Opacity - ScaleTransform ist in KeyFrames NICHT unterstuetzt) -->
     <Style Selector="Border.PulseCircle">
       <Style.Animations>
         <Animation Duration="0:0:1.5" IterationCount="INFINITE"
                    PlaybackDirection="Alternate" Easing="CubicEaseInOut">
           <KeyFrame Cue="0%">
-            <Setter Property="ScaleTransform.ScaleX" Value="1.0" />
-            <Setter Property="ScaleTransform.ScaleY" Value="1.0" />
-            <Setter Property="Opacity" Value="0.8" />
+            <Setter Property="Opacity" Value="0.75" />
           </KeyFrame>
           <KeyFrame Cue="100%">
-            <Setter Property="ScaleTransform.ScaleX" Value="1.08" />
-            <Setter Property="ScaleTransform.ScaleY" Value="1.08" />
             <Setter Property="Opacity" Value="1.0" />
           </KeyFrame>
         </Animation>
@@ -32,13 +28,10 @@
 
       <!-- Icon circle with pulse -->
       <Border Grid.Row="1" Classes="PulseCircle"
+              AutomationProperties.AutomationId="AlarmOverlay_IconCircle"
               Width="140" Height="140" CornerRadius="70"
               Background="{DynamicResource PrimaryBrush}"
-              HorizontalAlignment="Center" Margin="0,0,0,24"
-              RenderTransformOrigin="0.5,0.5">
-        <Border.RenderTransform>
-          <ScaleTransform />
-        </Border.RenderTransform>
+              HorizontalAlignment="Center" Margin="0,0,0,24">
         <Panel>
           <mi:MaterialIcon Kind="TimerSand" Width="64" Height="64"
                            Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -52,15 +45,18 @@
       <!-- Title -->
       <StackPanel Grid.Row="2" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,16">
         <TextBlock Text="{Binding Title}" Classes="HeadlineLarge"
+                   AutomationProperties.AutomationId="AlarmOverlay_Title"
                    Foreground="White" HorizontalAlignment="Center"
                    TextAlignment="Center" TextWrapping="Wrap" />
         <TextBlock Text="{Binding Subtitle}" Classes="TitleMedium"
+                   AutomationProperties.AutomationId="AlarmOverlay_Subtitle"
                    Foreground="#B0FFFFFF" HorizontalAlignment="Center"
                    TextAlignment="Center" />
       </StackPanel>
 
       <!-- Current time display -->
       <TextBlock Grid.Row="3" Text="{Binding CurrentTime}"
+                 AutomationProperties.AutomationId="AlarmOverlay_CurrentTime"
                  FontSize="64" FontWeight="Light" Foreground="White"
                  HorizontalAlignment="Center" Margin="0,0,0,48" />
 
@@ -72,17 +68,21 @@
           <TextBlock Text="{Binding ChallengeInstructionText}" FontSize="14"
                      Foreground="#D0FFFFFF" HorizontalAlignment="Center" TextAlignment="Center" />
           <TextBlock Text="{Binding ChallengeQuestion}" FontSize="28" FontWeight="Bold"
+                     AutomationProperties.AutomationId="AlarmOverlay_MathQuestion"
                      Foreground="White" HorizontalAlignment="Center" />
           <TextBox Text="{Binding ChallengeAnswer, Mode=TwoWay}"
+                   AutomationProperties.AutomationId="AlarmOverlay_MathAnswerInput"
                    Watermark="{Binding ChallengeAnswerHintText}"
                    HorizontalAlignment="Stretch" FontSize="20"
                    HorizontalContentAlignment="Center" />
           <Button Classes="Primary" Content="{Binding ChallengeSubmitText}"
+                  AutomationProperties.AutomationId="AlarmOverlay_MathSubmitButton"
                   HorizontalAlignment="Center" MinWidth="160" Height="44" CornerRadius="22"
                   HorizontalContentAlignment="Center"
                   IsVisible="{Binding !ChallengeSolved}"
                   Command="{Binding SubmitChallengeCommand}" />
           <TextBlock Text="{Binding ChallengeFeedback}" FontSize="14"
+                     AutomationProperties.AutomationId="AlarmOverlay_MathFeedback"
                      Foreground="#F0FFFFFF" HorizontalAlignment="Center"
                      TextAlignment="Center" TextWrapping="Wrap" />
         </StackPanel>
@@ -94,9 +94,11 @@
               HorizontalAlignment="Center" MaxWidth="340">
         <StackPanel Spacing="12">
           <TextBlock Text="{Binding ShakeInstructionText}" FontSize="14"
+                     AutomationProperties.AutomationId="AlarmOverlay_ShakeInstruction"
                      Foreground="#D0FFFFFF" HorizontalAlignment="Center" TextAlignment="Center" />
           <!-- Fortschritt X/Y -->
-          <TextBlock HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="White">
+          <TextBlock AutomationProperties.AutomationId="AlarmOverlay_ShakeProgress"
+                     HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="White">
             <TextBlock.Text>
               <MultiBinding StringFormat="{}{0} / {1}">
                 <Binding Path="ShakeProgress" />
@@ -106,15 +108,18 @@
           </TextBlock>
           <!-- ProgressBar -->
           <ProgressBar Minimum="0" Maximum="1" Value="{Binding ShakeProgressFraction}"
+                       AutomationProperties.AutomationId="AlarmOverlay_ShakeProgressBar"
                        Height="8" CornerRadius="4"
                        Foreground="{DynamicResource PrimaryBrush}" />
           <!-- Desktop-Fallback-Button (nur wenn kein physischer Sensor) -->
           <Button Classes="Outlined" Content="{Binding SimulateShakeText}"
+                  AutomationProperties.AutomationId="AlarmOverlay_SimulateShakeButton"
                   HorizontalAlignment="Center" MinWidth="160" Height="44" CornerRadius="22"
                   HorizontalContentAlignment="Center"
                   IsVisible="{Binding !HasPhysicalSensor}"
                   Command="{Binding SimulateShakeCommand}" />
           <TextBlock Text="{Binding ChallengeFeedback}" FontSize="14"
+                     AutomationProperties.AutomationId="AlarmOverlay_ShakeFeedback"
                      Foreground="#F0FFFFFF" HorizontalAlignment="Center"
                      TextAlignment="Center" TextWrapping="Wrap" />
         </StackPanel>
@@ -124,18 +129,21 @@
       <StackPanel Grid.Row="5" Spacing="16" HorizontalAlignment="Center">
         <!-- Dismiss button -->
         <Button Classes="Primary" MinWidth="220" Height="56" CornerRadius="28"
+                AutomationProperties.AutomationId="AlarmOverlay_DismissButton"
                 HorizontalContentAlignment="Center"
                 IsEnabled="{Binding CanDismiss}"
                 Command="{Binding DismissCommand}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Close" Width="24" Height="24" />
             <TextBlock Text="{Binding DismissText}" FontSize="18" FontWeight="Medium"
+                       AutomationProperties.AutomationId="AlarmOverlay_DismissText"
                        VerticalAlignment="Center" />
           </StackPanel>
         </Button>
 
         <!-- Snooze button -->
         <Button Classes="Outlined" MinWidth="220" Height="48" CornerRadius="24"
+                AutomationProperties.AutomationId="AlarmOverlay_SnoozeButton"
                 HorizontalContentAlignment="Center"
                 IsVisible="{Binding CanSnooze}"
                 Command="{Binding SnoozeCommand}">
@@ -143,6 +151,7 @@
             <mi:MaterialIcon Kind="AlarmSnooze" Width="20" Height="20"
                              Foreground="White" />
             <TextBlock FontSize="16" Foreground="White"
+                       AutomationProperties.AutomationId="AlarmOverlay_SnoozeText"
                        VerticalAlignment="Center">
               <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} ({1})">

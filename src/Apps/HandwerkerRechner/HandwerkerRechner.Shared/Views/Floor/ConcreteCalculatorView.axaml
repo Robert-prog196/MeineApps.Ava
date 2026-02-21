@@ -7,15 +7,15 @@
              x:Class="HandwerkerRechner.Views.Floor.ConcreteCalculatorView"
              x:DataType="vm:ConcreteCalculatorViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid AutomationProperties.AutomationId="Concrete_RootGrid" RowDefinitions="Auto,*,Auto">
 
     <!-- Row 0: Header -->
-    <Border Grid.Row="0"
+    <Border AutomationProperties.AutomationId="Concrete_Header" Grid.Row="0"
             Background="{DynamicResource WarningBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="Concrete_BtnBack" Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -29,7 +29,7 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcConcrete}"
+          <TextBlock AutomationProperties.AutomationId="Concrete_TxtTitle" Text="{loc:Translate CalcConcrete}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -37,23 +37,24 @@
     </Border>
 
     <!-- Row 1: Scrollable Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer AutomationProperties.AutomationId="Concrete_ScrollContent" Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Sub-Rechner Auswahl -->
-        <Border Classes="Card StatsCard">
+        <Border AutomationProperties.AutomationId="Concrete_CardShape" Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate ConcreteShape}"
                        FontSize="16" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
-            <ComboBox ItemsSource="{Binding Calculators}"
+            <ComboBox AutomationProperties.AutomationId="Concrete_CboShape"
+                      ItemsSource="{Binding Calculators}"
                       SelectedIndex="{Binding SelectedCalculator}"
                       HorizontalAlignment="Stretch" />
           </StackPanel>
         </Border>
 
         <!-- Platte Inputs (Shape 0) -->
-        <Border Classes="Card StatsCard"
+        <Border AutomationProperties.AutomationId="Concrete_CardSlab" Classes="Card StatsCard"
                 IsVisible="{Binding IsSlabSelected}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate ConcreteSlab}"
@@ -62,23 +63,23 @@
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate SlabLength}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding SlabLength}" Watermark="m" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxSlabLength" Text="{Binding SlabLength}" Watermark="m" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate SlabWidth}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding SlabWidth}" Watermark="m" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxSlabWidth" Text="{Binding SlabWidth}" Watermark="m" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate SlabHeight}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding SlabHeight}" Watermark="cm" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxSlabHeight" Text="{Binding SlabHeight}" Watermark="cm" Classes="Outlined" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Fundament Inputs (Shape 1) -->
-        <Border Classes="Card StatsCard"
+        <Border AutomationProperties.AutomationId="Concrete_CardStrip" Classes="Card StatsCard"
                 IsVisible="{Binding IsStripSelected}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate StripFoundation}"
@@ -87,23 +88,23 @@
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate StripLength}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding StripLength}" Watermark="m" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxStripLength" Text="{Binding StripLength}" Watermark="m" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate StripWidth}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding StripWidth}" Watermark="cm" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxStripWidth" Text="{Binding StripWidth}" Watermark="cm" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate StripDepth}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding StripDepth}" Watermark="cm" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxStripDepth" Text="{Binding StripDepth}" Watermark="cm" Classes="Outlined" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Säule Inputs (Shape 2) -->
-        <Border Classes="Card StatsCard"
+        <Border AutomationProperties.AutomationId="Concrete_CardColumn" Classes="Card StatsCard"
                 IsVisible="{Binding IsColumnSelected}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate ConcreteColumn}"
@@ -112,18 +113,18 @@
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate ColumnDiameter}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding ColumnDiameter}" Watermark="cm" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxColumnDiameter" Text="{Binding ColumnDiameter}" Watermark="cm" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate ColumnHeight}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding ColumnHeight}" Watermark="cm" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxColumnHeight" Text="{Binding ColumnHeight}" Watermark="cm" Classes="Outlined" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Sack-Gewicht + Kosten -->
-        <Border Classes="Card StatsCard">
+        <Border AutomationProperties.AutomationId="Concrete_CardCost" Classes="Card StatsCard">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate CostCalculation}"
                        FontSize="16" FontWeight="SemiBold"
@@ -131,31 +132,32 @@
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate BagWeight}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <ComboBox ItemsSource="{Binding BagWeights}"
+              <ComboBox AutomationProperties.AutomationId="Concrete_CboBagWeight"
+                        ItemsSource="{Binding BagWeights}"
                         SelectedItem="{Binding BagWeight}"
                         HorizontalAlignment="Stretch" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate PricePerBag}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding PricePerBag}" Watermark="EUR" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxPricePerBag" Text="{Binding PricePerBag}" Watermark="EUR" Classes="Outlined" />
             </StackPanel>
             <StackPanel Spacing="4">
               <TextBlock Text="{loc:Translate PricePerCubicMeter}"
                          FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Text="{Binding PricePerCubicMeter}" Watermark="EUR" Classes="Outlined" />
+              <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxPricePerM3" Text="{Binding PricePerCubicMeter}" Watermark="EUR" Classes="Outlined" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Visualisierung -->
-        <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
+        <Border AutomationProperties.AutomationId="Concrete_CardVisualization" Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
                 IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="ConcreteCanvas" PaintSurface="OnPaintVisualization" />
+          <skia:SKCanvasView AutomationProperties.AutomationId="Concrete_Canvas" x:Name="ConcreteCanvas" PaintSurface="OnPaintVisualization" />
         </Border>
 
         <!-- Ergebnisse -->
-        <Border Classes="Card Elevated StatsCard"
+        <Border AutomationProperties.AutomationId="Concrete_CardResult" Classes="Card Elevated StatsCard"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate Result}"
@@ -166,7 +168,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultVolume}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding VolumeDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtVolume" Grid.Column="1" Text="{Binding VolumeDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource AccentBrush}" />
             </Grid>
@@ -175,7 +177,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultBags}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding BagsDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtBags" Grid.Column="1" Text="{Binding BagsDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </Grid>
@@ -190,7 +192,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultCite}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding CementDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtCite" Grid.Column="1" Text="{Binding CementDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </Grid>
@@ -199,7 +201,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultSand}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding SandDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtSand" Grid.Column="1" Text="{Binding SandDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </Grid>
@@ -208,7 +210,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultGravel}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding GravelDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtGravel" Grid.Column="1" Text="{Binding GravelDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </Grid>
@@ -217,7 +219,7 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="{loc:Translate ResultWater}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding WaterDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtWater" Grid.Column="1" Text="{Binding WaterDisplay}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </Grid>
@@ -227,7 +229,7 @@
                   IsVisible="{Binding ShowBagCost}">
               <TextBlock Grid.Column="0" Text="{loc:Translate CostBags}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding BagCostDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtBagCost" Grid.Column="1" Text="{Binding BagCostDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}" />
             </Grid>
@@ -237,14 +239,14 @@
                   IsVisible="{Binding ShowCubicMeterCost}">
               <TextBlock Grid.Column="0" Text="{loc:Translate CostCubicMeter}"
                          FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Grid.Column="1" Text="{Binding CubicMeterCostDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Concrete_TxtCubicMeterCost" Grid.Column="1" Text="{Binding CubicMeterCostDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}" />
             </Grid>
 
             <!-- Aktions-Buttons: Share + PDF Export -->
             <Grid ColumnDefinitions="*,8,*" Margin="0,4,0,0">
-              <Button Grid.Column="0"
+              <Button AutomationProperties.AutomationId="Concrete_BtnShare" Grid.Column="0"
                       Command="{Binding ShareResultCommand}"
                       Classes="Outlined"
                       HorizontalAlignment="Stretch"
@@ -256,7 +258,7 @@
                              VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
               </Button>
-              <Button Grid.Column="2"
+              <Button AutomationProperties.AutomationId="Concrete_BtnExport" Grid.Column="2"
                       Command="{Binding ExportMaterialListCommand}"
                       Classes="Outlined"
                       IsEnabled="{Binding !IsExporting}"
@@ -277,9 +279,9 @@
     </ScrollViewer>
 
     <!-- Row 2: Action Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border AutomationProperties.AutomationId="Concrete_ActionBar" Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
       <Grid ColumnDefinitions="*,8,*,8,*">
-        <Button Grid.Column="0"
+        <Button AutomationProperties.AutomationId="Concrete_BtnReset" Grid.Column="0"
                 Classes="Outlined"
                 Command="{Binding ResetCommand}"
                 HorizontalAlignment="Stretch"
@@ -291,7 +293,7 @@
                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           </StackPanel>
         </Button>
-        <Button Grid.Column="2"
+        <Button AutomationProperties.AutomationId="Concrete_BtnCalculate" Grid.Column="2"
                 Classes="Primary"
                 Command="{Binding CalculateCommand}"
                 HorizontalAlignment="Stretch"
@@ -302,7 +304,7 @@
                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           </StackPanel>
         </Button>
-        <Button Grid.Column="4"
+        <Button AutomationProperties.AutomationId="Concrete_BtnSave" Grid.Column="4"
                 Classes="Secondary"
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
@@ -318,7 +320,7 @@
     </Border>
 
     <!-- Save Dialog Overlay -->
-    <Border Grid.Row="0" Grid.RowSpan="3"
+    <Border AutomationProperties.AutomationId="Concrete_SaveOverlay" Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
             IsVisible="{Binding ShowSaveDialog}">
@@ -333,17 +335,17 @@
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
-          <TextBox Text="{Binding SaveProjectName}"
+          <TextBox AutomationProperties.AutomationId="Concrete_TxtBoxProjectName" Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
                    Classes="Outlined" />
           <Grid ColumnDefinitions="*,12,*">
-            <Button Grid.Column="0"
+            <Button AutomationProperties.AutomationId="Concrete_BtnCancelSave" Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
                     Content="{loc:Translate Cancel}" />
-            <Button Grid.Column="2"
+            <Button AutomationProperties.AutomationId="Concrete_BtnConfirmSave" Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"

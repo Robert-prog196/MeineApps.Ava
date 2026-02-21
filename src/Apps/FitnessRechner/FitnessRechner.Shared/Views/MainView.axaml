@@ -68,34 +68,34 @@
     </DataTemplate>
   </UserControl.DataTemplates>
 
-  <Grid RowDefinitions="*,Auto,Auto">
+  <Grid AutomationProperties.AutomationId="Main_RootPanel" RowDefinitions="*,Auto,Auto">
 
     <!-- Content Area -->
     <Panel Grid.Row="0">
       <!-- Tab Pages -->
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabContentHome" Classes="TabContent"
               Classes.Active="{Binding IsHomeActive}"
               IsVisible="{Binding !IsCalculatorOpen}">
         <views:HomeView DataContext="{Binding}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabContentProgress" Classes="TabContent"
               Classes.Active="{Binding IsProgressActive}"
               IsVisible="{Binding !IsCalculatorOpen}">
         <views:ProgressView DataContext="{Binding ProgressViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabContentFood" Classes="TabContent"
               Classes.Active="{Binding IsFoodActive}"
               IsVisible="{Binding !IsCalculatorOpen}">
         <views:FoodSearchView DataContext="{Binding FoodSearchViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabContentSettings" Classes="TabContent"
               Classes.Active="{Binding IsSettingsActive}"
               IsVisible="{Binding !IsCalculatorOpen}">
         <views:SettingsView DataContext="{Binding SettingsViewModel}" />
       </Border>
 
       <!-- Calculator Page Overlay (Slide-In von rechts) -->
-      <Panel Classes="CalculatorOverlay"
+      <Panel AutomationProperties.AutomationId="Main_CalculatorOverlay" Classes="CalculatorOverlay"
              Classes.Open="{Binding IsCalculatorOpen}"
              IsVisible="{Binding IsCalculatorOpen}"
              Background="{DynamicResource BackgroundBrush}">
@@ -103,7 +103,7 @@
       </Panel>
 
       <!-- Achievements Overlay (Fullscreen) -->
-      <Panel Classes="CalculatorOverlay"
+      <Panel AutomationProperties.AutomationId="Main_AchievementsOverlay" Classes="CalculatorOverlay"
              Classes.Open="{Binding ShowAchievements}"
              IsVisible="{Binding ShowAchievements}"
              Background="{DynamicResource BackgroundBrush}">
@@ -112,18 +112,18 @@
     </Panel>
 
     <!-- Ad Banner Spacer (64dp fuer adaptive Banner) -->
-    <Border Grid.Row="1" Height="64"
+    <Border AutomationProperties.AutomationId="Main_AdSpacer" Grid.Row="1" Height="64"
             IsVisible="{Binding IsAdBannerVisible}" />
 
     <!-- Bottom Navigation Bar -->
-    <Border Grid.Row="2"
+    <Border AutomationProperties.AutomationId="Main_NavBar" Grid.Row="2"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="*,*,*,*" Margin="0,2">
 
         <!-- Home Tab -->
-        <Button Grid.Column="0"
+        <Button AutomationProperties.AutomationId="Main_TabHome" Grid.Column="0"
                 Classes="Text"
                 Command="{Binding SelectHomeTabCommand}"
                 HorizontalAlignment="Stretch"
@@ -162,7 +162,7 @@
         </Button>
 
         <!-- Progress Tab -->
-        <Button Grid.Column="1"
+        <Button AutomationProperties.AutomationId="Main_TabProgress" Grid.Column="1"
                 Classes="Text"
                 Command="{Binding SelectProgressTabCommand}"
                 HorizontalAlignment="Stretch"
@@ -201,7 +201,7 @@
         </Button>
 
         <!-- Food Tab -->
-        <Button Grid.Column="2"
+        <Button AutomationProperties.AutomationId="Main_TabFood" Grid.Column="2"
                 Classes="Text"
                 Command="{Binding SelectFoodTabCommand}"
                 HorizontalAlignment="Stretch"
@@ -240,7 +240,7 @@
         </Button>
 
         <!-- Settings Tab -->
-        <Button Grid.Column="3"
+        <Button AutomationProperties.AutomationId="Main_TabSettings" Grid.Column="3"
                 Classes="Text"
                 Command="{Binding SelectSettingsTabCommand}"
                 HorizontalAlignment="Stretch"
@@ -283,10 +283,12 @@
 
     <!-- Game Juice Overlays -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   AutomationProperties.AutomationId="Main_FloatingText"
                                    Grid.RowSpan="99"
                                    ZIndex="15"
                                    IsHitTestVisible="False" />
     <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                      AutomationProperties.AutomationId="Main_CelebrationOverlay"
                                       Grid.RowSpan="99"
                                       ZIndex="16"
                                       IsHitTestVisible="False" />

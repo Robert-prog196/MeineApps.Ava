@@ -6,15 +6,19 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="FinanzRechner.Views.HomeView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             AutomationProperties.AutomationId="Home_Root">
 
-  <Panel>
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="0" Margin="0,0,0,120">
+  <Panel AutomationProperties.AutomationId="Home_Panel_Root">
+  <ScrollViewer VerticalScrollBarVisibility="Auto"
+                AutomationProperties.AutomationId="Home_ScrollViewer">
+    <StackPanel Spacing="0" Margin="0,0,0,120"
+                AutomationProperties.AutomationId="Home_Panel_MainContent">
 
       <!-- ========== A) Hero-Header (Gradient passend zum Bilanz-Status) ========== -->
       <Border CornerRadius="0,0,16,16" Padding="20,20,20,16"
-              Cursor="Hand">
+              Cursor="Hand"
+              AutomationProperties.AutomationId="Home_CardHeroHeader">
         <Border.Background>
           <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
             <GradientStop Color="{DynamicResource PrimaryColor}" Offset="0" />
@@ -36,40 +40,54 @@
           </Style>
         </Border.Styles>
 
-        <StackPanel Spacing="10" HorizontalAlignment="Center">
+        <StackPanel Spacing="10" HorizontalAlignment="Center"
+                    AutomationProperties.AutomationId="Home_Panel_HeroContent">
 
           <!-- Monat zentriert -->
-          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-            <Border Width="36" Height="36" CornerRadius="18" Background="#33FFFFFF">
+          <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center"
+                      AutomationProperties.AutomationId="Home_Panel_MonthRow">
+            <Border Width="36" Height="36" CornerRadius="18" Background="#33FFFFFF"
+                    AutomationProperties.AutomationId="Home_Border_FinanceIcon">
               <mi:MaterialIcon Kind="Finance" Width="20" Height="20"
                                Foreground="White"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               AutomationProperties.AutomationId="Home_Icon_Finance" />
             </Border>
             <TextBlock Text="{Binding CurrentMonthDisplay}"
                        FontSize="20" FontWeight="Bold" Foreground="White"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Home_TxtCurrentMonth" />
           </StackPanel>
 
           <!-- Mit Transaktionen: Bilanz + Chips -->
           <StackPanel Spacing="6" IsVisible="{Binding HasTransactions}"
-                      HorizontalAlignment="Center">
+                      HorizontalAlignment="Center"
+                      AutomationProperties.AutomationId="Home_Panel_BalanceSection">
             <TextBlock Text="{Binding MonthlyBalanceDisplay}"
                        FontSize="30" FontWeight="Bold" Foreground="White"
-                       HorizontalAlignment="Center" />
+                       HorizontalAlignment="Center"
+                       AutomationProperties.AutomationId="Home_TxtBalance" />
 
-            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-              <Border Background="#4422C55E" CornerRadius="12" Padding="10,4">
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center"
+                        AutomationProperties.AutomationId="Home_Panel_IncomeExpenseChips">
+              <Border Background="#4422C55E" CornerRadius="12" Padding="10,4"
+                      AutomationProperties.AutomationId="Home_BadgeIncome">
                 <StackPanel Orientation="Horizontal" Spacing="4">
-                  <mi:MaterialIcon Kind="ArrowUpBold" Width="14" Height="14" Foreground="#22C55E" />
+                  <mi:MaterialIcon Kind="ArrowUpBold" Width="14" Height="14" Foreground="#22C55E"
+                                   AutomationProperties.AutomationId="Home_Icon_IncomeArrow" />
                   <TextBlock Text="{Binding MonthlyIncomeDisplay}"
-                             FontSize="13" FontWeight="SemiBold" Foreground="#22C55E" />
+                             FontSize="13" FontWeight="SemiBold" Foreground="#22C55E"
+                             AutomationProperties.AutomationId="Home_TxtIncome" />
                 </StackPanel>
               </Border>
-              <Border Background="#44EF4444" CornerRadius="12" Padding="10,4">
+              <Border Background="#44EF4444" CornerRadius="12" Padding="10,4"
+                      AutomationProperties.AutomationId="Home_BadgeExpenses">
                 <StackPanel Orientation="Horizontal" Spacing="4">
-                  <mi:MaterialIcon Kind="ArrowDownBold" Width="14" Height="14" Foreground="#EF4444" />
+                  <mi:MaterialIcon Kind="ArrowDownBold" Width="14" Height="14" Foreground="#EF4444"
+                                   AutomationProperties.AutomationId="Home_Icon_ExpenseArrow" />
                   <TextBlock Text="{Binding MonthlyExpensesDisplay}"
-                             FontSize="13" FontWeight="SemiBold" Foreground="#EF4444" />
+                             FontSize="13" FontWeight="SemiBold" Foreground="#EF4444"
+                             AutomationProperties.AutomationId="Home_TxtExpenses" />
                 </StackPanel>
               </Border>
             </StackPanel>
@@ -79,18 +97,23 @@
                                 PaintSurface="OnPaintSparkline"
                                 Height="40"
                                 IsVisible="{Binding HasSparklineData}"
-                                Margin="0,4,0,0" />
+                                Margin="0,4,0,0"
+                                AutomationProperties.AutomationId="Home_CanvasSparkline" />
           </StackPanel>
 
           <!-- Ohne Transaktionen: Animiertes Icon + Onboarding-Text -->
-          <StackPanel IsVisible="{Binding !HasTransactions}" Spacing="6" HorizontalAlignment="Center">
-            <Border Classes="EmptyPulse" HorizontalAlignment="Center">
-              <mi:MaterialIcon Kind="WalletPlus" Width="32" Height="32" Foreground="#CCFFFFFF" />
+          <StackPanel IsVisible="{Binding !HasTransactions}" Spacing="6" HorizontalAlignment="Center"
+                      AutomationProperties.AutomationId="Home_Panel_EmptyState">
+            <Border Classes="EmptyPulse" HorizontalAlignment="Center"
+                    AutomationProperties.AutomationId="Home_Border_EmptyPulse">
+              <mi:MaterialIcon Kind="WalletPlus" Width="32" Height="32" Foreground="#CCFFFFFF"
+                               AutomationProperties.AutomationId="Home_Icon_WalletPlus" />
             </Border>
             <TextBlock Text="{Binding HomeSubtitleText}"
                        FontSize="13" Foreground="#BBFFFFFF"
                        HorizontalAlignment="Center" TextAlignment="Center"
-                       TextWrapping="Wrap" MaxWidth="300" />
+                       TextWrapping="Wrap" MaxWidth="300"
+                       AutomationProperties.AutomationId="Home_TxtEmptySubtitle" />
           </StackPanel>
 
         </StackPanel>
@@ -99,16 +122,19 @@
       <!-- ========== Monatsreport Button ========== -->
       <Button HorizontalAlignment="Stretch" Margin="16,12,16,0"
               CornerRadius="12" Padding="14,10"
-              Command="{Binding RequestBudgetAnalysisCommand}">
+              Command="{Binding RequestBudgetAnalysisCommand}"
+              AutomationProperties.AutomationId="Home_BtnMonthlyReport">
         <Button.Background>
           <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
             <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
             <GradientStop Color="{DynamicResource CardHoverColor}" Offset="1" />
           </LinearGradientBrush>
         </Button.Background>
-        <Grid ColumnDefinitions="Auto,*,Auto">
+        <Grid ColumnDefinitions="Auto,*,Auto"
+              AutomationProperties.AutomationId="Home_Panel_MonthlyReportGrid">
           <Border Grid.Column="0" Width="36" Height="36" CornerRadius="10"
-                  Margin="0,0,12,0">
+                  Margin="0,0,12,0"
+                  AutomationProperties.AutomationId="Home_Border_MonthlyReportIcon">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="#8B5CF6" Offset="0" />
@@ -117,65 +143,85 @@
             </Border.Background>
             <mi:MaterialIcon Kind="ChartBox" Width="20" Height="20"
                              Foreground="White"
-                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                             HorizontalAlignment="Center" VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_Icon_MonthlyReport" />
           </Border>
           <TextBlock Grid.Column="1" Text="{Binding MonthlyReportText}"
                      FontSize="14" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Home_TxtMonthlyReport" />
           <mi:MaterialIcon Grid.Column="2" Kind="ChevronRight" Width="20" Height="20"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           VerticalAlignment="Center" />
+                           VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Home_Icon_MonthlyReportChevron" />
         </Grid>
       </Button>
 
       <!-- ========== Content ========== -->
-      <StackPanel Spacing="16" Margin="16,16,16,0">
+      <StackPanel Spacing="16" Margin="16,16,16,0"
+                  AutomationProperties.AutomationId="Home_Panel_Content">
 
         <!-- ========== B) Budget-Status Sektion ========== -->
         <Border Classes="StatsCard"
                 BoxShadow="{DynamicResource CardShadow}"
-                IsVisible="{Binding HasBudgets}">
-          <StackPanel Spacing="12">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Border Background="#206366F1" Width="28" Height="28" CornerRadius="8">
+                IsVisible="{Binding HasBudgets}"
+                AutomationProperties.AutomationId="Home_CardBudgetStatus">
+          <StackPanel Spacing="12"
+                      AutomationProperties.AutomationId="Home_Panel_BudgetContent">
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        AutomationProperties.AutomationId="Home_Panel_BudgetHeader">
+              <Border Background="#206366F1" Width="28" Height="28" CornerRadius="8"
+                      AutomationProperties.AutomationId="Home_Border_BudgetIcon">
                 <mi:MaterialIcon Kind="ChartDonut" Width="16" Height="16"
-                                 Foreground="{DynamicResource AccentBrush}" />
+                                 Foreground="{DynamicResource AccentBrush}"
+                                 AutomationProperties.AutomationId="Home_Icon_BudgetDonut" />
               </Border>
               <TextBlock Text="{Binding SectionBudgetText}"
                          Classes="SectionTitle"
-                         VerticalAlignment="Center" />
+                         VerticalAlignment="Center"
+                         AutomationProperties.AutomationId="Home_TxtSectionBudget" />
             </StackPanel>
 
             <!-- SkiaSharp Budget-Gauge (Halbkreis-Tachometer) -->
-            <Border Height="110" ClipToBounds="True" Margin="0,0,0,4">
-              <skia:SKCanvasView x:Name="BudgetGaugeCanvas" PaintSurface="OnPaintBudgetGauge" />
+            <Border Height="110" ClipToBounds="True" Margin="0,0,0,4"
+                    AutomationProperties.AutomationId="Home_Border_GaugeContainer">
+              <skia:SKCanvasView x:Name="BudgetGaugeCanvas" PaintSurface="OnPaintBudgetGauge"
+                                 AutomationProperties.AutomationId="Home_CanvasBudgetGauge" />
             </Border>
 
             <!-- Mini-Ringe für Budget-Kategorien -->
             <Border Height="60" ClipToBounds="True"
                     IsVisible="{Binding HasBudgetRings}"
-                    Margin="0,0,0,4">
+                    Margin="0,0,0,4"
+                    AutomationProperties.AutomationId="Home_Border_MiniRingContainer">
               <skia:SKCanvasView x:Name="BudgetMiniRingCanvas"
-                                  PaintSurface="OnPaintBudgetMiniRings" />
+                                  PaintSurface="OnPaintBudgetMiniRings"
+                                  AutomationProperties.AutomationId="Home_CanvasBudgetMiniRings" />
             </Border>
 
-            <ItemsControl ItemsSource="{Binding TopBudgets}">
+            <ItemsControl ItemsSource="{Binding TopBudgets}"
+                          AutomationProperties.AutomationId="Home_ListTopBudgets">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:BudgetDisplayItem">
-                  <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,3">
+                  <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,3"
+                        AutomationProperties.AutomationId="Home_Panel_BudgetItem">
                     <!-- Farbiger Kategorie-Punkt -->
                     <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4"
                             Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
-                            VerticalAlignment="Center" Margin="0,0,8,0" />
+                            VerticalAlignment="Center" Margin="0,0,8,0"
+                            AutomationProperties.AutomationId="Home_Border_BudgetCategoryDot" />
                     <TextBlock Grid.Column="1" Text="{Binding CategoryName}" FontSize="13"
                                Foreground="{DynamicResource TextPrimaryBrush}"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center"
+                               AutomationProperties.AutomationId="Home_Txt_BudgetCategoryName" />
                     <Border Grid.Column="2" CornerRadius="8" Padding="6,2"
-                            Background="{DynamicResource SurfaceBrush}">
+                            Background="{DynamicResource SurfaceBrush}"
+                            AutomationProperties.AutomationId="Home_Border_BudgetPercentBadge">
                       <TextBlock Text="{Binding PercentageDisplay}"
                                  FontSize="12" FontWeight="Bold"
-                                 Foreground="{Binding AlertLevel, Converter={x:Static conv:AlertLevelToColorConverter.Instance}}" />
+                                 Foreground="{Binding AlertLevel, Converter={x:Static conv:AlertLevelToColorConverter.Instance}}"
+                                 AutomationProperties.AutomationId="Home_Txt_BudgetPercent" />
                     </Border>
                   </Grid>
                 </DataTemplate>
@@ -187,72 +233,96 @@
         <!-- ========== C) Ausgabenverteilung (Mini-Donut) ========== -->
         <Border Classes="StatsCard"
                 BoxShadow="{DynamicResource CardShadow}"
-                IsVisible="{Binding HasHomeChartData}">
-          <StackPanel Spacing="8">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <Border Background="#20EF4444" Width="28" Height="28" CornerRadius="8">
+                IsVisible="{Binding HasHomeChartData}"
+                AutomationProperties.AutomationId="Home_CardExpenseDistribution">
+          <StackPanel Spacing="8"
+                      AutomationProperties.AutomationId="Home_Panel_ExpenseDistContent">
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        AutomationProperties.AutomationId="Home_Panel_ExpenseDistHeader">
+              <Border Background="#20EF4444" Width="28" Height="28" CornerRadius="8"
+                      AutomationProperties.AutomationId="Home_Border_ExpenseDistIcon">
                 <mi:MaterialIcon Kind="ChartDonut" Width="16" Height="16"
-                                 Foreground="{DynamicResource ExpenseBrush}" />
+                                 Foreground="{DynamicResource ExpenseBrush}"
+                                 AutomationProperties.AutomationId="Home_Icon_ExpenseDonut" />
               </Border>
               <TextBlock Text="{Binding SectionExpensesText}"
                          Classes="SectionTitle"
-                         VerticalAlignment="Center" />
+                         VerticalAlignment="Center"
+                         AutomationProperties.AutomationId="Home_TxtSectionExpenses" />
             </StackPanel>
             <skia:SKCanvasView x:Name="ExpenseDonutCanvas"
                                  PaintSurface="OnPaintExpenseDonut"
-                                 Height="180" />
+                                 Height="180"
+                                 AutomationProperties.AutomationId="Home_CanvasExpenseDonut" />
           </StackPanel>
         </Border>
 
         <!-- ========== D) Letzte Transaktionen ========== -->
         <Border Classes="StatsCard"
                 BoxShadow="{DynamicResource CardShadow}"
-                IsVisible="{Binding HasRecentTransactions}">
-          <StackPanel Spacing="10">
-            <Grid ColumnDefinitions="*,Auto">
-              <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="0">
-                <Border Background="#201565C0" Width="28" Height="28" CornerRadius="8">
+                IsVisible="{Binding HasRecentTransactions}"
+                AutomationProperties.AutomationId="Home_CardRecentTransactions">
+          <StackPanel Spacing="10"
+                      AutomationProperties.AutomationId="Home_Panel_RecentContent">
+            <Grid ColumnDefinitions="*,Auto"
+                  AutomationProperties.AutomationId="Home_Panel_RecentHeader">
+              <StackPanel Orientation="Horizontal" Spacing="8" Grid.Column="0"
+                          AutomationProperties.AutomationId="Home_Panel_RecentHeaderLeft">
+                <Border Background="#201565C0" Width="28" Height="28" CornerRadius="8"
+                        AutomationProperties.AutomationId="Home_Border_RecentIcon">
                   <mi:MaterialIcon Kind="ClockOutline" Width="16" Height="16"
-                                   Foreground="{DynamicResource PrimaryBrush}" />
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   AutomationProperties.AutomationId="Home_Icon_RecentClock" />
                 </Border>
                 <TextBlock Text="{Binding SectionRecentText}"
                            Classes="SectionTitle"
-                           VerticalAlignment="Center" />
+                           VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Home_TxtSectionRecent" />
               </StackPanel>
               <Button Grid.Column="1" Classes="Flat"
                       Content="{Binding ViewAllText}" FontSize="12"
-                      Command="{Binding NavigateToTrackerCommand}" />
+                      Command="{Binding NavigateToTrackerCommand}"
+                      AutomationProperties.AutomationId="Home_BtnViewAll" />
             </Grid>
 
-            <ItemsControl ItemsSource="{Binding RecentTransactions}">
+            <ItemsControl ItemsSource="{Binding RecentTransactions}"
+                          AutomationProperties.AutomationId="Home_ListRecentTransactions">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Expense">
                   <Border Padding="6,10" Margin="0,2"
                           CornerRadius="10"
-                          Background="{DynamicResource SurfaceBrush}">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
+                          Background="{DynamicResource SurfaceBrush}"
+                          AutomationProperties.AutomationId="Home_Border_TransactionItem">
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          AutomationProperties.AutomationId="Home_Panel_TransactionItemGrid">
                       <!-- Farbiges Kategorie-Icon -->
                       <Border Grid.Column="0" Width="36" Height="36"
                               CornerRadius="10"
                               Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
-                              Margin="0,0,10,0">
+                              Margin="0,0,10,0"
+                              AutomationProperties.AutomationId="Home_Border_TransactionCategoryIcon">
                         <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
                                          Width="18" Height="18"
                                          Foreground="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         AutomationProperties.AutomationId="Home_Icon_TransactionCategory" />
                       </Border>
-                      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center"
+                                  AutomationProperties.AutomationId="Home_Panel_TransactionDetails">
                         <TextBlock Text="{Binding Description}"
                                    FontSize="14" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}"
-                                   TextTrimming="CharacterEllipsis" />
+                                   TextTrimming="CharacterEllipsis"
+                                   AutomationProperties.AutomationId="Home_Txt_TransactionDescription" />
                         <TextBlock Text="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}"
                                    FontSize="11"
-                                   Foreground="{DynamicResource TextMutedBrush}" />
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   AutomationProperties.AutomationId="Home_Txt_TransactionDate" />
                       </StackPanel>
                       <TextBlock Grid.Column="2" FontSize="14" FontWeight="Bold"
                                  VerticalAlignment="Center"
-                                 Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}">
+                                 Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}"
+                                 AutomationProperties.AutomationId="Home_Txt_TransactionAmount">
                         <TextBlock.Text>
                           <MultiBinding StringFormat="{}{0}{1:N2} €">
                             <Binding Path="Type" Converter="{x:Static conv:TransactionTypeToPrefixConverter.Instance}" />
@@ -269,25 +339,32 @@
         </Border>
 
         <!-- ========== E) Finanz-Rechner (2x3 Grid) ========== -->
-        <StackPanel Spacing="12">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <Border Background="#2022C55E" Width="28" Height="28" CornerRadius="8">
+        <StackPanel Spacing="12"
+                    AutomationProperties.AutomationId="Home_SectionCalculators">
+          <StackPanel Orientation="Horizontal" Spacing="8"
+                      AutomationProperties.AutomationId="Home_Panel_CalculatorsHeader">
+            <Border Background="#2022C55E" Width="28" Height="28" CornerRadius="8"
+                    AutomationProperties.AutomationId="Home_Border_CalculatorsIcon">
               <mi:MaterialIcon Kind="Calculator" Width="16" Height="16"
-                               Foreground="#22C55E" />
+                               Foreground="#22C55E"
+                               AutomationProperties.AutomationId="Home_Icon_Calculator" />
             </Border>
             <TextBlock Text="{Binding CalculatorsTitleText}"
                        Classes="SectionTitle"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Home_TxtSectionCalculators" />
           </StackPanel>
 
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto"
-                ColumnSpacing="12" RowSpacing="12">
+                ColumnSpacing="12" RowSpacing="12"
+                AutomationProperties.AutomationId="Home_Panel_CalculatorGrid">
 
             <!-- Zinseszins -->
             <Button Grid.Row="0" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenCompoundInterestCommand}">
+                    Command="{Binding OpenCompoundInterestCommand}"
+                    AutomationProperties.AutomationId="Home_BtnCompoundInterest">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -304,11 +381,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="TrendingUp" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_CompoundInterest" />
                 </Border>
                 <TextBlock Text="{Binding CalcCompoundInterestText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtCompoundInterest" />
               </StackPanel>
             </Button>
 
@@ -316,7 +395,8 @@
             <Button Grid.Row="0" Grid.Column="1"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenSavingsPlanCommand}">
+                    Command="{Binding OpenSavingsPlanCommand}"
+                    AutomationProperties.AutomationId="Home_BtnSavingsPlan">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -333,11 +413,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="Safe" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_SavingsPlan" />
                 </Border>
                 <TextBlock Text="{Binding CalcSavingsPlanText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtSavingsPlan" />
               </StackPanel>
             </Button>
 
@@ -345,7 +427,8 @@
             <Button Grid.Row="1" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenLoanCommand}">
+                    Command="{Binding OpenLoanCommand}"
+                    AutomationProperties.AutomationId="Home_BtnLoan">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -362,11 +445,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="Bank" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_Loan" />
                 </Border>
                 <TextBlock Text="{Binding CalcLoanText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtLoan" />
               </StackPanel>
             </Button>
 
@@ -374,7 +459,8 @@
             <Button Grid.Row="1" Grid.Column="1"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenAmortizationCommand}">
+                    Command="{Binding OpenAmortizationCommand}"
+                    AutomationProperties.AutomationId="Home_BtnAmortization">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -391,11 +477,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="ListStatus" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_Amortization" />
                 </Border>
                 <TextBlock Text="{Binding CalcAmortizationText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtAmortization" />
               </StackPanel>
             </Button>
 
@@ -403,7 +491,8 @@
             <Button Grid.Row="2" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenYieldCommand}">
+                    Command="{Binding OpenYieldCommand}"
+                    AutomationProperties.AutomationId="Home_BtnYield">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -420,11 +509,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="ChartArc" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_Yield" />
                 </Border>
                 <TextBlock Text="{Binding CalcYieldText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtYield" />
               </StackPanel>
             </Button>
 
@@ -432,7 +523,8 @@
             <Button Grid.Row="2" Grid.Column="1"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                    Command="{Binding OpenInflationCommand}">
+                    Command="{Binding OpenInflationCommand}"
+                    AutomationProperties.AutomationId="Home_BtnInflation">
               <Button.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="{DynamicResource CardColor}" Offset="0" />
@@ -449,11 +541,13 @@
                   </Border.Background>
                   <mi:MaterialIcon Kind="CurrencyUsd" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_Inflation" />
                 </Border>
                 <TextBlock Text="{Binding CalcInflationText}"
                            FontSize="13" FontWeight="Bold" TextAlignment="Center"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtInflation" />
               </StackPanel>
             </Button>
 
@@ -464,8 +558,10 @@
         <Button Background="Transparent" Padding="0"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                 IsVisible="{Binding !IsPremium}"
-                Command="{Binding NavigateToSettingsCommand}">
-          <Border Classes="PremiumShimmer" CornerRadius="16" Padding="16" ClipToBounds="True">
+                Command="{Binding NavigateToSettingsCommand}"
+                AutomationProperties.AutomationId="Home_BtnPremium">
+          <Border Classes="PremiumShimmer" CornerRadius="16" Padding="16" ClipToBounds="True"
+                  AutomationProperties.AutomationId="Home_CardPremium">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{DynamicResource AccentColor}" Offset="0" />
@@ -473,29 +569,37 @@
               </LinearGradientBrush>
             </Border.Background>
 
-            <Panel>
+            <Panel AutomationProperties.AutomationId="Home_Panel_PremiumInner">
               <Ellipse Width="100" Height="100"
                        Opacity="0.1" Fill="White"
                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                       Margin="0,0,-20,0" />
+                       Margin="0,0,-20,0"
+                       AutomationProperties.AutomationId="Home_Ellipse_PremiumDecor" />
 
-              <Grid ColumnDefinitions="Auto,*,Auto">
+              <Grid ColumnDefinitions="Auto,*,Auto"
+                    AutomationProperties.AutomationId="Home_Panel_PremiumGrid">
                 <Border Grid.Column="0" Width="44" Height="44"
                         CornerRadius="22" Background="#33FFFFFF"
-                        Margin="0,0,14,0">
+                        Margin="0,0,14,0"
+                        AutomationProperties.AutomationId="Home_Border_PremiumStarIcon">
                   <mi:MaterialIcon Kind="Star" Width="24" Height="24"
                                    Foreground="White"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   AutomationProperties.AutomationId="Home_Icon_PremiumStar" />
                 </Border>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2"
+                            AutomationProperties.AutomationId="Home_Panel_PremiumTexts">
                   <TextBlock Text="{Binding RemoveAdsText}"
-                             FontSize="15" FontWeight="Bold" Foreground="White" />
+                             FontSize="15" FontWeight="Bold" Foreground="White"
+                             AutomationProperties.AutomationId="Home_TxtPremiumTitle" />
                   <TextBlock Text="{Binding PremiumPriceText}"
-                             FontSize="12" Foreground="#CCFFFFFF" />
+                             FontSize="12" Foreground="#CCFFFFFF"
+                             AutomationProperties.AutomationId="Home_TxtPremiumPrice" />
                 </StackPanel>
                 <mi:MaterialIcon Grid.Column="2"
                                  Kind="ChevronRight" Width="20" Height="20"
-                                 Foreground="#AAFFFFFF" VerticalAlignment="Center" />
+                                 Foreground="#AAFFFFFF" VerticalAlignment="Center"
+                                 AutomationProperties.AutomationId="Home_Icon_PremiumChevron" />
               </Grid>
             </Panel>
           </Border>
@@ -508,25 +612,31 @@
   <!-- ========== Budget Ad Overlay (innerhalb Panel) ========== -->
   <Border IsVisible="{Binding ShowBudgetAdOverlay}"
           Background="#CC000000"
-          ZIndex="200">
+          ZIndex="200"
+          AutomationProperties.AutomationId="Home_OverlayBudgetAd">
     <Border Background="{DynamicResource CardBrush}"
             CornerRadius="16"
             Padding="24"
             MaxWidth="340"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-      <StackPanel Spacing="16" HorizontalAlignment="Center">
+            VerticalAlignment="Center"
+            AutomationProperties.AutomationId="Home_CardBudgetAdDialog">
+      <StackPanel Spacing="16" HorizontalAlignment="Center"
+                  AutomationProperties.AutomationId="Home_Panel_BudgetAdContent">
         <TextBlock Text="{Binding BudgetAnalysisTitleText}"
                    FontSize="22" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
-                   HorizontalAlignment="Center" />
+                   HorizontalAlignment="Center"
+                   AutomationProperties.AutomationId="Home_TxtBudgetAdTitle" />
 
         <Border Background="{DynamicResource SurfaceBrush}"
                 CornerRadius="30"
                 Width="60" Height="60"
-                HorizontalAlignment="Center">
+                HorizontalAlignment="Center"
+                AutomationProperties.AutomationId="Home_Border_BudgetAdIcon">
           <mi:MaterialIcon Kind="ChartBox" Width="32" Height="32"
-                           Foreground="{DynamicResource AccentBrush}" />
+                           Foreground="{DynamicResource AccentBrush}"
+                           AutomationProperties.AutomationId="Home_Icon_BudgetAdChart" />
         </Border>
 
         <TextBlock Text="{Binding BudgetAnalysisDescText}"
@@ -534,18 +644,24 @@
                    Foreground="{DynamicResource TextSecondaryBrush}"
                    HorizontalAlignment="Center"
                    TextWrapping="Wrap"
-                   TextAlignment="Center" />
+                   TextAlignment="Center"
+                   AutomationProperties.AutomationId="Home_TxtBudgetAdDesc" />
 
-        <StackPanel Spacing="8">
+        <StackPanel Spacing="8"
+                    AutomationProperties.AutomationId="Home_Panel_BudgetAdButtons">
           <Button Classes="Filled"
                   Command="{Binding ConfirmBudgetAdCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Padding="16,12">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
+                  Padding="16,12"
+                  AutomationProperties.AutomationId="Home_BtnWatchVideo">
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        AutomationProperties.AutomationId="Home_Panel_WatchVideoContent">
+              <mi:MaterialIcon Kind="Video" Width="20" Height="20"
+                               AutomationProperties.AutomationId="Home_Icon_Video" />
               <TextBlock Text="{Binding WatchVideoReportText}"
-                         FontSize="15" FontWeight="SemiBold" />
+                         FontSize="15" FontWeight="SemiBold"
+                         AutomationProperties.AutomationId="Home_TxtWatchVideo" />
             </StackPanel>
           </Button>
 
@@ -553,10 +669,12 @@
                   Command="{Binding CancelBudgetAdCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Padding="12,10">
+                  Padding="12,10"
+                  AutomationProperties.AutomationId="Home_BtnCancelBudgetAd">
             <TextBlock Text="{Binding CloseText}"
                        FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       AutomationProperties.AutomationId="Home_TxtCancelBudgetAd" />
           </Button>
         </StackPanel>
       </StackPanel>
@@ -566,56 +684,72 @@
   <!-- ========== Budget Analysis Report Overlay ========== -->
   <Border IsVisible="{Binding ShowBudgetAnalysisOverlay}"
           Background="#CC000000"
-          ZIndex="210">
+          ZIndex="210"
+          AutomationProperties.AutomationId="Home_OverlayBudgetAnalysis">
     <Border Background="{DynamicResource CardBrush}"
             CornerRadius="16"
             Padding="20"
             MaxWidth="400" MaxHeight="600"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-      <ScrollViewer>
+            VerticalAlignment="Center"
+            AutomationProperties.AutomationId="Home_CardBudgetAnalysisDialog">
+      <ScrollViewer AutomationProperties.AutomationId="Home_ScrollAnalysisReport">
         <StackPanel Spacing="14"
                     DataContext="{Binding BudgetAnalysisReport}"
-                    x:DataType="models:BudgetAnalysisReport">
+                    x:DataType="models:BudgetAnalysisReport"
+                    AutomationProperties.AutomationId="Home_Panel_AnalysisReportContent">
 
           <!-- Header -->
-          <StackPanel HorizontalAlignment="Center" Spacing="4">
+          <StackPanel HorizontalAlignment="Center" Spacing="4"
+                      AutomationProperties.AutomationId="Home_Panel_AnalysisHeader">
             <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).BudgetAnalysisTitleText}"
                        FontSize="20" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
-                       HorizontalAlignment="Center" />
+                       HorizontalAlignment="Center"
+                       AutomationProperties.AutomationId="Home_TxtAnalysisTitle" />
             <TextBlock Text="{Binding PeriodDisplay}"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}"
-                       HorizontalAlignment="Center" />
+                       HorizontalAlignment="Center"
+                       AutomationProperties.AutomationId="Home_TxtAnalysisPeriod" />
           </StackPanel>
 
           <!-- Bilanz-Box -->
-          <Border CornerRadius="12" Padding="16">
+          <Border CornerRadius="12" Padding="16"
+                  AutomationProperties.AutomationId="Home_CardAnalysisBalance">
             <Border.Background>
               <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                 <GradientStop Color="{DynamicResource PrimaryColor}" Offset="0" />
                 <GradientStop Color="{DynamicResource SecondaryColor}" Offset="1" />
               </LinearGradientBrush>
             </Border.Background>
-            <StackPanel Spacing="8" HorizontalAlignment="Center">
+            <StackPanel Spacing="8" HorizontalAlignment="Center"
+                        AutomationProperties.AutomationId="Home_Panel_AnalysisBalanceContent">
               <TextBlock Text="{Binding BalanceDisplay}"
                          FontSize="26" FontWeight="Bold" Foreground="White"
-                         HorizontalAlignment="Center" />
-              <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
-                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                         HorizontalAlignment="Center"
+                         AutomationProperties.AutomationId="Home_TxtAnalysisBalance" />
+              <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center"
+                          AutomationProperties.AutomationId="Home_Panel_AnalysisBalanceDetails">
+                <StackPanel Spacing="2" HorizontalAlignment="Center"
+                            AutomationProperties.AutomationId="Home_Panel_AnalysisExpenses">
                   <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).ExpensesLabelText}"
-                             FontSize="11" Foreground="#AAFFFFFF" HorizontalAlignment="Center" />
+                             FontSize="11" Foreground="#AAFFFFFF" HorizontalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_TxtAnalysisExpensesLabel" />
                   <TextBlock Text="{Binding TotalExpensesDisplay}"
                              FontSize="14" FontWeight="SemiBold" Foreground="#FFCCCC"
-                             HorizontalAlignment="Center" />
+                             HorizontalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_TxtAnalysisTotalExpenses" />
                 </StackPanel>
-                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                <StackPanel Spacing="2" HorizontalAlignment="Center"
+                            AutomationProperties.AutomationId="Home_Panel_AnalysisIncome">
                   <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).IncomeLabelText}"
-                             FontSize="11" Foreground="#AAFFFFFF" HorizontalAlignment="Center" />
+                             FontSize="11" Foreground="#AAFFFFFF" HorizontalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_TxtAnalysisIncomeLabel" />
                   <TextBlock Text="{Binding TotalIncomeDisplay}"
                              FontSize="14" FontWeight="SemiBold" Foreground="#CCFFCC"
-                             HorizontalAlignment="Center" />
+                             HorizontalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_TxtAnalysisTotalIncome" />
                 </StackPanel>
               </StackPanel>
             </StackPanel>
@@ -623,37 +757,48 @@
 
           <!-- Vormonatsvergleich -->
           <Border Background="{DynamicResource SurfaceBrush}"
-                  CornerRadius="10" Padding="12">
-            <StackPanel Spacing="4">
+                  CornerRadius="10" Padding="12"
+                  AutomationProperties.AutomationId="Home_CardPreviousMonthCompare">
+            <StackPanel Spacing="4"
+                        AutomationProperties.AutomationId="Home_Panel_PreviousMonthContent">
               <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).ComparedToLastMonthText}"
-                         FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <StackPanel Orientation="Horizontal" Spacing="8">
+                         FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                         AutomationProperties.AutomationId="Home_TxtComparedToLastMonth" />
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          AutomationProperties.AutomationId="Home_Panel_PreviousMonthValues">
                 <TextBlock Text="{Binding PreviousMonthDisplay}"
                            FontSize="14" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtPreviousMonth" />
                 <TextBlock Text="{Binding MonthChangeDisplay}"
                            FontSize="13" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           AutomationProperties.AutomationId="Home_TxtMonthChange" />
               </StackPanel>
             </StackPanel>
           </Border>
 
           <!-- Kategorie-Aufschluesselung -->
-          <ItemsControl ItemsSource="{Binding CategoryBreakdown}">
+          <ItemsControl ItemsSource="{Binding CategoryBreakdown}"
+                        AutomationProperties.AutomationId="Home_ListCategoryBreakdown">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="models:CategoryBreakdownItem">
-                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,3">
+                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,3"
+                      AutomationProperties.AutomationId="Home_Panel_BreakdownItem">
                   <TextBlock Grid.Column="0" Text="{Binding CategoryName}"
                              FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}"
-                             VerticalAlignment="Center" />
+                             VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_Txt_BreakdownCategory" />
                   <TextBlock Grid.Column="1" Text="{Binding AmountDisplay}"
                              FontSize="13" FontWeight="SemiBold"
                              Foreground="{DynamicResource TextPrimaryBrush}"
-                             VerticalAlignment="Center" Margin="0,0,8,0" />
+                             VerticalAlignment="Center" Margin="0,0,8,0"
+                             AutomationProperties.AutomationId="Home_Txt_BreakdownAmount" />
                   <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}"
                              FontSize="12"
                              Foreground="{DynamicResource TextSecondaryBrush}"
-                             VerticalAlignment="Center" />
+                             VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Home_Txt_BreakdownPercent" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -661,26 +806,34 @@
 
           <!-- Spartipps -->
           <StackPanel Spacing="6"
-                      IsVisible="{Binding SavingTips.Count}">
+                      IsVisible="{Binding SavingTips.Count}"
+                      AutomationProperties.AutomationId="Home_Panel_SavingTips">
             <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SavingTipText}"
                        FontSize="14" FontWeight="Bold"
-                       Foreground="{DynamicResource AccentBrush}" />
-            <ItemsControl ItemsSource="{Binding SavingTips}">
+                       Foreground="{DynamicResource AccentBrush}"
+                       AutomationProperties.AutomationId="Home_TxtSavingTipsTitle" />
+            <ItemsControl ItemsSource="{Binding SavingTips}"
+                          AutomationProperties.AutomationId="Home_ListSavingTips">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:SavingTipItem">
                   <Border Background="{DynamicResource SurfaceBrush}"
-                          CornerRadius="8" Padding="10,8" Margin="0,2">
-                    <Grid ColumnDefinitions="Auto,*,Auto">
+                          CornerRadius="8" Padding="10,8" Margin="0,2"
+                          AutomationProperties.AutomationId="Home_Border_SavingTipItem">
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          AutomationProperties.AutomationId="Home_Panel_SavingTipGrid">
                       <mi:MaterialIcon Grid.Column="0" Kind="Lightbulb" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}"
-                                       Margin="0,0,8,0" VerticalAlignment="Center" />
+                                       Margin="0,0,8,0" VerticalAlignment="Center"
+                                       AutomationProperties.AutomationId="Home_Icon_SavingTipBulb" />
                       <TextBlock Grid.Column="1" Text="{Binding Tip}"
                                  FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}"
-                                 VerticalAlignment="Center" TextWrapping="Wrap" />
+                                 VerticalAlignment="Center" TextWrapping="Wrap"
+                                 AutomationProperties.AutomationId="Home_Txt_SavingTipText" />
                       <TextBlock Grid.Column="2" Text="{Binding AmountDisplay}"
                                  FontSize="12" FontWeight="SemiBold"
                                  Foreground="{DynamicResource TextSecondaryBrush}"
-                                 VerticalAlignment="Center" Margin="8,0,0,0" />
+                                 VerticalAlignment="Center" Margin="8,0,0,0"
+                                 AutomationProperties.AutomationId="Home_Txt_SavingTipAmount" />
                     </Grid>
                   </Border>
                 </DataTemplate>
@@ -693,9 +846,11 @@
                   Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).CloseBudgetAnalysisCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Padding="14,10" Margin="0,4,0,0">
+                  Padding="14,10" Margin="0,4,0,0"
+                  AutomationProperties.AutomationId="Home_BtnCloseAnalysis">
             <TextBlock Text="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).CloseText}"
-                       FontSize="15" FontWeight="SemiBold" />
+                       FontSize="15" FontWeight="SemiBold"
+                       AutomationProperties.AutomationId="Home_TxtCloseAnalysis" />
           </Button>
         </StackPanel>
       </ScrollViewer>

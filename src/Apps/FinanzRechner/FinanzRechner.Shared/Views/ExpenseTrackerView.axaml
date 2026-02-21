@@ -8,59 +8,73 @@
              x:DataType="vm:ExpenseTrackerViewModel">
 
   <!-- Äußerstes Grid: ScrollView + FAB + Dialog Overlay -->
-  <Grid RowDefinitions="*,Auto">
+  <Grid RowDefinitions="*,Auto"
+        AutomationProperties.AutomationId="Tracker_Root">
 
     <!-- Ganzseitige ScrollView (Header, Filter, Chart, Monatsnavigation, Transaktionen) -->
     <ScrollViewer Grid.Row="0"
                   VerticalScrollBarVisibility="Auto"
-                  IsVisible="{Binding !IsAddingExpense}">
-      <StackPanel Spacing="0" Margin="16">
+                  IsVisible="{Binding !IsAddingExpense}"
+                  AutomationProperties.AutomationId="Tracker_ScrollMain">
+      <StackPanel Spacing="0" Margin="16"
+                  AutomationProperties.AutomationId="ExpenseTracker_Panel_MainContent">
 
         <!-- Header -->
-        <Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,8,0,16">
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,8,0,16"
+              AutomationProperties.AutomationId="ExpenseTracker_Panel_Header">
           <TextBlock Grid.Column="0"
                      Text="{Binding FinanceTrackerText}"
                      Classes="PageTitle"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Tracker_TxtTitle" />
 
           <!-- Recurring Transactions Button -->
           <Button Grid.Column="1" Classes="Text"
                   Command="{Binding ShowRecurringTransactionsCommand}"
-                  Width="48" Height="48" Padding="0">
+                  Width="48" Height="48" Padding="0"
+                  AutomationProperties.AutomationId="Tracker_BtnRecurring">
             <mi:MaterialIcon Kind="CalendarClock" Width="22" Height="22"
+                             AutomationProperties.AutomationId="ExpenseTracker_Icon_Recurring"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
           </Button>
 
           <!-- Budgets Button -->
           <Button Grid.Column="2" Classes="Text"
                   Command="{Binding ShowBudgetsCommand}"
-                  Width="48" Height="48" Padding="0">
+                  Width="48" Height="48" Padding="0"
+                  AutomationProperties.AutomationId="Tracker_BtnBudgets">
             <mi:MaterialIcon Kind="Target" Width="22" Height="22"
+                             AutomationProperties.AutomationId="ExpenseTracker_Icon_Budgets"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
           </Button>
 
           <!-- Export Button -->
           <Button Grid.Column="3" Classes="Text"
                   Command="{Binding ExportToCsvCommand}"
-                  Width="48" Height="48" Padding="0">
+                  Width="48" Height="48" Padding="0"
+                  AutomationProperties.AutomationId="Tracker_BtnExport">
             <mi:MaterialIcon Kind="Export" Width="22" Height="22"
+                             AutomationProperties.AutomationId="ExpenseTracker_Icon_Export"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
           </Button>
         </Grid>
 
         <!-- Search & Filter Controls -->
-        <StackPanel Spacing="8" Margin="0,0,0,16">
+        <StackPanel Spacing="8" Margin="0,0,0,16"
+                    AutomationProperties.AutomationId="ExpenseTracker_Panel_SearchFilter">
 
           <!-- SearchBar -->
           <TextBox Watermark="{Binding SearchTransactionsText}"
                    Text="{Binding SearchTerm}"
                    Foreground="{DynamicResource TextPrimaryBrush}"
-                   Background="{DynamicResource InputBackgroundBrush}" />
+                   Background="{DynamicResource InputBackgroundBrush}"
+                   AutomationProperties.AutomationId="Tracker_InputSearch" />
 
           <!-- Sort & Filter Row -->
           <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
             <!-- Sort Picker -->
             <Border Grid.Column="0"
+                    AutomationProperties.AutomationId="ExpenseTracker_Border_Sort"
                     Background="{DynamicResource CardBrush}"
                     CornerRadius="8"
                     Padding="8,4">
@@ -68,7 +82,8 @@
                         SelectedItem="{Binding SelectedSort}"
                         PlaceholderText="{Binding SortText}"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Stretch"
+                        AutomationProperties.AutomationId="Tracker_ComboSort">
                 <ComboBox.ItemTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding Converter={x:Static conv:SortOptionToStringConverter.Instance}}" />
@@ -79,6 +94,7 @@
 
             <!-- Filter Type Picker -->
             <Border Grid.Column="1"
+                    AutomationProperties.AutomationId="ExpenseTracker_Border_Filter"
                     Background="{DynamicResource CardBrush}"
                     CornerRadius="8"
                     Padding="8,4">
@@ -86,7 +102,8 @@
                         SelectedItem="{Binding SelectedFilter}"
                         PlaceholderText="{Binding FilterText}"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        HorizontalAlignment="Stretch">
+                        HorizontalAlignment="Stretch"
+                        AutomationProperties.AutomationId="Tracker_ComboFilter">
                 <ComboBox.ItemTemplate>
                   <DataTemplate>
                     <TextBlock Text="{Binding Converter={x:Static conv:FilterTypeToStringConverter.Instance}}" />
@@ -100,14 +117,17 @@
           <Border Background="{DynamicResource CardBrush}"
                   CornerRadius="12"
                   Padding="12"
-                  IsVisible="{Binding HasCategoryChartData}">
+                  IsVisible="{Binding HasCategoryChartData}"
+                  AutomationProperties.AutomationId="Tracker_CardCategoryChart">
             <StackPanel Spacing="4">
               <TextBlock Text="{Binding CategoryBreakdownText}"
                          FontSize="13" FontWeight="Bold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AutomationProperties.AutomationId="Tracker_TxtCategoryBreakdown" />
               <skia:SKCanvasView x:Name="CategoryDonutCanvas"
                                    PaintSurface="OnPaintCategoryDonut"
-                                   Height="180" />
+                                   Height="180"
+                                   AutomationProperties.AutomationId="Tracker_CanvasCategoryDonut" />
             </StackPanel>
           </Border>
 
@@ -115,18 +135,21 @@
           <Border IsVisible="{Binding IsFilterActive}"
                   Background="{DynamicResource CardBrush}"
                   CornerRadius="8"
-                  Padding="12">
+                  Padding="12"
+                  AutomationProperties.AutomationId="Tracker_CardFilterDetails">
             <StackPanel Spacing="8">
 
               <!-- Category Filter -->
               <StackPanel Spacing="4">
                 <TextBlock Text="{Binding FilterByCategoryText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="12" />
+                           FontSize="12"
+                           AutomationProperties.AutomationId="Tracker_TxtFilterByCategory" />
                 <ComboBox ItemsSource="{Binding CategoryFilterOptions}"
                           SelectedItem="{Binding SelectedCategoryFilter}"
                           Foreground="{DynamicResource TextPrimaryBrush}"
-                          HorizontalAlignment="Stretch" />
+                          HorizontalAlignment="Stretch"
+                          AutomationProperties.AutomationId="Tracker_ComboCategory" />
               </StackPanel>
 
               <!-- Amount Range Filter -->
@@ -134,21 +157,25 @@
                 <StackPanel Grid.Column="0" Spacing="4">
                   <TextBlock Text="{Binding MinAmountText}"
                              Foreground="{DynamicResource TextSecondaryBrush}"
-                             FontSize="12" />
+                             FontSize="12"
+                             AutomationProperties.AutomationId="Tracker_TxtMinAmount" />
                   <TextBox Text="{Binding MinAmountFilter}"
                            Watermark="0"
                            Foreground="{DynamicResource TextPrimaryBrush}"
-                           Background="{DynamicResource InputBackgroundBrush}" />
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           AutomationProperties.AutomationId="Tracker_InputMinAmount" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Spacing="4">
                   <TextBlock Text="{Binding MaxAmountText}"
                              Foreground="{DynamicResource TextSecondaryBrush}"
-                             FontSize="12" />
+                             FontSize="12"
+                             AutomationProperties.AutomationId="Tracker_TxtMaxAmount" />
                   <TextBox Text="{Binding MaxAmountFilter}"
                            Watermark="0"
                            Foreground="{DynamicResource TextPrimaryBrush}"
-                           Background="{DynamicResource InputBackgroundBrush}" />
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           AutomationProperties.AutomationId="Tracker_InputMaxAmount" />
                 </StackPanel>
               </Grid>
 
@@ -157,7 +184,8 @@
                       Command="{Binding ResetFiltersCommand}"
                       Classes="Secondary"
                       Padding="8,4"
-                      Margin="0,4,0,0" />
+                      Margin="0,4,0,0"
+                      AutomationProperties.AutomationId="Tracker_BtnResetFilters" />
             </StackPanel>
           </Border>
 
@@ -167,17 +195,20 @@
                      FontSize="12"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      HorizontalAlignment="Center"
-                     Margin="0,4,0,0" />
+                     Margin="0,4,0,0"
+                     AutomationProperties.AutomationId="Tracker_TxtFilteredCount" />
         </StackPanel>
 
         <!-- Monats-Navigation (kompakt) -->
         <Border Background="{DynamicResource CardBrush}"
                 CornerRadius="12"
                 Padding="12,8"
-                Margin="0,0,0,12">
+                Margin="0,0,0,12"
+                AutomationProperties.AutomationId="Tracker_CardMonthNav">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
-                    Command="{Binding PreviousMonthCommand}" Padding="4">
+                    Command="{Binding PreviousMonthCommand}" Padding="4"
+                    AutomationProperties.AutomationId="Tracker_BtnPrevMonth">
               <mi:MaterialIcon Kind="ChevronLeft" Width="18" Height="18"
                                Foreground="{DynamicResource PrimaryBrush}" />
             </Button>
@@ -185,10 +216,12 @@
             <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="4">
               <!-- Monatsname -->
               <Button Classes="Text" Command="{Binding GoToCurrentMonthCommand}"
-                      HorizontalAlignment="Center" Padding="4,0">
+                      HorizontalAlignment="Center" Padding="4,0"
+                      AutomationProperties.AutomationId="Tracker_BtnCurrentMonth">
                 <TextBlock Text="{Binding MonthYearDisplay}"
                            FontSize="15" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Tracker_TxtMonthYear" />
               </Button>
 
               <!-- Einnahmen + Ausgaben + Bilanz kompakt -->
@@ -197,22 +230,27 @@
                   <mi:MaterialIcon Kind="ArrowUpBold" Width="12" Height="12"
                                    Foreground="#22C55E" VerticalAlignment="Center" />
                   <TextBlock Text="{Binding TotalIncomeDisplay}" FontSize="12" FontWeight="SemiBold"
-                             Foreground="#22C55E" VerticalAlignment="Center" />
+                             Foreground="#22C55E" VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Tracker_TxtIncome" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="3">
                   <mi:MaterialIcon Kind="ArrowDownBold" Width="12" Height="12"
                                    Foreground="#EF4444" VerticalAlignment="Center" />
                   <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="12" FontWeight="SemiBold"
-                             Foreground="#EF4444" VerticalAlignment="Center" />
+                             Foreground="#EF4444" VerticalAlignment="Center"
+                             AutomationProperties.AutomationId="Tracker_TxtExpenses" />
                 </StackPanel>
-                <Border Background="{DynamicResource AccentBrush}" CornerRadius="6" Padding="6,2">
-                  <TextBlock Text="{Binding BalanceDisplay}" FontSize="12" FontWeight="Bold" Foreground="White" />
+                <Border Background="{DynamicResource AccentBrush}" CornerRadius="6" Padding="6,2"
+                        AutomationProperties.AutomationId="Tracker_CardBalance">
+                  <TextBlock Text="{Binding BalanceDisplay}" FontSize="12" FontWeight="Bold" Foreground="White"
+                             AutomationProperties.AutomationId="Tracker_TxtBalance" />
                 </Border>
               </StackPanel>
             </StackPanel>
 
             <Button Grid.Column="2" Classes="Text"
-                    Command="{Binding NextMonthCommand}" Padding="4">
+                    Command="{Binding NextMonthCommand}" Padding="4"
+                    AutomationProperties.AutomationId="Tracker_BtnNextMonth">
               <mi:MaterialIcon Kind="ChevronRight" Width="18" Height="18"
                                Foreground="{DynamicResource PrimaryBrush}" />
             </Button>
@@ -223,32 +261,41 @@
         <!-- Empty State -->
         <StackPanel IsVisible="{Binding !HasExpenses}"
                     HorizontalAlignment="Center"
-                    Spacing="8" Margin="0,40,0,0">
+                    Spacing="8" Margin="0,40,0,0"
+                    AutomationProperties.AutomationId="Tracker_SectionEmpty">
           <mi:MaterialIcon Kind="Wallet" Width="48" Height="48"
+                           AutomationProperties.AutomationId="ExpenseTracker_Icon_Empty"
                            Foreground="{DynamicResource TextMutedBrush}"
                            HorizontalAlignment="Center" />
           <TextBlock Text="{Binding NoTransactionsText}"
                      FontSize="16" FontWeight="Bold"
                      Foreground="{DynamicResource TextSecondaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Tracker_TxtNoTransactions" />
           <TextBlock Text="{Binding NoTransactionsHintText}"
                      FontSize="13"
                      Foreground="{DynamicResource TextMutedBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Tracker_TxtNoTransactionsHint" />
         </StackPanel>
 
         <!-- Gruppierte Transaction Items (nach Datum) -->
         <ItemsControl ItemsSource="{Binding GroupedExpenses}"
-                      IsVisible="{Binding HasExpenses}">
+                      IsVisible="{Binding HasExpenses}"
+                      AutomationProperties.AutomationId="Tracker_SectionTransactions">
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <StackPanel Spacing="0" Margin="0,0,0,12">
+              <StackPanel Spacing="0" Margin="0,0,0,12"
+                          AutomationProperties.AutomationId="ExpenseTracker_Panel_DateGroup">
                 <!-- Date-Header: Datum links, Tages-Summe rechts -->
-                <Grid ColumnDefinitions="*,Auto" Margin="4,4,4,6">
+                <Grid ColumnDefinitions="*,Auto" Margin="4,4,4,6"
+                      AutomationProperties.AutomationId="ExpenseTracker_Panel_DateHeader">
                   <TextBlock Grid.Column="0" Text="{Binding DateDisplay}"
+                             AutomationProperties.AutomationId="ExpenseTracker_Txt_DateDisplay"
                              FontSize="13" FontWeight="SemiBold"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1"
+                             AutomationProperties.AutomationId="ExpenseTracker_Txt_DayTotal"
                              FontSize="13" FontWeight="Bold"
                              Foreground="{DynamicResource TextSecondaryBrush}">
                     <TextBlock.Text>
@@ -260,10 +307,12 @@
                 </Grid>
 
                 <!-- Transaktionen dieser Gruppe -->
-                <ItemsControl ItemsSource="{Binding}">
+                <ItemsControl ItemsSource="{Binding}"
+                              AutomationProperties.AutomationId="ExpenseTracker_Items_DayTransactions">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Border Background="{DynamicResource CardBrush}"
+                              AutomationProperties.AutomationId="ExpenseTracker_Border_TransactionItem"
                               CornerRadius="12"
                               Padding="12"
                               Margin="0,0,0,6">
@@ -271,28 +320,34 @@
                           <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
                             <!-- Farbiges Kategorie-Icon -->
                             <Border Grid.Column="0"
+                                    AutomationProperties.AutomationId="ExpenseTracker_Border_CategoryIcon"
                                     Background="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}, ConverterParameter=0.2}"
                                     CornerRadius="12"
                                     Width="44" Height="44">
                               <mi:MaterialIcon Kind="{Binding Category, Converter={x:Static conv:CategoryToIconConverter.Instance}}"
                                                Width="22" Height="22"
+                                               AutomationProperties.AutomationId="ExpenseTracker_Icon_Category"
                                                Foreground="{Binding Category, Converter={x:Static conv:CategoryToColorBrushConverter.Instance}}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
 
                             <!-- Details -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center"
+                                        AutomationProperties.AutomationId="ExpenseTracker_Panel_TransactionDetails">
                               <TextBlock Text="{Binding Description}"
+                                         AutomationProperties.AutomationId="ExpenseTracker_Txt_Description"
                                          FontSize="15" FontWeight="SemiBold"
                                          Foreground="{DynamicResource TextPrimaryBrush}"
                                          TextTrimming="CharacterEllipsis" />
                               <TextBlock Text="{Binding Date, StringFormat='{}{0:HH:mm}'}"
+                                         AutomationProperties.AutomationId="ExpenseTracker_Txt_Time"
                                          FontSize="11"
                                          Foreground="{DynamicResource TextMutedBrush}" />
                             </StackPanel>
 
                             <!-- Betrag mit Farbe nach Typ -->
                             <TextBlock Grid.Column="2"
+                                       AutomationProperties.AutomationId="ExpenseTracker_Txt_Amount"
                                        FontSize="15" FontWeight="Bold"
                                        Foreground="{Binding Type, Converter={x:Static conv:TransactionTypeToColorConverter.Instance}}"
                                        VerticalAlignment="Center">
@@ -306,27 +361,32 @@
 
                             <!-- Edit Button -->
                             <Button Grid.Column="3" Classes="Text"
+                                    AutomationProperties.AutomationId="ExpenseTracker_Btn_EditTransaction"
                                     Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).EditExpenseCommand}"
                                     CommandParameter="{Binding}"
                                     Width="36" Height="36" Padding="0"
                                     VerticalAlignment="Center">
                               <mi:MaterialIcon Kind="Pencil" Width="18" Height="18"
+                                               AutomationProperties.AutomationId="ExpenseTracker_Icon_Edit"
                                                Foreground="{DynamicResource TextSecondaryBrush}" />
                             </Button>
 
                             <!-- Delete Button -->
                             <Button Grid.Column="4" Classes="Text"
+                                    AutomationProperties.AutomationId="ExpenseTracker_Btn_DeleteTransaction"
                                     Command="{Binding $parent[UserControl].((vm:ExpenseTrackerViewModel)DataContext).DeleteExpenseCommand}"
                                     CommandParameter="{Binding}"
                                     Width="36" Height="36" Padding="0"
                                     VerticalAlignment="Center">
                               <mi:MaterialIcon Kind="Delete" Width="18" Height="18"
+                                               AutomationProperties.AutomationId="ExpenseTracker_Icon_Delete"
                                                Foreground="{DynamicResource TextSecondaryBrush}" />
                             </Button>
                           </Grid>
 
                           <!-- Notiz (optional, grau, kleiner Text) -->
                           <TextBlock Grid.Row="1"
+                                     AutomationProperties.AutomationId="ExpenseTracker_Txt_Note"
                                      Text="{Binding Note}"
                                      IsVisible="{Binding Note, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                      FontSize="12" FontStyle="Italic"
@@ -353,7 +413,8 @@
                  IsIndeterminate="True"
                  IsVisible="{Binding IsLoading}"
                  HorizontalAlignment="Center"
-                 VerticalAlignment="Center" />
+                 VerticalAlignment="Center"
+                 AutomationProperties.AutomationId="Tracker_ProgressLoading" />
 
     <!-- Undo Delete Snackbar mit Countdown-Balken -->
     <Border Grid.Row="0"
@@ -364,7 +425,8 @@
             Margin="16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Bottom"
-            ZIndex="100">
+            ZIndex="100"
+            AutomationProperties.AutomationId="Tracker_SnackbarUndo">
       <StackPanel Spacing="8">
         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
           <TextBlock Grid.Column="0"
@@ -372,21 +434,26 @@
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      FontSize="14"
                      VerticalAlignment="Center"
-                     TextTrimming="CharacterEllipsis" />
+                     TextTrimming="CharacterEllipsis"
+                     AutomationProperties.AutomationId="Tracker_TxtUndoMessage" />
           <Button Grid.Column="1"
                   Content="{Binding UndoText}"
                   Command="{Binding UndoDeleteCommand}"
                   Classes="Primary"
-                  Padding="16,8" />
+                  Padding="16,8"
+                  AutomationProperties.AutomationId="Tracker_BtnUndo" />
           <Button Grid.Column="2" Classes="Text"
                   Command="{Binding DismissUndoCommand}"
-                  Width="36" Height="36" Padding="0">
+                  Width="36" Height="36" Padding="0"
+                  AutomationProperties.AutomationId="Tracker_BtnDismissUndo">
             <mi:MaterialIcon Kind="Close" Width="18" Height="18"
+                             AutomationProperties.AutomationId="ExpenseTracker_Icon_DismissUndo"
                              Foreground="{DynamicResource TextMutedBrush}" />
           </Button>
         </Grid>
         <!-- Undo-Countdown-Balken -->
         <Border Classes="UndoTimer" Height="3" CornerRadius="2"
+                AutomationProperties.AutomationId="ExpenseTracker_Border_UndoTimer"
                 Background="{DynamicResource AccentBrush}" />
       </StackPanel>
     </Border>
@@ -405,8 +472,10 @@
             Cursor="Hand"
             Command="{Binding ShowAddExpenseFormCommand}"
             Padding="0"
-            ZIndex="50">
+            ZIndex="50"
+            AutomationProperties.AutomationId="Tracker_FabAdd">
       <mi:MaterialIcon Kind="Plus" Width="24" Height="24"
+                       AutomationProperties.AutomationId="ExpenseTracker_Icon_Add"
                        Foreground="White"
                        HorizontalAlignment="Center" VerticalAlignment="Center" />
     </Button>
@@ -420,13 +489,16 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Margin="0,0,0,72"
-            ZIndex="200">
+            ZIndex="200"
+            AutomationProperties.AutomationId="Tracker_SnackbarExport">
       <StackPanel Orientation="Horizontal" Spacing="8">
         <mi:MaterialIcon Kind="CheckCircle" Width="18" Height="18"
+                         AutomationProperties.AutomationId="ExpenseTracker_Icon_ExportSuccess"
                          Foreground="{DynamicResource PrimaryBrush}" />
         <TextBlock Text="{Binding ExportStatusMessage}"
                    Foreground="{DynamicResource TextPrimaryBrush}"
-                   FontSize="13" VerticalAlignment="Center" />
+                   FontSize="13" VerticalAlignment="Center"
+                   AutomationProperties.AutomationId="Tracker_TxtExportStatus" />
       </StackPanel>
     </Border>
 
@@ -434,25 +506,31 @@
     <Border Grid.Row="0" Grid.RowSpan="2"
             IsVisible="{Binding IsAddingExpense}"
             Background="#80000000"
-            ZIndex="10">
-      <ScrollViewer VerticalAlignment="Center" MaxHeight="600" Margin="20">
+            ZIndex="10"
+            AutomationProperties.AutomationId="Tracker_OverlayAddEdit">
+      <ScrollViewer VerticalAlignment="Center" MaxHeight="600" Margin="20"
+                    AutomationProperties.AutomationId="ExpenseTracker_Scroll_Dialog">
         <Border Classes="DialogOverlay"
                 Background="{DynamicResource CardBrush}"
                 CornerRadius="16"
                 Padding="24"
                 MaxWidth="420"
-                HorizontalAlignment="Center">
+                HorizontalAlignment="Center"
+                AutomationProperties.AutomationId="Tracker_CardDialog">
           <StackPanel Spacing="20">
 
             <!-- HEADER: Title + Close -->
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0"
                          Text="{Binding DialogTitleText}"
-                         Classes="SectionHeader" />
+                         Classes="SectionHeader"
+                         AutomationProperties.AutomationId="Tracker_TxtDialogTitle" />
               <Button Grid.Column="1" Classes="Text"
                       Command="{Binding CancelAddExpenseCommand}"
-                      Width="48" Height="48" Padding="0">
+                      Width="48" Height="48" Padding="0"
+                      AutomationProperties.AutomationId="Tracker_BtnCloseDialog">
                 <mi:MaterialIcon Kind="Close" Width="22" Height="22"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_CloseDialog"
                                  Foreground="{DynamicResource TextSecondaryBrush}" />
               </Button>
             </Grid>
@@ -461,33 +539,39 @@
             <StackPanel Spacing="8">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="CurrencyEur" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_AmountSection"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  VerticalAlignment="Center" />
                 <TextBlock Text="{Binding AmountText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="14" VerticalAlignment="Center" />
+                           FontSize="14" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtAmountLabel" />
               </StackPanel>
               <TextBox Text="{Binding NewExpenseAmount}"
                        FontSize="32" FontWeight="Bold"
                        TextAlignment="Center"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        Watermark="0.00"
-                       Background="{DynamicResource InputBackgroundBrush}" />
+                       Background="{DynamicResource InputBackgroundBrush}"
+                       AutomationProperties.AutomationId="Tracker_InputAmount" />
             </StackPanel>
 
             <!-- TYP: Ausgabe / Einnahme (mit Selected-State) -->
             <StackPanel Spacing="8">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="SwapHorizontal" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_TypeSection"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  VerticalAlignment="Center" />
                 <TextBlock Text="{Binding TypeText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="14" VerticalAlignment="Center" />
+                           FontSize="14" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtTypeLabel" />
               </StackPanel>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                 <!-- Ausgabe: Selected -->
-                <Panel Grid.Column="0">
+                <Panel Grid.Column="0"
+                       AutomationProperties.AutomationId="Tracker_BtnExpenseType">
                   <Button Command="{Binding SetTransactionTypeExpenseCommand}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,18"
@@ -516,7 +600,8 @@
                 </Panel>
 
                 <!-- Einnahme: Selected -->
-                <Panel Grid.Column="1">
+                <Panel Grid.Column="1"
+                       AutomationProperties.AutomationId="Tracker_BtnIncomeType">
                   <Button Command="{Binding SetTransactionTypeIncomeCommand}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                           Padding="12,18"
@@ -550,14 +635,17 @@
             <StackPanel Spacing="8">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Filter" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_CategorySection"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  VerticalAlignment="Center" />
                 <TextBlock Text="{Binding CategoryText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="14" VerticalAlignment="Center" />
+                           FontSize="14" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtCategoryLabel" />
               </StackPanel>
               <!-- Category chips mit farbigem Hintergrund -->
-              <ItemsControl ItemsSource="{Binding CategoryItems}">
+              <ItemsControl ItemsSource="{Binding CategoryItems}"
+                            AutomationProperties.AutomationId="ExpenseTracker_Items_Categories">
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
                     <WrapPanel />
@@ -610,27 +698,32 @@
             <StackPanel Spacing="8">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="ClipboardText" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_DetailsSection"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  VerticalAlignment="Center" />
                 <TextBlock Text="{Binding DescriptionText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="14" VerticalAlignment="Center" />
+                           FontSize="14" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtDescriptionLabel" />
               </StackPanel>
 
               <TextBox Text="{Binding NewExpenseDescription}"
                        Foreground="{DynamicResource TextPrimaryBrush}"
-                       Background="{DynamicResource InputBackgroundBrush}" />
+                       Background="{DynamicResource InputBackgroundBrush}"
+                       AutomationProperties.AutomationId="Tracker_InputDescription" />
 
               <!-- Date -->
               <CalendarDatePicker SelectedDate="{Binding NewExpenseDate}"
                                   Foreground="{DynamicResource TextPrimaryBrush}"
-                                  HorizontalAlignment="Stretch" />
+                                  HorizontalAlignment="Stretch"
+                                  AutomationProperties.AutomationId="Tracker_InputDate" />
 
               <!-- Note (optional) -->
               <TextBox Text="{Binding NewExpenseNote}"
                        Watermark="{Binding NoteText}"
                        Foreground="{DynamicResource TextPrimaryBrush}"
-                       Background="{DynamicResource InputBackgroundBrush}" />
+                       Background="{DynamicResource InputBackgroundBrush}"
+                       AutomationProperties.AutomationId="Tracker_InputNote" />
             </StackPanel>
 
             <!-- RECURRING (only for new entries) -->
@@ -638,34 +731,41 @@
                         IsVisible="{Binding ShowRecurringSection}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Refresh" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="ExpenseTracker_Icon_RecurringSection"
                                  Foreground="{DynamicResource PrimaryBrush}"
                                  VerticalAlignment="Center" />
                 <TextBlock Text="{Binding RecurringText}"
                            Foreground="{DynamicResource TextSecondaryBrush}"
-                           FontSize="14" VerticalAlignment="Center" />
+                           FontSize="14" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtRecurringLabel" />
               </StackPanel>
 
               <!-- Toggle -->
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Grid.Column="0" Text="{Binding MakeRecurringText}"
                            Foreground="{DynamicResource TextPrimaryBrush}"
-                           FontSize="15" VerticalAlignment="Center" />
+                           FontSize="15" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Tracker_TxtMakeRecurring" />
                 <ToggleSwitch Grid.Column="1"
                               IsChecked="{Binding IsRecurring}"
-                              OnContent="" OffContent="" />
+                              OnContent="" OffContent=""
+                              AutomationProperties.AutomationId="Tracker_ToggleRecurring" />
               </Grid>
             </StackPanel>
 
             <!-- BUTTONS -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,4,0,0"
+                  AutomationProperties.AutomationId="ExpenseTracker_Panel_DialogButtons">
               <Button Grid.Column="0"
                       Content="{Binding CancelText}"
                       Classes="Secondary"
-                      Command="{Binding CancelAddExpenseCommand}" />
+                      Command="{Binding CancelAddExpenseCommand}"
+                      AutomationProperties.AutomationId="Tracker_BtnCancel" />
               <Button Grid.Column="1"
                       Content="{Binding SaveText}"
                       Classes="Primary"
-                      Command="{Binding SaveExpenseCommand}" />
+                      Command="{Binding SaveExpenseCommand}"
+                      AutomationProperties.AutomationId="Tracker_BtnSave" />
             </Grid>
 
           </StackPanel>

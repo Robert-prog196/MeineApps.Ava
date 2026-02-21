@@ -20,22 +20,26 @@
     <conv:FoodCategoryToColorConverter x:Key="CategoryColorConverter" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto"
+        AutomationProperties.AutomationId="Food_RootPanel">
 
     <!-- ============================================ -->
     <!-- Row 0: Header with Title + Barcode Button    -->
     <!-- ============================================ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Food_HeaderBorder"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             Padding="16,12">
       <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-        <TextBlock Text="{loc:Translate FoodSearch}"
+        <TextBlock AutomationProperties.AutomationId="Food_TxtTitle"
+                   Text="{loc:Translate FoodSearch}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
         <Button Grid.Column="1"
+                AutomationProperties.AutomationId="Food_BtnQuickAdd"
                 Classes="Small"
                 Command="{Binding OpenQuickAddCommand}"
                 ToolTip.Tip="{loc:Translate QuickAddCalories}">
@@ -45,6 +49,7 @@
           </StackPanel>
         </Button>
         <Button Grid.Column="2"
+                AutomationProperties.AutomationId="Food_BtnBarcode"
                 Classes="Primary Small"
                 Command="{Binding OpenBarcodeScannerCommand}">
           <mi:MaterialIcon Kind="Barcode" Width="20" Height="20" />
@@ -55,13 +60,15 @@
     <!-- ============================================ -->
     <!-- Row 1: Search Bar                            -->
     <!-- ============================================ -->
-    <Border Grid.Row="1" Classes="Card StatsCard" Margin="16,12,16,0" Padding="12">
+    <Border Grid.Row="1" Classes="Card StatsCard" Margin="16,12,16,0" Padding="12"
+            AutomationProperties.AutomationId="Food_SearchBarBorder">
       <Grid ColumnDefinitions="Auto,*">
         <mi:MaterialIcon Kind="Magnify" Width="20" Height="20"
                          Foreground="{DynamicResource TextMutedBrush}"
                          VerticalAlignment="Center"
                          Margin="0,0,10,0" />
         <TextBox Grid.Column="1"
+                 AutomationProperties.AutomationId="Food_TxtBoxSearch"
                  Text="{Binding SearchQuery}"
                  Watermark="{loc:Translate SearchFoodPlaceholder}"
                  Background="Transparent"
@@ -73,7 +80,8 @@
     <!-- ============================================ -->
     <!-- Row 2: Content Area (Scrollable)             -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Food_ScrollViewer">
       <StackPanel Spacing="16" Margin="12,12,12,80">
 
         <!-- Favorites Section -->
@@ -82,7 +90,8 @@
             <mi:MaterialIcon Kind="Star" Width="16" Height="16"
                              Foreground="{DynamicResource WarningBrush}"
                              VerticalAlignment="Center" />
-            <TextBlock Text="{loc:Translate Favorites}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtFavoritesHeader"
+                       Text="{loc:Translate Favorites}"
                        FontSize="16" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
@@ -126,7 +135,8 @@
             <mi:MaterialIcon Kind="History" Width="16" Height="16"
                              Foreground="{DynamicResource TextMutedBrush}"
                              VerticalAlignment="Center" />
-            <TextBlock Text="{loc:Translate RecentFoods}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtRecentHeader"
+                       Text="{loc:Translate RecentFoods}"
                        FontSize="14" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        VerticalAlignment="Center" />
@@ -167,6 +177,7 @@
 
         <!-- Quick-Add Panel -->
         <Border Classes="Card StatsCard" Padding="16"
+                AutomationProperties.AutomationId="Food_CardQuickAdd"
                 IsVisible="{Binding ShowQuickAddPanel}">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -177,14 +188,16 @@
           <StackPanel Spacing="12">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="LightningBolt" Width="20" Height="20" Foreground="White" />
-              <TextBlock Text="{loc:Translate QuickAddCalories}"
+              <TextBlock AutomationProperties.AutomationId="Food_TxtQuickAddTitle"
+                         Text="{loc:Translate QuickAddCalories}"
                          FontSize="18" FontWeight="Bold" Foreground="White" />
             </StackPanel>
             <TextBlock Text="{loc:Translate QuickAddCaloriesHint}"
                        FontSize="12" Foreground="#CCFFFFFF" />
             <!-- Kalorien-Eingabe -->
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-              <NumericUpDown Value="{Binding QuickAddCalories}"
+              <NumericUpDown AutomationProperties.AutomationId="Food_NumQuickAddCalories"
+                             Value="{Binding QuickAddCalories}"
                              Minimum="1" Maximum="10000"
                              Increment="50"
                              FormatString="F0"
@@ -194,19 +207,22 @@
                          VerticalAlignment="Center" FontSize="14" FontWeight="Bold" />
             </Grid>
             <!-- Beschreibung (optional) -->
-            <TextBox Text="{Binding QuickAddName}"
+            <TextBox AutomationProperties.AutomationId="Food_TxtBoxQuickAddName"
+                     Text="{Binding QuickAddName}"
                      Watermark="{loc:Translate QuickAddFoodName}"
                      Background="Transparent"
                      Foreground="White"
                      BorderBrush="#66FFFFFF"
                      Height="NaN" />
             <!-- Mahlzeit-Auswahl -->
-            <ComboBox ItemsSource="{Binding Meals}"
+            <ComboBox AutomationProperties.AutomationId="Food_CmbQuickAddMeal"
+                      ItemsSource="{Binding Meals}"
                       SelectedIndex="{Binding QuickAddMeal}"
                       HorizontalAlignment="Stretch" />
             <!-- Buttons -->
             <Grid ColumnDefinitions="*,8,*">
               <Button Grid.Column="0"
+                      AutomationProperties.AutomationId="Food_BtnCancelQuickAdd"
                       Command="{Binding CancelQuickAddCommand}"
                       Background="Transparent"
                       Foreground="White"
@@ -217,6 +233,7 @@
                 <TextBlock Text="{loc:Translate Cancel}" />
               </Button>
               <Button Grid.Column="2" Classes="Success"
+                      AutomationProperties.AutomationId="Food_BtnConfirmQuickAdd"
                       Command="{Binding ConfirmQuickAddCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center">
@@ -231,16 +248,19 @@
 
         <!-- Add Food Panel (when food is selected) -->
         <Border Classes="Card StatsCard" Padding="16"
+                AutomationProperties.AutomationId="Food_CardAddFood"
                 Background="{DynamicResource PrimaryBrush}"
                 IsVisible="{Binding ShowAddPanel}">
           <StackPanel Spacing="12">
 
             <!-- Food Name + Favorite Toggle -->
             <Grid ColumnDefinitions="*,Auto">
-              <TextBlock Text="{Binding SelectedFood.Name}"
+              <TextBlock AutomationProperties.AutomationId="Food_TxtSelectedFoodName"
+                         Text="{Binding SelectedFood.Name}"
                          FontSize="20" FontWeight="Bold" Foreground="White"
                          TextWrapping="Wrap" />
               <Button Grid.Column="1" Classes="Icon"
+                      AutomationProperties.AutomationId="Food_BtnToggleFavorite"
                       Command="{Binding ToggleFavoriteCommand}">
                 <Panel>
                   <mi:MaterialIcon Kind="Star" Width="24" Height="24"
@@ -256,6 +276,7 @@
             <!-- Portion Input -->
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
               <NumericUpDown Grid.Column="0"
+                             AutomationProperties.AutomationId="Food_NumPortionGrams"
                              Value="{Binding PortionGrams}"
                              Minimum="1" Maximum="10000"
                              Increment="10"
@@ -265,6 +286,7 @@
               <TextBlock Grid.Column="1" Text="g" Foreground="White"
                          VerticalAlignment="Center" FontSize="14" />
               <Button Grid.Column="2"
+                      AutomationProperties.AutomationId="Food_BtnDefaultPortion"
                       Command="{Binding UseDefaultPortionCommand}"
                       Background="Transparent"
                       Foreground="White"
@@ -279,28 +301,32 @@
             <!-- Nutrition Preview -->
             <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
               <StackPanel HorizontalAlignment="Center">
-                <TextBlock Text="{Binding CalculatedCalories, StringFormat='{}{0:F0}'}"
+                <TextBlock AutomationProperties.AutomationId="Food_TxtCalcCalories"
+                           Text="{Binding CalculatedCalories, StringFormat='{}{0:F0}'}"
                            FontSize="18" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="kcal" FontSize="10" Foreground="White" Opacity="0.8"
                            HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding CalculatedProtein, StringFormat='{}{0:F1}g'}"
+                <TextBlock AutomationProperties.AutomationId="Food_TxtCalcProtein"
+                           Text="{Binding CalculatedProtein, StringFormat='{}{0:F1}g'}"
                            FontSize="14" Foreground="White"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Protein}" FontSize="10" Foreground="White" Opacity="0.8"
                            HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding CalculatedCarbs, StringFormat='{}{0:F1}g'}"
+                <TextBlock AutomationProperties.AutomationId="Food_TxtCalcCarbs"
+                           Text="{Binding CalculatedCarbs, StringFormat='{}{0:F1}g'}"
                            FontSize="14" Foreground="White"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Carbs}" FontSize="10" Foreground="White" Opacity="0.8"
                            HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding CalculatedFat, StringFormat='{}{0:F1}g'}"
+                <TextBlock AutomationProperties.AutomationId="Food_TxtCalcFat"
+                           Text="{Binding CalculatedFat, StringFormat='{}{0:F1}g'}"
                            FontSize="14" Foreground="White"
                            HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Fat}" FontSize="10" Foreground="White" Opacity="0.8"
@@ -309,13 +335,15 @@
             </Grid>
 
             <!-- Meal Selection -->
-            <ComboBox ItemsSource="{Binding Meals}"
+            <ComboBox AutomationProperties.AutomationId="Food_CmbMeal"
+                      ItemsSource="{Binding Meals}"
                       SelectedIndex="{Binding SelectedMeal}"
                       HorizontalAlignment="Stretch" />
 
             <!-- Action Buttons -->
             <Grid ColumnDefinitions="*,8,*">
               <Button Grid.Column="0"
+                      AutomationProperties.AutomationId="Food_BtnCancelAdd"
                       Command="{Binding CancelAddCommand}"
                       Background="Transparent"
                       Foreground="White"
@@ -326,6 +354,7 @@
                 <TextBlock Text="{loc:Translate Cancel}" />
               </Button>
               <Button Grid.Column="2" Classes="Success"
+                      AutomationProperties.AutomationId="Food_BtnAddToLog"
                       Command="{Binding AddToLogCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center">
@@ -340,7 +369,8 @@
 
         <!-- Search Results -->
         <StackPanel IsVisible="{Binding HasResults}" Spacing="8">
-          <TextBlock Text="{loc:Translate SearchResults}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtSearchResultsHeader"
+                     Text="{loc:Translate SearchResults}"
                      FontSize="16" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -395,7 +425,8 @@
           </ItemsControl>
 
           <!-- Load More Button -->
-          <Button Classes="Outlined"
+          <Button AutomationProperties.AutomationId="Food_BtnLoadMore"
+                  Classes="Outlined"
                   Command="{Binding LoadMoreResultsCommand}"
                   IsVisible="{Binding HasMoreResults}"
                   HorizontalAlignment="Center"
@@ -409,8 +440,10 @@
 
         <!-- Extended Database Hint (wenig lokale Ergebnisse) -->
         <Border Classes="Card StatsCard" Padding="12" Margin="0,4"
+                AutomationProperties.AutomationId="Food_CardExtendedDbHint"
                 IsVisible="{Binding ShowExtendedDbHint}">
-          <Button Classes="Text" Padding="0" Height="NaN"
+          <Button AutomationProperties.AutomationId="Food_BtnExtendedDb"
+                  Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding RequestExtendedDbCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -426,7 +459,8 @@
         </Border>
 
         <!-- Skeleton-Loader während der Suche -->
-        <uiControls:SkeletonLoader Lines="3" LineHeight="56"
+        <uiControls:SkeletonLoader AutomationProperties.AutomationId="Food_SkeletonLoader"
+                                    Lines="3" LineHeight="56"
                                     IsVisible="{Binding IsSearching}" />
 
         <!-- Search hint wenn kein Query und keine Ergebnisse -->
@@ -437,18 +471,21 @@
                            Foreground="{DynamicResource TextMutedBrush}"
                            HorizontalAlignment="Center"
                            IsVisible="{Binding !IsSearching}" />
-          <TextBlock Text="{loc:Translate TapToSearch}" Classes="Caption"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtSearchHint"
+                     Text="{loc:Translate TapToSearch}" Classes="Caption"
                      HorizontalAlignment="Center"
                      IsVisible="{Binding !IsSearching}" />
         </StackPanel>
 
         <!-- Today's Food Log -->
         <StackPanel Spacing="8">
-          <TextBlock Text="{loc:Translate TodayLog}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtTodayLogHeader"
+                     Text="{loc:Translate TodayLog}"
                      FontSize="16" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
-          <TextBlock Text="{loc:Translate NoFoodEntries}" Classes="Caption"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtNoEntries"
+                     Text="{loc:Translate NoFoodEntries}" Classes="Caption"
                      HorizontalAlignment="Center" Margin="0,20"
                      IsVisible="{Binding !HasLogEntries}" />
 
@@ -502,6 +539,7 @@
     <!-- Row 3: Nutrition Summary Footer              -->
     <!-- ============================================ -->
     <Border Grid.Row="3"
+            AutomationProperties.AutomationId="Food_FooterSummary"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,1,0,0"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
@@ -516,6 +554,7 @@
             <TextBlock Text="{loc:Translate Protein}" FontSize="11"
                        Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
             <ProgressBar Grid.Column="1"
+                         AutomationProperties.AutomationId="Food_ProgressProtein"
                          Value="{Binding DailyMacroSummary.ProteinProgress.PercentageComplete}"
                          Maximum="100"
                          Foreground="{DynamicResource SuccessBrush}"
@@ -531,6 +570,7 @@
             <TextBlock Text="{loc:Translate Carbs}" FontSize="11"
                        Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
             <ProgressBar Grid.Column="1"
+                         AutomationProperties.AutomationId="Food_ProgressCarbs"
                          Value="{Binding DailyMacroSummary.CarbsProgress.PercentageComplete}"
                          Maximum="100"
                          Foreground="{DynamicResource WarningBrush}"
@@ -546,6 +586,7 @@
             <TextBlock Text="{loc:Translate Fat}" FontSize="11"
                        Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
             <ProgressBar Grid.Column="1"
+                         AutomationProperties.AutomationId="Food_ProgressFat"
                          Value="{Binding DailyMacroSummary.FatProgress.PercentageComplete}"
                          Maximum="100"
                          Foreground="{DynamicResource ErrorBrush}"
@@ -561,26 +602,30 @@
         <!-- Totals Summary Row -->
         <Grid ColumnDefinitions="*,*,*,*">
           <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="{Binding TodaySummary.TotalCalories, StringFormat='{}{0:F0}'}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtTotalCalories"
+                       Text="{Binding TodaySummary.TotalCalories, StringFormat='{}{0:F0}'}"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="kcal" Classes="Caption" HorizontalAlignment="Center" />
           </StackPanel>
           <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding TodaySummary.TotalProtein, StringFormat='{}{0:F0}g'}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtTotalProtein"
+                       Text="{Binding TodaySummary.TotalProtein, StringFormat='{}{0:F0}g'}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{loc:Translate Protein}" Classes="Caption" HorizontalAlignment="Center" />
           </StackPanel>
           <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding TodaySummary.TotalCarbs, StringFormat='{}{0:F0}g'}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtTotalCarbs"
+                       Text="{Binding TodaySummary.TotalCarbs, StringFormat='{}{0:F0}g'}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{loc:Translate Carbs}" Classes="Caption" HorizontalAlignment="Center" />
           </StackPanel>
           <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding TodaySummary.TotalFat, StringFormat='{}{0:F0}g'}"
+            <TextBlock AutomationProperties.AutomationId="Food_TxtTotalFat"
+                       Text="{Binding TodaySummary.TotalFat, StringFormat='{}{0:F0}g'}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center" />
             <TextBlock Text="{loc:Translate Fat}" Classes="Caption" HorizontalAlignment="Center" />
@@ -588,10 +633,12 @@
         </Grid>
 
         <!-- Calorie Status Banner -->
-        <Border CornerRadius="8" Padding="8,6"
+        <Border AutomationProperties.AutomationId="Food_CardCalorieStatus"
+                CornerRadius="8" Padding="8,6"
                 Background="{DynamicResource PrimaryBrush}"
                 IsVisible="{Binding HasCalorieGoal}">
-          <TextBlock Text="{Binding CalorieStatusText}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtCalorieStatus"
+                     Text="{Binding CalorieStatusText}"
                      FontSize="13" FontWeight="SemiBold" Foreground="White"
                      HorizontalAlignment="Center" />
         </Border>
@@ -602,16 +649,19 @@
     <!-- Row 4: Undo Banner                           -->
     <!-- ============================================ -->
     <Border Grid.Row="4"
+            AutomationProperties.AutomationId="Food_CardUndo"
             Background="{DynamicResource SurfaceBrush}"
             CornerRadius="8"
             Padding="16,12"
             Margin="16,8"
             IsVisible="{Binding ShowUndoBanner}">
       <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="{Binding UndoMessage}"
+        <TextBlock AutomationProperties.AutomationId="Food_TxtUndoMessage"
+                   Text="{Binding UndoMessage}"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    FontSize="14" VerticalAlignment="Center" />
         <Button Grid.Column="1" Classes="Warning Small"
+                AutomationProperties.AutomationId="Food_BtnUndo"
                 Command="{Binding UndoDeleteLogCommand}">
           <TextBlock Text="{loc:Translate Undo}" FontWeight="Bold" />
         </Button>
@@ -622,6 +672,7 @@
     <!-- Scan Limit Ad Overlay                         -->
     <!-- ============================================ -->
     <Border Grid.RowSpan="5"
+            AutomationProperties.AutomationId="Food_OverlayScanLimit"
             Background="#CC000000"
             IsVisible="{Binding ShowScanLimitOverlay}"
             ZIndex="80">
@@ -635,15 +686,18 @@
           <mi:MaterialIcon Kind="Barcode" Width="48" Height="48"
                            Foreground="{DynamicResource WarningBrush}"
                            HorizontalAlignment="Center" />
-          <TextBlock Text="{loc:Translate ScanLimitTitle}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtScanLimitTitle"
+                     Text="{loc:Translate ScanLimitTitle}"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
-          <TextBlock Text="{loc:Translate ScanLimitMessage}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtScanLimitMessage"
+                     Text="{loc:Translate ScanLimitMessage}"
                      FontSize="14"
                      Foreground="{DynamicResource TextMutedBrush}"
                      TextWrapping="Wrap" TextAlignment="Center" />
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Food_BtnWatchAdScans"
+                  Classes="Primary"
                   Command="{Binding WatchAdForScansCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -652,7 +706,8 @@
               <TextBlock Text="{loc:Translate WatchAdForScans}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Classes="Text"
+          <Button AutomationProperties.AutomationId="Food_BtnCancelScanLimit"
+                  Classes="Text"
                   Command="{Binding CancelScanLimitCommand}"
                   HorizontalAlignment="Center">
             <TextBlock Text="{loc:Translate Cancel}"
@@ -666,6 +721,7 @@
     <!-- Extended Food DB Ad Overlay                   -->
     <!-- ============================================ -->
     <Border Grid.RowSpan="5"
+            AutomationProperties.AutomationId="Food_OverlayExtendedDb"
             Background="#CC000000"
             IsVisible="{Binding ShowExtendedDbOverlay}"
             ZIndex="80">
@@ -679,15 +735,18 @@
           <mi:MaterialIcon Kind="DatabaseSearch" Width="48" Height="48"
                            Foreground="{DynamicResource InfoBrush}"
                            HorizontalAlignment="Center" />
-          <TextBlock Text="{loc:Translate ExtendedFoodDb}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtExtendedDbTitle"
+                     Text="{loc:Translate ExtendedFoodDb}"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
-          <TextBlock Text="{loc:Translate ExtendedFoodDbDesc}"
+          <TextBlock AutomationProperties.AutomationId="Food_TxtExtendedDbDesc"
+                     Text="{loc:Translate ExtendedFoodDbDesc}"
                      FontSize="14"
                      Foreground="{DynamicResource TextMutedBrush}"
                      TextWrapping="Wrap" TextAlignment="Center" />
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Food_BtnWatchAdExtendedDb"
+                  Classes="Primary"
                   Command="{Binding ConfirmExtendedDbAdCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -696,7 +755,8 @@
               <TextBlock Text="{loc:Translate ExtendedFoodDb}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Classes="Text"
+          <Button AutomationProperties.AutomationId="Food_BtnCancelExtendedDb"
+                  Classes="Text"
                   Command="{Binding CancelExtendedDbCommand}"
                   HorizontalAlignment="Center">
             <TextBlock Text="{loc:Translate Cancel}"

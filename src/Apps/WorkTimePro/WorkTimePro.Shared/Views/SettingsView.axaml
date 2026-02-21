@@ -11,17 +11,18 @@
     <conv:RoundingDisplayConverter x:Key="RoundingDisplayConverter" />
   </UserControl.Resources>
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="12" Margin="16">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" AutomationProperties.AutomationId="Settings_ScrollViewer">
+    <StackPanel Spacing="12" Margin="16" AutomationProperties.AutomationId="Settings_RootPanel">
 
       <!-- Header -->
-      <TextBlock Text="{loc:Translate Settings}"
+      <TextBlock AutomationProperties.AutomationId="Settings_TxtTitle"
+                 Text="{loc:Translate Settings}"
                  FontSize="22" FontWeight="Bold"
                  Foreground="{DynamicResource TextPrimaryBrush}"
                  Margin="0,4,0,4" />
 
       <!-- ==================== Premium Status ==================== -->
-      <Border Classes="SettingsCard PremiumShimmer">
+      <Border Classes="SettingsCard PremiumShimmer" AutomationProperties.AutomationId="Settings_PremiumCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
@@ -33,33 +34,36 @@
           </StackPanel>
 
           <!-- Status Badge -->
-          <Border Background="{Binding PremiumStatusColor}"
+          <Border AutomationProperties.AutomationId="Settings_PremiumBadge"
+                  Background="{Binding PremiumStatusColor}"
                   CornerRadius="12" Padding="16,8"
                   HorizontalAlignment="Center">
-            <TextBlock Text="{Binding PremiumStatusText}"
+            <TextBlock AutomationProperties.AutomationId="Settings_TxtPremiumStatus" Text="{Binding PremiumStatusText}"
                        FontSize="15" FontWeight="Bold"
                        Foreground="White" />
           </Border>
 
           <!-- Trial Progress -->
-          <StackPanel Spacing="4" IsVisible="{Binding IsInTrial}">
-            <TextBlock Text="{Binding TrialProgressText}"
+          <StackPanel Spacing="4" IsVisible="{Binding IsInTrial}" AutomationProperties.AutomationId="Settings_TrialProgress">
+            <TextBlock AutomationProperties.AutomationId="Settings_TxtTrialProgress" Text="{Binding TrialProgressText}"
                        FontSize="12"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
-            <ProgressBar Value="{Binding TrialProgress}"
+            <ProgressBar AutomationProperties.AutomationId="Settings_PbTrialProgress" Value="{Binding TrialProgress}"
                          Maximum="1"
                          Foreground="{DynamicResource WarningBrush}"
                          Height="8" />
           </StackPanel>
 
-          <Button Content="{Binding BuyPremiumButtonText}"
+          <Button AutomationProperties.AutomationId="Settings_BtnBuyPremium"
+                  Content="{Binding BuyPremiumButtonText}"
                   Classes="Primary"
                   Command="{Binding PurchasePremiumCommand}"
                   IsVisible="{Binding !IsPremium}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center" />
 
-          <Button Content="{loc:Translate RestorePurchases}"
+          <Button AutomationProperties.AutomationId="Settings_BtnRestorePurchases"
+                  Content="{loc:Translate RestorePurchases}"
                   Classes="Secondary"
                   Command="{Binding RestorePurchasesCommand}"
                   IsVisible="{Binding !IsPremium}"
@@ -70,7 +74,7 @@
       </Border>
 
       <!-- ==================== Work Time Settings ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_WorkTimeCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="ClockOutline" Width="20" Height="20"
@@ -83,22 +87,26 @@
 
           <!-- Daily Hours -->
           <Grid ColumnDefinitions="*,120">
-            <TextBlock Text="{loc:Translate DailyTarget}"
+            <TextBlock AutomationProperties.AutomationId="Settings_TxtDailyTarget"
+                       Text="{loc:Translate DailyTarget}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbDailyHours"
                      Text="{Binding DailyHours}"
                      HorizontalContentAlignment="Center" />
           </Grid>
 
           <!-- Weekly Hours -->
           <Grid ColumnDefinitions="*,120">
-            <TextBlock Text="{loc:Translate WeeklyTarget}"
+            <TextBlock AutomationProperties.AutomationId="Settings_TxtWeeklyTarget"
+                       Text="{loc:Translate WeeklyTarget}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbWeeklyHours"
                      Text="{Binding WeeklyHours}"
                      HorizontalContentAlignment="Center" />
           </Grid>
@@ -113,43 +121,43 @@
 
           <WrapPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding MondayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkMonday" IsChecked="{Binding MondayEnabled}" />
               <TextBlock Text="{loc:Translate Monday}" FontSize="13"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding TuesdayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkTuesday" IsChecked="{Binding TuesdayEnabled}" />
               <TextBlock Text="{loc:Translate Tuesday}" FontSize="13"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding WednesdayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkWednesday" IsChecked="{Binding WednesdayEnabled}" />
               <TextBlock Text="{loc:Translate Wednesday}" FontSize="13"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding ThursdayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkThursday" IsChecked="{Binding ThursdayEnabled}" />
               <TextBlock Text="{loc:Translate Thursday}" FontSize="13"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding FridayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkFriday" IsChecked="{Binding FridayEnabled}" />
               <TextBlock Text="{loc:Translate Friday}" FontSize="13"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding SaturdayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkSaturday" IsChecked="{Binding SaturdayEnabled}" />
               <TextBlock Text="{loc:Translate Saturday}" FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
-              <CheckBox IsChecked="{Binding SundayEnabled}" />
+              <CheckBox AutomationProperties.AutomationId="Settings_ChkSunday" IsChecked="{Binding SundayEnabled}" />
               <TextBlock Text="{loc:Translate Sunday}" FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          VerticalAlignment="Center" />
@@ -160,7 +168,7 @@
 
           <!-- Individual Hours per Day -->
           <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-            <ToggleSwitch IsChecked="{Binding UseIndividualHours}" OnContent="" OffContent="" />
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_TsIndividualHours" IsChecked="{Binding UseIndividualHours}" OnContent="" OffContent="" />
             <TextBlock Text="{loc:Translate IndividualHoursPerDay}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
@@ -172,31 +180,31 @@
                   ColumnSpacing="8" RowSpacing="4">
               <TextBlock Grid.Row="0" Text="{loc:Translate Monday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding MondayHours}" />
+              <TextBox Grid.Row="0" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbMondayHours" Text="{Binding MondayHours}" />
 
               <TextBlock Grid.Row="1" Text="{loc:Translate Tuesday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TuesdayHours}" />
+              <TextBox Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbTuesdayHours" Text="{Binding TuesdayHours}" />
 
               <TextBlock Grid.Row="2" Text="{loc:Translate Wednesday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WednesdayHours}" />
+              <TextBox Grid.Row="2" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbWednesdayHours" Text="{Binding WednesdayHours}" />
 
               <TextBlock Grid.Row="3" Text="{loc:Translate Thursday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ThursdayHours}" />
+              <TextBox Grid.Row="3" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbThursdayHours" Text="{Binding ThursdayHours}" />
 
               <TextBlock Grid.Row="4" Text="{loc:Translate Friday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding FridayHours}" />
+              <TextBox Grid.Row="4" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbFridayHours" Text="{Binding FridayHours}" />
 
               <TextBlock Grid.Row="5" Text="{loc:Translate Saturday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SaturdayHours}" />
+              <TextBox Grid.Row="5" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbSaturdayHours" Text="{Binding SaturdayHours}" />
 
               <TextBlock Grid.Row="6" Text="{loc:Translate Sunday}" FontSize="13" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding SundayHours}" />
+              <TextBox Grid.Row="6" Grid.Column="1" AutomationProperties.AutomationId="Settings_TbSundayHours" Text="{Binding SundayHours}" />
             </Grid>
           </StackPanel>
 
@@ -209,6 +217,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <ComboBox Grid.Column="1"
+                      AutomationProperties.AutomationId="Settings_CmbRounding"
                       ItemsSource="{Binding RoundingOptions}"
                       SelectedItem="{Binding RoundingMinutes}"
                       HorizontalAlignment="Stretch">
@@ -227,6 +236,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <NumericUpDown Grid.Column="1"
+                           AutomationProperties.AutomationId="Settings_NudHourlyRate"
                            Value="{Binding HourlyRate}"
                            Minimum="0"
                            Maximum="10000"
@@ -238,7 +248,7 @@
       </Border>
 
       <!-- ==================== Auto-Pause ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_AutoPauseCard">
         <StackPanel Spacing="12">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="Coffee" Width="20" Height="20"
@@ -250,6 +260,7 @@
                        VerticalAlignment="Center"
                        Margin="8,0,0,0" />
             <ToggleSwitch Grid.Column="2"
+                          AutomationProperties.AutomationId="Settings_TsAutoPause"
                           IsChecked="{Binding AutoPauseEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
@@ -264,6 +275,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbAutoPauseAfterHours"
                      Text="{Binding AutoPauseAfterHours}"
                      HorizontalContentAlignment="Center" />
           </Grid>
@@ -274,6 +286,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbAutoPauseMinutes"
                      Text="{Binding AutoPauseMinutes}"
                      HorizontalContentAlignment="Center" />
           </Grid>
@@ -281,7 +294,7 @@
       </Border>
 
       <!-- ==================== Reminders ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_RemindersCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Bell" Width="20" Height="20"
@@ -294,13 +307,14 @@
 
           <!-- Morning -->
           <Grid ColumnDefinitions="Auto,*,Auto">
-            <ToggleSwitch IsChecked="{Binding MorningReminderEnabled}" OnContent="" OffContent="" />
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_TsMorningReminder" IsChecked="{Binding MorningReminderEnabled}" OnContent="" OffContent="" />
             <TextBlock Grid.Column="1"
                        Text="{loc:Translate MorningReminder}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TimePicker Grid.Column="2"
+                       AutomationProperties.AutomationId="Settings_TpMorningReminder"
                        SelectedTime="{Binding MorningReminderTime}"
                        IsEnabled="{Binding MorningReminderEnabled}"
                        ClockIdentifier="24HourClock"
@@ -309,13 +323,14 @@
 
           <!-- Evening -->
           <Grid ColumnDefinitions="Auto,*,Auto">
-            <ToggleSwitch IsChecked="{Binding EveningReminderEnabled}" OnContent="" OffContent="" />
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_TsEveningReminder" IsChecked="{Binding EveningReminderEnabled}" OnContent="" OffContent="" />
             <TextBlock Grid.Column="1"
                        Text="{loc:Translate EveningReminder}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TimePicker Grid.Column="2"
+                       AutomationProperties.AutomationId="Settings_TpEveningReminder"
                        SelectedTime="{Binding EveningReminderTime}"
                        IsEnabled="{Binding EveningReminderEnabled}"
                        ClockIdentifier="24HourClock"
@@ -324,7 +339,7 @@
 
           <!-- Break -->
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <ToggleSwitch IsChecked="{Binding PauseReminderEnabled}" OnContent="" OffContent="" />
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_TsPauseReminder" IsChecked="{Binding PauseReminderEnabled}" OnContent="" OffContent="" />
             <TextBlock Text="{loc:Translate BreakReminder}"
                        FontSize="14"
                        Foreground="{DynamicResource TextPrimaryBrush}"
@@ -334,7 +349,7 @@
       </Border>
 
       <!-- ==================== Vacation ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_VacationCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Beach" Width="20" Height="20"
@@ -351,6 +366,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbVacationDays"
                      Text="{Binding VacationDaysPerYear}"
                      HorizontalContentAlignment="Center" />
           </Grid>
@@ -362,7 +378,7 @@
       </Border>
 
       <!-- ==================== Holidays ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_HolidaysCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="PartyPopper" Width="20" Height="20"
@@ -377,14 +393,15 @@
                      FontSize="12"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
 
-          <ComboBox ItemsSource="{Binding GermanRegions}"
+          <ComboBox AutomationProperties.AutomationId="Settings_CmbRegion"
+                    ItemsSource="{Binding GermanRegions}"
                     SelectedIndex="{Binding SelectedRegionIndex}"
                     HorizontalAlignment="Stretch" />
         </StackPanel>
       </Border>
 
       <!-- ==================== Legal Compliance ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_LegalComplianceCard">
         <StackPanel Spacing="8">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="Shield" Width="20" Height="20"
@@ -396,6 +413,7 @@
                        VerticalAlignment="Center"
                        Margin="8,0,0,0" />
             <ToggleSwitch Grid.Column="2"
+                          AutomationProperties.AutomationId="Settings_TsLegalCompliance"
                           IsChecked="{Binding LegalComplianceEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
@@ -407,7 +425,7 @@
       </Border>
 
       <!-- ==================== Overtime Warning ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_OvertimeCard">
         <StackPanel Spacing="12">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Kind="TrendingUp" Width="20" Height="20"
@@ -419,6 +437,7 @@
                        VerticalAlignment="Center"
                        Margin="8,0,0,0" />
             <ToggleSwitch Grid.Column="2"
+                          AutomationProperties.AutomationId="Settings_TsOvertimeWarning"
                           IsChecked="{Binding OvertimeWarningEnabled}"
                           OnContent="" OffContent="" />
           </Grid>
@@ -429,6 +448,7 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
             <TextBox Grid.Column="1"
+                     AutomationProperties.AutomationId="Settings_TbOvertimeHours"
                      Text="{Binding OvertimeWarningHours}"
                      HorizontalContentAlignment="Center" />
           </Grid>
@@ -436,7 +456,7 @@
       </Border>
 
       <!-- ==================== Theme Selection ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_ThemeCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Palette" Width="20" Height="20"
@@ -452,7 +472,8 @@
 
             <!-- Theme 1: Midnight -->
             <Panel Grid.Row="0" Grid.Column="0">
-              <Button IsVisible="{Binding IsMidnightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeMidnightActive"
+                      IsVisible="{Binding IsMidnightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Midnight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -479,7 +500,8 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsMidnightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeMidnight"
+                      IsVisible="{Binding !IsMidnightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Midnight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -504,7 +526,8 @@
 
             <!-- Theme 2: Aurora -->
             <Panel Grid.Row="0" Grid.Column="1">
-              <Button IsVisible="{Binding IsAuroraSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeAuroraActive"
+                      IsVisible="{Binding IsAuroraSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Aurora"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -531,7 +554,8 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsAuroraSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeAurora"
+                      IsVisible="{Binding !IsAuroraSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Aurora"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -556,7 +580,8 @@
 
             <!-- Theme 3: Daylight -->
             <Panel Grid.Row="1" Grid.Column="0">
-              <Button IsVisible="{Binding IsDaylightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeDaylightActive"
+                      IsVisible="{Binding IsDaylightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Daylight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -583,7 +608,8 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsDaylightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeDaylight"
+                      IsVisible="{Binding !IsDaylightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Daylight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -608,7 +634,8 @@
 
             <!-- Theme 4: Forest -->
             <Panel Grid.Row="1" Grid.Column="1">
-              <Button IsVisible="{Binding IsForestSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeForestActive"
+                      IsVisible="{Binding IsForestSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Forest"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -635,7 +662,8 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsForestSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeForest"
+                      IsVisible="{Binding !IsForestSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Forest"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -663,7 +691,7 @@
       </Border>
 
       <!-- ==================== Language Selection ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_LanguageCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Translate" Width="20" Height="20"
@@ -676,61 +704,61 @@
 
           <WrapPanel Orientation="Horizontal">
             <Panel>
-              <Button Classes="Primary Small" Content="Deutsch"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangDeActive" Classes="Primary Small" Content="Deutsch"
                       IsVisible="{Binding IsGermanSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Deutsch"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangDe" Classes="Outlined Small" Content="Deutsch"
                       IsVisible="{Binding !IsGermanSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                       Margin="0,0,8,8" />
             </Panel>
             <Panel>
-              <Button Classes="Primary Small" Content="English"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEnActive" Classes="Primary Small" Content="English"
                       IsVisible="{Binding IsEnglishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="English"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEn" Classes="Outlined Small" Content="English"
                       IsVisible="{Binding !IsEnglishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                       Margin="0,0,8,8" />
             </Panel>
             <Panel>
-              <Button Classes="Primary Small" Content="Espa&#241;ol"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEsActive" Classes="Primary Small" Content="Espa&#241;ol"
                       IsVisible="{Binding IsSpanishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Espa&#241;ol"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEs" Classes="Outlined Small" Content="Espa&#241;ol"
                       IsVisible="{Binding !IsSpanishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                       Margin="0,0,8,8" />
             </Panel>
             <Panel>
-              <Button Classes="Primary Small" Content="Fran&#231;ais"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangFrActive" Classes="Primary Small" Content="Fran&#231;ais"
                       IsVisible="{Binding IsFrenchSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Fran&#231;ais"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangFr" Classes="Outlined Small" Content="Fran&#231;ais"
                       IsVisible="{Binding !IsFrenchSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                       Margin="0,0,8,8" />
             </Panel>
             <Panel>
-              <Button Classes="Primary Small" Content="Italiano"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangItActive" Classes="Primary Small" Content="Italiano"
                       IsVisible="{Binding IsItalianSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Italiano"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangIt" Classes="Outlined Small" Content="Italiano"
                       IsVisible="{Binding !IsItalianSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                       Margin="0,0,8,8" />
             </Panel>
             <Panel>
-              <Button Classes="Primary Small" Content="Portugu&#234;s"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangPtActive" Classes="Primary Small" Content="Portugu&#234;s"
                       IsVisible="{Binding IsPortugueseSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Portugu&#234;s"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangPt" Classes="Outlined Small" Content="Portugu&#234;s"
                       IsVisible="{Binding !IsPortugueseSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                       Margin="0,0,8,8" />
@@ -740,7 +768,7 @@
       </Border>
 
       <!-- ==================== Legal Sources ==================== -->
-      <Border Classes="SettingsCard">
+      <Border Classes="SettingsCard" AutomationProperties.AutomationId="Settings_LegalSourcesCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="BookOpen" Width="20" Height="20"
@@ -755,14 +783,16 @@
                      FontSize="12"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
 
-          <Button Content="{loc:Translate LegalSourceArbZG}"
+          <Button AutomationProperties.AutomationId="Settings_BtnArbZG"
+                  Content="{loc:Translate LegalSourceArbZG}"
                   Classes="Secondary"
                   Command="{Binding OpenArbZGCommand}"
                   FontSize="13"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center" />
 
-          <Button Content="{loc:Translate LegalSourceHolidays}"
+          <Button AutomationProperties.AutomationId="Settings_BtnHolidaysSource"
+                  Content="{loc:Translate LegalSourceHolidays}"
                   Classes="Secondary"
                   Command="{Binding OpenHolidaysSourceCommand}"
                   FontSize="13"
@@ -772,7 +802,8 @@
       </Border>
 
       <!-- App Version -->
-      <TextBlock Text="{Binding AppVersion}"
+      <TextBlock AutomationProperties.AutomationId="Settings_TxtAppVersion"
+                 Text="{Binding AppVersion}"
                  FontSize="12"
                  Foreground="{DynamicResource TextSecondaryBrush}"
                  HorizontalAlignment="Center"

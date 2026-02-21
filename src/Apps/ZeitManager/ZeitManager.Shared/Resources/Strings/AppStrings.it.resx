@@ -689,4 +689,7 @@ Esempi:
   <data name="OnboardingCreateTimer" xml:space="preserve">
     <value>Oppure crea il tuo timer personalizzato</value>
   </data>
+  <data name="AlarmPermissionMissing" xml:space="preserve">
+    <value>Autorizzazione allarme necessaria. Consenti gli allarmi esatti nelle impostazioni dell'app.</value>
+  </data>
 </root>

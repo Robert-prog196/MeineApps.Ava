@@ -7,17 +7,19 @@
              x:Class="WorkTimePro.Views.StatisticsView"
              x:DataType="vm:StatisticsViewModel">
 
-  <Grid RowDefinitions="Auto,Auto,Auto,*">
+  <Grid RowDefinitions="Auto,Auto,Auto,*" AutomationProperties.AutomationId="Stats_RootPanel">
 
     <!-- Row 0: Kompakter Header (Titel + View-Toggle + Export) -->
     <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="16,8,16,10">
       <TextBlock Grid.Column="0"
+                 AutomationProperties.AutomationId="Stats_TxtTitle"
                  Text="{loc:Translate Statistics}"
                  FontSize="22" FontWeight="Bold"
                  Foreground="{DynamicResource TextPrimaryBrush}"
                  VerticalAlignment="Center" />
 
       <TextBlock Grid.Column="1"
+                 AutomationProperties.AutomationId="Stats_TxtPeriod"
                  Text="{Binding PeriodDisplay}"
                  FontSize="15" FontWeight="SemiBold"
                  Foreground="{DynamicResource AccentBrush}"
@@ -25,6 +27,7 @@
 
       <!-- View Toggle -->
       <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}"
+              AutomationProperties.AutomationId="Stats_ViewToggle"
               CornerRadius="12" Padding="2" Margin="0,0,8,0" VerticalAlignment="Center">
         <StackPanel Orientation="Horizontal" Spacing="2">
           <Panel>
@@ -58,6 +61,7 @@
 
       <!-- Export Button -->
       <Button Grid.Column="3" Classes="Text"
+              AutomationProperties.AutomationId="Stats_BtnExport"
               Command="{Binding ExportCommand}"
               Width="36" Height="36" Padding="0"
               VerticalAlignment="Center">
@@ -68,6 +72,7 @@
 
     <!-- Row 1: Period-Chips -->
     <Border Grid.Row="1"
+            AutomationProperties.AutomationId="Stats_PeriodChips"
             Background="{DynamicResource SurfaceBrush}"
             CornerRadius="20"
             Padding="4"
@@ -141,6 +146,7 @@
 
     <!-- Row 2: Summary-Band -->
     <Border Grid.Row="2"
+            AutomationProperties.AutomationId="Stats_SummaryBand"
             Background="{DynamicResource CardBrush}"
             CornerRadius="16"
             Padding="12,10"
@@ -157,6 +163,7 @@
                        Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
           </StackPanel>
           <TextBlock Text="{Binding TotalWorkDisplay}"
+                     AutomationProperties.AutomationId="Stats_TxtWorkTime"
                      FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
@@ -172,6 +179,7 @@
                        Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
           </StackPanel>
           <TextBlock Text="{Binding TotalOvertimeDisplay}"
+                     AutomationProperties.AutomationId="Stats_TxtOvertime"
                      FontSize="15" FontWeight="Bold"
                      Foreground="{Binding OvertimeColor}"
                      HorizontalAlignment="Center" />
@@ -187,6 +195,7 @@
                        Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
           </StackPanel>
           <TextBlock Text="{Binding AverageDailyDisplay}"
+                     AutomationProperties.AutomationId="Stats_TxtAvgDaily"
                      FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
@@ -202,6 +211,7 @@
                        Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
           </StackPanel>
           <TextBlock Text="{Binding WorkedDays}"
+                     AutomationProperties.AutomationId="Stats_TxtWorkedDays"
                      FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
@@ -210,13 +220,13 @@
     </Border>
 
     <!-- Row 3: ScrollViewer mit Content -->
-    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="3" AutomationProperties.AutomationId="Stats_ScrollViewer" VerticalScrollBarVisibility="Auto">
       <StackPanel Spacing="12" Margin="16,0,16,0">
 
         <!-- CHARTS MODE -->
 
         <!-- Abwesenheits-Übersicht -->
-        <Border Classes="StatsCard" IsVisible="{Binding !ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_AbsenceCard" IsVisible="{Binding !ShowTable}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#2000838F" Width="28" Height="28" CornerRadius="8">
@@ -229,7 +239,7 @@
                 <Border Background="#201565C0" Width="32" Height="32" CornerRadius="16" HorizontalAlignment="Center">
                   <mi:MaterialIcon Kind="Beach" Width="18" Height="18" Foreground="{DynamicResource InfoBrush}" />
                 </Border>
-                <TextBlock Text="{Binding VacationDays}" FontSize="18" FontWeight="Bold"
+                <TextBlock Text="{Binding VacationDays}" AutomationProperties.AutomationId="Stats_TxtVacationDays" FontSize="18" FontWeight="Bold"
                            Foreground="{DynamicResource InfoBrush}" HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Vacation}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
@@ -238,7 +248,7 @@
                 <Border Background="#20F44336" Width="32" Height="32" CornerRadius="16" HorizontalAlignment="Center">
                   <mi:MaterialIcon Kind="Thermometer" Width="18" Height="18" Foreground="{DynamicResource ErrorBrush}" />
                 </Border>
-                <TextBlock Text="{Binding SickDays}" FontSize="18" FontWeight="Bold"
+                <TextBlock Text="{Binding SickDays}" AutomationProperties.AutomationId="Stats_TxtSickDays" FontSize="18" FontWeight="Bold"
                            Foreground="{DynamicResource ErrorBrush}" HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Sick}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
@@ -247,7 +257,7 @@
                 <Border Background="#201565C0" Width="32" Height="32" CornerRadius="16" HorizontalAlignment="Center">
                   <mi:MaterialIcon Kind="HomeAccount" Width="18" Height="18" Foreground="{DynamicResource PrimaryBrush}" />
                 </Border>
-                <TextBlock Text="{Binding HomeOfficeDays}" FontSize="18" FontWeight="Bold"
+                <TextBlock Text="{Binding HomeOfficeDays}" AutomationProperties.AutomationId="Stats_TxtHomeOfficeDays" FontSize="18" FontWeight="Bold"
                            Foreground="{DynamicResource PrimaryBrush}" HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Home}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
@@ -256,7 +266,7 @@
                 <Border Background="#20FF9800" Width="32" Height="32" CornerRadius="16" HorizontalAlignment="Center">
                   <mi:MaterialIcon Kind="PartyPopper" Width="18" Height="18" Foreground="{DynamicResource WarningBrush}" />
                 </Border>
-                <TextBlock Text="{Binding HolidayDays}" FontSize="18" FontWeight="Bold"
+                <TextBlock Text="{Binding HolidayDays}" AutomationProperties.AutomationId="Stats_TxtHolidayDays" FontSize="18" FontWeight="Bold"
                            Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" />
                 <TextBlock Text="{loc:Translate Holiday}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
@@ -266,7 +276,7 @@
         </Border>
 
         <!-- Pausen-Statistik mit SkiaSharp Donut -->
-        <Border Classes="StatsCard" IsVisible="{Binding !ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_PauseCard" IsVisible="{Binding !ShowTable}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#20FF9800" Width="28" Height="28" CornerRadius="8">
@@ -278,7 +288,7 @@
               <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="2">
                 <TextBlock Text="{loc:Translate Manual}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                <TextBlock Text="{Binding TotalManualPauseDisplay}" FontSize="17" FontWeight="Bold"
+                <TextBlock Text="{Binding TotalManualPauseDisplay}" AutomationProperties.AutomationId="Stats_TxtManualPause" FontSize="17" FontWeight="Bold"
                            Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="2">
@@ -286,25 +296,25 @@
                   <TextBlock Text="{loc:Translate Auto}" FontSize="10" Foreground="{DynamicResource TextMutedBrush}" />
                   <mi:MaterialIcon Kind="FlashOutline" Width="10" Height="10" Foreground="{DynamicResource WarningBrush}" />
                 </StackPanel>
-                <TextBlock Text="{Binding TotalAutoPauseDisplay}" FontSize="17" FontWeight="Bold"
+                <TextBlock Text="{Binding TotalAutoPauseDisplay}" AutomationProperties.AutomationId="Stats_TxtAutoPause" FontSize="17" FontWeight="Bold"
                            Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="2">
                 <TextBlock Text="{loc:Translate AvgPerDay}" FontSize="10"
                            Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
-                <TextBlock Text="{Binding AveragePauseDisplay}" FontSize="17" FontWeight="Bold"
+                <TextBlock Text="{Binding AveragePauseDisplay}" AutomationProperties.AutomationId="Stats_TxtAvgPause" FontSize="17" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" />
               </StackPanel>
             </Grid>
             <!-- SkiaSharp Pausen-Donut -->
             <Border Height="150" ClipToBounds="True" IsVisible="{Binding HasPauseChartData}">
-              <skia:SKCanvasView x:Name="PauseDonutCanvas" PaintSurface="OnPaintPauseDonut" />
+              <skia:SKCanvasView x:Name="PauseDonutCanvas" AutomationProperties.AutomationId="Stats_PauseDonutCanvas" PaintSurface="OnPaintPauseDonut" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- Wöchentliche Arbeitszeit (SkiaSharp) -->
-        <Border Classes="StatsCard" IsVisible="{Binding !ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_WeeklyChartCard" IsVisible="{Binding !ShowTable}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#201565C0" Width="28" Height="28" CornerRadius="8">
@@ -313,13 +323,13 @@
               <TextBlock Text="{loc:Translate WeeklyWorkTimeChart}" Classes="SectionTitle" VerticalAlignment="Center" />
             </StackPanel>
             <Border Height="200" ClipToBounds="True">
-              <skia:SKCanvasView x:Name="WeeklyChartCanvas" PaintSurface="OnPaintWeeklyChart" />
+              <skia:SKCanvasView x:Name="WeeklyChartCanvas" AutomationProperties.AutomationId="Stats_WeeklyChartCanvas" PaintSurface="OnPaintWeeklyChart" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- Überstunden-Trend (SkiaSharp) -->
-        <Border Classes="StatsCard" IsVisible="{Binding !ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_OvertimeChartCard" IsVisible="{Binding !ShowTable}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#20FF9800" Width="28" Height="28" CornerRadius="8">
@@ -328,13 +338,13 @@
               <TextBlock Text="{loc:Translate OvertimeTrendChart}" Classes="SectionTitle" VerticalAlignment="Center" />
             </StackPanel>
             <Border Height="200" ClipToBounds="True">
-              <skia:SKCanvasView x:Name="OvertimeChartCanvas" PaintSurface="OnPaintOvertimeChart" />
+              <skia:SKCanvasView x:Name="OvertimeChartCanvas" AutomationProperties.AutomationId="Stats_OvertimeChartCanvas" PaintSurface="OnPaintOvertimeChart" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- Wochentag-Verteilung (SkiaSharp Radial) -->
-        <Border Classes="StatsCard" IsVisible="{Binding !ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_WeekdayRadialCard" IsVisible="{Binding !ShowTable}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#204CAF50" Width="28" Height="28" CornerRadius="8">
@@ -343,13 +353,13 @@
               <TextBlock Text="{loc:Translate WeekdayAverage}" Classes="SectionTitle" VerticalAlignment="Center" />
             </StackPanel>
             <Border Height="200" ClipToBounds="True">
-              <skia:SKCanvasView x:Name="WeekdayRadialCanvas" PaintSurface="OnPaintWeekdayRadial" />
+              <skia:SKCanvasView x:Name="WeekdayRadialCanvas" AutomationProperties.AutomationId="Stats_WeekdayRadialCanvas" PaintSurface="OnPaintWeekdayRadial" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- Projekt-Verteilung (SkiaSharp Donut) -->
-        <Border Classes="StatsCard" IsVisible="{Binding HasProjects}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_ProjectCard" IsVisible="{Binding HasProjects}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#206A1B9A" Width="28" Height="28" CornerRadius="8">
@@ -358,13 +368,13 @@
               <TextBlock Text="{loc:Translate ProjectDistribution}" Classes="SectionTitle" VerticalAlignment="Center" />
             </StackPanel>
             <Border Height="220" ClipToBounds="True">
-              <skia:SKCanvasView x:Name="ProjectDonutCanvas" PaintSurface="OnPaintProjectDonut" />
+              <skia:SKCanvasView x:Name="ProjectDonutCanvas" AutomationProperties.AutomationId="Stats_ProjectDonutCanvas" PaintSurface="OnPaintProjectDonut" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- Arbeitgeber-Verteilung (SkiaSharp Donut) -->
-        <Border Classes="StatsCard" IsVisible="{Binding HasEmployers}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_EmployerCard" IsVisible="{Binding HasEmployers}">
           <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" Spacing="8">
               <Border Background="#20C62828" Width="28" Height="28" CornerRadius="8">
@@ -373,13 +383,13 @@
               <TextBlock Text="{loc:Translate EmployerDistribution}" Classes="SectionTitle" VerticalAlignment="Center" />
             </StackPanel>
             <Border Height="220" ClipToBounds="True">
-              <skia:SKCanvasView x:Name="EmployerDonutCanvas" PaintSurface="OnPaintEmployerDonut" />
+              <skia:SKCanvasView x:Name="EmployerDonutCanvas" AutomationProperties.AutomationId="Stats_EmployerDonutCanvas" PaintSurface="OnPaintEmployerDonut" />
             </Border>
           </StackPanel>
         </Border>
 
         <!-- TABLE MODE -->
-        <Border Classes="StatsCard" Padding="8" IsVisible="{Binding ShowTable}">
+        <Border Classes="StatsCard" AutomationProperties.AutomationId="Stats_TableCard" Padding="8" IsVisible="{Binding ShowTable}">
           <StackPanel Spacing="4">
             <StackPanel Orientation="Horizontal" Spacing="8" Margin="8,4">
               <Border Background="#201565C0" Width="28" Height="28" CornerRadius="8">
@@ -398,7 +408,7 @@
                 <TextBlock Grid.Column="6" Text="{loc:Translate TableBalance}" Foreground="White" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" />
               </Grid>
             </Border>
-            <ItemsControl ItemsSource="{Binding TableDays}">
+            <ItemsControl ItemsSource="{Binding TableDays}" AutomationProperties.AutomationId="Stats_TableList">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="vm:WorkDayTableItem">
                   <Border Padding="6,5" Background="{DynamicResource CardBrush}">
@@ -436,7 +446,7 @@
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <StackPanel IsVisible="{Binding HasNoTableData}" HorizontalAlignment="Center" Margin="0,24">
+            <StackPanel IsVisible="{Binding HasNoTableData}" AutomationProperties.AutomationId="Stats_EmptyState" HorizontalAlignment="Center" Margin="0,24">
               <Border Classes="EmptyPulse" Width="64" Height="64" CornerRadius="32"
                       Background="{DynamicResource SurfaceBrush}" HorizontalAlignment="Center">
                 <mi:MaterialIcon Kind="FileDocument" Width="32" Height="32"
@@ -449,19 +459,21 @@
           </StackPanel>
         </Border>
 
-        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" />
+        <ProgressBar AutomationProperties.AutomationId="Stats_LoadingBar" IsIndeterminate="True" IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" />
         <Border Height="60" />
       </StackPanel>
     </ScrollViewer>
 
     <!-- Rewarded Ad Overlay -->
     <Border Grid.RowSpan="4"
+            AutomationProperties.AutomationId="Stats_AdOverlay"
             IsVisible="{Binding ShowRewardedAdOverlay}"
             Background="#CC000000" ZIndex="100">
       <Border Background="{DynamicResource CardBrush}" CornerRadius="16" Padding="24"
+              AutomationProperties.AutomationId="Stats_AdOverlayCard"
               MaxWidth="340" HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel Spacing="16" HorizontalAlignment="Center">
-          <TextBlock Text="{loc:Translate PremiumFeatureTitle}" FontSize="22" FontWeight="Bold"
+          <TextBlock Text="{loc:Translate PremiumFeatureTitle}" AutomationProperties.AutomationId="Stats_TxtAdTitle" FontSize="22" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" />
           <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="30"
                   Width="60" Height="60" HorizontalAlignment="Center">
@@ -471,14 +483,14 @@
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
           <StackPanel Spacing="8">
-            <Button Classes="Filled" Command="{Binding WatchAdCommand}"
+            <Button Classes="Filled" AutomationProperties.AutomationId="Stats_BtnWatchAd" Command="{Binding WatchAdCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="16,12">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Video" Width="20" Height="20" />
                 <TextBlock Text="{loc:Translate WatchVideoOnce}" FontSize="15" FontWeight="SemiBold" />
               </StackPanel>
             </Button>
-            <Button Classes="Text" Command="{Binding CancelAdOverlayCommand}"
+            <Button Classes="Text" AutomationProperties.AutomationId="Stats_BtnCancelAd" Command="{Binding CancelAdOverlayCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12,10">
               <TextBlock Text="{loc:Translate Cancel}" FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" />

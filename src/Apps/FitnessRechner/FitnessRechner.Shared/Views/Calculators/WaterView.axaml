@@ -9,17 +9,20 @@
              x:Class="FitnessRechner.Views.Calculators.WaterView"
              x:DataType="vm:WaterViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Water_RootPanel">
 
     <!-- ============================================ -->
     <!-- Row 0: Header Banner (InfoBrush)             -->
     <!-- ============================================ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Water_HeaderBanner"
             Background="{DynamicResource InfoBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="Water_BtnBack"
+                Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -33,7 +36,8 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcWater}"
+          <TextBlock AutomationProperties.AutomationId="Water_TxtTitle"
+                     Text="{loc:Translate CalcWater}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -43,13 +47,16 @@
     <!-- ============================================ -->
     <!-- Row 1: Scrollable Content                    -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Water_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,0">
 
         <!-- Input Section -->
-        <Border Classes="StatsCard">
+        <Border Classes="StatsCard"
+                AutomationProperties.AutomationId="Water_CardInput">
           <StackPanel Spacing="12">
-            <TextBlock Text="{loc:Translate Input}"
+            <TextBlock AutomationProperties.AutomationId="Water_TxtInputHeader"
+                       Text="{loc:Translate Input}"
                        FontSize="16" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -62,7 +69,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding Weight}"
+              <TextBox AutomationProperties.AutomationId="Water_TxtBoxWeight"
+                       Text="{Binding Weight}"
                        Watermark="kg"
                        TextInputOptions.ContentType="Number"
                        Classes="Outlined" />
@@ -77,7 +85,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
-              <TextBox Text="{Binding ActivityMinutes}"
+              <TextBox AutomationProperties.AutomationId="Water_TxtBoxActivity"
+                       Text="{Binding ActivityMinutes}"
                        Watermark="{loc:Translate Minutes}"
                        TextInputOptions.ContentType="Digits"
                        Classes="Outlined" />
@@ -93,6 +102,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"/>
               </StackPanel>
               <ToggleSwitch Grid.Column="1"
+                            AutomationProperties.AutomationId="Water_ToggleHotWeather"
                             OnContent="" OffContent=""
                             IsChecked="{Binding IsHotWeather}" />
             </Grid>
@@ -101,6 +111,7 @@
 
         <!-- Results Section -->
         <Border Classes="StatsCard"
+                AutomationProperties.AutomationId="Water_CardResult"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
 
@@ -108,19 +119,22 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
                                Foreground="{DynamicResource InfoBrush}" />
-              <TextBlock Text="{loc:Translate Result}"
+              <TextBlock AutomationProperties.AutomationId="Water_TxtResultHeader"
+                         Text="{loc:Translate Result}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"/>
             </StackPanel>
 
             <!-- Primary Result Highlight -->
-            <Border Background="{DynamicResource InfoBrush}"
+            <Border AutomationProperties.AutomationId="Water_CardValue"
+                    Background="{DynamicResource InfoBrush}"
                     CornerRadius="12"
                     Padding="16,12">
               <StackPanel HorizontalAlignment="Center">
                 <TextBlock Text="{loc:Translate CalcWater}"
                            FontSize="12" Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
-                <TextBlock FontSize="28" FontWeight="Bold" Foreground="White"
+                <TextBlock AutomationProperties.AutomationId="Water_TxtResult"
+                           FontSize="28" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center">
                   <i:Interaction.Behaviors>
                     <uiBehaviors:CountUpBehavior TargetValue="{Binding TotalLitersValue}" Format="F1" Suffix=" L" Duration="500" />
@@ -133,7 +147,8 @@
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Text="{loc:Translate Glasses}" FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="1" Text="{Binding GlassesDisplay}"
+              <TextBlock Grid.Column="1" AutomationProperties.AutomationId="Water_TxtGlasses"
+                         Text="{Binding GlassesDisplay}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource InfoBrush}" />
             </Grid>
@@ -141,7 +156,8 @@
             <!-- Wasserglas-Visualisierung -->
             <Border Height="140" Margin="0,4,0,4" ClipToBounds="True" CornerRadius="8"
                     Background="{DynamicResource SurfaceBrush}">
-              <skia:SKCanvasView PaintSurface="OnPaintWaterGlass" />
+              <skia:SKCanvasView AutomationProperties.AutomationId="Water_CanvasGlass"
+                                   PaintSurface="OnPaintWaterGlass" />
             </Border>
 
             <!-- Separator -->
@@ -152,7 +168,8 @@
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Text="{loc:Translate BaseWater}"
                            Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="{Binding BaseWaterDisplay}"
+                <TextBlock Grid.Column="1" AutomationProperties.AutomationId="Water_TxtBaseWater"
+                           Text="{Binding BaseWaterDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
               </Grid>
@@ -160,7 +177,8 @@
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Text="{loc:Translate ActivityWater}"
                            Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="{Binding ActivityWaterDisplay}"
+                <TextBlock Grid.Column="1" AutomationProperties.AutomationId="Water_TxtActivityWater"
+                           Text="{Binding ActivityWaterDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
               </Grid>
@@ -168,14 +186,16 @@
               <Grid ColumnDefinitions="*,Auto">
                 <TextBlock Text="{loc:Translate HeatWater}"
                            Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="{Binding HeatWaterDisplay}"
+                <TextBlock Grid.Column="1" AutomationProperties.AutomationId="Water_TxtHeatWater"
+                           Text="{Binding HeatWaterDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}"/>
               </Grid>
             </StackPanel>
 
             <!-- Save Water Goal -->
-            <Button Classes="Secondary"
+            <Button AutomationProperties.AutomationId="Water_BtnSaveGoal"
+                    Classes="Secondary"
                     Command="{Binding SaveWaterGoalCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -195,16 +215,19 @@
     <!-- ============================================ -->
     <!-- Row 2: Action Buttons                        -->
     <!-- ============================================ -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Water_ActionBar">
       <Grid ColumnDefinitions="*,12,*">
-        <Button Command="{Binding ResetCommand}" Classes="Outlined"
+        <Button AutomationProperties.AutomationId="Water_BtnReset"
+                Command="{Binding ResetCommand}" Classes="Outlined"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
             <TextBlock Text="{loc:Translate Reset}" VerticalAlignment="Center" />
           </StackPanel>
         </Button>
-        <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+        <Button Grid.Column="2" AutomationProperties.AutomationId="Water_BtnCalculate"
+                Command="{Binding CalculateCommand}" Classes="Primary"
                 HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />

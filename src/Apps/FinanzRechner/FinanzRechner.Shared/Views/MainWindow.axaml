@@ -11,11 +11,13 @@
         Height="750"
         MinWidth="360"
         MinHeight="500"
+        AutomationProperties.AutomationId="MainWindow_Root"
         Background="{DynamicResource BackgroundBrush}">
 
-  <Panel>
-    <views:MainView />
-    <splash:SplashOverlay AppName="FinanzRechner"
+  <Panel AutomationProperties.AutomationId="MainWindow_Content">
+    <views:MainView AutomationProperties.AutomationId="MainWindow_MainView" />
+    <splash:SplashOverlay AutomationProperties.AutomationId="MainWindow_SplashOverlay"
+                          AppName="FinanzRechner"
                           IconSource="avares://FinanzRechner.Shared/Assets/icon.png" />
   </Panel>
 

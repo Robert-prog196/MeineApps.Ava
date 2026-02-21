@@ -9,19 +9,22 @@
              x:DataType="vm:DayDetailViewModel"
              Background="{DynamicResource BackgroundBrush}">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*" AutomationProperties.AutomationId="DayDetail_RootGrid">
 
     <!-- Back Button Header -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="DayDetail_Header"
             Background="{DynamicResource SurfaceBrush}"
             Padding="8,4">
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button Classes="Text"
+        <Button AutomationProperties.AutomationId="DayDetail_BtnBack"
+                Classes="Text"
                 Command="{Binding GoBackCommand}">
           <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
-        <TextBlock Text="{loc:Translate DayDetails}"
+        <TextBlock AutomationProperties.AutomationId="DayDetail_TxtTitle"
+                   Text="{loc:Translate DayDetails}"
                    FontSize="18" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
@@ -29,13 +32,13 @@
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1">
+    <ScrollViewer Grid.Row="1" AutomationProperties.AutomationId="DayDetail_ScrollViewer">
       <StackPanel Spacing="12" Margin="16">
 
         <!-- ==================== Header with Date and Status ==================== -->
-        <Border Classes="CardElevated StatsCard">
+        <Border Classes="CardElevated StatsCard" AutomationProperties.AutomationId="DayDetail_HeaderCard">
           <StackPanel Spacing="8">
-            <TextBlock Text="{Binding DateDisplay}"
+            <TextBlock AutomationProperties.AutomationId="DayDetail_TxtDate" Text="{Binding DateDisplay}"
                        Classes="PageTitle"
                        HorizontalAlignment="Center" />
 
@@ -44,11 +47,13 @@
               <mi:MaterialIcon Kind="{Binding StatusIconKind}"
                                Width="20" Height="20"
                                Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding StatusDisplay}"
+              <TextBlock AutomationProperties.AutomationId="DayDetail_TxtStatus"
+                         Text="{Binding StatusDisplay}"
                          FontSize="14"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          VerticalAlignment="Center" />
-              <Button Classes="Text"
+              <Button AutomationProperties.AutomationId="DayDetail_BtnChangeStatus"
+                      Classes="Text"
                       Command="{Binding ChangeStatusCommand}"
                       IsEnabled="{Binding !IsLocked}">
                 <mi:MaterialIcon Kind="Pencil" Width="16" Height="16"
@@ -57,7 +62,8 @@
             </StackPanel>
 
             <!-- Locked Badge -->
-            <Border Background="{DynamicResource ErrorLightBrush}"
+            <Border AutomationProperties.AutomationId="DayDetail_LockedBadge"
+                    Background="{DynamicResource ErrorLightBrush}"
                     CornerRadius="8"
                     Padding="8,4"
                     HorizontalAlignment="Center"
@@ -74,7 +80,7 @@
         </Border>
 
         <!-- ==================== Time Summary ==================== -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard" AutomationProperties.AutomationId="DayDetail_SummaryCard">
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
                 ColumnSpacing="16" RowSpacing="12">
 
@@ -83,7 +89,8 @@
               <TextBlock Text="{loc:Translate WorkTime}"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding WorkTimeDisplay}"
+              <TextBlock AutomationProperties.AutomationId="DayDetail_TxtWorkTime"
+                         Text="{Binding WorkTimeDisplay}"
                          FontSize="24" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -93,7 +100,8 @@
               <TextBlock Text="{loc:Translate Balance}"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding BalanceDisplay}"
+              <TextBlock AutomationProperties.AutomationId="DayDetail_TxtBalance"
+                         Text="{Binding BalanceDisplay}"
                          FontSize="24" FontWeight="Bold"
                          Foreground="{Binding BalanceColor}" />
             </StackPanel>
@@ -103,7 +111,8 @@
               <TextBlock Text="{loc:Translate ManualBreak}"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <TextBlock Text="{Binding PauseTimeDisplay}"
+              <TextBlock AutomationProperties.AutomationId="DayDetail_TxtPauseTime"
+                         Text="{Binding PauseTimeDisplay}"
                          FontSize="18"
                          Foreground="{DynamicResource WarningBrush}" />
             </StackPanel>
@@ -118,7 +127,8 @@
                                  Foreground="{DynamicResource WarningBrush}"
                                  IsVisible="{Binding HasAutoPause}" />
               </StackPanel>
-              <TextBlock Text="{Binding AutoPauseDisplay}"
+              <TextBlock AutomationProperties.AutomationId="DayDetail_TxtAutoPause"
+                         Text="{Binding AutoPauseDisplay}"
                          FontSize="18"
                          Foreground="{DynamicResource WarningBrush}"
                          Opacity="0.7" />
@@ -128,7 +138,8 @@
         </Border>
 
         <!-- ==================== Warnings (labor law) ==================== -->
-        <Border Background="{DynamicResource ErrorLightBrush}"
+        <Border AutomationProperties.AutomationId="DayDetail_WarningsCard"
+                Background="{DynamicResource ErrorLightBrush}"
                 BorderBrush="{DynamicResource ErrorBrush}"
                 BorderThickness="1"
                 CornerRadius="12"
@@ -156,18 +167,19 @@
         </Border>
 
         <!-- ==================== Time Entries (Timeline) ==================== -->
-        <Border Classes="Card StatsCard" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="DayDetail_TimeEntriesCard">
           <StackPanel Spacing="12">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="ClockOutline" Width="20" Height="20"
                                  Foreground="{DynamicResource PrimaryBrush}" />
-                <TextBlock Text="{loc:Translate TimeEntries}"
+                <TextBlock AutomationProperties.AutomationId="DayDetail_TxtTimeEntries" Text="{loc:Translate TimeEntries}"
                            FontSize="16" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}"
                            VerticalAlignment="Center" />
               </StackPanel>
               <Button Grid.Column="1"
+                      AutomationProperties.AutomationId="DayDetail_BtnAddEntry"
                       Content="{loc:Translate AddEntry}"
                       Classes="Primary Small"
                       Command="{Binding AddEntryCommand}"
@@ -224,7 +236,8 @@
             </ItemsControl>
 
             <!-- Empty State -->
-            <StackPanel IsVisible="{Binding HasNoTimeEntries}"
+            <StackPanel AutomationProperties.AutomationId="DayDetail_EmptyTimeEntries"
+                        IsVisible="{Binding HasNoTimeEntries}"
                         HorizontalAlignment="Center" Margin="0,16">
               <mi:MaterialIcon Kind="ClockOutline" Width="48" Height="48"
                                Foreground="{DynamicResource TextSecondaryBrush}"
@@ -239,18 +252,19 @@
         </Border>
 
         <!-- ==================== Breaks (Timeline) ==================== -->
-        <Border Classes="Card StatsCard" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="DayDetail_PausesCard">
           <StackPanel Spacing="12">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Coffee" Width="20" Height="20"
                                  Foreground="{DynamicResource WarningBrush}" />
-                <TextBlock Text="{loc:Translate Pauses}"
+                <TextBlock AutomationProperties.AutomationId="DayDetail_TxtPauses" Text="{loc:Translate Pauses}"
                            FontSize="16" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}"
                            VerticalAlignment="Center" />
               </StackPanel>
               <Button Grid.Column="1"
+                      AutomationProperties.AutomationId="DayDetail_BtnAddPause"
                       Content="{loc:Translate AddBreak}"
                       Classes="Primary Small"
                       Command="{Binding AddPauseCommand}"
@@ -326,7 +340,8 @@
             </ItemsControl>
 
             <!-- Empty State -->
-            <StackPanel IsVisible="{Binding HasNoPauseEntries}"
+            <StackPanel AutomationProperties.AutomationId="DayDetail_EmptyPauses"
+                        IsVisible="{Binding HasNoPauseEntries}"
                         HorizontalAlignment="Center" Margin="0,16">
               <mi:MaterialIcon Kind="Coffee" Width="48" Height="48"
                                Foreground="{DynamicResource TextSecondaryBrush}"
@@ -348,6 +363,7 @@
 
     <!-- ==================== TimeEntry Edit Overlay (Bottom-Sheet) ==================== -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="DayDetail_TimeEntryOverlay"
             IsVisible="{Binding IsTimeEntryOverlayVisible}"
             Background="#80000000"
             ZIndex="10">
@@ -358,7 +374,8 @@
         <StackPanel Spacing="16">
 
           <!-- Titel -->
-          <TextBlock Text="{Binding TimeEntryOverlayTitle}"
+          <TextBlock AutomationProperties.AutomationId="DayDetail_TxtTimeEntryOverlayTitle"
+                     Text="{Binding TimeEntryOverlayTitle}"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -370,12 +387,14 @@
             <Grid ColumnDefinitions="*,*" Height="40">
               <!-- CheckIn aktiv -->
               <Button Grid.Column="0" Classes="Primary"
+                      AutomationProperties.AutomationId="DayDetail_BtnCheckInActive"
                       Content="{loc:Translate CheckIn}"
                       IsVisible="{Binding EditIsCheckIn}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       CornerRadius="8,0,0,8" Padding="8,4"
                       Command="{Binding ToggleEntryTypeCommand}" />
               <Button Grid.Column="0" Classes="Outlined"
+                      AutomationProperties.AutomationId="DayDetail_BtnCheckInInactive"
                       Content="{loc:Translate CheckIn}"
                       IsVisible="{Binding !EditIsCheckIn}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
@@ -383,12 +402,14 @@
                       Command="{Binding ToggleEntryTypeCommand}" />
               <!-- CheckOut aktiv -->
               <Button Grid.Column="1" Classes="Primary"
+                      AutomationProperties.AutomationId="DayDetail_BtnCheckOutActive"
                       Content="{loc:Translate CheckOut}"
                       IsVisible="{Binding !EditIsCheckIn}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       CornerRadius="0,8,8,0" Padding="8,4"
                       Command="{Binding ToggleEntryTypeCommand}" />
               <Button Grid.Column="1" Classes="Outlined"
+                      AutomationProperties.AutomationId="DayDetail_BtnCheckOutInactive"
                       Content="{loc:Translate CheckOut}"
                       IsVisible="{Binding EditIsCheckIn}"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
@@ -400,28 +421,31 @@
           <!-- Zeit-Picker (Drum Wheel) -->
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
             <StackPanel Spacing="2">
-              <controls:WheelPicker Value="{Binding EditHour}" Minimum="0" Maximum="23" FormatString="D2" />
+              <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpEditHour" Value="{Binding EditHour}" Minimum="0" Maximum="23" FormatString="D2" />
               <TextBlock Text="{loc:Translate HoursShort}" Classes="Caption" HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
             <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                        Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,16" />
             <StackPanel Spacing="2">
-              <controls:WheelPicker Value="{Binding EditMinute}" Minimum="0" Maximum="59" FormatString="D2" />
+              <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpEditMinute" Value="{Binding EditMinute}" Minimum="0" Maximum="59" FormatString="D2" />
               <TextBlock Text="{loc:Translate MinutesShort}" Classes="Caption" HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
           </StackPanel>
 
           <!-- Notiz -->
-          <TextBox Text="{Binding EditNote, Mode=TwoWay}"
+          <TextBox AutomationProperties.AutomationId="DayDetail_TxtEditNote"
+                   Text="{Binding EditNote, Mode=TwoWay}"
                    Watermark="{loc:Translate NotePlaceholder}" />
 
           <!-- Buttons -->
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Classes="Text" Content="{loc:Translate Cancel}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnCancelTimeEntry"
+                    Classes="Text" Content="{loc:Translate Cancel}"
                     Command="{Binding CancelTimeEntryOverlayCommand}" />
-            <Button Classes="Primary" Content="{loc:Translate Save}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnSaveTimeEntry"
+                    Classes="Primary" Content="{loc:Translate Save}"
                     Command="{Binding SaveTimeEntryCommand}" />
           </StackPanel>
 
@@ -431,6 +455,7 @@
 
     <!-- ==================== PauseEntry Edit Overlay (Bottom-Sheet) ==================== -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="DayDetail_PauseOverlay"
             IsVisible="{Binding IsPauseOverlayVisible}"
             Background="#80000000"
             ZIndex="10">
@@ -441,7 +466,8 @@
         <StackPanel Spacing="16">
 
           <!-- Titel -->
-          <TextBlock Text="{Binding PauseOverlayTitle}"
+          <TextBlock AutomationProperties.AutomationId="DayDetail_TxtPauseOverlayTitle"
+                     Text="{Binding PauseOverlayTitle}"
                      FontSize="20" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -452,14 +478,14 @@
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding PauseStartHour}" Minimum="0" Maximum="23" FormatString="D2" />
+                <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpPauseStartHour" Value="{Binding PauseStartHour}" Minimum="0" Maximum="23" FormatString="D2" />
                 <TextBlock Text="{loc:Translate HoursShort}" Classes="Caption" HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
               <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,16" />
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding PauseStartMinute}" Minimum="0" Maximum="59" FormatString="D2" />
+                <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpPauseStartMinute" Value="{Binding PauseStartMinute}" Minimum="0" Maximum="59" FormatString="D2" />
                 <TextBlock Text="{loc:Translate MinutesShort}" Classes="Caption" HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
@@ -473,14 +499,14 @@
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding PauseEndHour}" Minimum="0" Maximum="23" FormatString="D2" />
+                <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpPauseEndHour" Value="{Binding PauseEndHour}" Minimum="0" Maximum="23" FormatString="D2" />
                 <TextBlock Text="{loc:Translate HoursShort}" Classes="Caption" HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
               <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,16" />
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding PauseEndMinute}" Minimum="0" Maximum="59" FormatString="D2" />
+                <controls:WheelPicker AutomationProperties.AutomationId="DayDetail_WpPauseEndMinute" Value="{Binding PauseEndMinute}" Minimum="0" Maximum="59" FormatString="D2" />
                 <TextBlock Text="{loc:Translate MinutesShort}" Classes="Caption" HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
@@ -488,14 +514,17 @@
           </StackPanel>
 
           <!-- Notiz -->
-          <TextBox Text="{Binding PauseNote, Mode=TwoWay}"
+          <TextBox AutomationProperties.AutomationId="DayDetail_TxtPauseNote"
+                   Text="{Binding PauseNote, Mode=TwoWay}"
                    Watermark="{loc:Translate NotePlaceholder}" />
 
           <!-- Buttons -->
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Classes="Text" Content="{loc:Translate Cancel}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnCancelPause"
+                    Classes="Text" Content="{loc:Translate Cancel}"
                     Command="{Binding CancelPauseOverlayCommand}" />
-            <Button Classes="Primary" Content="{loc:Translate Save}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnSavePause"
+                    Classes="Primary" Content="{loc:Translate Save}"
                     Command="{Binding SavePauseCommand}" />
           </StackPanel>
 
@@ -505,6 +534,7 @@
 
     <!-- ==================== Confirm Delete Overlay ==================== -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="DayDetail_ConfirmDeleteOverlay"
             IsVisible="{Binding IsConfirmDeleteVisible}"
             Background="#80000000"
             ZIndex="10"
@@ -527,16 +557,19 @@
           </StackPanel>
 
           <!-- Nachricht -->
-          <TextBlock Text="{Binding ConfirmDeleteMessage}"
+          <TextBlock AutomationProperties.AutomationId="DayDetail_TxtConfirmDeleteMessage"
+                     Text="{Binding ConfirmDeleteMessage}"
                      FontSize="14"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      TextWrapping="Wrap" />
 
           <!-- Buttons -->
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-            <Button Classes="Text" Content="{loc:Translate No}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnCancelDelete"
+                    Classes="Text" Content="{loc:Translate No}"
                     Command="{Binding CancelDeleteCommand}" />
-            <Button Classes="Danger" Content="{loc:Translate Yes}"
+            <Button AutomationProperties.AutomationId="DayDetail_BtnConfirmDelete"
+                    Classes="Danger" Content="{loc:Translate Yes}"
                     Command="{Binding ConfirmDeleteCommand}" />
           </StackPanel>
 

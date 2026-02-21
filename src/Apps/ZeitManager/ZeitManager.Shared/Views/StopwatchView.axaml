@@ -28,7 +28,8 @@
     <!-- SkiaSharp Stoppuhr-Ring -->
     <Border Grid.Row="0" Margin="16,16,16,8" HorizontalAlignment="Center"
             Width="340" Height="340" ClipToBounds="True">
-      <skia:SKCanvasView x:Name="StopwatchCanvas" PaintSurface="OnPaintStopwatch" />
+      <skia:SKCanvasView x:Name="StopwatchCanvas" PaintSurface="OnPaintStopwatch"
+                         AutomationProperties.AutomationId="Stopwatch_Ring" />
     </Border>
 
     <!-- Steuerungs-Buttons -->
@@ -37,6 +38,7 @@
 
       <!-- Runde (bei laufend) -->
       <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              AutomationProperties.AutomationId="Stopwatch_LapButton"
               IsVisible="{Binding IsRunning}"
               Command="{Binding LapCommand}">
         <mi:MaterialIcon Kind="FlagCheckered" Width="24" Height="24"
@@ -45,6 +47,7 @@
 
       <!-- Reset (bei gestoppt) -->
       <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              AutomationProperties.AutomationId="Stopwatch_ResetButton"
               IsVisible="{Binding !IsRunning}"
               Command="{Binding ResetCommand}">
         <mi:MaterialIcon Kind="Refresh" Width="24" Height="24" />
@@ -53,6 +56,7 @@
       <!-- Start/Stop Button -->
       <Panel>
         <Button Width="72" Height="72" CornerRadius="36" Padding="0"
+                AutomationProperties.AutomationId="Stopwatch_StartButton"
                 IsVisible="{Binding !IsRunning}"
                 Command="{Binding StartStopCommand}"
                 Background="{DynamicResource StopwatchAccentBrush}"
@@ -60,6 +64,7 @@
           <mi:MaterialIcon Kind="Play" Width="32" Height="32" />
         </Button>
         <Button Width="72" Height="72" CornerRadius="36" Padding="0"
+                AutomationProperties.AutomationId="Stopwatch_StopButton"
                 IsVisible="{Binding IsRunning}"
                 Command="{Binding StartStopCommand}"
                 Background="{DynamicResource StopwatchAccentBrush}"
@@ -70,6 +75,7 @@
 
       <!-- Undo -->
       <Button Classes="Outlined" Width="56" Height="56" CornerRadius="28" Padding="0"
+              AutomationProperties.AutomationId="Stopwatch_UndoButton"
               IsVisible="{Binding CanUndo}"
               Command="{Binding UndoCommand}">
         <mi:MaterialIcon Kind="Undo" Width="24" Height="24" />
@@ -83,6 +89,7 @@
 
       <!-- Empty State -->
       <controls:EmptyStateView IsVisible="{Binding !HasLaps}"
+          AutomationProperties.AutomationId="Stopwatch_EmptyState"
           Icon="FlagCheckered" Title="{Binding NoLapsText}"
           Subtitle="{Binding StopwatchEmptyHintText}" />
 
@@ -92,10 +99,11 @@
           <mi:MaterialIcon Kind="FlagCheckered" Width="16" Height="16"
                            Foreground="{DynamicResource StopwatchAccentBrush}" />
           <TextBlock Text="{Binding LapTimesText}" Classes="TitleSmall"
+                     AutomationProperties.AutomationId="Stopwatch_LapsTitle"
                      Foreground="{DynamicResource StopwatchAccentBrush}" />
         </StackPanel>
 
-        <ScrollViewer>
+        <ScrollViewer AutomationProperties.AutomationId="Stopwatch_LapsScrollViewer">
           <ItemsControl ItemsSource="{Binding Laps}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="models:StopwatchLap">

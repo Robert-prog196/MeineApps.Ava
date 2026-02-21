@@ -109,19 +109,20 @@
     </DataTemplate>
   </UserControl.DataTemplates>
 
-  <Grid RowDefinitions="*,Auto,Auto">
+  <Grid AutomationProperties.AutomationId="Main_RootGrid" RowDefinitions="*,Auto,Auto">
 
     <!-- Content Area -->
     <Panel Grid.Row="0">
 
       <!-- Tab 0: Home -->
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabHome"
+              Classes="TabContent"
               Classes.Active="{Binding IsHomeTab}">
-        <ScrollViewer>
+        <ScrollViewer AutomationProperties.AutomationId="Main_ScrollHome">
           <StackPanel Spacing="0">
 
             <!-- ========== Hero-Header (Amber/Orange Gradient) ========== -->
-            <Border CornerRadius="0,0,16,16" Padding="20,20,20,16">
+            <Border AutomationProperties.AutomationId="Main_HeroHeader" CornerRadius="0,0,16,16" Padding="20,20,20,16">
               <Border.Background>
                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                   <GradientStop Color="#F59E0B" Offset="0" />
@@ -136,15 +137,18 @@
                                      Foreground="White"
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                   </Border>
-                  <TextBlock Text="{Binding AppTitle}"
+                  <TextBlock AutomationProperties.AutomationId="Main_TxtAppTitle"
+                             Text="{Binding AppTitle}"
                              FontSize="20" FontWeight="Bold" Foreground="White"
                              VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBlock Text="{Binding AppDescription}"
+                <TextBlock AutomationProperties.AutomationId="Main_TxtAppDescription"
+                           Text="{Binding AppDescription}"
                            FontSize="13" Foreground="#BBFFFFFF"
                            HorizontalAlignment="Center" TextAlignment="Center"
                            TextWrapping="Wrap" MaxWidth="300" />
-                <TextBlock Text="{Binding CalculatorCountText}"
+                <TextBlock AutomationProperties.AutomationId="Main_TxtCalculatorCount"
+                           Text="{Binding CalculatorCountText}"
                            FontSize="12" Foreground="#99FFFFFF"
                            HorizontalAlignment="Center" />
               </StackPanel>
@@ -154,7 +158,8 @@
             <StackPanel Spacing="16" Margin="16,16,16,0">
 
               <!-- ========== Premium-Card (direkt unter Hero) ========== -->
-              <Button Background="Transparent" Padding="0"
+              <Button AutomationProperties.AutomationId="Main_BtnPremiumCard"
+                      Background="Transparent" Padding="0"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                       IsVisible="{Binding !IsPremium}"
                       Command="{Binding PurchaseRemoveAdsCommand}">
@@ -184,9 +189,11 @@
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
                       <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="{Binding GetPremiumText}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtGetPremium"
+                                   Text="{Binding GetPremiumText}"
                                    FontSize="15" FontWeight="Bold" Foreground="White" />
-                        <TextBlock Text="{Binding PremiumPriceText}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtPremiumPrice"
+                                   Text="{Binding PremiumPriceText}"
                                    FontSize="12" Foreground="#CCFFFFFF" />
                       </StackPanel>
                       <mi:MaterialIcon Grid.Column="2"
@@ -201,9 +208,10 @@
               <StackPanel Spacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <Border Background="#F59E0B" CornerRadius="6" Padding="8,4">
-                    <TextBlock Text="{Binding SectionFloorWallText}" FontSize="11" FontWeight="Bold" Foreground="White" />
+                    <TextBlock AutomationProperties.AutomationId="Main_TxtSectionFloorWall" Text="{Binding SectionFloorWallText}" FontSize="11" FontWeight="Bold" Foreground="White" />
                   </Border>
-                  <TextBlock Text="{Binding CategoryFloorWallLabel}"
+                  <TextBlock AutomationProperties.AutomationId="Main_TxtCategoryFloorWall"
+                             Text="{Binding CategoryFloorWallLabel}"
                              FontSize="18" FontWeight="Bold"
                              Foreground="{DynamicResource TextPrimaryBrush}"
                              VerticalAlignment="Center" />
@@ -211,7 +219,8 @@
 
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                   <!-- Fliesen -->
-                  <Button Grid.Row="0" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnTiles"
+                          Grid.Row="0" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToTilesCommand}">
@@ -237,14 +246,16 @@
                                          Foreground="White"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Text="{Binding CalcTilesLabel}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtTilesLabel"
+                                 Text="{Binding CalcTilesLabel}"
                                  FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                   </Button>
 
                   <!-- Tapete -->
-                  <Button Grid.Row="0" Grid.Column="1"
+                  <Button AutomationProperties.AutomationId="Main_BtnWallpaper"
+                          Grid.Row="0" Grid.Column="1"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToWallpaperCommand}">
@@ -270,14 +281,16 @@
                                          Foreground="White"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Text="{Binding CalcWallpaperLabel}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtWallpaperLabel"
+                                 Text="{Binding CalcWallpaperLabel}"
                                  FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                   </Button>
 
                   <!-- Farbe -->
-                  <Button Grid.Row="1" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnPaint"
+                          Grid.Row="1" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToPaintCommand}">
@@ -303,14 +316,16 @@
                                          Foreground="White"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Text="{Binding CalcPaintLabel}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtPaintLabel"
+                                 Text="{Binding CalcPaintLabel}"
                                  FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                   </Button>
 
                   <!-- Boden -->
-                  <Button Grid.Row="1" Grid.Column="1"
+                  <Button AutomationProperties.AutomationId="Main_BtnFlooring"
+                          Grid.Row="1" Grid.Column="1"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToFlooringCommand}">
@@ -336,13 +351,15 @@
                                          Foreground="White"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Text="{Binding CalcFlooringLabel}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtFlooringLabel"
+                                 Text="{Binding CalcFlooringLabel}"
                                  FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
                   </Button>
                   <!-- Beton -->
-                  <Button Grid.Row="2" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnConcrete"
+                          Grid.Row="2" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToConcreteCommand}">
@@ -368,7 +385,8 @@
                                          Foreground="White"
                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Border>
-                      <TextBlock Text="{Binding CalcConcreteLabel}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtConcreteLabel"
+                                 Text="{Binding CalcConcreteLabel}"
                                  FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                     </StackPanel>
@@ -380,9 +398,10 @@
               <StackPanel Spacing="12">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <Border Background="{DynamicResource AccentBrush}" CornerRadius="6" Padding="8,4">
-                    <TextBlock Text="{Binding SectionPremiumToolsText}" FontSize="11" FontWeight="Bold" Foreground="White" />
+                    <TextBlock AutomationProperties.AutomationId="Main_TxtSectionPremiumTools" Text="{Binding SectionPremiumToolsText}" FontSize="11" FontWeight="Bold" Foreground="White" />
                   </Border>
-                  <TextBlock Text="{Binding MoreCategoriesLabel}"
+                  <TextBlock AutomationProperties.AutomationId="Main_TxtMoreCategories"
+                             Text="{Binding MoreCategoriesLabel}"
                              FontSize="18" FontWeight="Bold"
                              Foreground="{DynamicResource TextPrimaryBrush}"
                              VerticalAlignment="Center" />
@@ -390,7 +409,8 @@
 
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
                   <!-- Trockenbau -->
-                  <Button Grid.Row="0" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnDrywall"
+                          Grid.Row="0" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToDrywallCommand}">
@@ -417,7 +437,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CategoryDrywallLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtDrywallLabel"
+                                   Text="{Binding CategoryDrywallLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -430,7 +451,8 @@
                   </Button>
 
                   <!-- Elektro -->
-                  <Button Grid.Row="0" Grid.Column="1"
+                  <Button AutomationProperties.AutomationId="Main_BtnElectrical"
+                          Grid.Row="0" Grid.Column="1"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToElectricalCommand}">
@@ -457,7 +479,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CategoryElectricalLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtElectricalLabel"
+                                   Text="{Binding CategoryElectricalLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -470,7 +493,8 @@
                   </Button>
 
                   <!-- Metall -->
-                  <Button Grid.Row="1" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnMetal"
+                          Grid.Row="1" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToMetalCommand}">
@@ -497,7 +521,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CategoryMetalLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtMetalLabel"
+                                   Text="{Binding CategoryMetalLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -510,7 +535,8 @@
                   </Button>
 
                   <!-- Garten -->
-                  <Button Grid.Row="1" Grid.Column="1"
+                  <Button AutomationProperties.AutomationId="Main_BtnGarden"
+                          Grid.Row="1" Grid.Column="1"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToGardenCommand}">
@@ -537,7 +563,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CategoryGardenLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtGardenLabel"
+                                   Text="{Binding CategoryGardenLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -550,7 +577,8 @@
                   </Button>
 
                   <!-- Dach/Solar -->
-                  <Button Grid.Row="2" Grid.Column="0"
+                  <Button AutomationProperties.AutomationId="Main_BtnRoofSolar"
+                          Grid.Row="2" Grid.Column="0"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToRoofSolarCommand}">
@@ -577,7 +605,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CategoryRoofSolarLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtRoofSolarLabel"
+                                   Text="{Binding CategoryRoofSolarLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -590,7 +619,8 @@
                   </Button>
 
                   <!-- Treppen -->
-                  <Button Grid.Row="2" Grid.Column="1"
+                  <Button AutomationProperties.AutomationId="Main_BtnStairs"
+                          Grid.Row="2" Grid.Column="1"
                           CornerRadius="12" Height="120" Padding="8"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           Command="{Binding NavigateToStairsCommand}">
@@ -617,7 +647,8 @@
                                            Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Text="{Binding CalcStairsLabel}"
+                        <TextBlock AutomationProperties.AutomationId="Main_TxtStairsLabel"
+                                   Text="{Binding CalcStairsLabel}"
                                    FontSize="13" FontWeight="Bold" TextAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
                       </StackPanel>
@@ -632,7 +663,8 @@
               </StackPanel>
 
               <!-- ========== Extended History Card ========== -->
-              <Button Background="Transparent" Padding="0" Height="NaN"
+              <Button AutomationProperties.AutomationId="Main_BtnExtendedHistory"
+                      Background="Transparent" Padding="0" Height="NaN"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                       VerticalContentAlignment="Stretch"
                       IsVisible="{Binding !IsPremium}"
@@ -656,10 +688,12 @@
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                      <TextBlock Text="{Binding ExtendedHistoryTitleText}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtExtHistoryTitle"
+                                 Text="{Binding ExtendedHistoryTitleText}"
                                  FontSize="14" FontWeight="Bold"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <TextBlock Text="{Binding ExtendedHistoryDescText}"
+                      <TextBlock AutomationProperties.AutomationId="Main_TxtExtHistoryDesc"
+                                 Text="{Binding ExtendedHistoryDescText}"
                                  FontSize="12"
                                  Foreground="{DynamicResource TextSecondaryBrush}"
                                  TextWrapping="Wrap" />
@@ -682,26 +716,30 @@
       </Border>
 
       <!-- Tab 1: Projects -->
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabProjects"
+              Classes="TabContent"
               Classes.Active="{Binding IsProjectsTab}">
         <views:ProjectsView DataContext="{Binding ProjectsViewModel}" />
       </Border>
 
       <!-- Tab 2: Settings -->
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabSettings"
+              Classes="TabContent"
               Classes.Active="{Binding IsSettingsTab}">
         <views:SettingsView DataContext="{Binding SettingsViewModel}" />
       </Border>
 
       <!-- Calculator Overlay -->
-      <Panel IsVisible="{Binding IsCalculatorOpen}"
+      <Panel AutomationProperties.AutomationId="Main_CalculatorOverlay"
+             IsVisible="{Binding IsCalculatorOpen}"
              ZIndex="50"
              Background="{DynamicResource BackgroundBrush}">
-        <ContentControl Content="{Binding CurrentCalculatorVm}" />
+        <ContentControl AutomationProperties.AutomationId="Main_CalculatorContent" Content="{Binding CurrentCalculatorVm}" />
       </Panel>
 
       <!-- Premium Access Overlay -->
-      <Border IsVisible="{Binding ShowPremiumAccessOverlay}"
+      <Border AutomationProperties.AutomationId="Main_PremiumOverlay"
+              IsVisible="{Binding ShowPremiumAccessOverlay}"
               Background="#CC000000"
               ZIndex="100">
         <Border Background="{DynamicResource CardBrush}"
@@ -711,7 +749,8 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
           <StackPanel Spacing="16" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding PremiumLockedText}"
+            <TextBlock AutomationProperties.AutomationId="Main_TxtPremiumLocked"
+                       Text="{Binding PremiumLockedText}"
                        FontSize="22" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        HorizontalAlignment="Center"
@@ -725,7 +764,8 @@
                                Foreground="{DynamicResource AccentBrush}" />
             </Border>
 
-            <TextBlock Text="{Binding PremiumLockedDescText}"
+            <TextBlock AutomationProperties.AutomationId="Main_TxtPremiumLockedDesc"
+                       Text="{Binding PremiumLockedDescText}"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center"
@@ -733,7 +773,8 @@
                        TextAlignment="Center" />
 
             <StackPanel Spacing="8">
-              <Button Classes="Filled"
+              <Button AutomationProperties.AutomationId="Main_BtnConfirmPremiumAd"
+                      Classes="Filled"
                       Command="{Binding ConfirmPremiumAdCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
@@ -745,7 +786,8 @@
                 </StackPanel>
               </Button>
 
-              <Button Classes="Text"
+              <Button AutomationProperties.AutomationId="Main_BtnCancelPremiumAd"
+                      Classes="Text"
                       Command="{Binding CancelPremiumAdCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
@@ -760,7 +802,8 @@
       </Border>
 
       <!-- Extended History Overlay -->
-      <Border IsVisible="{Binding ShowExtendedHistoryOverlay}"
+      <Border AutomationProperties.AutomationId="Main_ExtHistoryOverlay"
+              IsVisible="{Binding ShowExtendedHistoryOverlay}"
               Background="#CC000000"
               ZIndex="100">
         <Border Background="{DynamicResource CardBrush}"
@@ -792,7 +835,8 @@
                        TextAlignment="Center" />
 
             <StackPanel Spacing="8">
-              <Button Classes="Filled"
+              <Button AutomationProperties.AutomationId="Main_BtnConfirmExtHistoryAd"
+                      Classes="Filled"
                       Command="{Binding ConfirmExtendedHistoryAdCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
@@ -804,7 +848,8 @@
                 </StackPanel>
               </Button>
 
-              <Button Classes="Text"
+              <Button AutomationProperties.AutomationId="Main_BtnCancelExtHistoryAd"
+                      Classes="Text"
                       Command="{Binding CancelExtendedHistoryAdCommand}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Center"
@@ -821,7 +866,7 @@
     </Panel>
 
     <!-- Ad Banner Spacer (64dp fuer adaptive Banner) -->
-    <Border Grid.Row="1" Height="64"
+    <Border AutomationProperties.AutomationId="Main_AdSpacer" Grid.Row="1" Height="64"
             IsVisible="{Binding IsAdBannerVisible}" />
 
     <!-- Ersatz-Spacer wenn Tab-Bar versteckt (Calculator offen) -->
@@ -830,14 +875,16 @@
             IsVisible="{Binding IsCalculatorOpen}" />
 
     <!-- Bottom Tab Bar -->
-    <Border Grid.Row="2"
+    <Border AutomationProperties.AutomationId="Main_TabBar"
+            Grid.Row="2"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,1,0,0"
             BorderBrush="{DynamicResource CardBorderBrush}"
             IsVisible="{Binding !IsCalculatorOpen}">
       <Grid ColumnDefinitions="*,*,*" Margin="0,2">
         <!-- Home Tab -->
-        <Button Grid.Column="0" Classes="Text"
+        <Button AutomationProperties.AutomationId="Main_BtnTabHome"
+                Grid.Column="0" Classes="Text"
                 Command="{Binding SelectHomeTabCommand}"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
@@ -873,7 +920,8 @@
         </Button>
 
         <!-- Projects Tab -->
-        <Button Grid.Column="1" Classes="Text"
+        <Button AutomationProperties.AutomationId="Main_BtnTabProjects"
+                Grid.Column="1" Classes="Text"
                 Command="{Binding SelectProjectsTabCommand}"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
@@ -909,7 +957,8 @@
         </Button>
 
         <!-- Settings Tab -->
-        <Button Grid.Column="2" Classes="Text"
+        <Button AutomationProperties.AutomationId="Main_BtnTabSettings"
+                Grid.Column="2" Classes="Text"
                 Command="{Binding SelectSettingsTabCommand}"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
@@ -947,10 +996,12 @@
     </Border>
 
     <!-- Game Juice Overlays -->
-    <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+    <controls:FloatingTextOverlay AutomationProperties.AutomationId="Main_FloatingText"
+                                  x:Name="FloatingTextCanvas"
                                   Grid.RowSpan="3" ZIndex="15"
                                   IsHitTestVisible="False" />
-    <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+    <controls:SkiaCelebrationOverlay AutomationProperties.AutomationId="Main_Celebration"
+                                     x:Name="CelebrationCanvas"
                                      Grid.RowSpan="3" ZIndex="16"
                                      IsHitTestVisible="False" />
 

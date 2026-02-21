@@ -9,15 +9,18 @@
              x:Class="FitnessRechner.Views.Calculators.BmiView"
              x:DataType="vm:BmiViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Bmi_RootPanel">
 
     <!-- ═══════ Header Banner ═══════ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Bmi_HeaderBanner"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
             CornerRadius="0,0,24,24">
       <Grid ColumnDefinitions="Auto,*">
-        <Button Command="{Binding GoBackCommand}"
+        <Button AutomationProperties.AutomationId="Bmi_BtnBack"
+                Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
@@ -31,7 +34,8 @@
                              Foreground="White"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
-          <TextBlock Text="{loc:Translate CalcBmi}"
+          <TextBlock AutomationProperties.AutomationId="Bmi_TxtTitle"
+                     Text="{loc:Translate CalcBmi}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
                      VerticalAlignment="Center" />
         </StackPanel>
@@ -39,11 +43,13 @@
     </Border>
 
     <!-- ═══════ Content ═══════ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Bmi_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,0">
 
         <!-- Input Card -->
-        <Border Classes="Card">
+        <Border Classes="Card"
+                AutomationProperties.AutomationId="Bmi_CardInput">
           <StackPanel Spacing="14">
 
             <!-- Weight -->
@@ -55,7 +61,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
-              <TextBox Text="{Binding Weight}"
+              <TextBox AutomationProperties.AutomationId="Bmi_TxtBoxWeight"
+                       Text="{Binding Weight}"
                        Watermark="kg"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -71,7 +78,8 @@
                            FontSize="12" FontWeight="Medium"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
-              <TextBox Text="{Binding Height}"
+              <TextBox AutomationProperties.AutomationId="Bmi_TxtBoxHeight"
+                       Text="{Binding Height}"
                        Watermark="cm"
                        TextInputOptions.ContentType="Number"
                        Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -83,6 +91,7 @@
 
         <!-- Result Card -->
         <Border Classes="Card Elevated"
+                AutomationProperties.AutomationId="Bmi_CardResult"
                 IsVisible="{Binding HasResult}">
           <StackPanel Spacing="12">
 
@@ -90,19 +99,22 @@
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
                                Foreground="{DynamicResource AccentBrush}" />
-              <TextBlock Text="{loc:Translate Result}"
+              <TextBlock AutomationProperties.AutomationId="Bmi_TxtResultHeader"
+                         Text="{loc:Translate Result}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
 
             <!-- Primary Result Highlight -->
-            <Border Background="{DynamicResource AccentBrush}"
+            <Border AutomationProperties.AutomationId="Bmi_CardBmiValue"
+                    Background="{DynamicResource AccentBrush}"
                     CornerRadius="12"
                     Padding="16,12">
               <StackPanel HorizontalAlignment="Center">
                 <TextBlock Text="BMI"
                            FontSize="12" Foreground="#CCFFFFFF" HorizontalAlignment="Center" />
-                <TextBlock FontSize="28" FontWeight="Bold" Foreground="White"
+                <TextBlock AutomationProperties.AutomationId="Bmi_TxtResult"
+                           FontSize="28" FontWeight="Bold" Foreground="White"
                            HorizontalAlignment="Center">
                   <i:Interaction.Behaviors>
                     <uiBehaviors:CountUpBehavior TargetValue="{Binding BmiValue}" Format="F1" Duration="500" />
@@ -114,7 +126,8 @@
             <!-- BMI-Gauge Visualisierung -->
             <Border Height="130" Margin="0,4,0,0" ClipToBounds="True" CornerRadius="8"
                     Background="{DynamicResource SurfaceBrush}">
-              <skia:SKCanvasView PaintSurface="OnPaintBmiGauge" />
+              <skia:SKCanvasView AutomationProperties.AutomationId="Bmi_CanvasGauge"
+                                   PaintSurface="OnPaintBmiGauge" />
             </Border>
 
             <!-- Secondary Results -->
@@ -124,6 +137,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="Bmi_TxtCategory"
                            Text="{Binding CategoryDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -134,6 +148,7 @@
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1"
+                           AutomationProperties.AutomationId="Bmi_TxtHealthyRange"
                            Text="{Binding HealthyRangeDisplay}"
                            FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -141,7 +156,8 @@
             </StackPanel>
 
             <!-- Save to Tracking -->
-            <Button Classes="Secondary"
+            <Button AutomationProperties.AutomationId="Bmi_BtnSaveTracking"
+                    Classes="Secondary"
                     Command="{Binding SaveToTrackingCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -162,10 +178,12 @@
     </ScrollViewer>
 
     <!-- ═══════ Action Buttons ═══════ -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Bmi_ActionBar">
       <Grid ColumnDefinitions="*,12,*">
         <!-- Reset -->
         <Button Grid.Column="0"
+                AutomationProperties.AutomationId="Bmi_BtnReset"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
@@ -181,6 +199,7 @@
 
         <!-- Calculate -->
         <Button Grid.Column="2"
+                AutomationProperties.AutomationId="Bmi_BtnCalculate"
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"

@@ -37,20 +37,21 @@
     </Style>
   </UserControl.Styles>
 
-  <ScrollViewer>
-    <StackPanel Spacing="12" Margin="16">
+  <ScrollViewer AutomationProperties.AutomationId="Today_ScrollViewer">
+    <StackPanel Spacing="12" Margin="16" AutomationProperties.AutomationId="Today_RootPanel">
 
       <!-- Date Header -->
       <TextBlock Text="{Binding TodayDateDisplay}"
+                 AutomationProperties.AutomationId="Today_TxtDate"
                  Classes="PageTitle"
                  HorizontalAlignment="Center" />
 
       <!-- ==================== Status Card ==================== -->
-      <Border Classes="CardElevated StatsCard" Padding="24">
+      <Border Classes="CardElevated StatsCard" Padding="24" AutomationProperties.AutomationId="Today_StatusCard">
         <StackPanel Spacing="20">
 
           <!-- Status Badge mit BrushTransition -->
-          <Border Background="{Binding StatusColor}"
+          <Border AutomationProperties.AutomationId="Today_StatusBadge" Background="{Binding StatusColor}"
                   CornerRadius="16"
                   Padding="16,8"
                   HorizontalAlignment="Center">
@@ -64,6 +65,7 @@
                                Width="18" Height="18"
                                Foreground="White" />
               <TextBlock Text="{Binding StatusText}"
+                         AutomationProperties.AutomationId="Today_TxtStatus"
                          FontSize="16" FontWeight="Bold"
                          Foreground="White"
                          VerticalAlignment="Center" />
@@ -74,6 +76,7 @@
           <Panel HorizontalAlignment="Center" Width="140" Height="140">
             <!-- SkiaSharp Gradient-Ring mit Glow + Pulsation -->
             <skiaControls:SkiaGradientRing
+                AutomationProperties.AutomationId="Today_ProgressRing"
                 Value="{Binding DayProgressFraction}"
                 IsPulsing="{Binding IsWorking}"
                 GlowEnabled="{Binding IsWorking}"
@@ -84,7 +87,8 @@
                 TickMarkCount="24"
                 Width="140" Height="140" />
             <!-- Button zentriert im Ring -->
-            <Button Command="{Binding ToggleTrackingCommand}"
+            <Button AutomationProperties.AutomationId="Today_BtnToggleTracking"
+                    Command="{Binding ToggleTrackingCommand}"
                     Classes="BigAction"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -100,6 +104,7 @@
             </Button>
             <!-- Fortschritts-Prozent unter dem Button -->
             <TextBlock Text="{Binding DayProgressPercent}"
+                       AutomationProperties.AutomationId="Today_TxtProgressPercent"
                        FontSize="12" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center"
@@ -108,7 +113,8 @@
           </Panel>
 
           <!-- Pause Button -->
-          <Button Content="{Binding PauseButtonText}"
+          <Button AutomationProperties.AutomationId="Today_BtnTogglePause"
+                  Content="{Binding PauseButtonText}"
                   Classes="Secondary"
                   Command="{Binding TogglePauseCommand}"
                   HorizontalAlignment="Center"
@@ -118,15 +124,17 @@
       </Border>
 
       <!-- ==================== Undo Bar ==================== -->
-      <Border Background="{DynamicResource WarningBrush}" CornerRadius="8" Padding="12,8"
+      <Border AutomationProperties.AutomationId="Today_UndoBar" Background="{DynamicResource WarningBrush}" CornerRadius="8" Padding="12,8"
               IsVisible="{Binding IsUndoVisible}"
               HorizontalAlignment="Stretch">
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock Grid.Column="0"
+                     AutomationProperties.AutomationId="Today_TxtUndoMessage"
                      Text="{Binding UndoMessage}"
                      Foreground="White" FontWeight="SemiBold"
                      VerticalAlignment="Center" />
           <Button Grid.Column="1"
+                  AutomationProperties.AutomationId="Today_BtnUndo"
                   Command="{Binding UndoLastActionCommand}"
                   Background="Transparent"
                   BorderThickness="1" BorderBrush="White"
@@ -141,7 +149,7 @@
       </Border>
 
       <!-- ==================== Streak-Anzeige ==================== -->
-      <Border Background="{DynamicResource WarningLightBrush}" CornerRadius="12" Padding="10,6"
+      <Border AutomationProperties.AutomationId="Today_StreakBadge" Background="{DynamicResource WarningLightBrush}" CornerRadius="12" Padding="10,6"
               HorizontalAlignment="Center"
               IsVisible="{Binding HasStreak}">
         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -160,7 +168,7 @@
       </Border>
 
       <!-- ==================== Time Metrics Card ==================== -->
-      <Border Classes="Card StatsCard" Padding="16">
+      <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="Today_MetricsCard">
         <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto"
               RowSpacing="12">
 
@@ -168,6 +176,7 @@
           <StackPanel Grid.Column="0" Grid.Row="0"
                       HorizontalAlignment="Center">
             <TextBlock Text="{Binding CurrentWorkTime}"
+                       AutomationProperties.AutomationId="Today_TxtWorkTime"
                        FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource SuccessBrush}"
                        HorizontalAlignment="Center" />
@@ -181,6 +190,7 @@
           <StackPanel Grid.Column="1" Grid.Row="0"
                       HorizontalAlignment="Center">
             <TextBlock Text="{Binding CurrentPauseTime}"
+                       AutomationProperties.AutomationId="Today_TxtPauseTime"
                        FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource WarningBrush}"
                        HorizontalAlignment="Center" />
@@ -194,6 +204,7 @@
           <StackPanel Grid.Column="2" Grid.Row="0"
                       HorizontalAlignment="Center">
             <TextBlock Text="{Binding BalanceTime}"
+                       AutomationProperties.AutomationId="Today_TxtBalance"
                        FontSize="24" FontWeight="Bold"
                        Foreground="{Binding BalanceColor}"
                        HorizontalAlignment="Center" />
@@ -207,6 +218,7 @@
           <StackPanel Grid.Column="0" Grid.Row="1"
                       HorizontalAlignment="Center">
             <TextBlock Text="{Binding TargetWorkTime}"
+                       AutomationProperties.AutomationId="Today_TxtTarget"
                        FontSize="16"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
@@ -221,6 +233,7 @@
                       HorizontalAlignment="Center"
                       IsVisible="{Binding HasCheckedIn}">
             <TextBlock Text="{Binding FirstCheckIn}"
+                       AutomationProperties.AutomationId="Today_TxtFirstCheckIn"
                        FontSize="16"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        HorizontalAlignment="Center" />
@@ -234,7 +247,7 @@
       </Border>
 
       <!-- ==================== Earnings Card (nur wenn Stundenlohn konfiguriert) ==================== -->
-      <Border Classes="Card StatsCard" Padding="12"
+      <Border AutomationProperties.AutomationId="Today_EarningsCard" Classes="Card StatsCard" Padding="12"
               BorderBrush="{DynamicResource SuccessBrush}"
               BorderThickness="1"
               CornerRadius="12"
@@ -246,6 +259,7 @@
                            Foreground="{DynamicResource SuccessBrush}" />
           <StackPanel>
             <TextBlock Text="{Binding TodayEarnings}"
+                       AutomationProperties.AutomationId="Today_TxtEarnings"
                        FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource SuccessBrush}" />
             <TextBlock Text="{loc:Translate TodayEarnings}"
@@ -256,7 +270,8 @@
       </Border>
 
       <!-- ==================== Auto-Pause Warning ==================== -->
-      <Border Background="{DynamicResource WarningLightBrush}"
+      <Border AutomationProperties.AutomationId="Today_AutoPauseWarning"
+              Background="{DynamicResource WarningLightBrush}"
               BorderBrush="{DynamicResource WarningBrush}"
               BorderThickness="1"
               CornerRadius="12"
@@ -271,6 +286,7 @@
                        FontSize="14" FontWeight="Bold"
                        Foreground="{DynamicResource WarningBrush}" />
             <TextBlock Text="{Binding AutoPauseInfo}"
+                       AutomationProperties.AutomationId="Today_TxtAutoPauseInfo"
                        FontSize="12"
                        Foreground="{DynamicResource WarningBrush}" />
           </StackPanel>
@@ -279,21 +295,24 @@
 
       <!-- SkiaSharp Tages-Timeline (Arbeitsblöcke + Pausen) -->
       <Border Classes="Card StatsCard" Padding="8"
+              AutomationProperties.AutomationId="Today_TimelineCard"
               IsVisible="{Binding HasCheckedIn}">
         <Border Height="56" ClipToBounds="True">
-          <skia:SKCanvasView x:Name="TimelineCanvas" PaintSurface="OnPaintTimeline" />
+          <skia:SKCanvasView x:Name="TimelineCanvas" AutomationProperties.AutomationId="Today_TimelineCanvas" PaintSurface="OnPaintTimeline" />
         </Border>
       </Border>
 
       <!-- Day Details Button -->
-      <Button Content="{Binding ShowDayDetailsText}"
+      <Button AutomationProperties.AutomationId="Today_BtnDayDetails"
+              Content="{Binding ShowDayDetailsText}"
               Classes="Secondary"
               Command="{Binding NavigateToDayDetailCommand}"
               HorizontalAlignment="Stretch"
               HorizontalContentAlignment="Center" />
 
       <!-- ==================== Quick Navigation Section ==================== -->
-      <TextBlock Text="{loc:Translate MoreFeatures}"
+      <TextBlock AutomationProperties.AutomationId="Today_TxtMoreFeatures"
+                 Text="{loc:Translate MoreFeatures}"
                  FontSize="18" FontWeight="Bold"
                  Foreground="{DynamicResource TextPrimaryBrush}"
                  Margin="0,8,0,0" />
@@ -304,6 +323,7 @@
 
         <!-- Month Overview -->
         <Button Grid.Row="0" Grid.Column="0"
+                AutomationProperties.AutomationId="Today_BtnMonth"
                 Classes="QuickNav"
                 Command="{Binding NavigateToMonthCommand}"
                 HorizontalAlignment="Stretch"
@@ -332,6 +352,7 @@
 
         <!-- Year Overview -->
         <Button Grid.Row="0" Grid.Column="1"
+                AutomationProperties.AutomationId="Today_BtnYear"
                 Classes="QuickNav"
                 Command="{Binding NavigateToYearCommand}"
                 HorizontalAlignment="Stretch"
@@ -360,6 +381,7 @@
 
         <!-- Vacation -->
         <Button Grid.Row="1" Grid.Column="0"
+                AutomationProperties.AutomationId="Today_BtnVacation"
                 Classes="QuickNav"
                 Command="{Binding NavigateToVacationCommand}"
                 HorizontalAlignment="Stretch"
@@ -388,6 +410,7 @@
 
         <!-- Shift Plan -->
         <Button Grid.Row="1" Grid.Column="1"
+                AutomationProperties.AutomationId="Today_BtnShiftPlan"
                 Classes="QuickNav"
                 Command="{Binding NavigateToShiftPlanCommand}"
                 HorizontalAlignment="Stretch"

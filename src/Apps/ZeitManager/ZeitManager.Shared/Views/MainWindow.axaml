@@ -5,6 +5,7 @@
         xmlns:splash="using:MeineApps.UI.Controls"
         x:Class="ZeitManager.Views.MainWindow"
         x:DataType="vm:MainViewModel"
+        AutomationProperties.AutomationId="MainWindow"
         Title="ZeitManager"
         Icon="avares://ZeitManager.Shared/Assets/icon.png"
         Width="400"
@@ -14,8 +15,9 @@
         Background="{DynamicResource BackgroundBrush}">
 
   <Panel>
-    <views:MainView />
-    <splash:SplashOverlay AppName="ZeitManager"
+    <views:MainView AutomationProperties.AutomationId="MainWindow_MainView" />
+    <splash:SplashOverlay AutomationProperties.AutomationId="MainWindow_SplashOverlay"
+                          AppName="ZeitManager"
                           IconSource="avares://ZeitManager.Shared/Assets/icon.png" />
   </Panel>
 

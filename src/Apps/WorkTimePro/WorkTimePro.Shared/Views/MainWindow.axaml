@@ -9,9 +9,10 @@
         MinWidth="360" MinHeight="600"
         Background="{DynamicResource BackgroundBrush}">
 
-  <Panel>
-    <views:MainView />
-    <splash:SplashOverlay AppName="WorkTimePro"
+  <Panel AutomationProperties.AutomationId="MW_RootPanel">
+    <views:MainView AutomationProperties.AutomationId="MW_MainView" />
+    <splash:SplashOverlay AutomationProperties.AutomationId="MW_SplashOverlay"
+                          AppName="WorkTimePro"
                           IconSource="avares://WorkTimePro.Shared/Assets/icon.png" />
   </Panel>
 

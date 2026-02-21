@@ -9,14 +9,14 @@
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource BackgroundBrush}">
 
-  <Grid RowDefinitions="*,Auto,Auto">
+  <Grid RowDefinitions="*,Auto,Auto" AutomationProperties.AutomationId="Main_RootGrid">
 
     <!-- ============================================ -->
     <!-- Row 0: Content Area (switches based on tab)  -->
     <!-- ============================================ -->
-    <Panel Grid.Row="0">
+    <Panel Grid.Row="0" AutomationProperties.AutomationId="Main_ContentPanel">
       <!-- Today Tab (uses MainViewModel directly) -->
-      <Border x:Name="TodayTab" IsVisible="{Binding IsTodayActive}"
+      <Border x:Name="TodayTab" AutomationProperties.AutomationId="Main_TabTodayContent" IsVisible="{Binding IsTodayActive}"
               Opacity="1">
         <Border.Transitions>
           <Transitions>
@@ -27,7 +27,7 @@
       </Border>
 
       <!-- Week Tab -->
-      <Border x:Name="WeekTab" IsVisible="{Binding IsWeekActive}"
+      <Border x:Name="WeekTab" AutomationProperties.AutomationId="Main_TabWeekContent" IsVisible="{Binding IsWeekActive}"
               Opacity="1">
         <Border.Transitions>
           <Transitions>
@@ -38,7 +38,7 @@
       </Border>
 
       <!-- Calendar Tab -->
-      <Border x:Name="CalendarTab" IsVisible="{Binding IsCalendarActive}"
+      <Border x:Name="CalendarTab" AutomationProperties.AutomationId="Main_TabCalendarContent" IsVisible="{Binding IsCalendarActive}"
               Opacity="1">
         <Border.Transitions>
           <Transitions>
@@ -49,7 +49,7 @@
       </Border>
 
       <!-- Statistics Tab -->
-      <Border x:Name="StatisticsTab" IsVisible="{Binding IsStatisticsActive}"
+      <Border x:Name="StatisticsTab" AutomationProperties.AutomationId="Main_TabStatisticsContent" IsVisible="{Binding IsStatisticsActive}"
               Opacity="1">
         <Border.Transitions>
           <Transitions>
@@ -60,7 +60,7 @@
       </Border>
 
       <!-- Settings Tab -->
-      <Border x:Name="SettingsTab" IsVisible="{Binding IsSettingsActive}"
+      <Border x:Name="SettingsTab" AutomationProperties.AutomationId="Main_TabSettingsContent" IsVisible="{Binding IsSettingsActive}"
               Opacity="1">
         <Border.Transitions>
           <Transitions>
@@ -74,6 +74,7 @@
       <!-- Sub-Pages (overlays, higher z-index)         -->
       <!-- ============================================ -->
       <Border x:Name="SubPageOverlay"
+              AutomationProperties.AutomationId="Main_SubPageOverlay"
               IsVisible="{Binding IsSubPageActive}"
               ZIndex="5"
               RenderTransform="translateX(0px)"
@@ -106,10 +107,12 @@
 
     <!-- Game Juice Overlays -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   AutomationProperties.AutomationId="Main_FloatingTextOverlay"
                                    Grid.RowSpan="3"
                                    ZIndex="15"
                                    IsHitTestVisible="False" />
     <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                      AutomationProperties.AutomationId="Main_CelebrationOverlay"
                                       Grid.RowSpan="3"
                                       ZIndex="16"
                                       IsHitTestVisible="False" />
@@ -117,6 +120,7 @@
     <!-- ============================================ -->
     <!-- Ad Banner Spacer (64dp fuer adaptive Banner) -->
     <Border Grid.Row="1" Height="64"
+            AutomationProperties.AutomationId="Main_AdBannerSpacer"
             IsVisible="{Binding IsAdBannerVisible}" />
 
     <!-- Ersatz-Spacer wenn Tab-Bar versteckt (SubPage offen) -->
@@ -126,6 +130,7 @@
     <!-- Row 2: Bottom Tab Bar                        -->
     <!-- ============================================ -->
     <Border Grid.Row="2"
+            AutomationProperties.AutomationId="Main_TabBar"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,1,0,0"
             BorderBrush="{DynamicResource CardBorderBrush}"
@@ -156,6 +161,7 @@
 
           <!-- Today -->
           <Button Grid.Column="0" Classes="Text"
+                  AutomationProperties.AutomationId="Main_TabToday"
                   Command="{Binding SelectTodayTabCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -172,6 +178,7 @@
 
           <!-- Week -->
           <Button Grid.Column="1" Classes="Text"
+                  AutomationProperties.AutomationId="Main_TabWeek"
                   Command="{Binding SelectWeekTabCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -188,6 +195,7 @@
 
           <!-- Calendar -->
           <Button Grid.Column="2" Classes="Text"
+                  AutomationProperties.AutomationId="Main_TabCalendar"
                   Command="{Binding SelectCalendarTabCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -204,6 +212,7 @@
 
           <!-- Statistics -->
           <Button Grid.Column="3" Classes="Text"
+                  AutomationProperties.AutomationId="Main_TabStatistics"
                   Command="{Binding SelectStatisticsTabCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -220,6 +229,7 @@
 
           <!-- Settings -->
           <Button Grid.Column="4" Classes="Text"
+                  AutomationProperties.AutomationId="Main_TabSettings"
                   Command="{Binding SelectSettingsTabCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">

@@ -29,21 +29,25 @@
     <Border Grid.Row="0" Margin="16,16,16,8">
       <Grid ColumnDefinitions="*,*" Height="44">
         <Button Grid.Column="0" Classes="Primary" Content="{Binding TitleText}"
+                AutomationProperties.AutomationId="Alarm_BtnAlarmTab"
                 IsVisible="{Binding !IsShiftScheduleMode}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                 CornerRadius="8,0,0,8" Padding="8,4"
                 Command="{Binding ToggleViewModeCommand}" />
         <Button Grid.Column="0" Classes="Outlined" Content="{Binding TitleText}"
+                AutomationProperties.AutomationId="Alarm_BtnAlarmTabInactive"
                 IsVisible="{Binding IsShiftScheduleMode}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                 CornerRadius="8,0,0,8" Padding="8,4"
                 Command="{Binding ToggleViewModeCommand}" />
         <Button Grid.Column="1" Classes="Primary" Content="{Binding ShiftText}"
+                AutomationProperties.AutomationId="Alarm_BtnShiftTab"
                 IsVisible="{Binding IsShiftScheduleMode}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                 CornerRadius="0,8,8,0" Padding="8,4"
                 Command="{Binding ToggleViewModeCommand}" />
         <Button Grid.Column="1" Classes="Outlined" Content="{Binding ShiftText}"
+                AutomationProperties.AutomationId="Alarm_BtnShiftTabInactive"
                 IsVisible="{Binding !IsShiftScheduleMode}"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                 CornerRadius="0,8,8,0" Padding="8,4"
@@ -56,6 +60,7 @@
 
       <!-- Urlaubsmodus Status-Banner -->
       <Border IsVisible="{Binding IsAllPaused}"
+              AutomationProperties.AutomationId="Alarm_VacationBanner"
               Background="{DynamicResource WarningBackgroundBrush}"
               CornerRadius="8" Margin="16,0,16,8" Padding="12"
               VerticalAlignment="Top" ZIndex="1">
@@ -64,13 +69,17 @@
                            Foreground="{DynamicResource WarningBrush}" Margin="0,0,12,0"
                            VerticalAlignment="Center" />
           <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-            <TextBlock Text="{Binding VacationModeText}" Classes="TitleSmall" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding VacationModeText}" Classes="TitleSmall" FontWeight="SemiBold"
+                       AutomationProperties.AutomationId="Alarm_TxtVacationMode" />
             <TextBlock Text="{Binding PausedUntilText}" FontSize="12"
+                       AutomationProperties.AutomationId="Alarm_TxtPausedUntil"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
           </StackPanel>
           <Button Grid.Column="2" Classes="Text" MinWidth="0" Padding="8,4"
+                  AutomationProperties.AutomationId="Alarm_BtnResumeAll"
                   Command="{Binding ResumeAllAlarmsCommand}">
             <TextBlock Text="{Binding ResumeAllAlarmsText}" FontSize="12"
+                       AutomationProperties.AutomationId="Alarm_TxtResumeAll"
                        Foreground="{DynamicResource PrimaryBrush}" />
           </Button>
         </Grid>
@@ -78,6 +87,7 @@
 
       <!-- Nächster-Alarm-Countdown-Banner -->
       <Border IsVisible="{Binding HasNextAlarm}"
+              AutomationProperties.AutomationId="Alarm_NextAlarmBanner"
               Background="{DynamicResource SurfaceBrush}"
               CornerRadius="8" Margin="16,0,16,8" Padding="12"
               VerticalAlignment="Top">
@@ -87,8 +97,10 @@
                            VerticalAlignment="Center" />
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
             <TextBlock Text="{Binding NextAlarmInText}" Classes="BodyMedium"
+                       AutomationProperties.AutomationId="Alarm_TxtNextAlarmIn"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
             <TextBlock Text="{Binding NextAlarmCountdown}" Classes="BodyMedium"
+                       AutomationProperties.AutomationId="Alarm_TxtNextAlarmCountdown"
                        FontWeight="SemiBold"
                        Foreground="{DynamicResource AlarmAccentBrush}" />
           </StackPanel>
@@ -97,13 +109,14 @@
 
       <!-- Empty State -->
       <controls:EmptyStateView IsVisible="{Binding !HasAlarms}"
+          AutomationProperties.AutomationId="Alarm_EmptyState"
           Icon="AlarmOff" Title="{Binding NoAlarmsText}"
           Subtitle="{Binding CreateAlarmText}"
           ActionText="{Binding NewAlarmButtonText}"
           ActionCommand="{Binding NewAlarmCommand}" />
 
       <!-- Alarm List -->
-      <ScrollViewer IsVisible="{Binding HasAlarms}">
+      <ScrollViewer IsVisible="{Binding HasAlarms}" AutomationProperties.AutomationId="Alarm_AlarmListScroll">
         <ItemsControl ItemsSource="{Binding Alarms}" Margin="16,0">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:AlarmItem">
@@ -173,6 +186,7 @@
 
       <!-- Pause-Button (Urlaubsmodus) -->
       <Button Command="{Binding ShowPauseDialogCommand}"
+              AutomationProperties.AutomationId="Alarm_FabPause"
               IsVisible="{Binding !IsAllPaused}"
               HorizontalAlignment="Right" VerticalAlignment="Bottom"
               Margin="0,0,24,88" Width="44" Height="44"
@@ -184,6 +198,7 @@
 
       <!-- FAB: New Alarm -->
       <Button Command="{Binding NewAlarmCommand}"
+              AutomationProperties.AutomationId="Alarm_FabNew"
               IsVisible="{Binding !IsEditMode}"
               HorizontalAlignment="Right" VerticalAlignment="Bottom"
               Margin="0,0,24,24" Width="56" Height="56"
@@ -202,13 +217,16 @@
 
     <!-- Alarm Editor Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="Alarm_EditorOverlay"
             IsVisible="{Binding IsEditMode}"
             Background="#AA000000">
         <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                AutomationProperties.AutomationId="Alarm_EditorSheet"
                 Background="{DynamicResource CardBrush}"
                 CornerRadius="20,20,0,0" Padding="24,16,24,32"
                 MaxWidth="500" BoxShadow="0 -4 16 0 #40000000">
-          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
+          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600"
+                        AutomationProperties.AutomationId="Alarm_EditorScroll">
           <StackPanel Spacing="16">
             <!-- Drag Handle -->
             <Border Width="40" Height="4" CornerRadius="2"
@@ -216,70 +234,84 @@
                     HorizontalAlignment="Center" Margin="0,0,0,8" />
 
             <!-- Editor Title -->
-            <TextBlock Text="{Binding NewAlarmText}" Classes="HeadlineMedium" />
+            <TextBlock Text="{Binding NewAlarmText}" Classes="HeadlineMedium"
+                       AutomationProperties.AutomationId="Alarm_TxtEditorTitle" />
 
             <!-- Time Picker (Drum Wheel) -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding AlarmHour}" Minimum="0" Maximum="23" FormatString="D2" />
+                <controls:WheelPicker Value="{Binding AlarmHour}" Minimum="0" Maximum="23" FormatString="D2"
+                                     AutomationProperties.AutomationId="Alarm_WheelHour" />
                 <TextBlock Text="{Binding HoursShortText}" Classes="Caption" HorizontalAlignment="Center"
+                           AutomationProperties.AutomationId="Alarm_TxtHoursLabel"
                            Foreground="{DynamicResource TextMutedBrush}" />
               </StackPanel>
               <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
               <StackPanel Spacing="2">
-                <controls:WheelPicker Value="{Binding AlarmMinute}" Minimum="0" Maximum="59" FormatString="D2" />
+                <controls:WheelPicker Value="{Binding AlarmMinute}" Minimum="0" Maximum="59" FormatString="D2"
+                                     AutomationProperties.AutomationId="Alarm_WheelMinute" />
                 <TextBlock Text="{Binding MinutesShortText}" Classes="Caption" HorizontalAlignment="Center"
+                           AutomationProperties.AutomationId="Alarm_TxtMinutesLabel"
                            Foreground="{DynamicResource TextMutedBrush}" />
               </StackPanel>
             </StackPanel>
 
             <!-- Alarm Name -->
             <TextBox Text="{Binding AlarmName, Mode=TwoWay}"
+                     AutomationProperties.AutomationId="Alarm_TxtBoxName"
                      Watermark="{Binding AlarmNamePlaceholderText}" />
 
             <!-- Weekday Toggles (runde Buttons) -->
             <StackPanel Spacing="8">
               <TextBlock Text="{Binding RepeatText}" Classes="TitleSmall"
+                         AutomationProperties.AutomationId="Alarm_TxtRepeatLabel"
                          Foreground="{DynamicResource TextMutedBrush}" />
               <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsMondaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnMonday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Monday">
                   <TextBlock Text="{Binding MondayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsTuesdaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnTuesday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Tuesday">
                   <TextBlock Text="{Binding TuesdayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsWednesdaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnWednesday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Wednesday">
                   <TextBlock Text="{Binding WednesdayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsThursdaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnThursday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Thursday">
                   <TextBlock Text="{Binding ThursdayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsFridaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnFriday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Friday">
                   <TextBlock Text="{Binding FridayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsSaturdaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnSaturday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Saturday">
                   <TextBlock Text="{Binding SaturdayShortText}" FontSize="11" FontWeight="SemiBold"
                              HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Button>
                 <Button Classes="WeekdayToggle" Classes.Selected="{Binding IsSundaySelected}"
+                        AutomationProperties.AutomationId="Alarm_BtnSunday"
                         Width="36" Height="36" CornerRadius="18" Padding="0" MinWidth="0" MinHeight="0"
                         Command="{Binding ToggleDayCommand}" CommandParameter="Sunday">
                   <TextBlock Text="{Binding SundayShortText}" FontSize="11" FontWeight="SemiBold"
@@ -291,19 +323,23 @@
             <!-- Sound Selection -->
             <StackPanel Spacing="8">
               <TextBlock Text="{Binding AlarmSoundText}" Classes="TitleSmall"
+                         AutomationProperties.AutomationId="Alarm_TxtSoundLabel"
                          Foreground="{DynamicResource TextMutedBrush}" />
               <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                 <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableSounds}"
+                          AutomationProperties.AutomationId="Alarm_CmbSound"
                           SelectedValue="{Binding SelectedAlarmTone}"
                           SelectedValueBinding="{Binding Id}"
                           DisplayMemberBinding="{Binding Name}"
                           HorizontalAlignment="Stretch" />
                 <Button Grid.Column="1" Classes="Outlined" MinWidth="48" MinHeight="48" Padding="8"
+                        AutomationProperties.AutomationId="Alarm_BtnPreviewSound"
                         Command="{Binding PreviewSoundCommand}"
                         ToolTip.Tip="{Binding TestText}">
                   <mi:MaterialIcon Kind="Play" Width="20" Height="20" />
                 </Button>
                 <Button Grid.Column="2" Classes="Outlined" MinWidth="48" MinHeight="48" Padding="8"
+                        AutomationProperties.AutomationId="Alarm_BtnPickSound"
                         Command="{Binding PickAlarmSoundCommand}"
                         ToolTip.Tip="{Binding PickFromDeviceText}">
                   <mi:MaterialIcon Kind="FolderMusic" Width="20" Height="20" />
@@ -317,16 +353,20 @@
                                Foreground="{DynamicResource AlarmAccentBrush}"
                                VerticalAlignment="Center" Margin="0,0,8,0" />
               <TextBlock Grid.Column="1" Text="{Binding VibrateText}" Classes="BodyMedium"
+                         AutomationProperties.AutomationId="Alarm_TxtVibrateLabel"
                          VerticalAlignment="Center" />
               <ToggleSwitch Grid.Column="2" IsChecked="{Binding Vibrate, Mode=TwoWay}"
+                            AutomationProperties.AutomationId="Alarm_ToggleVibrate"
                             OnContent="" OffContent="" />
             </Grid>
 
             <!-- Dialog Buttons -->
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
               <Button Classes="Text" Content="{Binding CancelText}"
+                      AutomationProperties.AutomationId="Alarm_BtnCancelEdit"
                       Command="{Binding CancelEditCommand}" />
               <Button Classes="Primary" Content="{Binding SaveText}"
+                      AutomationProperties.AutomationId="Alarm_BtnSave"
                       Command="{Binding SaveAlarmCommand}" />
             </StackPanel>
 
@@ -337,9 +377,11 @@
 
     <!-- Delete Confirmation Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="Alarm_DeleteOverlay"
             IsVisible="{Binding IsDeleteConfirmVisible}"
             Background="#AA000000">
       <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+              AutomationProperties.AutomationId="Alarm_DeleteSheet"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,16,24,32"
               MaxWidth="500" BoxShadow="0 -4 16 0 #40000000">
@@ -348,13 +390,17 @@
           <Border Width="40" Height="4" CornerRadius="2"
                   Background="{DynamicResource TextMutedBrush}"
                   HorizontalAlignment="Center" Margin="0,0,0,8" />
-          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge"
+                     AutomationProperties.AutomationId="Alarm_TxtDeleteTitle" />
           <TextBlock Text="{Binding ConfirmDeleteMessageText}" Classes="BodyMedium"
+                     AutomationProperties.AutomationId="Alarm_TxtDeleteMessage"
                      TextWrapping="Wrap" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding NoText}"
+                    AutomationProperties.AutomationId="Alarm_BtnDeleteNo"
                     Command="{Binding CancelDeleteAlarmCommand}" />
             <Button Classes="Primary" Content="{Binding YesText}"
+                    AutomationProperties.AutomationId="Alarm_BtnDeleteYes"
                     Command="{Binding ConfirmDeleteAlarmCommand}" />
           </StackPanel>
         </StackPanel>
@@ -363,9 +409,11 @@
 
     <!-- Pause Dialog Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="2"
+            AutomationProperties.AutomationId="Alarm_PauseOverlay"
             IsVisible="{Binding IsPauseDialogVisible}"
             Background="#AA000000">
       <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+              AutomationProperties.AutomationId="Alarm_PauseSheet"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,16,24,32"
               MaxWidth="500" BoxShadow="0 -4 16 0 #40000000">
@@ -377,18 +425,24 @@
           <StackPanel Orientation="Horizontal" Spacing="8">
             <mi:MaterialIcon Kind="Beach" Width="24" Height="24"
                              Foreground="{DynamicResource AlarmAccentBrush}" />
-            <TextBlock Text="{Binding VacationModeText}" Classes="TitleLarge" />
+            <TextBlock Text="{Binding VacationModeText}" Classes="TitleLarge"
+                       AutomationProperties.AutomationId="Alarm_TxtPauseTitle" />
           </StackPanel>
           <TextBlock Text="{Binding PauseDurationText}" Classes="BodyMedium"
+                     AutomationProperties.AutomationId="Alarm_TxtPauseDuration"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
-            <controls:WheelPicker Value="{Binding PauseDays}" Minimum="1" Maximum="30" />
-            <TextBlock Text="{Binding DaysText}" Classes="TitleMedium" VerticalAlignment="Center" />
+            <controls:WheelPicker Value="{Binding PauseDays}" Minimum="1" Maximum="30"
+                                  AutomationProperties.AutomationId="Alarm_WheelPauseDays" />
+            <TextBlock Text="{Binding DaysText}" Classes="TitleMedium" VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Alarm_TxtDaysLabel" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding CancelText}"
+                    AutomationProperties.AutomationId="Alarm_BtnCancelPause"
                     Command="{Binding CancelPauseDialogCommand}" />
             <Button Classes="Primary" Content="{Binding PauseAllAlarmsText}"
+                    AutomationProperties.AutomationId="Alarm_BtnPauseAll"
                     Command="{Binding PauseAllAlarmsCommand}" />
           </StackPanel>
         </StackPanel>

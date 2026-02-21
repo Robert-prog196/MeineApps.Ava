@@ -142,7 +142,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid x:Name="RootGrid" RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="16">
+  <Grid x:Name="RootGrid" AutomationProperties.AutomationId="Calc_RootPanel" RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="16">
 
     <!-- ============================================ -->
     <!-- 1. Display Area                              -->
@@ -151,11 +151,13 @@
       <Border Background="{DynamicResource DisplayGradientBrush}"
               CornerRadius="16"
               Padding="16"
-              x:Name="DisplayBorder">
+              x:Name="DisplayBorder"
+              AutomationProperties.AutomationId="Calc_DisplayCard">
         <Grid RowDefinitions="Auto,Auto,Auto,Auto">
           <!-- Expression line mit Copy + Backspace-Button -->
           <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
             <TextBlock Grid.Column="0"
+                       AutomationProperties.AutomationId="Calc_MemoryIndicator"
                        Text="M"
                        FontSize="13"
                        FontWeight="Bold"
@@ -166,6 +168,7 @@
                        ToolTip.Tip="{Binding MemoryDisplay}"/>
             <ctrl:ExpressionHighlightControl Grid.Column="1"
                        x:Name="ExpressionText"
+                       AutomationProperties.AutomationId="Calc_ExpressionText"
                        Expression="{Binding Expression}"
                        FontSize="14"
                        Foreground="{DynamicResource TextSecondaryBrush}"
@@ -174,6 +177,7 @@
                        MinHeight="20"
                        TextTrimming="CharacterEllipsis"/>
             <Button Grid.Column="2"
+                    AutomationProperties.AutomationId="Calc_BtnShare"
                     Classes="Text"
                     Padding="8,4"
                     MinWidth="0"
@@ -185,6 +189,7 @@
                                Opacity="0.6"/>
             </Button>
             <Button Grid.Column="3"
+                    AutomationProperties.AutomationId="Calc_BtnCopy"
                     Classes="Text"
                     Padding="8,4"
                     MinWidth="0"
@@ -196,6 +201,7 @@
                                Opacity="0.6"/>
             </Button>
             <Button Grid.Column="4"
+                    AutomationProperties.AutomationId="Calc_BtnBackspace"
                     Classes="Text"
                     Padding="8,4"
                     MinWidth="0"
@@ -210,12 +216,13 @@
           <Border Grid.Row="1" Height="56" Margin="0,4,0,0"
                   ClipToBounds="True" CornerRadius="8"
                   Background="#0A0A0A">
-            <skia:SKCanvasView x:Name="VfdCanvas" PaintSurface="OnPaintVfd" />
+            <skia:SKCanvasView x:Name="VfdCanvas" AutomationProperties.AutomationId="Calc_VfdDisplay" PaintSurface="OnPaintVfd" />
           </Border>
 
           <!-- Main display (unsichtbar, wird für Messung/Fallback benötigt) -->
           <TextBlock Grid.Row="1"
                      x:Name="DisplayText"
+                     AutomationProperties.AutomationId="Calc_DisplayText"
                      Text="{Binding Display}"
                      FontSize="{Binding DisplayFontSize}"
                      FontFamily="JetBrains Mono, Consolas, monospace"
@@ -235,6 +242,7 @@
 
           <!-- Live Preview -->
           <TextBlock Grid.Row="2"
+                     AutomationProperties.AutomationId="Calc_PreviewResult"
                      Text="{Binding PreviewResult}"
                      FontSize="16"
                      Foreground="{DynamicResource TextMutedBrush}"
@@ -246,6 +254,7 @@
 
           <!-- Error message -->
           <TextBlock Grid.Row="3"
+                     AutomationProperties.AutomationId="Calc_ErrorMessage"
                      Text="{Binding ErrorMessage}"
                      FontSize="12"
                      Foreground="{DynamicResource ErrorBrush}"
@@ -255,7 +264,7 @@
       </Border>
 
       <!-- Result-Burst-Overlay (transparent, nur bei Animation sichtbar) -->
-      <Border x:Name="BurstOverlay" CornerRadius="16" ClipToBounds="True"
+      <Border x:Name="BurstOverlay" AutomationProperties.AutomationId="Calc_BurstOverlay" CornerRadius="16" ClipToBounds="True"
               IsHitTestVisible="False" IsVisible="False">
         <skia:SKCanvasView x:Name="BurstCanvas" PaintSurface="OnPaintBurst" />
       </Border>
@@ -270,6 +279,7 @@
 
       <!-- Basic mode button -->
       <Button Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_BtnModeBasic"
               Classes="Primary Small"
               Content="{Binding ModeBasicText}"
               IsVisible="{Binding IsBasicMode}"
@@ -277,6 +287,7 @@
               CommandParameter="{x:Static vm:CalculatorMode.Basic}"
               Margin="0,0,6,0"/>
       <Button Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_BtnModeBasicInactive"
               Classes="Outlined Small"
               Content="{Binding ModeBasicText}"
               IsVisible="{Binding !IsBasicMode}"
@@ -286,12 +297,14 @@
 
       <!-- Scientific mode button -->
       <Button Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_BtnModeScientific"
               Classes="Primary Small"
               Content="{Binding ModeScientificText}"
               IsVisible="{Binding IsScientificMode}"
               Command="{Binding SetModeCommand}"
               CommandParameter="{x:Static vm:CalculatorMode.Scientific}"/>
       <Button Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_BtnModeScientificInactive"
               Classes="Outlined Small"
               Content="{Binding ModeScientificText}"
               IsVisible="{Binding !IsScientificMode}"
@@ -300,6 +313,7 @@
 
       <!-- INV toggle (nur im Scientific Mode sichtbar) -->
       <Button Grid.Column="3"
+              AutomationProperties.AutomationId="Calc_BtnInverse"
               Classes="Outlined Small"
               Classes.InvActive="{Binding IsInverseMode}"
               Content="INV"
@@ -309,6 +323,7 @@
 
       <!-- Angle mode toggle (right-aligned) -->
       <Button Grid.Column="4"
+              AutomationProperties.AutomationId="Calc_BtnAngleMode"
               Classes="Text Small"
               Content="{Binding AngleModeText}"
               Command="{Binding ToggleAngleModeCommand}"/>
@@ -347,54 +362,69 @@
 
       <!-- Row 0: sin/asin, cos/acos, tan/atan, log/10^x, ln/e^x -->
       <Button Grid.Row="0" Grid.Column="0" Content="{Binding SinButtonText}"
+              AutomationProperties.AutomationId="Calc_BtnSin"
               Classes="Outlined Small Function"
               Command="{Binding SinOrInverseCommand}"/>
       <Button Grid.Row="0" Grid.Column="1" Content="{Binding CosButtonText}"
+              AutomationProperties.AutomationId="Calc_BtnCos"
               Classes="Outlined Small Function"
               Command="{Binding CosOrInverseCommand}"/>
       <Button Grid.Row="0" Grid.Column="2" Content="{Binding TanButtonText}"
+              AutomationProperties.AutomationId="Calc_BtnTan"
               Classes="Outlined Small Function"
               Command="{Binding TanOrInverseCommand}"/>
       <Button Grid.Row="0" Grid.Column="3" Content="{Binding LogButtonText}"
+              AutomationProperties.AutomationId="Calc_BtnLog"
               Classes="Outlined Small Function"
               Command="{Binding LogOrInverseCommand}"/>
       <Button Grid.Row="0" Grid.Column="4" Content="{Binding LnButtonText}"
+              AutomationProperties.AutomationId="Calc_BtnLn"
               Classes="Outlined Small Function"
               Command="{Binding LnOrInverseCommand}"/>
 
-      <!-- Row 1: (, ), x^y, 1/x, |x| -->
+      <!-- Row 1: (, ), x^y, 1/x, Ans -->
       <Button Grid.Row="1" Grid.Column="0" Content="("
+              AutomationProperties.AutomationId="Calc_BtnParenOpen"
               Classes="Outlined Small Function"
               Command="{Binding InputParenthesisCommand}"
               CommandParameter="("/>
       <Button Grid.Row="1" Grid.Column="1" Content=")"
+              AutomationProperties.AutomationId="Calc_BtnParenClose"
               Classes="Outlined Small Function"
               Command="{Binding InputParenthesisCommand}"
               CommandParameter=")"/>
       <Button Grid.Row="1" Grid.Column="2" Content="x&#x02B8;"
+              AutomationProperties.AutomationId="Calc_BtnPower"
               Classes="Outlined Small Function"
               Command="{Binding PowerCommand}"/>
       <Button Grid.Row="1" Grid.Column="3" Content="1/x"
+              AutomationProperties.AutomationId="Calc_BtnReciprocal"
               Classes="Outlined Small Function"
               Command="{Binding ReciprocalCommand}"/>
       <Button Grid.Row="1" Grid.Column="4" Content="Ans"
+              AutomationProperties.AutomationId="Calc_BtnAns"
               Classes="Outlined Small Function"
               Command="{Binding AnsCommand}"/>
 
       <!-- Row 2: pi, e, x^2, sqrt(x), x! -->
       <Button Grid.Row="2" Grid.Column="0" Content="&#x03C0;"
+              AutomationProperties.AutomationId="Calc_BtnPi"
               Classes="Outlined Small Function"
               Command="{Binding PiCommand}"/>
       <Button Grid.Row="2" Grid.Column="1" Content="e"
+              AutomationProperties.AutomationId="Calc_BtnEuler"
               Classes="Outlined Small Function"
               Command="{Binding EulerCommand}"/>
       <Button Grid.Row="2" Grid.Column="2" Content="x&#x00B2;"
+              AutomationProperties.AutomationId="Calc_BtnSquare"
               Classes="Outlined Small Function"
               Command="{Binding SquareCommand}"/>
       <Button Grid.Row="2" Grid.Column="3" Content="&#x221A;x"
+              AutomationProperties.AutomationId="Calc_BtnSqrt"
               Classes="Outlined Small Function"
               Command="{Binding SquareRootCommand}"/>
       <Button Grid.Row="2" Grid.Column="4" Content="x!"
+              AutomationProperties.AutomationId="Calc_BtnFactorial"
               Classes="Outlined Small Function"
               Command="{Binding FactorialCommand}"/>
     </Grid>
@@ -410,18 +440,23 @@
           Margin="0,0,0,8">
 
       <Button Grid.Column="0" Content="MC"
+              AutomationProperties.AutomationId="Calc_BtnMemoryClear"
               Classes="Text Small"
               Command="{Binding MemoryClearCommand}"/>
       <Button Grid.Column="1" Content="MR"
+              AutomationProperties.AutomationId="Calc_BtnMemoryRecall"
               Classes="Text Small"
               Command="{Binding MemoryRecallCommand}"/>
       <Button Grid.Column="2" Content="M+"
+              AutomationProperties.AutomationId="Calc_BtnMemoryAdd"
               Classes="Text Small"
               Command="{Binding MemoryAddCommand}"/>
       <Button Grid.Column="3" Content="M-"
+              AutomationProperties.AutomationId="Calc_BtnMemorySubtract"
               Classes="Text Small"
               Command="{Binding MemorySubtractCommand}"/>
       <Button Grid.Column="4" Content="MS"
+              AutomationProperties.AutomationId="Calc_BtnMemoryStore"
               Classes="Text Small"
               Command="{Binding MemoryStoreCommand}"/>
     </Grid>
@@ -437,22 +472,26 @@
 
       <!-- Row 0: C, ( ), %, ÷ -->
       <Button Grid.Row="0" Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_BtnClear"
               Content="C"
               Classes="Secondary CalcButton"
               FontSize="18"
               FontWeight="SemiBold"
               Command="{Binding ClearCommand}"/>
       <Button Grid.Row="0" Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_BtnSmartParenthesis"
               Content="( )"
               Classes="Outlined CalcButton"
               FontSize="18"
               Command="{Binding InputSmartParenthesisCommand}"/>
       <Button Grid.Row="0" Grid.Column="2"
+              AutomationProperties.AutomationId="Calc_BtnPercent"
               Content="%"
               Classes="Outlined CalcButton"
               FontSize="18"
               Command="{Binding PercentCommand}"/>
       <Button Grid.Row="0" Grid.Column="3"
+              AutomationProperties.AutomationId="Calc_BtnDivide"
               Content="&#x00F7;"
               Classes="Primary Operator CalcButton"
               Classes.ActiveOp="{Binding IsDivideActive}"
@@ -461,21 +500,25 @@
 
       <!-- Row 1: 7, 8, 9, Multiply -->
       <Button Grid.Row="1" Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_Btn7"
               Content="7"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="7"/>
       <Button Grid.Row="1" Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_Btn8"
               Content="8"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="8"/>
       <Button Grid.Row="1" Grid.Column="2"
+              AutomationProperties.AutomationId="Calc_Btn9"
               Content="9"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="9"/>
       <Button Grid.Row="1" Grid.Column="3"
+              AutomationProperties.AutomationId="Calc_BtnMultiply"
               Content="&#x00D7;"
               Classes="Primary Operator CalcButton"
               Classes.ActiveOp="{Binding IsMultiplyActive}"
@@ -484,21 +527,25 @@
 
       <!-- Row 2: 4, 5, 6, Subtract -->
       <Button Grid.Row="2" Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_Btn4"
               Content="4"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="4"/>
       <Button Grid.Row="2" Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_Btn5"
               Content="5"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="5"/>
       <Button Grid.Row="2" Grid.Column="2"
+              AutomationProperties.AutomationId="Calc_Btn6"
               Content="6"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="6"/>
       <Button Grid.Row="2" Grid.Column="3"
+              AutomationProperties.AutomationId="Calc_BtnSubtract"
               Content="&#x2212;"
               Classes="Primary Operator CalcButton"
               Classes.ActiveOp="{Binding IsSubtractActive}"
@@ -507,21 +554,25 @@
 
       <!-- Row 3: 1, 2, 3, Add -->
       <Button Grid.Row="3" Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_Btn1"
               Content="1"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="1"/>
       <Button Grid.Row="3" Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_Btn2"
               Content="2"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="2"/>
       <Button Grid.Row="3" Grid.Column="2"
+              AutomationProperties.AutomationId="Calc_Btn3"
               Content="3"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="3"/>
       <Button Grid.Row="3" Grid.Column="3"
+              AutomationProperties.AutomationId="Calc_BtnAdd"
               Content="+"
               Classes="Primary Operator CalcButton"
               Classes.ActiveOp="{Binding IsAddActive}"
@@ -530,20 +581,24 @@
 
       <!-- Row 4: Negate, 0, Decimal, Equals -->
       <Button Grid.Row="4" Grid.Column="0"
+              AutomationProperties.AutomationId="Calc_BtnNegate"
               Content="&#x00B1;"
               Classes="Digit CalcButton"
               Command="{Binding NegateCommand}"/>
       <Button Grid.Row="4" Grid.Column="1"
+              AutomationProperties.AutomationId="Calc_Btn0"
               Content="0"
               Classes="Digit CalcButton"
               Command="{Binding InputDigitCommand}"
               CommandParameter="0"/>
       <Button Grid.Row="4" Grid.Column="2"
+              AutomationProperties.AutomationId="Calc_BtnDecimal"
               Content="{Binding DecimalButtonText}"
               Classes="Digit CalcButton"
               Command="{Binding InputDecimalCommand}"/>
       <Button Grid.Row="4" Grid.Column="3"
               x:Name="EqualsButton"
+              AutomationProperties.AutomationId="Calc_BtnEquals"
               Content="="
               Classes="Primary Operator CalcButton Equals"
               Command="{Binding CalculateCommand}"/>

@@ -28,43 +28,212 @@
       <Setter Property="RenderTransform" Value="translate(0px, 0px)" />
       <Setter Property="IsHitTestVisible" Value="True" />
     </Style>
+    <!-- Pulsier-Animation fuer den Alarm-Icon-Kreis -->
+    <Style Selector="Border.PulseCircle">
+      <Style.Animations>
+        <Animation Duration="0:0:1.5" IterationCount="INFINITE"
+                   PlaybackDirection="Alternate" Easing="CubicEaseInOut">
+          <KeyFrame Cue="0%">
+            <Setter Property="Opacity" Value="0.75" />
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Opacity" Value="1.0" />
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,Auto">
 
-    <!-- Content Area -->
-    <Panel Grid.Row="0">
-      <Border Classes="TabContent"
+    <!-- Content Area (versteckt wenn Alarm-Overlay aktiv) -->
+    <Panel Grid.Row="0" IsVisible="{Binding !IsAlarmOverlayVisible}">
+      <Border AutomationProperties.AutomationId="Main_TabTimer"
+              Classes="TabContent"
               Classes.Active="{Binding IsTimerActive}">
         <views:TimerView DataContext="{Binding TimerViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabStopwatch"
+              Classes="TabContent"
               Classes.Active="{Binding IsStopwatchActive}">
         <views:StopwatchView DataContext="{Binding StopwatchViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabPomodoro"
+              Classes="TabContent"
               Classes.Active="{Binding IsPomodoroActive}">
         <views:PomodoroView DataContext="{Binding PomodoroViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabAlarm"
+              Classes="TabContent"
               Classes.Active="{Binding IsAlarmActive}">
         <views:AlarmView DataContext="{Binding AlarmViewModel}" />
       </Border>
-      <Border Classes="TabContent"
+      <Border AutomationProperties.AutomationId="Main_TabSettings"
+              Classes="TabContent"
               Classes.Active="{Binding IsSettingsActive}">
         <views:SettingsView DataContext="{Binding SettingsViewModel}" />
       </Border>
     </Panel>
 
-    <!-- Bottom Navigation Bar -->
-    <Border Grid.Row="1"
+    <!-- Alarm-Content (ersetzt den normalen Content wenn Alarm aktiv) -->
+    <Border AutomationProperties.AutomationId="Main_AlarmOverlay"
+            Grid.Row="0" Grid.RowSpan="2"
+            IsVisible="{Binding IsAlarmOverlayVisible}"
+            Background="#E0000000">
+      <Grid RowDefinitions="*,Auto,Auto,Auto,Auto,Auto,*" Margin="32"
+            DataContext="{Binding AlarmOverlayViewModel}"
+            x:DataType="vm:AlarmOverlayViewModel">
+
+        <!-- Icon-Kreis mit Puls -->
+        <Border AutomationProperties.AutomationId="Main_AlarmPulseCircle"
+                Grid.Row="1" Classes="PulseCircle"
+                Width="140" Height="140" CornerRadius="70"
+                Background="{DynamicResource PrimaryBrush}"
+                HorizontalAlignment="Center" Margin="0,0,0,24">
+          <Panel>
+            <mi:MaterialIcon Kind="TimerSand" Width="64" Height="64"
+                             Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                             IsVisible="{Binding IsTimerSource}" />
+            <mi:MaterialIcon Kind="Alarm" Width="64" Height="64"
+                             Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                             IsVisible="{Binding !IsTimerSource}" />
+          </Panel>
+        </Border>
+
+        <!-- Titel -->
+        <StackPanel Grid.Row="2" Spacing="8" HorizontalAlignment="Center" Margin="0,0,0,16">
+          <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtTitle"
+                     Text="{Binding Title}" Classes="HeadlineLarge"
+                     Foreground="White" HorizontalAlignment="Center"
+                     TextAlignment="Center" TextWrapping="Wrap" />
+          <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtSubtitle"
+                     Text="{Binding Subtitle}" Classes="TitleMedium"
+                     Foreground="#B0FFFFFF" HorizontalAlignment="Center"
+                     TextAlignment="Center" />
+        </StackPanel>
+
+        <!-- Aktuelle Uhrzeit -->
+        <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtTime"
+                   Grid.Row="3" Text="{Binding CurrentTime}"
+                   FontSize="64" FontWeight="Light" Foreground="White"
+                   HorizontalAlignment="Center" Margin="0,0,0,48" />
+
+        <!-- Math-Challenge-Bereich -->
+        <Border AutomationProperties.AutomationId="Main_AlarmMathChallenge"
+                Grid.Row="4" IsVisible="{Binding IsMathChallenge}"
+                Background="#30FFFFFF" CornerRadius="16" Padding="20" Margin="0,0,0,16"
+                HorizontalAlignment="Center" MaxWidth="340">
+          <StackPanel Spacing="12">
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtMathInstruction"
+                       Text="{Binding ChallengeInstructionText}" FontSize="14"
+                       Foreground="#D0FFFFFF" HorizontalAlignment="Center" TextAlignment="Center" />
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtMathQuestion"
+                       Text="{Binding ChallengeQuestion}" FontSize="28" FontWeight="Bold"
+                       Foreground="White" HorizontalAlignment="Center" />
+            <TextBox AutomationProperties.AutomationId="Main_AlarmTxtMathAnswer"
+                     Text="{Binding ChallengeAnswer, Mode=TwoWay}"
+                     Watermark="{Binding ChallengeAnswerHintText}"
+                     HorizontalAlignment="Stretch" FontSize="20"
+                     HorizontalContentAlignment="Center" />
+            <Button AutomationProperties.AutomationId="Main_AlarmBtnMathSubmit"
+                    Classes="Primary" Content="{Binding ChallengeSubmitText}"
+                    HorizontalAlignment="Center" MinWidth="160" Height="44" CornerRadius="22"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding !ChallengeSolved}"
+                    Command="{Binding SubmitChallengeCommand}" />
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtMathFeedback"
+                       Text="{Binding ChallengeFeedback}" FontSize="14"
+                       Foreground="#F0FFFFFF" HorizontalAlignment="Center"
+                       TextAlignment="Center" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <!-- Shake-Challenge-Bereich -->
+        <Border AutomationProperties.AutomationId="Main_AlarmShakeChallenge"
+                Grid.Row="4" IsVisible="{Binding IsShakeChallenge}"
+                Background="#30FFFFFF" CornerRadius="16" Padding="20" Margin="0,0,0,16"
+                HorizontalAlignment="Center" MaxWidth="340">
+          <StackPanel Spacing="12">
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtShakeInstruction"
+                       Text="{Binding ShakeInstructionText}" FontSize="14"
+                       Foreground="#D0FFFFFF" HorizontalAlignment="Center" TextAlignment="Center" />
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtShakeProgress"
+                       HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" Foreground="White">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="{}{0} / {1}">
+                  <Binding Path="ShakeProgress" />
+                  <Binding Path="ShakeTarget" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+            <ProgressBar AutomationProperties.AutomationId="Main_AlarmShakeProgressBar"
+                         Minimum="0" Maximum="1" Value="{Binding ShakeProgressFraction}"
+                         Height="8" CornerRadius="4"
+                         Foreground="{DynamicResource PrimaryBrush}" />
+            <Button AutomationProperties.AutomationId="Main_AlarmBtnSimulateShake"
+                    Classes="Outlined" Content="{Binding SimulateShakeText}"
+                    HorizontalAlignment="Center" MinWidth="160" Height="44" CornerRadius="22"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding !HasPhysicalSensor}"
+                    Command="{Binding SimulateShakeCommand}" />
+            <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtShakeFeedback"
+                       Text="{Binding ChallengeFeedback}" FontSize="14"
+                       Foreground="#F0FFFFFF" HorizontalAlignment="Center"
+                       TextAlignment="Center" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="5" Spacing="16" HorizontalAlignment="Center">
+          <Button AutomationProperties.AutomationId="Main_AlarmBtnDismiss"
+                  Classes="Primary" MinWidth="220" Height="56" CornerRadius="28"
+                  HorizontalContentAlignment="Center"
+                  IsEnabled="{Binding CanDismiss}"
+                  Command="{Binding DismissCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="Close" Width="24" Height="24" />
+              <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtDismiss"
+                         Text="{Binding DismissText}" FontSize="18" FontWeight="Medium"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <Button AutomationProperties.AutomationId="Main_AlarmBtnSnooze"
+                  Classes="Outlined" MinWidth="220" Height="48" CornerRadius="24"
+                  HorizontalContentAlignment="Center"
+                  IsVisible="{Binding CanSnooze}"
+                  Command="{Binding SnoozeCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="AlarmSnooze" Width="20" Height="20"
+                               Foreground="White" />
+              <TextBlock AutomationProperties.AutomationId="Main_AlarmTxtSnooze"
+                         FontSize="16" Foreground="White"
+                         VerticalAlignment="Center">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0} ({1})">
+                    <Binding Path="SnoozeLabel" />
+                    <Binding Path="SnoozeText" />
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- Bottom Navigation Bar (versteckt wenn Alarm-Overlay aktiv) -->
+    <Border AutomationProperties.AutomationId="Main_NavBar"
+            Grid.Row="1"
+            IsVisible="{Binding !IsAlarmOverlayVisible}"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,2">
 
         <!-- Timer Tab (Amber) -->
-        <Button Grid.Column="0"
+        <Button AutomationProperties.AutomationId="Main_NavTimer"
+                Grid.Column="0"
                 Classes="Text"
                 Command="{Binding NavigateToTimerCommand}"
                 HorizontalAlignment="Stretch"
@@ -103,7 +272,8 @@
         </Button>
 
         <!-- Stopwatch Tab (Cyan) -->
-        <Button Grid.Column="1"
+        <Button AutomationProperties.AutomationId="Main_NavStopwatch"
+                Grid.Column="1"
                 Classes="Text"
                 Command="{Binding NavigateToStopwatchCommand}"
                 HorizontalAlignment="Stretch"
@@ -142,7 +312,8 @@
         </Button>
 
         <!-- Pomodoro Tab (Rot) -->
-        <Button Grid.Column="2"
+        <Button AutomationProperties.AutomationId="Main_NavPomodoro"
+                Grid.Column="2"
                 Classes="Text"
                 Command="{Binding NavigateToPomodoroCommand}"
                 HorizontalAlignment="Stretch"
@@ -181,7 +352,8 @@
         </Button>
 
         <!-- Alarm Tab (Violet) -->
-        <Button Grid.Column="3"
+        <Button AutomationProperties.AutomationId="Main_NavAlarm"
+                Grid.Column="3"
                 Classes="Text"
                 Command="{Binding NavigateToAlarmCommand}"
                 HorizontalAlignment="Stretch"
@@ -220,7 +392,8 @@
         </Button>
 
         <!-- Settings Tab (Primary) -->
-        <Button Grid.Column="4"
+        <Button AutomationProperties.AutomationId="Main_NavSettings"
+                Grid.Column="4"
                 Classes="Text"
                 Command="{Binding NavigateToSettingsCommand}"
                 HorizontalAlignment="Stretch"
@@ -263,18 +436,23 @@
 
     <!-- Game Juice Overlays -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   AutomationProperties.AutomationId="Main_FloatingTextOverlay"
                                    Grid.Row="0" Grid.RowSpan="2"
                                    ZIndex="10"
                                    IsHitTestVisible="False" />
     <controls:SkiaCelebrationOverlay x:Name="CelebrationCanvas"
+                                      AutomationProperties.AutomationId="Main_CelebrationOverlay"
                                       Grid.Row="0" Grid.RowSpan="2"
                                       ZIndex="20"
                                       IsHitTestVisible="False" />
 
     <!-- Onboarding Overlay -->
-    <Panel x:Name="OnboardingOverlay" IsVisible="False" Grid.Row="0" Grid.RowSpan="2" ZIndex="25">
+    <Panel x:Name="OnboardingOverlay"
+           AutomationProperties.AutomationId="Main_OnboardingOverlay"
+           IsVisible="False" Grid.Row="0" Grid.RowSpan="2" ZIndex="25">
       <Border Background="#60000000" />
       <controls:TooltipBubble x:Name="OnboardingTooltip"
+                               AutomationProperties.AutomationId="Main_OnboardingTooltip"
                                HorizontalAlignment="Center"
                                Margin="32,0">
         <controls:TooltipBubble.Transitions>
@@ -287,7 +465,8 @@
     </Panel>
 
     <!-- Snackbar Message -->
-    <Border Grid.Row="0" Grid.RowSpan="2"
+    <Border AutomationProperties.AutomationId="Main_Snackbar"
+            Grid.Row="0" Grid.RowSpan="2"
             IsVisible="{Binding IsSnackbarVisible}"
             IsHitTestVisible="False"
             VerticalAlignment="Bottom" HorizontalAlignment="Center"
@@ -296,17 +475,11 @@
               CornerRadius="8" Padding="16,10"
               MinWidth="200" MaxWidth="400"
               BoxShadow="0 2 8 0 #40000000">
-        <TextBlock Text="{Binding SnackbarMessage}" Classes="BodyMedium"
+        <TextBlock AutomationProperties.AutomationId="Main_TxtSnackbar"
+                   Text="{Binding SnackbarMessage}" Classes="BodyMedium"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    TextWrapping="Wrap" TextAlignment="Center" />
       </Border>
-    </Border>
-
-    <!-- Alarm Overlay (oberste Ebene) -->
-    <Border Grid.Row="0" Grid.RowSpan="2"
-            IsVisible="{Binding IsAlarmOverlayVisible}"
-            IsHitTestVisible="{Binding IsAlarmOverlayVisible}">
-      <views:AlarmOverlayView DataContext="{Binding AlarmOverlayViewModel}" />
     </Border>
 
   </Grid>

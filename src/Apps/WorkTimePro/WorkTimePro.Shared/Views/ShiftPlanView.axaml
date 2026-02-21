@@ -8,19 +8,22 @@
              x:DataType="vm:ShiftPlanViewModel"
              Background="{DynamicResource BackgroundBrush}">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*" AutomationProperties.AutomationId="ShiftPlan_RootPanel">
 
     <!-- Back Button Header -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="ShiftPlan_Header"
             Background="{DynamicResource SurfaceBrush}"
             Padding="8,4">
       <StackPanel Orientation="Horizontal" Spacing="8">
         <Button Classes="Text"
+                AutomationProperties.AutomationId="ShiftPlan_BtnBack"
                 Command="{Binding GoBackCommand}">
           <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                            Foreground="{DynamicResource PrimaryBrush}" />
         </Button>
         <TextBlock Text="{loc:Translate ShiftPlan}"
+                   AutomationProperties.AutomationId="ShiftPlan_TxtTitle"
                    FontSize="18" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
@@ -32,10 +35,12 @@
 
         <!-- ==================== Week Navigation ==================== -->
         <Border Grid.Row="0" Classes="Card StatsCard"
+                AutomationProperties.AutomationId="ShiftPlan_NavCard"
                 Margin="16,8,16,0"
                 CornerRadius="0,0,12,12">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
+                    AutomationProperties.AutomationId="ShiftPlan_BtnPrevWeek"
                     Command="{Binding PreviousWeekCommand}">
               <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
@@ -43,16 +48,19 @@
 
             <StackPanel Grid.Column="1" HorizontalAlignment="Center">
               <TextBlock Text="{Binding WeekDisplay}"
+                         AutomationProperties.AutomationId="ShiftPlan_TxtWeekDisplay"
                          FontSize="18" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding TotalHoursDisplay}"
+                         AutomationProperties.AutomationId="ShiftPlan_TxtTotalHours"
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
             </StackPanel>
 
             <Button Grid.Column="2" Classes="Text"
+                    AutomationProperties.AutomationId="ShiftPlan_BtnNextWeek"
                     Command="{Binding NextWeekCommand}">
               <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
@@ -61,7 +69,7 @@
         </Border>
 
         <!-- ==================== Shift Pattern Selection ==================== -->
-        <Border Grid.Row="1" Classes="Card StatsCard" Margin="16,8">
+        <Border Grid.Row="1" Classes="Card StatsCard" AutomationProperties.AutomationId="ShiftPlan_PatternCard" Margin="16,8">
           <StackPanel Spacing="8">
             <TextBlock Text="{loc:Translate SelectShiftPattern}"
                        FontSize="12"
@@ -69,6 +77,7 @@
 
             <!-- Horizontal Shift Pattern List -->
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          AutomationProperties.AutomationId="ShiftPlan_PatternScroller"
                           VerticalScrollBarVisibility="Disabled"
                           Height="70">
               <ItemsControl ItemsSource="{Binding ShiftPatterns}">
@@ -105,6 +114,7 @@
 
             <!-- Empty State for Patterns -->
             <StackPanel IsVisible="{Binding HasNoPatterns}"
+                        AutomationProperties.AutomationId="ShiftPlan_EmptyPatterns"
                         HorizontalAlignment="Center" Margin="0,8">
               <mi:MaterialIcon Kind="CalendarCheck" Width="32" Height="32"
                                Foreground="{DynamicResource TextSecondaryBrush}"
@@ -118,9 +128,11 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right" Spacing="8">
               <Button Content="{loc:Translate AddNew}"
+                      AutomationProperties.AutomationId="ShiftPlan_BtnAddPattern"
                       Classes="Outlined Small"
                       Command="{Binding ShowPatternEditorCommand}" />
               <Button Content="{loc:Translate ApplyToWeek}"
+                      AutomationProperties.AutomationId="ShiftPlan_BtnApplyPattern"
                       Classes="Primary Small"
                       Command="{Binding ApplyPatternToWeekCommand}" />
             </StackPanel>
@@ -128,9 +140,9 @@
         </Border>
 
         <!-- ==================== Week Days ==================== -->
-        <ScrollViewer Grid.Row="2">
+        <ScrollViewer Grid.Row="2" AutomationProperties.AutomationId="ShiftPlan_DaysScroller">
           <StackPanel Spacing="8" Margin="16,0">
-            <ItemsControl ItemsSource="{Binding WeekDays}">
+            <ItemsControl ItemsSource="{Binding WeekDays}" AutomationProperties.AutomationId="ShiftPlan_DaysList">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="vm:ShiftDayItem">
                   <Border Classes="Card" Padding="16" Margin="0,2"
@@ -194,6 +206,7 @@
 
         <!-- Today Button -->
         <Button Grid.Row="3"
+                AutomationProperties.AutomationId="ShiftPlan_BtnToday"
                 Content="{loc:Translate TodayButton}"
                 Classes="Primary"
                 CornerRadius="24"
@@ -204,7 +217,7 @@
       </Grid>
 
       <!-- ==================== Pattern Editor Modal ==================== -->
-      <Panel IsVisible="{Binding IsPatternEditorVisible}">
+      <Panel IsVisible="{Binding IsPatternEditorVisible}" AutomationProperties.AutomationId="ShiftPlan_EditorOverlay">
 
         <!-- Backdrop -->
         <Border Background="#80000000"
@@ -213,6 +226,7 @@
 
         <!-- Modal Content -->
         <Border Background="{DynamicResource SurfaceBrush}"
+                AutomationProperties.AutomationId="ShiftPlan_EditorCard"
                 CornerRadius="16"
                 Padding="24"
                 Margin="32"
@@ -228,6 +242,7 @@
                          FontSize="12"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding PatternName}"
+                       AutomationProperties.AutomationId="ShiftPlan_TxtPatternName"
                        Watermark="{loc:Translate EarlyShiftExample}" />
             </StackPanel>
 
@@ -238,6 +253,7 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <TextBox Text="{Binding PatternStartTimeDisplay}"
+                         AutomationProperties.AutomationId="ShiftPlan_TxtStartTime"
                          Watermark="HH:mm" />
               </StackPanel>
 
@@ -246,6 +262,7 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <TextBox Text="{Binding PatternEndTimeDisplay}"
+                         AutomationProperties.AutomationId="ShiftPlan_TxtEndTime"
                          Watermark="HH:mm" />
               </StackPanel>
             </Grid>
@@ -257,30 +274,35 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Classes="Text" Padding="0"
+                        AutomationProperties.AutomationId="ShiftPlan_BtnColorBlue"
                         Command="{Binding SetPatternColorCommand}"
                         CommandParameter="#1565C0">
                   <Border Background="#1565C0" Width="48" Height="48"
                           CornerRadius="8" />
                 </Button>
                 <Button Classes="Text" Padding="0"
+                        AutomationProperties.AutomationId="ShiftPlan_BtnColorGreen"
                         Command="{Binding SetPatternColorCommand}"
                         CommandParameter="#2E7D32">
                   <Border Background="#2E7D32" Width="48" Height="48"
                           CornerRadius="8" />
                 </Button>
                 <Button Classes="Text" Padding="0"
+                        AutomationProperties.AutomationId="ShiftPlan_BtnColorOrange"
                         Command="{Binding SetPatternColorCommand}"
                         CommandParameter="#F57C00">
                   <Border Background="#F57C00" Width="48" Height="48"
                           CornerRadius="8" />
                 </Button>
                 <Button Classes="Text" Padding="0"
+                        AutomationProperties.AutomationId="ShiftPlan_BtnColorRed"
                         Command="{Binding SetPatternColorCommand}"
                         CommandParameter="#C62828">
                   <Border Background="#C62828" Width="48" Height="48"
                           CornerRadius="8" />
                 </Button>
                 <Button Classes="Text" Padding="0"
+                        AutomationProperties.AutomationId="ShiftPlan_BtnColorPurple"
                         Command="{Binding SetPatternColorCommand}"
                         CommandParameter="#6A1B9A">
                   <Border Background="#6A1B9A" Width="48" Height="48"
@@ -293,9 +315,11 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right" Spacing="12">
               <Button Content="{loc:Translate Cancel}"
+                      AutomationProperties.AutomationId="ShiftPlan_BtnCancelEditor"
                       Classes="Secondary"
                       Command="{Binding HidePatternEditorCommand}" />
               <Button Content="{loc:Translate Save}"
+                      AutomationProperties.AutomationId="ShiftPlan_BtnSavePattern"
                       Classes="Primary"
                       Command="{Binding SavePatternCommand}" />
             </StackPanel>
@@ -304,7 +328,8 @@
       </Panel>
 
       <!-- Loading -->
-      <ProgressBar IsIndeterminate="True"
+      <ProgressBar AutomationProperties.AutomationId="ShiftPlan_LoadingBar"
+                   IsIndeterminate="True"
                    IsVisible="{Binding IsLoading}"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center" />

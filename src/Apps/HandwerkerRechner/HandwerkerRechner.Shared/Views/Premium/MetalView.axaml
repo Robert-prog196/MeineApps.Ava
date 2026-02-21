@@ -12,19 +12,22 @@
     <conv:IntEqualsConverter x:Key="IntEquals" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Metal_RootGrid">
 
     <!-- Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
-            CornerRadius="0,0,24,24">
+            CornerRadius="0,0,24,24"
+            AutomationProperties.AutomationId="Metal_HeaderBorder">
       <Grid ColumnDefinitions="Auto,*">
         <Button Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
-                Padding="0">
+                Padding="0"
+                AutomationProperties.AutomationId="Metal_BtnBack">
           <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
@@ -36,26 +39,32 @@
           </Border>
           <TextBlock Text="{loc:Translate MetalCalculator}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Metal_TxtTitle" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Metal_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Calculator Selector -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Metal_CardSelector">
           <ComboBox ItemsSource="{Binding Calculators}"
                     SelectedIndex="{Binding SelectedCalculator}"
-                    HorizontalAlignment="Stretch" />
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="Metal_CmbCalculator" />
         </Border>
 
         <!-- Visualisierung -->
         <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
-                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="MetalCanvas" PaintSurface="OnPaintVisualization" />
+                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12"
+                AutomationProperties.AutomationId="Metal_CardVisualization">
+          <skia:SKCanvasView x:Name="MetalCanvas" PaintSurface="OnPaintVisualization"
+                             AutomationProperties.AutomationId="Metal_Canvas" />
         </Border>
 
         <!-- Calculator 0: Metal Weight -->
@@ -63,7 +72,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Metal_CardWeightInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate MetalWeight}"
                            FontSize="16" FontWeight="SemiBold"
@@ -75,7 +85,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <ComboBox ItemsSource="{Binding Metals}"
                             SelectedIndex="{Binding SelectedMetal}"
-                            HorizontalAlignment="Stretch" />
+                            HorizontalAlignment="Stretch"
+                            AutomationProperties.AutomationId="Metal_CmbMetal" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -84,35 +95,40 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <ComboBox ItemsSource="{Binding Profiles}"
                             SelectedIndex="{Binding SelectedProfile}"
-                            HorizontalAlignment="Stretch" />
+                            HorizontalAlignment="Stretch"
+                            AutomationProperties.AutomationId="Metal_CmbProfile" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate LengthM}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Length}" Watermark="mm" />
+                  <TextBox Text="{Binding Length}" Watermark="mm"
+                           AutomationProperties.AutomationId="Metal_TxtBoxLength" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Dimension1}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Dimension1}" Watermark="mm" />
+                  <TextBox Text="{Binding Dimension1}" Watermark="mm"
+                           AutomationProperties.AutomationId="Metal_TxtBoxDimension1" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Dimension2}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Dimension2}" Watermark="mm" />
+                  <TextBox Text="{Binding Dimension2}" Watermark="mm"
+                           AutomationProperties.AutomationId="Metal_TxtBoxDimension2" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate WallThickness}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding WallThickness}" Watermark="mm" />
+                  <TextBox Text="{Binding WallThickness}" Watermark="mm"
+                           AutomationProperties.AutomationId="Metal_TxtBoxWallThickness" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -120,18 +136,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding PricePerKg}"
-                           Watermark="EUR/kg" />
+                           Watermark="EUR/kg"
+                           AutomationProperties.AutomationId="Metal_TxtBoxPricePerKg" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Metal_CardWeightResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Metal_TxtWeightResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UnitKilograms}"
@@ -139,7 +158,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding WeightResult.Weight}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Metal_TxtWeight" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -148,7 +168,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding WeightResult.Volume}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Metal_TxtVolume" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -158,7 +179,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding MetalCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Metal_TxtMetalCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -167,7 +189,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Metal_BtnShareWeight">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -181,7 +204,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Metal_BtnExportWeight">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -202,7 +226,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Metal_CardThreadInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate ThreadDrill}"
                            FontSize="16" FontWeight="SemiBold"
@@ -214,18 +239,21 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <ComboBox ItemsSource="{Binding ThreadSizes}"
                             SelectedIndex="{Binding SelectedThread}"
-                            HorizontalAlignment="Stretch" />
+                            HorizontalAlignment="Stretch"
+                            AutomationProperties.AutomationId="Metal_CmbThread" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Metal_CardThreadResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Metal_TxtThreadResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate ThreadDrill}"
@@ -233,7 +261,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding ThreadResult.ThreadSize}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Metal_TxtThreadSize" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -242,7 +271,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding ThreadResult.DrillSize}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Metal_TxtDrillSize" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -251,7 +281,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Metal_BtnShareThread">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -265,7 +296,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Metal_BtnExportThread">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -285,13 +317,15 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Metal_BottomBar">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Metal_BtnReset">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -304,7 +338,8 @@
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Metal_BtnCalculate">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Calculator" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Calculate}"
@@ -318,7 +353,8 @@
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Metal_BtnSave">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Save}"
@@ -333,34 +369,40 @@
     <Border Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
-            IsVisible="{Binding ShowSaveDialog}">
+            IsVisible="{Binding ShowSaveDialog}"
+            AutomationProperties.AutomationId="Metal_SaveDialogOverlay">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="Metal_SaveDialogCard">
         <StackPanel Spacing="16">
           <TextBlock Text="{loc:Translate SaveProject}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Metal_TxtSaveDialogTitle" />
           <TextBox Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
-                   Classes="Outlined" />
+                   Classes="Outlined"
+                   AutomationProperties.AutomationId="Metal_TxtBoxProjectName" />
           <Grid ColumnDefinitions="*,12,*">
             <Button Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Cancel}" />
+                    Content="{loc:Translate Cancel}"
+                    AutomationProperties.AutomationId="Metal_BtnCancelSave" />
             <Button Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Save}" />
+                    Content="{loc:Translate Save}"
+                    AutomationProperties.AutomationId="Metal_BtnConfirmSave" />
           </Grid>
         </StackPanel>
       </Border>

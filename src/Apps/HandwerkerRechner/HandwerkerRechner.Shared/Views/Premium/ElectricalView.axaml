@@ -12,19 +12,22 @@
     <conv:IntEqualsConverter x:Key="IntEquals" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Electrical_RootGrid">
 
     <!-- Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
-            CornerRadius="0,0,24,24">
+            CornerRadius="0,0,24,24"
+            AutomationProperties.AutomationId="Electrical_HeaderBorder">
       <Grid ColumnDefinitions="Auto,*">
         <Button Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
-                Padding="0">
+                Padding="0"
+                AutomationProperties.AutomationId="Electrical_BtnBack">
           <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
@@ -36,26 +39,32 @@
           </Border>
           <TextBlock Text="{loc:Translate ElectricalCalculator}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Electrical_TxtTitle" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Electrical_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Calculator Selector -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Electrical_CardSelector">
           <ComboBox ItemsSource="{Binding Calculators}"
                     SelectedIndex="{Binding SelectedCalculator}"
-                    HorizontalAlignment="Stretch" />
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="Electrical_CmbCalculator" />
         </Border>
 
         <!-- Visualisierung -->
         <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
-                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="ElectricalCanvas" PaintSurface="OnPaintVisualization" />
+                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12"
+                AutomationProperties.AutomationId="Electrical_CardVisualization">
+          <skia:SKCanvasView x:Name="ElectricalCanvas" PaintSurface="OnPaintVisualization"
+                             AutomationProperties.AutomationId="Electrical_Canvas" />
         </Border>
 
         <!-- Calculator 0: Voltage Drop -->
@@ -63,38 +72,44 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Electrical_CardVoltageDropInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate VoltageDropCalculator}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtVoltageDropHeader" />
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Voltage}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Voltage}" Watermark="V" />
+                  <TextBox Text="{Binding Voltage}" Watermark="V"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxVoltage" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Current}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Current}" Watermark="A" />
+                  <TextBox Text="{Binding Current}" Watermark="A"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxCurrent" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate CableLength}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding CableLength}" Watermark="m" />
+                  <TextBox Text="{Binding CableLength}" Watermark="m"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxCableLength" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate CrossSection}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding CrossSection}" Watermark="mm²" />
+                  <TextBox Text="{Binding CrossSection}" Watermark="mm²"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxCrossSection" />
                 </StackPanel>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -104,7 +119,8 @@
                              VerticalAlignment="Center" />
                   <ToggleSwitch Grid.Column="1"
                                 IsChecked="{Binding IsCopper}"
-                                OnContent="" OffContent="" />
+                                OnContent="" OffContent=""
+                                AutomationProperties.AutomationId="Electrical_ToggleCopper" />
                 </Grid>
 
                 <StackPanel Spacing="4">
@@ -112,18 +128,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding CablePrice}"
-                           Watermark="EUR" />
+                           Watermark="EUR"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxCablePrice" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Electrical_CardVoltageDropResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtVoltageDropResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate Voltage}"
@@ -131,7 +150,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.VoltageDrop}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtVoltageDrop" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -140,7 +160,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.PercentDrop}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtPercentDrop" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -149,7 +170,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding VoltageDropResult.IsAcceptable}"
                              FontSize="15" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtIsAcceptable" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -159,7 +181,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding CableCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtCableCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -168,7 +191,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnShareVoltageDrop">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -182,7 +206,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnExportVoltageDrop">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -203,42 +228,49 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Electrical_CardPowerCostInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate PowerCostCalculator}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtPowerCostHeader" />
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Power}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Watts}" Watermark="W" />
+                  <TextBox Text="{Binding Watts}" Watermark="W"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxWatts" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate HoursPerDay}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding HoursPerDay}" Watermark="h" />
+                  <TextBox Text="{Binding HoursPerDay}" Watermark="h"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxHoursPerDay" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate PricePerKwh}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PricePerKwh}" Watermark="€/kWh" />
+                  <TextBox Text="{Binding PricePerKwh}" Watermark="€/kWh"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxPricePerKwh" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Electrical_CardPowerCostResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtPowerCostResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate CostPerDay}"
@@ -246,7 +278,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerDay}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtCostPerDay" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -255,7 +288,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerMonth}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtCostPerMonth" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -264,7 +298,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PowerCostResult.CostPerYear}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtCostPerYear" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -273,7 +308,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnSharePowerCost">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -287,7 +323,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnExportPowerCost">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -308,11 +345,13 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Electrical_CardOhmsLawInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate OhmsLawCalculator}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtOhmsLawHeader" />
 
                 <TextBlock Text="{loc:Translate EnterAtLeastTwoValues}"
                            FontSize="12"
@@ -323,39 +362,45 @@
                   <TextBlock Text="{loc:Translate VoltageU}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding OhmsVoltage}" Watermark="V" />
+                  <TextBox Text="{Binding OhmsVoltage}" Watermark="V"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxOhmsVoltage" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate CurrentI}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding OhmsCurrent}" Watermark="A" />
+                  <TextBox Text="{Binding OhmsCurrent}" Watermark="A"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxOhmsCurrent" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate ResistanceR}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding OhmsResistance}" Watermark="Ω" />
+                  <TextBox Text="{Binding OhmsResistance}" Watermark="Ω"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxOhmsResistance" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate PowerP}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding OhmsPower}" Watermark="W" />
+                  <TextBox Text="{Binding OhmsPower}" Watermark="W"
+                           AutomationProperties.AutomationId="Electrical_TxtBoxOhmsPower" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Electrical_CardOhmsLawResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Electrical_TxtOhmsLawResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate VoltageU}"
@@ -363,7 +408,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Voltage}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtOhmsVoltage" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -372,7 +418,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Current}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtOhmsCurrent" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -381,7 +428,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Resistance}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtOhmsResistance" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -390,7 +438,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding OhmsLawResult.Power}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Electrical_TxtOhmsPower" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -399,7 +448,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnShareOhmsLaw">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -413,7 +463,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Electrical_BtnExportOhmsLaw">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -433,13 +484,15 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Electrical_BottomBar">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Electrical_BtnReset">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -452,7 +505,8 @@
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Electrical_BtnCalculate">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Calculator" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Calculate}"
@@ -466,7 +520,8 @@
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Electrical_BtnSave">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Save}"
@@ -481,34 +536,40 @@
     <Border Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
-            IsVisible="{Binding ShowSaveDialog}">
+            IsVisible="{Binding ShowSaveDialog}"
+            AutomationProperties.AutomationId="Electrical_SaveDialogOverlay">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="Electrical_SaveDialogCard">
         <StackPanel Spacing="16">
           <TextBlock Text="{loc:Translate SaveProject}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Electrical_TxtSaveDialogTitle" />
           <TextBox Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
-                   Classes="Outlined" />
+                   Classes="Outlined"
+                   AutomationProperties.AutomationId="Electrical_TxtBoxProjectName" />
           <Grid ColumnDefinitions="*,12,*">
             <Button Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Cancel}" />
+                    Content="{loc:Translate Cancel}"
+                    AutomationProperties.AutomationId="Electrical_BtnCancelSave" />
             <Button Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Save}" />
+                    Content="{loc:Translate Save}"
+                    AutomationProperties.AutomationId="Electrical_BtnConfirmSave" />
           </Grid>
         </StackPanel>
       </Border>

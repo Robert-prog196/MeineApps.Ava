@@ -25,20 +25,24 @@
   <Panel>
 
     <!-- Timer-Ansicht -->
-    <ScrollViewer IsVisible="{Binding !IsStatisticsView}">
+    <ScrollViewer IsVisible="{Binding !IsStatisticsView}"
+                  AutomationProperties.AutomationId="Pomodoro_TimerScrollViewer">
       <StackPanel Spacing="16" Margin="24,16,24,80">
 
         <!-- Header mit Statistik-Toggle und Config -->
         <Grid ColumnDefinitions="Auto,*,Auto">
           <Button Grid.Column="0" Classes="Text" Padding="8"
-                  Command="{Binding ToggleStatisticsCommand}">
+                  Command="{Binding ToggleStatisticsCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_StatsButton">
             <mi:MaterialIcon Kind="ChartBar" Width="22" Height="22"
                              Foreground="{DynamicResource TextMutedBrush}" />
           </Button>
           <TextBlock Grid.Column="1" Text="{Binding PomodoroTitleText}" Classes="HeadlineMedium"
-                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Pomodoro_TitleText" />
           <Button Grid.Column="2" Classes="Text" Padding="8"
-                  Command="{Binding ShowConfigCommand}">
+                  Command="{Binding ShowConfigCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_ConfigButton">
             <mi:MaterialIcon Kind="Cog" Width="22" Height="22"
                              Foreground="{DynamicResource TextMutedBrush}" />
           </Button>
@@ -48,10 +52,12 @@
         <StackPanel HorizontalAlignment="Center" Spacing="4">
           <TextBlock Text="{Binding PhaseText}" Classes="TitleLarge"
                      HorizontalAlignment="Center" FontWeight="SemiBold"
-                     Foreground="{DynamicResource PomodoroAccentBrush}" />
+                     Foreground="{DynamicResource PomodoroAccentBrush}"
+                     AutomationProperties.AutomationId="Pomodoro_PhaseText" />
           <TextBlock Text="{Binding CycleText}" FontSize="14"
                      HorizontalAlignment="Center"
-                     Foreground="{DynamicResource TextMutedBrush}" />
+                     Foreground="{DynamicResource TextMutedBrush}"
+                     AutomationProperties.AutomationId="Pomodoro_CycleText" />
 
           <!-- Zyklus-Punkte -->
           <ItemsControl ItemsSource="{Binding CycleDots}" Margin="0,4,0,0">
@@ -71,14 +77,16 @@
         <!-- SkiaSharp Pomodoro-Fortschrittsring -->
         <Border HorizontalAlignment="Center" Margin="0,16,0,16"
                 Width="260" Height="260" ClipToBounds="True">
-          <skia:SKCanvasView x:Name="PomodoroRingCanvas" PaintSurface="OnPaintPomodoroRing" />
+          <skia:SKCanvasView x:Name="PomodoroRingCanvas" PaintSurface="OnPaintPomodoroRing"
+                             AutomationProperties.AutomationId="Pomodoro_RingCanvas" />
         </Border>
 
         <!-- Start/Pause/Reset/Skip Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16">
           <!-- Reset -->
           <Button Classes="Outlined" Width="48" Height="48" CornerRadius="24" Padding="0"
-                  Command="{Binding ResetPomodoroCommand}">
+                  Command="{Binding ResetPomodoroCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_ResetButton">
             <mi:MaterialIcon Kind="Refresh" Width="24" Height="24" />
           </Button>
 
@@ -86,7 +94,8 @@
           <Button Width="72" Height="72" CornerRadius="36" Padding="0"
                   Background="{DynamicResource PomodoroAccentBrush}"
                   Foreground="White"
-                  Command="{Binding ToggleTimerCommand}">
+                  Command="{Binding ToggleTimerCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_ToggleButton">
             <Panel>
               <mi:MaterialIcon Kind="Play" Width="36" Height="36"
                                IsVisible="{Binding !IsRunning}" />
@@ -97,23 +106,27 @@
 
           <!-- Skip -->
           <Button Classes="Outlined" Width="48" Height="48" CornerRadius="24" Padding="0"
-                  Command="{Binding SkipPhaseCommand}">
+                  Command="{Binding SkipPhaseCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_SkipButton">
             <mi:MaterialIcon Kind="SkipNext" Width="24" Height="24" />
           </Button>
         </StackPanel>
 
         <!-- Abgeschlossene Sessions -->
         <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12"
-                Padding="16" Margin="0,8,0,0">
+                Padding="16" Margin="0,8,0,0"
+                AutomationProperties.AutomationId="Pomodoro_SessionsCard">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Grid.Column="0" Kind="Fire" Width="24" Height="24"
                              Foreground="{DynamicResource PomodoroAccentBrush}"
                              VerticalAlignment="Center" Margin="0,0,12,0" />
             <TextBlock Grid.Column="1" Text="{Binding SessionsCompletedText}"
-                       Classes="BodyMedium" VerticalAlignment="Center" />
+                       Classes="BodyMedium" VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Pomodoro_SessionsLabel" />
             <TextBlock Grid.Column="2" FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource PomodoroAccentBrush}"
-                       VerticalAlignment="Center">
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Pomodoro_SessionsCount">
               <i:Interaction.Behaviors>
                 <behaviors:CountUpBehavior TargetValue="{Binding CompletedSessions}" Format="F0" Duration="500" />
               </i:Interaction.Behaviors>
@@ -123,16 +136,19 @@
 
         <!-- Streak-Anzeige (nur sichtbar wenn Streak > 1) -->
         <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12"
-                Padding="16" IsVisible="{Binding HasStreak}">
+                Padding="16" IsVisible="{Binding HasStreak}"
+                AutomationProperties.AutomationId="Pomodoro_StreakCard">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <mi:MaterialIcon Grid.Column="0" Kind="Fire" Width="24" Height="24"
                              Foreground="#F59E0B"
                              VerticalAlignment="Center" Margin="0,0,12,0" />
             <TextBlock Grid.Column="1" Text="{Binding StreakText}"
-                       Classes="BodyMedium" VerticalAlignment="Center" />
+                       Classes="BodyMedium" VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Pomodoro_StreakLabel" />
             <TextBlock Grid.Column="2" FontSize="24" FontWeight="Bold"
                        Foreground="#F59E0B"
-                       VerticalAlignment="Center">
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Pomodoro_StreakCount">
               <i:Interaction.Behaviors>
                 <behaviors:CountUpBehavior TargetValue="{Binding CurrentStreak}" Format="F0" Duration="500" />
               </i:Interaction.Behaviors>
@@ -144,45 +160,55 @@
     </ScrollViewer>
 
     <!-- Statistiken-Ansicht -->
-    <ScrollViewer IsVisible="{Binding IsStatisticsView}">
+    <ScrollViewer IsVisible="{Binding IsStatisticsView}"
+                  AutomationProperties.AutomationId="Pomodoro_StatsScrollViewer">
       <StackPanel Spacing="16" Margin="24,16,24,80">
 
         <!-- Header mit Zurueck-Button -->
         <Grid ColumnDefinitions="Auto,*">
           <Button Grid.Column="0" Classes="Text" Padding="8"
-                  Command="{Binding ToggleStatisticsCommand}">
+                  Command="{Binding ToggleStatisticsCommand}"
+                  AutomationProperties.AutomationId="Pomodoro_StatsBackButton">
             <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" />
           </Button>
           <TextBlock Grid.Column="1" Text="{Binding StatisticsText}" Classes="HeadlineMedium"
-                     VerticalAlignment="Center" Margin="8,0,0,0" />
+                     VerticalAlignment="Center" Margin="8,0,0,0"
+                     AutomationProperties.AutomationId="Pomodoro_StatsTitle" />
         </Grid>
 
         <!-- Zusammenfassung: Heute -->
-        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="16">
+        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="16"
+                AutomationProperties.AutomationId="Pomodoro_TodayCard">
           <StackPanel Spacing="8">
             <TextBlock Text="{Binding TodaySessionsText}" Classes="TitleMedium"
-                       Foreground="{DynamicResource PomodoroAccentBrush}" />
+                       Foreground="{DynamicResource PomodoroAccentBrush}"
+                       AutomationProperties.AutomationId="Pomodoro_TodaySessionsText" />
             <TextBlock Text="{Binding TodayMinutesText}" FontSize="14"
-                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       AutomationProperties.AutomationId="Pomodoro_TodayMinutesText" />
           </StackPanel>
         </Border>
 
         <!-- SkiaSharp Wochenbalkendiagramm -->
-        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="0">
+        <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="12" Padding="0"
+                AutomationProperties.AutomationId="Pomodoro_WeeklyCard">
           <StackPanel Spacing="8">
             <TextBlock Text="{Binding ThisWeekText}" Classes="TitleSmall"
-                       Foreground="{DynamicResource TextMutedBrush}" Margin="16,16,16,0" />
+                       Foreground="{DynamicResource TextMutedBrush}" Margin="16,16,16,0"
+                       AutomationProperties.AutomationId="Pomodoro_WeeklyTitle" />
 
             <!-- Keine Sessions -->
             <TextBlock Text="{Binding NoSessionsYetText}"
                        IsVisible="{Binding !HasSessions}"
                        Classes="BodyMedium"
                        Foreground="{DynamicResource TextMutedBrush}"
-                       HorizontalAlignment="Center" Margin="0,16" />
+                       HorizontalAlignment="Center" Margin="0,16"
+                       AutomationProperties.AutomationId="Pomodoro_NoSessionsText" />
 
             <!-- SkiaSharp Balkendiagramm -->
             <Border Height="220" ClipToBounds="True" IsVisible="{Binding HasSessions}">
-              <skia:SKCanvasView x:Name="WeeklyBarsCanvas" PaintSurface="OnPaintWeeklyBars" />
+              <skia:SKCanvasView x:Name="WeeklyBarsCanvas" PaintSurface="OnPaintWeeklyBars"
+                                 AutomationProperties.AutomationId="Pomodoro_WeeklyBarsCanvas" />
             </Border>
           </StackPanel>
         </Border>
@@ -191,14 +217,16 @@
     </ScrollViewer>
 
     <!-- Config Overlay (Bottom-Sheet) -->
-    <Grid IsVisible="{Binding IsConfigVisible}">
+    <Grid IsVisible="{Binding IsConfigVisible}"
+          AutomationProperties.AutomationId="Pomodoro_ConfigOverlay">
       <!-- Backdrop: Tap zum Schließen -->
       <Border Background="#AA000000" PointerPressed="OnConfigBackdropPressed" />
       <!-- Sheet mit Swipe-Down-Dismiss -->
       <Border x:Name="ConfigSheet" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,0,24,32"
-              MaxWidth="500" BoxShadow="0 -4 16 0 #40000000">
+              MaxWidth="500" BoxShadow="0 -4 16 0 #40000000"
+              AutomationProperties.AutomationId="Pomodoro_ConfigSheet">
         <StackPanel Spacing="0">
           <!-- Drag-Bereich: Swipe nach unten zum Schließen -->
           <Border Background="Transparent" Padding="0,16,0,8"
@@ -211,15 +239,19 @@
                     HorizontalAlignment="Center" />
           </Border>
           <!-- Scrollbarer Inhalt -->
-          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="450">
+          <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="450"
+                        AutomationProperties.AutomationId="Pomodoro_ConfigScrollViewer">
             <StackPanel Spacing="16">
-              <TextBlock Text="{Binding PomodoroConfigText}" Classes="HeadlineMedium" />
+              <TextBlock Text="{Binding PomodoroConfigText}" Classes="HeadlineMedium"
+                         AutomationProperties.AutomationId="Pomodoro_ConfigTitle" />
 
               <!-- Arbeitsdauer -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{Binding WorkDurationText}" Classes="BodyMedium" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding WorkDurationText}" Classes="BodyMedium" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Pomodoro_WorkDurationLabel" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                  <controls:WheelPicker Value="{Binding WorkMinutes}" Minimum="1" Maximum="60" />
+                  <controls:WheelPicker Value="{Binding WorkMinutes}" Minimum="1" Maximum="60"
+                                        AutomationProperties.AutomationId="Pomodoro_WorkMinutesPicker" />
                   <TextBlock Text="min" Classes="Caption" VerticalAlignment="Center"
                              Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
@@ -227,9 +259,11 @@
 
               <!-- Kurze Pause -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{Binding ShortBreakDurationText}" Classes="BodyMedium" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding ShortBreakDurationText}" Classes="BodyMedium" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Pomodoro_ShortBreakLabel" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                  <controls:WheelPicker Value="{Binding ShortBreakMinutes}" Minimum="1" Maximum="30" />
+                  <controls:WheelPicker Value="{Binding ShortBreakMinutes}" Minimum="1" Maximum="30"
+                                        AutomationProperties.AutomationId="Pomodoro_ShortBreakPicker" />
                   <TextBlock Text="min" Classes="Caption" VerticalAlignment="Center"
                              Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
@@ -237,9 +271,11 @@
 
               <!-- Lange Pause -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{Binding LongBreakDurationText}" Classes="BodyMedium" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding LongBreakDurationText}" Classes="BodyMedium" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Pomodoro_LongBreakLabel" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                  <controls:WheelPicker Value="{Binding LongBreakMinutes}" Minimum="1" Maximum="60" />
+                  <controls:WheelPicker Value="{Binding LongBreakMinutes}" Minimum="1" Maximum="60"
+                                        AutomationProperties.AutomationId="Pomodoro_LongBreakPicker" />
                   <TextBlock Text="min" Classes="Caption" VerticalAlignment="Center"
                              Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
@@ -247,23 +283,29 @@
 
               <!-- Zyklen bis Lange Pause -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{Binding CyclesBeforeLongBreakText}" Classes="BodyMedium" VerticalAlignment="Center" />
-                <controls:WheelPicker Grid.Column="1" Value="{Binding CyclesBeforeLongBreak}" Minimum="1" Maximum="10" />
+                <TextBlock Text="{Binding CyclesBeforeLongBreakText}" Classes="BodyMedium" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Pomodoro_CyclesLabel" />
+                <controls:WheelPicker Grid.Column="1" Value="{Binding CyclesBeforeLongBreak}" Minimum="1" Maximum="10"
+                                      AutomationProperties.AutomationId="Pomodoro_CyclesPicker" />
               </Grid>
 
               <!-- Auto Start -->
               <Grid ColumnDefinitions="*,Auto">
-                <TextBlock Text="{Binding AutoStartNextText}" Classes="BodyMedium" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AutoStartNextText}" Classes="BodyMedium" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Pomodoro_AutoStartLabel" />
                 <ToggleSwitch Grid.Column="1" IsChecked="{Binding AutoStartNext, Mode=TwoWay}"
-                              OnContent="{Binding OnText}" OffContent="{Binding OffText}" />
+                              OnContent="{Binding OnText}" OffContent="{Binding OffText}"
+                              AutomationProperties.AutomationId="Pomodoro_AutoStartToggle" />
               </Grid>
 
               <!-- Buttons -->
               <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
                 <Button Classes="Text" Content="{Binding CancelText}"
-                        Command="{Binding CancelConfigCommand}" />
+                        Command="{Binding CancelConfigCommand}"
+                        AutomationProperties.AutomationId="Pomodoro_ConfigCancelButton" />
                 <Button Classes="Primary" Content="{Binding SaveText}"
-                        Command="{Binding SaveConfigAndCloseCommand}" />
+                        Command="{Binding SaveConfigAndCloseCommand}"
+                        AutomationProperties.AutomationId="Pomodoro_ConfigSaveButton" />
               </StackPanel>
             </StackPanel>
           </ScrollViewer>

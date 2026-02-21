@@ -40,24 +40,24 @@
     </DataTemplate>
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,Auto,*,Auto">
+  <Grid AutomationProperties.AutomationId="Progress_RootPanel" RowDefinitions="Auto,Auto,*,Auto">
 
     <!-- ============================================ -->
     <!-- Row 0: Header with Title + Action Buttons    -->
     <!-- ============================================ -->
-    <Border Grid.Row="0"
+    <Border AutomationProperties.AutomationId="Progress_Header" Grid.Row="0"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource BorderSubtleBrush}"
             Padding="16,12">
       <Grid ColumnDefinitions="*,Auto,Auto,Auto">
-        <TextBlock Text="{loc:Translate Progress}"
+        <TextBlock AutomationProperties.AutomationId="Progress_TxtTitle" Text="{loc:Translate Progress}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    VerticalAlignment="Center" />
 
         <!-- Analyse Button -->
-        <Button Grid.Column="1"
+        <Button AutomationProperties.AutomationId="Progress_BtnAnalysis" Grid.Column="1"
                 Classes="Text Small"
                 Command="{Binding RequestAnalysisCommand}"
                 ToolTip.Tip="{loc:Translate WeeklyAnalysis}"
@@ -67,7 +67,7 @@
         </Button>
 
         <!-- Export Button -->
-        <Button Grid.Column="2"
+        <Button AutomationProperties.AutomationId="Progress_BtnExport" Grid.Column="2"
                 Classes="Text Small"
                 Command="{Binding ExportTrackingCommand}"
                 ToolTip.Tip="{loc:Translate ExportTracking}"
@@ -77,7 +77,7 @@
         </Button>
 
         <!-- Add Button -->
-        <Button Grid.Column="3"
+        <Button AutomationProperties.AutomationId="Progress_BtnAdd" Grid.Column="3"
                 Classes="Primary Small"
                 Command="{Binding ToggleAddFormCommand}"
                 IsVisible="{Binding !ShowAddForm}">
@@ -97,7 +97,7 @@
         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
 
           <!-- Weight Tab -->
-          <Button Classes="Text" Padding="0" Height="NaN"
+          <Button AutomationProperties.AutomationId="Progress_TabWeight" Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding SelectWeightTabCommand}">
             <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
                     Background="{Binding IsWeightTab, Converter={x:Static conv:TabColorConverters.WeightTab}}">
@@ -111,7 +111,7 @@
           </Button>
 
           <!-- Body Tab -->
-          <Button Classes="Text" Padding="0" Height="NaN"
+          <Button AutomationProperties.AutomationId="Progress_TabBody" Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding SelectBodyTabCommand}">
             <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
                     Background="{Binding IsBodyTab, Converter={x:Static conv:TabColorConverters.BodyTab}}">
@@ -125,7 +125,7 @@
           </Button>
 
           <!-- Water Tab -->
-          <Button Classes="Text" Padding="0" Height="NaN"
+          <Button AutomationProperties.AutomationId="Progress_TabWater" Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding SelectWaterTabCommand}">
             <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
                     Background="{Binding IsWaterTab, Converter={x:Static conv:TabColorConverters.WaterTab}}">
@@ -139,7 +139,7 @@
           </Button>
 
           <!-- Calories Tab -->
-          <Button Classes="Text" Padding="0" Height="NaN"
+          <Button AutomationProperties.AutomationId="Progress_TabCalories" Classes="Text" Padding="0" Height="NaN"
                   Command="{Binding SelectCaloriesTabCommand}">
             <Border CornerRadius="12" Padding="16,10" Cursor="Hand"
                     Background="{Binding IsCaloriesTab, Converter={x:Static conv:TabColorConverters.CaloriesTab}}">
@@ -159,14 +159,14 @@
     <!-- ============================================ -->
     <!-- Row 2: Tab Content (Scrollable)              -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer AutomationProperties.AutomationId="Progress_ScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto">
       <Panel Margin="12,12,12,80">
 
         <!-- ==================== WEIGHT TAB ==================== -->
         <StackPanel Spacing="16" IsVisible="{Binding IsWeightTab}">
 
           <!-- Stats Card -->
-          <Border Classes="Card" Padding="0" ClipToBounds="True">
+          <Border AutomationProperties.AutomationId="Progress_CardWeightStats" Classes="Card" Padding="0" ClipToBounds="True">
             <StackPanel>
               <!-- Gradient Header -->
               <Border Padding="12,10" CornerRadius="12,12,0,0">
@@ -178,12 +178,12 @@
                 </Border.Background>
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <mi:MaterialIcon Kind="ScaleBathroom" Width="18" Height="18" Foreground="White" />
-                  <TextBlock Text="{loc:Translate TrackingWeight}" FontSize="14" FontWeight="Bold" Foreground="White" />
+                  <TextBlock AutomationProperties.AutomationId="Progress_TxtWeightHeader" Text="{loc:Translate TrackingWeight}" FontSize="14" FontWeight="Bold" Foreground="White" />
                 </StackPanel>
               </Border>
               <Grid ColumnDefinitions="*,*,*" Margin="16,14,16,16">
                 <StackPanel HorizontalAlignment="Center">
-                  <TextBlock Text="{Binding WeightCurrentDisplay}"
+                  <TextBlock AutomationProperties.AutomationId="Progress_TxtWeightCurrent" Text="{Binding WeightCurrentDisplay}"
                              FontSize="26" FontWeight="Bold"
                              Foreground="#8B5CF6"
                              HorizontalAlignment="Center" />
@@ -227,7 +227,7 @@
           </Border>
 
           <!-- Gewichtsziel-Karte (wenn Ziel gesetzt) -->
-          <Border Classes="Card" Padding="14" IsVisible="{Binding HasWeightGoal}">
+          <Border AutomationProperties.AutomationId="Progress_CardWeightGoal" Classes="Card" Padding="14" IsVisible="{Binding HasWeightGoal}">
             <StackPanel Spacing="8">
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Orientation="Horizontal" Spacing="6">
@@ -244,22 +244,22 @@
                            Foreground="{DynamicResource TextMutedBrush}"
                            VerticalAlignment="Center" />
               </Grid>
-              <labs:SKCanvasView Height="18" PaintSurface="OnPaintWeightGoalProgress" />
+              <labs:SKCanvasView AutomationProperties.AutomationId="Progress_CanvasWeightGoal" Height="18" PaintSurface="OnPaintWeightGoalProgress" />
             </StackPanel>
           </Border>
 
           <!-- Gewichtsziel setzen (wenn noch kein Ziel) -->
-          <Border Classes="Card" Padding="14" IsVisible="{Binding !HasWeightGoal}">
+          <Border AutomationProperties.AutomationId="Progress_CardSetGoal" Classes="Card" Padding="14" IsVisible="{Binding !HasWeightGoal}">
             <StackPanel Spacing="6">
               <TextBlock Text="{loc:Translate SetWeightGoal}"
                          FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
               <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                <TextBox Text="{Binding WeightGoal}"
+                <TextBox AutomationProperties.AutomationId="Progress_TxtGoalInput" Text="{Binding WeightGoal}"
                          Watermark="{loc:Translate WeightGoalKg}" />
                 <TextBlock Grid.Column="1" Text="kg" FontSize="14"
                            Foreground="{DynamicResource TextMutedBrush}"
                            VerticalAlignment="Center" />
-                <Button Grid.Column="2" Classes="Primary Small"
+                <Button AutomationProperties.AutomationId="Progress_BtnSetGoal" Grid.Column="2" Classes="Primary Small"
                         Command="{Binding SetWeightGoalValueCommand}">
                   <mi:MaterialIcon Kind="Check" Width="18" Height="18" />
                 </Button>
@@ -309,26 +309,26 @@
                            Classes="SectionTitle"
                            VerticalAlignment="Center" />
               </StackPanel>
-              <labs:SKCanvasView x:Name="WeightChartCanvas" Height="220"
+              <labs:SKCanvasView AutomationProperties.AutomationId="Progress_CanvasWeightChart" x:Name="WeightChartCanvas" Height="220"
                                   PaintSurface="OnPaintWeightChart" />
             </StackPanel>
           </Border>
 
           <!-- Add Weight Form -->
-          <Border Classes="Card" Padding="16"
+          <Border AutomationProperties.AutomationId="Progress_CardAddWeight" Classes="Card" Padding="16"
                   Background="{DynamicResource PrimaryBrush}"
                   IsVisible="{Binding ShowAddForm}">
             <StackPanel Spacing="12">
               <TextBlock Text="{loc:Translate AddWeight}"
                          FontSize="18" FontWeight="Bold" Foreground="White" />
-              <TextBox Text="{Binding NewValue}"
+              <TextBox AutomationProperties.AutomationId="Progress_TxtAddValue" Text="{Binding NewValue}"
                        Watermark="{loc:Translate WeightValue}" />
-              <CalendarDatePicker SelectedDate="{Binding NewDate}"
+              <CalendarDatePicker AutomationProperties.AutomationId="Progress_DateAdd" SelectedDate="{Binding NewDate}"
                                   HorizontalAlignment="Stretch" />
-              <TextBox Text="{Binding NewNote}"
+              <TextBox AutomationProperties.AutomationId="Progress_TxtAddNote" Text="{Binding NewNote}"
                        Watermark="{loc:Translate NotePlaceholder}" />
               <Grid ColumnDefinitions="*,8,*">
-                <Button Grid.Column="0"
+                <Button AutomationProperties.AutomationId="Progress_BtnAddCancel" Grid.Column="0"
                         Command="{Binding ToggleAddFormCommand}"
                         Background="Transparent"
                         Foreground="White"
@@ -338,7 +338,7 @@
                         HorizontalContentAlignment="Center">
                   <TextBlock Text="{loc:Translate Cancel}" />
                 </Button>
-                <Button Grid.Column="2" Classes="Success"
+                <Button AutomationProperties.AutomationId="Progress_BtnAddSave" Grid.Column="2" Classes="Success"
                         Command="{Binding AddEntryCommand}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center">
@@ -420,7 +420,7 @@
 
           <!-- Sub-Tabs (BMI / Body Fat) -->
           <Grid ColumnDefinitions="*,8,*">
-            <Button Grid.Column="0" Classes="Text" Padding="0" Height="NaN"
+            <Button AutomationProperties.AutomationId="Progress_SubTabBmi" Grid.Column="0" Classes="Text" Padding="0" Height="NaN"
                     Command="{Binding SelectBmiCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
               <Border CornerRadius="12" Padding="12" Cursor="Hand"
@@ -430,7 +430,7 @@
                            HorizontalAlignment="Center" />
               </Border>
             </Button>
-            <Button Grid.Column="2" Classes="Text" Padding="0" Height="NaN"
+            <Button AutomationProperties.AutomationId="Progress_SubTabBodyFat" Grid.Column="2" Classes="Text" Padding="0" Height="NaN"
                     Command="{Binding SelectBodyFatCommand}"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
               <Border CornerRadius="12" Padding="12" Cursor="Hand"
@@ -544,7 +544,7 @@
                              Classes="SectionTitle"
                              VerticalAlignment="Center" />
                 </StackPanel>
-                <labs:SKCanvasView x:Name="BmiChartCanvas" Height="220"
+                <labs:SKCanvasView AutomationProperties.AutomationId="Progress_CanvasBmiChart" x:Name="BmiChartCanvas" Height="220"
                                     PaintSurface="OnPaintBmiChart" />
                 <TextBlock Text="{loc:Translate HealthyBmiRange}" Classes="Caption"
                            HorizontalAlignment="Center" />
@@ -683,7 +683,7 @@
                              Classes="SectionTitle"
                              VerticalAlignment="Center" />
                 </StackPanel>
-                <labs:SKCanvasView x:Name="BodyFatChartCanvas" Height="220"
+                <labs:SKCanvasView AutomationProperties.AutomationId="Progress_CanvasBodyFatChart" x:Name="BodyFatChartCanvas" Height="220"
                                     PaintSurface="OnPaintBodyFatChart" />
               </StackPanel>
             </Border>
@@ -786,7 +786,7 @@
         <StackPanel Spacing="16" IsVisible="{Binding IsWaterTab}">
 
           <!-- Water Progress Card -->
-          <Border Classes="Card" Padding="0" ClipToBounds="True">
+          <Border AutomationProperties.AutomationId="Progress_CardWaterStats" Classes="Card" Padding="0" ClipToBounds="True">
             <StackPanel>
               <!-- Gradient Header -->
               <Border Padding="12,10" CornerRadius="12,12,0,0">
@@ -829,21 +829,21 @@
                        VerticalAlignment="Center" />
           </StackPanel>
           <Grid ColumnDefinitions="*,8,*,8,*">
-            <Button Grid.Column="0" Classes="Secondary"
+            <Button AutomationProperties.AutomationId="Progress_BtnWater250" Grid.Column="0" Classes="Secondary"
                     Command="{Binding QuickAddWaterCommand}"
                     CommandParameter="250"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center">
               <TextBlock Text="+250ml" FontSize="14" />
             </Button>
-            <Button Grid.Column="2" Classes="Secondary"
+            <Button AutomationProperties.AutomationId="Progress_BtnWater500" Grid.Column="2" Classes="Secondary"
                     Command="{Binding QuickAddWaterCommand}"
                     CommandParameter="500"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center">
               <TextBlock Text="+500ml" FontSize="14" />
             </Button>
-            <Button Grid.Column="4" Classes="Primary"
+            <Button AutomationProperties.AutomationId="Progress_BtnWater1000" Grid.Column="4" Classes="Primary"
                     Command="{Binding QuickAddWaterCommand}"
                     CommandParameter="1000"
                     HorizontalAlignment="Stretch"
@@ -853,16 +853,16 @@
           </Grid>
 
           <!-- Water Goal Input -->
-          <Border Classes="Card" Padding="16">
+          <Border AutomationProperties.AutomationId="Progress_CardWaterGoal" Classes="Card" Padding="16">
             <StackPanel Spacing="8">
               <TextBlock Text="{loc:Translate WaterGoal}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <Grid ColumnDefinitions="*,8,Auto">
-                <TextBox Grid.Column="0"
+                <TextBox AutomationProperties.AutomationId="Progress_TxtWaterGoalInput" Grid.Column="0"
                          Text="{Binding DailyWaterGoal}"
                          Watermark="ml" />
-                <Button Grid.Column="2" Classes="Primary"
+                <Button AutomationProperties.AutomationId="Progress_BtnSaveWaterGoal" Grid.Column="2" Classes="Primary"
                         Command="{Binding SetWaterGoalCommand}"
                         HorizontalContentAlignment="Center">
                   <StackPanel Orientation="Horizontal" Spacing="6">
@@ -879,7 +879,7 @@
         <StackPanel Spacing="16" IsVisible="{Binding IsCaloriesTab}">
 
           <!-- Calorie Overview Card -->
-          <Border Classes="Card" Padding="0" ClipToBounds="True">
+          <Border AutomationProperties.AutomationId="Progress_CardCalorieStats" Classes="Card" Padding="0" ClipToBounds="True">
             <StackPanel>
               <!-- Gradient Header -->
               <Border Padding="12,10" CornerRadius="12,12,0,0">
@@ -996,7 +996,7 @@
                          Classes="SectionTitle"
                          VerticalAlignment="Center" />
             </StackPanel>
-            <Button Grid.Column="1" Classes="Text Small"
+            <Button AutomationProperties.AutomationId="Progress_BtnCopyYesterday" Grid.Column="1" Classes="Text Small"
                     Command="{Binding CopyYesterdayMealsCommand}"
                     ToolTip.Tip="{loc:Translate CopyYesterday}">
               <StackPanel Orientation="Horizontal" Spacing="4">
@@ -1106,13 +1106,13 @@
                            Classes="SectionTitle"
                            VerticalAlignment="Center" />
               </StackPanel>
-              <labs:SKCanvasView x:Name="WeeklyCaloriesCanvas" Height="160"
+              <labs:SKCanvasView AutomationProperties.AutomationId="Progress_CanvasWeeklyCalories" x:Name="WeeklyCaloriesCanvas" Height="160"
                                   PaintSurface="OnPaintWeeklyCalories" />
             </StackPanel>
           </Border>
 
           <!-- Add Food Button -->
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Progress_BtnAddFood" Classes="Primary"
                   Command="{Binding ToggleFoodSearchCommand}"
                   IsVisible="{Binding !ShowFoodSearch}"
                   HorizontalAlignment="Stretch"
@@ -1133,13 +1133,13 @@
                                  Foreground="{DynamicResource TextMutedBrush}"
                                  VerticalAlignment="Center"
                                  Margin="0,0,10,0" />
-                <TextBox Grid.Column="1"
+                <TextBox AutomationProperties.AutomationId="Progress_TxtFoodSearch" Grid.Column="1"
                          Text="{Binding SearchQuery}"
                          Watermark="{loc:Translate SearchFoodPlaceholder}"
                          Background="Transparent"
                          BorderThickness="0"
                          Height="NaN" />
-                <Button Grid.Column="2" Classes="Text Small"
+                <Button AutomationProperties.AutomationId="Progress_BtnCloseFoodSearch" Grid.Column="2" Classes="Text Small"
                         Command="{Binding ToggleFoodSearchCommand}">
                   <mi:MaterialIcon Kind="Close" Width="18" Height="18"
                                    Foreground="{DynamicResource TextMutedBrush}" />
@@ -1148,7 +1148,7 @@
             </Border>
 
             <!-- Ausgewähltes Lebensmittel - Portion & Hinzufügen -->
-            <Border Classes="Card" Padding="16"
+            <Border AutomationProperties.AutomationId="Progress_CardAddFood" Classes="Card" Padding="16"
                     IsVisible="{Binding ShowAddFoodPanel}">
               <StackPanel Spacing="12">
                 <TextBlock Text="{Binding SelectedFood.Name}"
@@ -1158,7 +1158,7 @@
 
                 <!-- Portion -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                  <TextBox Text="{Binding PortionGrams}"
+                  <TextBox AutomationProperties.AutomationId="Progress_TxtPortion" Text="{Binding PortionGrams}"
                            Watermark="{loc:Translate AmountGrams}" />
                   <TextBlock Grid.Column="1" Text="g"
                              Foreground="{DynamicResource TextMutedBrush}"
@@ -1203,19 +1203,19 @@
                 </Grid>
 
                 <!-- Mahlzeit-Auswahl -->
-                <ComboBox ItemsSource="{Binding Meals}"
+                <ComboBox AutomationProperties.AutomationId="Progress_CmbMealType" ItemsSource="{Binding Meals}"
                           SelectedIndex="{Binding SelectedMeal}"
                           HorizontalAlignment="Stretch" />
 
                 <!-- Buttons -->
                 <Grid ColumnDefinitions="*,8,*">
-                  <Button Grid.Column="0" Classes="Outlined"
+                  <Button AutomationProperties.AutomationId="Progress_BtnCancelFood" Grid.Column="0" Classes="Outlined"
                           Command="{Binding CancelAddFoodCommand}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Center">
                     <TextBlock Text="{loc:Translate Cancel}" />
                   </Button>
-                  <Button Grid.Column="2" Classes="Success"
+                  <Button AutomationProperties.AutomationId="Progress_BtnAddFoodConfirm" Grid.Column="2" Classes="Success"
                           Command="{Binding AddFoodToLogCommand}"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Center">
@@ -1265,16 +1265,16 @@
           </StackPanel>
 
           <!-- Calorie Goal Input -->
-          <Border Classes="Card" Padding="16">
+          <Border AutomationProperties.AutomationId="Progress_CardCalorieGoal" Classes="Card" Padding="16">
             <StackPanel Spacing="8">
               <TextBlock Text="{loc:Translate SetCalorieGoal}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <Grid ColumnDefinitions="*,8,Auto">
-                <TextBox Grid.Column="0"
+                <TextBox AutomationProperties.AutomationId="Progress_TxtCalorieGoalInput" Grid.Column="0"
                          Text="{Binding DailyCalorieGoal}"
                          Watermark="kcal" />
-                <Button Grid.Column="2" Classes="Primary"
+                <Button AutomationProperties.AutomationId="Progress_BtnSaveCalorieGoal" Grid.Column="2" Classes="Primary"
                         Command="{Binding SetCalorieGoalCommand}"
                         HorizontalContentAlignment="Center">
                   <StackPanel Orientation="Horizontal" Spacing="6">
@@ -1288,9 +1288,9 @@
         </StackPanel>
 
         <!-- Loading Indicator -->
-        <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+        <Border AutomationProperties.AutomationId="Progress_Loading" HorizontalAlignment="Center" VerticalAlignment="Center"
                 IsVisible="{Binding IsLoading}" IsHitTestVisible="False">
-          <ProgressBar IsIndeterminate="True" Width="120" />
+          <ProgressBar AutomationProperties.AutomationId="Progress_ProgressBar" IsIndeterminate="True" Width="120" />
         </Border>
 
       </Panel>
@@ -1299,17 +1299,17 @@
     <!-- ============================================ -->
     <!-- Row 3: Undo Banner                           -->
     <!-- ============================================ -->
-    <Border Grid.Row="3"
+    <Border AutomationProperties.AutomationId="Progress_UndoBanner" Grid.Row="3"
             Background="{DynamicResource SurfaceBrush}"
             CornerRadius="8"
             Padding="16,12"
             Margin="16,8"
             IsVisible="{Binding ShowUndoBanner}">
       <Grid ColumnDefinitions="*,Auto">
-        <TextBlock Text="{Binding UndoMessage}"
+        <TextBlock AutomationProperties.AutomationId="Progress_TxtUndoMessage" Text="{Binding UndoMessage}"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    FontSize="14" VerticalAlignment="Center" />
-        <Button Grid.Column="1" Classes="Warning Small"
+        <Button AutomationProperties.AutomationId="Progress_BtnUndo" Grid.Column="1" Classes="Warning Small"
                 Command="{Binding UndoDeleteCommand}">
           <TextBlock Text="{loc:Translate Undo}" FontWeight="Bold" />
         </Button>
@@ -1319,7 +1319,7 @@
     <!-- ============================================ -->
     <!-- Analysis Ad Overlay (Gate)                    -->
     <!-- ============================================ -->
-    <Border Grid.RowSpan="4"
+    <Border AutomationProperties.AutomationId="Progress_OverlayAnalysisAd" Grid.RowSpan="4"
             Background="#CC000000"
             IsVisible="{Binding ShowAnalysisAdOverlay}"
             ZIndex="80">
@@ -1341,7 +1341,7 @@
                      FontSize="14"
                      Foreground="{DynamicResource TextMutedBrush}"
                      TextWrapping="Wrap" TextAlignment="Center" />
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Progress_BtnConfirmAnalysisAd" Classes="Primary"
                   Command="{Binding ConfirmAnalysisAdCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -1350,7 +1350,7 @@
               <TextBlock Text="{loc:Translate WeeklyAnalysis}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Classes="Text"
+          <Button AutomationProperties.AutomationId="Progress_BtnCancelAnalysisAd" Classes="Text"
                   Command="{Binding CloseAnalysisCommand}"
                   HorizontalAlignment="Center">
             <TextBlock Text="{loc:Translate Cancel}"
@@ -1363,7 +1363,7 @@
     <!-- ============================================ -->
     <!-- Analysis Report Overlay                       -->
     <!-- ============================================ -->
-    <Border Grid.RowSpan="4"
+    <Border AutomationProperties.AutomationId="Progress_OverlayAnalysisReport" Grid.RowSpan="4"
             Background="#CC000000"
             IsVisible="{Binding ShowAnalysisOverlay}"
             ZIndex="80">
@@ -1424,7 +1424,7 @@
             </Grid>
           </Border>
 
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Progress_BtnCloseAnalysis" Classes="Primary"
                   Command="{Binding CloseAnalysisCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -1437,7 +1437,7 @@
     <!-- ============================================ -->
     <!-- Export Ad Overlay                             -->
     <!-- ============================================ -->
-    <Border Grid.RowSpan="4"
+    <Border AutomationProperties.AutomationId="Progress_OverlayExportAd" Grid.RowSpan="4"
             Background="#CC000000"
             IsVisible="{Binding ShowExportAdOverlay}"
             ZIndex="80">
@@ -1459,7 +1459,7 @@
                      FontSize="14"
                      Foreground="{DynamicResource TextMutedBrush}"
                      TextWrapping="Wrap" TextAlignment="Center" />
-          <Button Classes="Primary"
+          <Button AutomationProperties.AutomationId="Progress_BtnConfirmExportAd" Classes="Primary"
                   Command="{Binding ConfirmExportAdCommand}"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center">
@@ -1468,7 +1468,7 @@
               <TextBlock Text="{loc:Translate ExportTracking}" VerticalAlignment="Center" />
             </StackPanel>
           </Button>
-          <Button Classes="Text"
+          <Button AutomationProperties.AutomationId="Progress_BtnCancelExport" Classes="Text"
                   Command="{Binding CancelExportCommand}"
                   HorizontalAlignment="Center">
             <TextBlock Text="{loc:Translate Cancel}"

@@ -37,11 +37,11 @@
     </Style>
   </UserControl.Styles>
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="0" Margin="0,0,0,60">
+  <ScrollViewer AutomationProperties.AutomationId="Home_ScrollViewer" VerticalScrollBarVisibility="Auto">
+    <StackPanel AutomationProperties.AutomationId="Home_RootPanel" Spacing="0" Margin="0,0,0,60">
 
       <!-- ========== Hero-Header (Green/Teal Gradient) ========== -->
-      <Border CornerRadius="0,0,16,16" Padding="20,20,20,16">
+      <Border AutomationProperties.AutomationId="Home_HeroHeader" CornerRadius="0,0,16,16" Padding="20,20,20,16">
         <Border.Background>
           <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
             <GradientStop Color="#22C55E" Offset="0" />
@@ -58,14 +58,14 @@
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <StackPanel VerticalAlignment="Center">
-              <TextBlock Text="{Binding GreetingText}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtGreeting" Text="{Binding GreetingText}"
                          FontSize="13" Foreground="#CCFFFFFF" />
-              <TextBlock Text="{loc:Translate AppName}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtAppName" Text="{loc:Translate AppName}"
                          FontSize="20" FontWeight="Bold" Foreground="White" />
             </StackPanel>
           </StackPanel>
           <!-- Motivations-Zitat -->
-          <TextBlock Text="{Binding MotivationalQuote}"
+          <TextBlock AutomationProperties.AutomationId="Home_TxtMotivation" Text="{Binding MotivationalQuote}"
                      FontSize="12" FontStyle="Italic"
                      Foreground="#BBFFFFFF"
                      TextWrapping="Wrap" TextAlignment="Center"
@@ -78,7 +78,7 @@
       <StackPanel Spacing="16" Margin="12,16,12,0">
 
         <!-- ========== Tages-Score Ring (nur bei vorhandenen Daten) ========== -->
-        <Border Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardDailyScore" Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="0" StaggerDelay="80" BaseDuration="400" />
@@ -86,38 +86,38 @@
           <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
             <!-- Score-Ring (SkiaGradientRing) -->
             <Panel Width="80" Height="80">
-              <skiaControls:SkiaGradientRing Width="80" Height="80"
+              <skiaControls:SkiaGradientRing AutomationProperties.AutomationId="Home_RingDailyScore" Width="80" Height="80"
                   Value="{Binding DailyScoreFraction}"
                   StrokeWidth="6"
                   StartColor="#22C55E"
                   EndColor="{DynamicResource AccentColor}"
                   GlowEnabled="True" />
               <!-- Score-Text in der Mitte -->
-              <TextBlock Text="{Binding DailyScoreDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtDailyScore" Text="{Binding DailyScoreDisplay}"
                          FontSize="20" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Panel>
             <!-- Beschreibung rechts -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-              <TextBlock Text="{Binding DailyProgressLabel}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtDailyProgressLabel" Text="{Binding DailyProgressLabel}"
                          FontSize="16" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <!-- 3 Mini-Indikatoren -->
               <StackPanel Spacing="4">
                 <StackPanel Orientation="Horizontal" Spacing="6">
                   <Border Width="8" Height="8" CornerRadius="4" Background="#F59E0B" />
-                  <TextBlock Text="{Binding TodayCaloriesDisplay, StringFormat='{}{0} kcal'}"
+                  <TextBlock AutomationProperties.AutomationId="Home_TxtScoreCalories" Text="{Binding TodayCaloriesDisplay, StringFormat='{}{0} kcal'}"
                              FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="6">
                   <Border Width="8" Height="8" CornerRadius="4" Background="#22C55E" />
-                  <TextBlock Text="{Binding TodayWaterDisplay}"
+                  <TextBlock AutomationProperties.AutomationId="Home_TxtScoreWater" Text="{Binding TodayWaterDisplay}"
                              FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="6">
                   <Border Width="8" Height="8" CornerRadius="4" Background="#8B5CF6" />
-                  <TextBlock Text="{Binding TodayWeightDisplay, StringFormat='{}{0} kg'}"
+                  <TextBlock AutomationProperties.AutomationId="Home_TxtScoreWeight" Text="{Binding TodayWeightDisplay, StringFormat='{}{0} kg'}"
                              FontSize="12" Foreground="{DynamicResource TextMutedBrush}" />
                 </StackPanel>
               </StackPanel>
@@ -126,7 +126,7 @@
         </Border>
 
         <!-- ========== XP / Level Bar (nur bei vorhandenen Daten) ========== -->
-        <Border Classes="Card StatsCard" Padding="10,8" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardXpLevel" Classes="Card StatsCard" Padding="10,8" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="1" StaggerDelay="80" BaseDuration="300" />
@@ -135,21 +135,21 @@
             <!-- Level-Badge -->
             <Border Background="{DynamicResource PrimaryBrush}" CornerRadius="10" Padding="8,2"
                     VerticalAlignment="Center">
-              <TextBlock Text="{Binding LevelLabel}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtLevelBadge" Text="{Binding LevelLabel}"
                          FontSize="11" FontWeight="Bold" Foreground="White" />
             </Border>
             <!-- XP ProgressBar (SkiaSharp) -->
-            <labs:SKCanvasView Grid.Column="1" Height="14" VerticalAlignment="Center"
+            <labs:SKCanvasView AutomationProperties.AutomationId="Home_CanvasXpBar" Grid.Column="1" Height="14" VerticalAlignment="Center"
                                 PaintSurface="OnPaintLevelProgress" />
             <!-- XP Text -->
-            <TextBlock Grid.Column="2" Text="{Binding XpDisplay}"
+            <TextBlock AutomationProperties.AutomationId="Home_TxtXpDisplay" Grid.Column="2" Text="{Binding XpDisplay}"
                        FontSize="11" Foreground="{DynamicResource TextMutedBrush}"
                        VerticalAlignment="Center" />
           </Grid>
         </Border>
 
         <!-- ========== Today Dashboard Card ========== -->
-        <Border Classes="Card StatsCard" Padding="16"
+        <Border AutomationProperties.AutomationId="Home_CardTodayDashboard" Classes="Card StatsCard" Padding="16"
                 BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
@@ -168,7 +168,7 @@
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
 
               <!-- Gewicht -->
-              <Border Grid.Row="0" Grid.Column="0"
+              <Border AutomationProperties.AutomationId="Home_CardWeight" Grid.Row="0" Grid.Column="0"
                       Background="{DynamicResource SurfaceBrush}"
                       CornerRadius="10" Padding="12">
                 <StackPanel Spacing="6" HorizontalAlignment="Center">
@@ -184,7 +184,7 @@
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                   </Border>
                   <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding TodayWeightDisplay}"
+                    <TextBlock AutomationProperties.AutomationId="Home_TxtDashWeight" Text="{Binding TodayWeightDisplay}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="kg" FontSize="12"
@@ -195,7 +195,7 @@
               </Border>
 
               <!-- BMI -->
-              <Border Grid.Row="0" Grid.Column="1"
+              <Border AutomationProperties.AutomationId="Home_CardBmi" Grid.Row="0" Grid.Column="1"
                       Background="{DynamicResource SurfaceBrush}"
                       CornerRadius="10" Padding="12">
                 <StackPanel Spacing="6" HorizontalAlignment="Center">
@@ -211,7 +211,7 @@
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                   </Border>
                   <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-                    <TextBlock Text="{Binding TodayBmiDisplay}"
+                    <TextBlock AutomationProperties.AutomationId="Home_TxtDashBmi" Text="{Binding TodayBmiDisplay}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="BMI" FontSize="12"
@@ -222,7 +222,7 @@
               </Border>
 
               <!-- Wasser -->
-              <Border Grid.Row="1" Grid.Column="0"
+              <Border AutomationProperties.AutomationId="Home_CardWater" Grid.Row="1" Grid.Column="0"
                       Background="{DynamicResource SurfaceBrush}"
                       CornerRadius="10" Padding="12">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -238,12 +238,12 @@
                                        Foreground="White"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
-                    <TextBlock Text="{Binding TodayWaterDisplay}"
+                    <TextBlock AutomationProperties.AutomationId="Home_TxtDashWater" Text="{Binding TodayWaterDisplay}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                   </StackPanel>
                   <!-- Wasser SkiaGradientRing -->
-                  <skiaControls:SkiaGradientRing Grid.Column="1" Width="44" Height="44"
+                  <skiaControls:SkiaGradientRing AutomationProperties.AutomationId="Home_RingWater" Grid.Column="1" Width="44" Height="44"
                       Value="{Binding WaterProgressFraction}"
                       StrokeWidth="4"
                       StartColor="#22C55E"
@@ -254,7 +254,7 @@
               </Border>
 
               <!-- Kalorien -->
-              <Border Grid.Row="1" Grid.Column="1"
+              <Border AutomationProperties.AutomationId="Home_CardCalories" Grid.Row="1" Grid.Column="1"
                       Background="{DynamicResource SurfaceBrush}"
                       CornerRadius="10" Padding="12">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -271,7 +271,7 @@
                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                      <TextBlock Text="{Binding TodayCaloriesDisplay}"
+                      <TextBlock AutomationProperties.AutomationId="Home_TxtDashCalories" Text="{Binding TodayCaloriesDisplay}"
                                  FontSize="18" FontWeight="Bold"
                                  Foreground="{DynamicResource TextPrimaryBrush}" />
                       <TextBlock Text="kcal" FontSize="12"
@@ -280,7 +280,7 @@
                     </StackPanel>
                   </StackPanel>
                   <!-- Kalorien SkiaGradientRing -->
-                  <skiaControls:SkiaGradientRing Grid.Column="1" Width="44" Height="44"
+                  <skiaControls:SkiaGradientRing AutomationProperties.AutomationId="Home_RingCalories" Grid.Column="1" Width="44" Height="44"
                       Value="{Binding CalorieProgressFraction}"
                       StrokeWidth="4"
                       StartColor="#F59E0B"
@@ -295,7 +295,7 @@
         </Border>
 
         <!-- ========== Empty-State (wenn keine Tracking-Daten) ========== -->
-        <Border Classes="Card" CornerRadius="16" Padding="24,28"
+        <Border AutomationProperties.AutomationId="Home_CardEmptyState" Classes="Card" CornerRadius="16" Padding="24,28"
                 IsVisible="{Binding ShowEmptyState}"
                 BoxShadow="{DynamicResource CardShadow}">
           <StackPanel Spacing="16" HorizontalAlignment="Center">
@@ -312,13 +312,13 @@
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <!-- Titel -->
-            <TextBlock Text="{Binding EmptyStateTitle}"
+            <TextBlock AutomationProperties.AutomationId="Home_TxtEmptyTitle" Text="{Binding EmptyStateTitle}"
                        FontSize="18" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        TextAlignment="Center" TextWrapping="Wrap"
                        HorizontalAlignment="Center" />
             <!-- Beschreibung -->
-            <TextBlock Text="{Binding EmptyStateSubtitle}"
+            <TextBlock AutomationProperties.AutomationId="Home_TxtEmptySubtitle" Text="{Binding EmptyStateSubtitle}"
                        FontSize="13"
                        Foreground="{DynamicResource TextMutedBrush}"
                        TextAlignment="Center" TextWrapping="Wrap"
@@ -350,7 +350,7 @@
                         Margin="0,4,0,0">
               <mi:MaterialIcon Kind="ArrowDownBold" Width="14" Height="14"
                                Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{Binding EmptyStateHint}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtEmptyHint" Text="{Binding EmptyStateHint}"
                          FontSize="11" FontStyle="Italic"
                          Foreground="{DynamicResource PrimaryBrush}" />
             </StackPanel>
@@ -363,7 +363,7 @@
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="3" StaggerDelay="80" BaseDuration="300" />
           </i:Interaction.Behaviors>
           <!-- +kg Button (lila) -->
-          <Button Grid.Column="0" CornerRadius="12" Height="48" Padding="6"
+          <Button AutomationProperties.AutomationId="Home_BtnQuickWeight" Grid.Column="0" CornerRadius="12" Height="48" Padding="6"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                   Command="{Binding OpenWeightQuickAddCommand}">
             <i:Interaction.Behaviors>
@@ -383,7 +383,7 @@
           </Button>
 
           <!-- +250 ml Button (grün) -->
-          <Button Grid.Column="1" CornerRadius="12" Height="48" Padding="6"
+          <Button AutomationProperties.AutomationId="Home_BtnQuickWater" Grid.Column="1" CornerRadius="12" Height="48" Padding="6"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                   Command="{Binding QuickAddWaterCommand}" CommandParameter="250">
             <i:Interaction.Behaviors>
@@ -403,7 +403,7 @@
           </Button>
 
           <!-- +kcal Button (orange) -->
-          <Button Grid.Column="2" CornerRadius="12" Height="48" Padding="6"
+          <Button AutomationProperties.AutomationId="Home_BtnQuickCalories" Grid.Column="2" CornerRadius="12" Height="48" Padding="6"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                   Command="{Binding OpenFoodQuickAddCommand}">
             <i:Interaction.Behaviors>
@@ -424,7 +424,7 @@
         </Grid>
 
         <!-- ========== Weight Quick-Add Panel ========== -->
-        <Border Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardWeightQuickAdd" Classes="Card StatsCard" Padding="16" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding ShowWeightQuickAdd}">
           <Border.Background>
             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -439,19 +439,19 @@
                          FontSize="16" FontWeight="Bold" Foreground="White"
                          VerticalAlignment="Center" />
             </StackPanel>
-            <NumericUpDown Value="{Binding QuickAddWeight}"
+            <NumericUpDown AutomationProperties.AutomationId="Home_NumWeight" Value="{Binding QuickAddWeight}"
                           Minimum="20" Maximum="500" Increment="0.1"
                           FormatString="F1"
                           HorizontalAlignment="Stretch"
                           FontSize="18" />
             <Grid ColumnDefinitions="*,12,*">
-              <Button Grid.Column="0" CornerRadius="10" Height="40"
+              <Button AutomationProperties.AutomationId="Home_BtnWeightCancel" Grid.Column="0" CornerRadius="10" Height="40"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Background="#33FFFFFF"
                       Command="{Binding CancelWeightQuickAddCommand}">
                 <TextBlock Text="{loc:Translate Cancel}" FontSize="14" Foreground="White" />
               </Button>
-              <Button Grid.Column="2" CornerRadius="10" Height="40"
+              <Button AutomationProperties.AutomationId="Home_BtnWeightSave" Grid.Column="2" CornerRadius="10" Height="40"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                       Background="White"
                       Command="{Binding SaveWeightQuickAddCommand}">
@@ -462,7 +462,7 @@
         </Border>
 
         <!-- ========== Daily Challenge Card (nur bei vorhandenen Daten) ========== -->
-        <Border CornerRadius="12" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardChallenge" CornerRadius="12" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="4" StaggerDelay="80" BaseDuration="300" />
@@ -485,26 +485,26 @@
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
               <TextBlock Text="{Binding DailyChallengeLabel}"
                          FontSize="10" Foreground="#BBFFFFFF" />
-              <TextBlock Text="{Binding ChallengeTitleText}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtChallengeTitle" Text="{Binding ChallengeTitleText}"
                          FontSize="14" FontWeight="Bold" Foreground="White" />
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <labs:SKCanvasView Height="12"
+                <labs:SKCanvasView AutomationProperties.AutomationId="Home_CanvasChallengeProgress" Height="12"
                                     PaintSurface="OnPaintChallengeProgress" />
                 <TextBlock Grid.Column="1" Text="{Binding ChallengeProgressText}"
                            FontSize="10" Foreground="#CCFFFFFF" VerticalAlignment="Center" />
               </Grid>
             </StackPanel>
             <!-- XP Badge -->
-            <Border Grid.Column="2" CornerRadius="8" Padding="6,2"
+            <Border AutomationProperties.AutomationId="Home_BadgeChallengeXp" Grid.Column="2" CornerRadius="8" Padding="6,2"
                     Background="#33FFFFFF" VerticalAlignment="Top">
-              <TextBlock Text="{Binding ChallengeXpText}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtChallengeXp" Text="{Binding ChallengeXpText}"
                          FontSize="10" FontWeight="Bold" Foreground="White" />
             </Border>
           </Grid>
         </Border>
 
         <!-- ========== Streak Card (nur bei vorhandenen Daten) ========== -->
-        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardStreak" Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasDashboardData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="5" StaggerDelay="80" BaseDuration="300" />
@@ -527,7 +527,7 @@
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
               <TextBlock Text="{Binding StreakTitleText}"
                          FontSize="13" Foreground="{DynamicResource TextMutedBrush}" />
-              <TextBlock Text="{Binding StreakDisplay}"
+              <TextBlock AutomationProperties.AutomationId="Home_TxtStreakDisplay" Text="{Binding StreakDisplay}"
                          FontSize="18" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>
@@ -543,7 +543,7 @@
         </Border>
 
         <!-- ========== Recent Badges ========== -->
-        <Border Classes="Card StatsCard" Padding="12" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardBadges" Classes="Card StatsCard" Padding="12" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasRecentAchievements}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="6" StaggerDelay="80" BaseDuration="300" />
@@ -577,7 +577,7 @@
               </ItemsControl>
             </StackPanel>
             <!-- "Alle anzeigen" Button -->
-            <Button Grid.Column="1" Classes="Text" VerticalAlignment="Center"
+            <Button AutomationProperties.AutomationId="Home_BtnShowAllBadges" Grid.Column="1" Classes="Text" VerticalAlignment="Center"
                     Command="{Binding OpenAchievementsCommand}">
               <i:Interaction.Behaviors>
                 <behaviors:TapScaleBehavior PressedScale="0.95" />
@@ -593,7 +593,7 @@
         </Border>
 
         <!-- ========== Aktivitäts-Heatmap ========== -->
-        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardHeatmap" Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasHeatmapData}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="7" StaggerDelay="80" BaseDuration="300" />
@@ -610,7 +610,7 @@
             <!-- Heatmap -->
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Disabled">
-              <uiControls:HeatmapCalendar Data="{Binding HeatmapData}"
+              <uiControls:HeatmapCalendar AutomationProperties.AutomationId="Home_HeatmapCalendar" Data="{Binding HeatmapData}"
                                            Months="2"
                                            CellSize="13"
                                            CellSpacing="2" />
@@ -647,7 +647,7 @@
         </Border>
 
         <!-- ========== Weekly Comparison Card ========== -->
-        <Border Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
+        <Border AutomationProperties.AutomationId="Home_CardWeeklyComparison" Classes="Card StatsCard" Padding="14" BoxShadow="{DynamicResource CardShadow}"
                 IsVisible="{Binding HasWeeklyComparison}">
           <i:Interaction.Behaviors>
             <uiBehaviors:StaggerFadeInBehavior FixedIndex="8" StaggerDelay="80" BaseDuration="300" />
@@ -710,7 +710,7 @@
         </Border>
 
         <!-- ========== Abend-Zusammenfassung (nach 20 Uhr) ========== -->
-        <Border Classes="Card StatsCard" IsVisible="{Binding ShowEveningSummary}" Margin="0,0,0,12">
+        <Border AutomationProperties.AutomationId="Home_CardEveningSummary" Classes="Card StatsCard" IsVisible="{Binding ShowEveningSummary}" Margin="0,0,0,12">
           <i:Interaction.Behaviors>
             <behaviors:FadeInBehavior Duration="400" />
           </i:Interaction.Behaviors>
@@ -726,9 +726,9 @@
               <TextBlock Text="{Binding EveningSummaryLabel}"
                          FontSize="14" FontWeight="SemiBold" Foreground="White" />
             </StackPanel>
-            <TextBlock Text="{Binding EveningSummaryText}"
+            <TextBlock AutomationProperties.AutomationId="Home_TxtEveningSummary" Text="{Binding EveningSummaryText}"
                        FontSize="16" FontWeight="Bold" Foreground="White" />
-            <TextBlock Text="{Binding EveningSummaryRating}"
+            <TextBlock AutomationProperties.AutomationId="Home_TxtEveningRating" Text="{Binding EveningSummaryRating}"
                        FontSize="13">
               <TextBlock.Foreground>
                 <SolidColorBrush Color="{Binding EveningSummaryRatingColor}" />
@@ -754,7 +754,7 @@
           <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="12">
 
             <!-- BMI -->
-            <Button Grid.Row="0" Grid.Column="0"
+            <Button AutomationProperties.AutomationId="Home_BtnBmi" Grid.Row="0" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     Command="{Binding OpenBmiCommand}">
@@ -786,7 +786,7 @@
             </Button>
 
             <!-- Kalorien -->
-            <Button Grid.Row="0" Grid.Column="1"
+            <Button AutomationProperties.AutomationId="Home_BtnCalories" Grid.Row="0" Grid.Column="1"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     Command="{Binding OpenCaloriesCommand}">
@@ -818,7 +818,7 @@
             </Button>
 
             <!-- Wasser -->
-            <Button Grid.Row="1" Grid.Column="0"
+            <Button AutomationProperties.AutomationId="Home_BtnWater" Grid.Row="1" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     Command="{Binding OpenWaterCommand}">
@@ -850,7 +850,7 @@
             </Button>
 
             <!-- Idealgewicht -->
-            <Button Grid.Row="1" Grid.Column="1"
+            <Button AutomationProperties.AutomationId="Home_BtnIdealWeight" Grid.Row="1" Grid.Column="1"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     Command="{Binding OpenIdealWeightCommand}">
@@ -882,7 +882,7 @@
             </Button>
 
             <!-- Koerperfett -->
-            <Button Grid.Row="2" Grid.Column="0"
+            <Button AutomationProperties.AutomationId="Home_BtnBodyFat" Grid.Row="2" Grid.Column="0"
                     CornerRadius="12" Height="120" Padding="8"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                     Command="{Binding OpenBodyFatCommand}">
@@ -917,7 +917,7 @@
         </StackPanel>
 
         <!-- ========== Premium-Card ========== -->
-        <Button Background="Transparent" Padding="0"
+        <Button AutomationProperties.AutomationId="Home_BtnPremium" Background="Transparent" Padding="0"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                 IsVisible="{Binding !IsPremium}"
                 Command="{Binding OpenSettingsCommand}">
@@ -942,9 +942,9 @@
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="{Binding RemoveAdsText}"
+                  <TextBlock AutomationProperties.AutomationId="Home_TxtPremiumTitle" Text="{Binding RemoveAdsText}"
                              FontSize="15" FontWeight="Bold" Foreground="White" />
-                  <TextBlock Text="{Binding PremiumPriceText}"
+                  <TextBlock AutomationProperties.AutomationId="Home_TxtPremiumPrice" Text="{Binding PremiumPriceText}"
                              FontSize="12" Foreground="#CCFFFFFF" />
                 </StackPanel>
                 <mi:MaterialIcon Grid.Column="2"
@@ -956,7 +956,7 @@
         </Button>
 
         <!-- ========== Disclaimer ========== -->
-        <Border Background="{DynamicResource SurfaceBrush}"
+        <Border AutomationProperties.AutomationId="Home_CardDisclaimer" Background="{DynamicResource SurfaceBrush}"
                 CornerRadius="8" Padding="12"
                 BoxShadow="{DynamicResource CardShadow}"
                 Margin="0,4,0,0">

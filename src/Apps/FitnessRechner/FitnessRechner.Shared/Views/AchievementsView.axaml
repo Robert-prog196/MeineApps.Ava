@@ -11,36 +11,36 @@
     <conv:LocalizeKeyConverter x:Key="LocalizeKey" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid AutomationProperties.AutomationId="Achievements_RootPanel" RowDefinitions="Auto,*">
 
     <!-- Header -->
-    <Border Grid.Row="0" Padding="16,12" Background="{DynamicResource SurfaceBrush}"
+    <Border AutomationProperties.AutomationId="Achievements_Header" Grid.Row="0" Padding="16,12" Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderSubtleBrush}" BorderThickness="0,0,0,1">
       <Grid ColumnDefinitions="Auto,*,Auto">
-        <Button Grid.Column="0" Classes="Text" Command="{Binding CloseAchievementsCommand}">
+        <Button AutomationProperties.AutomationId="Achievements_BtnBack" Grid.Column="0" Classes="Text" Command="{Binding CloseAchievementsCommand}">
           <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
         </Button>
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <TextBlock Text="{Binding AchievementsTitleLabel}"
+          <TextBlock AutomationProperties.AutomationId="Achievements_TxtTitle" Text="{Binding AchievementsTitleLabel}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
                      HorizontalAlignment="Center" />
-          <TextBlock Text="{Binding AchievementCountDisplay}"
+          <TextBlock AutomationProperties.AutomationId="Achievements_TxtCount" Text="{Binding AchievementCountDisplay}"
                      FontSize="12" Foreground="{DynamicResource TextMutedBrush}"
                      HorizontalAlignment="Center" />
         </StackPanel>
         <!-- Level-Badge rechts -->
-        <Border Grid.Column="2" CornerRadius="12" Padding="10,4"
+        <Border AutomationProperties.AutomationId="Achievements_BadgeLevel" Grid.Column="2" CornerRadius="12" Padding="10,4"
                 Background="{DynamicResource PrimaryBrush}">
-          <TextBlock Text="{Binding LevelLabel}"
+          <TextBlock AutomationProperties.AutomationId="Achievements_TxtLevel" Text="{Binding LevelLabel}"
                      FontSize="12" FontWeight="Bold" Foreground="White" />
         </Border>
       </Grid>
     </Border>
 
     <!-- Achievements Grid -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer AutomationProperties.AutomationId="Achievements_ScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <ItemsControl ItemsSource="{Binding AllAchievements}" Margin="12,12,12,80">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>

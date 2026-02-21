@@ -6,18 +6,21 @@
              x:Class="FitnessRechner.Views.BarcodeScannerView"
              x:DataType="vm:BarcodeScannerViewModel">
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Barcode_RootPanel">
 
     <!-- ============================================ -->
     <!-- Row 0: Header mit Zurück-Button + Titel      -->
     <!-- ============================================ -->
     <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Barcode_HeaderBorder"
             Background="{DynamicResource SurfaceBrush}"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource CardBorderBrush}"
             Padding="16,12">
       <Grid ColumnDefinitions="Auto,*">
         <Button Grid.Column="0"
+                AutomationProperties.AutomationId="Barcode_BtnBack"
                 Classes="Text"
                 Command="{Binding GoBackCommand}"
                 Padding="4"
@@ -26,6 +29,7 @@
                            Foreground="{DynamicResource TextPrimaryBrush}" />
         </Button>
         <TextBlock Grid.Column="1"
+                   AutomationProperties.AutomationId="Barcode_TxtTitle"
                    Text="{loc:Translate ScanBarcode}"
                    FontSize="20" FontWeight="Bold"
                    Foreground="{DynamicResource TextPrimaryBrush}"
@@ -37,18 +41,21 @@
     <!-- ============================================ -->
     <!-- Row 1: Content                               -->
     <!-- ============================================ -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Barcode_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,12,16,80">
 
         <!-- Manuelle Barcode-Eingabe (IsScanning = true) -->
         <Border Classes="Card StatsCard" Padding="16"
+                AutomationProperties.AutomationId="Barcode_CardScanning"
                 IsVisible="{Binding IsScanning}">
           <StackPanel Spacing="12">
             <!-- Hinweis: Kein Kamera-Zugang auf Desktop -->
             <StackPanel Orientation="Horizontal" Spacing="8">
               <mi:MaterialIcon Kind="BarcodeScanner" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
-              <TextBlock Text="{loc:Translate CameraNotAvailable}"
+              <TextBlock AutomationProperties.AutomationId="Barcode_TxtCameraNotAvailable"
+                         Text="{loc:Translate CameraNotAvailable}"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          FontSize="14"
                          TextWrapping="Wrap"
@@ -58,11 +65,13 @@
             <!-- Eingabefeld + Suchen-Button -->
             <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
               <TextBox Grid.Column="0"
+                       AutomationProperties.AutomationId="Barcode_TxtBoxManualInput"
                        Text="{Binding ManualBarcodeInput, Mode=TwoWay}"
                        Watermark="{loc:Translate EnterBarcodeManually}"
                        FontSize="16"
                        Margin="0,0,8,0" />
               <Button Grid.Column="1"
+                      AutomationProperties.AutomationId="Barcode_BtnSearch"
                       Classes="Primary"
                       Command="{Binding ScanManuallyCommand}"
                       VerticalAlignment="Stretch">
@@ -78,11 +87,14 @@
 
         <!-- Lade-Indikator (IsBusy = true) -->
         <Border Classes="Card StatsCard" Padding="24"
+                AutomationProperties.AutomationId="Barcode_CardLoading"
                 IsVisible="{Binding IsBusy}">
           <StackPanel Spacing="12" HorizontalAlignment="Center">
-            <ProgressBar IsIndeterminate="True"
+            <ProgressBar AutomationProperties.AutomationId="Barcode_ProgressLoading"
+                         IsIndeterminate="True"
                          Width="200" />
-            <TextBlock Text="{Binding StatusMessage}"
+            <TextBlock AutomationProperties.AutomationId="Barcode_TxtLoadingStatus"
+                       Text="{Binding StatusMessage}"
                        HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        FontSize="14" />
@@ -90,7 +102,8 @@
         </Border>
 
         <!-- Status-Nachricht (wenn nicht busy und nicht scanning) -->
-        <TextBlock Text="{Binding StatusMessage}"
+        <TextBlock AutomationProperties.AutomationId="Barcode_TxtStatus"
+                   Text="{Binding StatusMessage}"
                    HorizontalAlignment="Center"
                    Foreground="{DynamicResource TextSecondaryBrush}"
                    FontSize="14"
@@ -99,23 +112,27 @@
 
         <!-- Ergebnis-Anzeige (ShowResult = true) -->
         <Border Classes="Card StatsCard" Padding="16"
+                AutomationProperties.AutomationId="Barcode_CardResult"
                 IsVisible="{Binding ShowResult}">
           <StackPanel Spacing="12">
 
             <!-- Produktname -->
-            <TextBlock Text="{Binding FoundFood.Name}"
+            <TextBlock AutomationProperties.AutomationId="Barcode_TxtProductName"
+                       Text="{Binding FoundFood.Name}"
                        FontSize="20" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        TextWrapping="Wrap" />
 
             <!-- Warnung bei fehlenden Daten -->
-            <Border Background="{DynamicResource WarningBackgroundBrush}"
+            <Border AutomationProperties.AutomationId="Barcode_CardWarning"
+                    Background="{DynamicResource WarningBackgroundBrush}"
                     CornerRadius="8" Padding="12"
                     IsVisible="{Binding HasIncompleteData}">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="AlertOutline" Width="20" Height="20"
                                  Foreground="{DynamicResource WarningBrush}" />
-                <TextBlock Text="{Binding DataWarningMessage}"
+                <TextBlock AutomationProperties.AutomationId="Barcode_TxtWarning"
+                           Text="{Binding DataWarningMessage}"
                            Foreground="{DynamicResource WarningBrush}"
                            TextWrapping="Wrap"
                            VerticalAlignment="Center" />
@@ -123,7 +140,8 @@
             </Border>
 
             <!-- Nährwert-Grid -->
-            <Border Background="{DynamicResource SurfaceBrush}"
+            <Border AutomationProperties.AutomationId="Barcode_CardNutrition"
+                    Background="{DynamicResource SurfaceBrush}"
                     CornerRadius="8" Padding="12">
               <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto"
                     Margin="0">
@@ -134,7 +152,8 @@
                              FontSize="12"
                              Foreground="{DynamicResource TextMutedBrush}" />
                   <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="{Binding FoundFood.CaloriesPer100g, StringFormat='{}{0:F1}'}"
+                    <TextBlock AutomationProperties.AutomationId="Barcode_TxtCalories"
+                               Text="{Binding FoundFood.CaloriesPer100g, StringFormat='{}{0:F1}'}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="kcal" FontSize="12"
@@ -149,7 +168,8 @@
                              FontSize="12"
                              Foreground="{DynamicResource TextMutedBrush}" />
                   <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="{Binding FoundFood.ProteinPer100g, StringFormat='{}{0:F1}'}"
+                    <TextBlock AutomationProperties.AutomationId="Barcode_TxtProtein"
+                               Text="{Binding FoundFood.ProteinPer100g, StringFormat='{}{0:F1}'}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="g" FontSize="12"
@@ -164,7 +184,8 @@
                              FontSize="12"
                              Foreground="{DynamicResource TextMutedBrush}" />
                   <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="{Binding FoundFood.CarbsPer100g, StringFormat='{}{0:F1}'}"
+                    <TextBlock AutomationProperties.AutomationId="Barcode_TxtCarbs"
+                               Text="{Binding FoundFood.CarbsPer100g, StringFormat='{}{0:F1}'}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="g" FontSize="12"
@@ -179,7 +200,8 @@
                              FontSize="12"
                              Foreground="{DynamicResource TextMutedBrush}" />
                   <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="{Binding FoundFood.FatPer100g, StringFormat='{}{0:F1}'}"
+                    <TextBlock AutomationProperties.AutomationId="Barcode_TxtFat"
+                               Text="{Binding FoundFood.FatPer100g, StringFormat='{}{0:F1}'}"
                                FontSize="18" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="g" FontSize="12"
@@ -199,6 +221,7 @@
             <!-- Aktions-Buttons -->
             <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
               <Button Grid.Column="0"
+                      AutomationProperties.AutomationId="Barcode_BtnUseProduct"
                       Classes="Primary"
                       Command="{Binding UseFoodCommand}"
                       HorizontalAlignment="Stretch"
@@ -211,6 +234,7 @@
                 </StackPanel>
               </Button>
               <Button Grid.Column="1"
+                      AutomationProperties.AutomationId="Barcode_BtnScanAgain"
                       Classes="Secondary"
                       Command="{Binding ScanAgainCommand}"
                       HorizontalAlignment="Stretch"

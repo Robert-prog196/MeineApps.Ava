@@ -8,19 +8,21 @@
 
   <Grid>
     <!-- Main Calendar Content -->
-    <ScrollViewer IsVisible="{Binding !IsOverlayVisible}">
-      <StackPanel Spacing="16" Margin="16">
+    <ScrollViewer AutomationProperties.AutomationId="Calendar_ScrollViewer" IsVisible="{Binding !IsOverlayVisible}">
+      <StackPanel Spacing="16" Margin="16" AutomationProperties.AutomationId="Calendar_RootPanel">
 
         <!-- ==================== Month Navigation ==================== -->
-        <Border Classes="CardElevated StatsCard" Padding="16">
+        <Border Classes="CardElevated StatsCard" Padding="16" AutomationProperties.AutomationId="Calendar_MonthNavCard">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
+                    AutomationProperties.AutomationId="Calendar_BtnPrevMonth"
                     Command="{Binding PreviousMonthCommand}">
               <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
             </Button>
 
             <TextBlock Grid.Column="1"
+                       AutomationProperties.AutomationId="Calendar_TxtMonthDisplay"
                        Text="{Binding MonthDisplay}"
                        FontSize="20" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
@@ -28,6 +30,7 @@
                        VerticalAlignment="Center" />
 
             <Button Grid.Column="2" Classes="Text"
+                    AutomationProperties.AutomationId="Calendar_BtnNextMonth"
                     Command="{Binding NextMonthCommand}">
               <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
@@ -36,13 +39,14 @@
         </Border>
 
         <!-- Today Button -->
-        <Button Content="{Binding TodayButtonText}"
+        <Button AutomationProperties.AutomationId="Calendar_BtnToday"
+                Content="{Binding TodayButtonText}"
                 Classes="Secondary"
                 Command="{Binding GoToTodayCommand}"
                 HorizontalAlignment="Center" />
 
         <!-- ==================== Month Summary ==================== -->
-        <Border Classes="Card StatsCard" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="Calendar_SummaryCard">
           <Grid ColumnDefinitions="*,*">
             <StackPanel Grid.Column="0" HorizontalAlignment="Center">
               <TextBlock Text="{loc:Translate WorkTime}"
@@ -50,6 +54,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding TotalWorkDisplay}"
+                         AutomationProperties.AutomationId="Calendar_TxtTotalWork"
                          FontSize="24" FontWeight="Bold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          HorizontalAlignment="Center" />
@@ -61,6 +66,7 @@
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          HorizontalAlignment="Center" />
               <TextBlock Text="{Binding BalanceDisplay}"
+                         AutomationProperties.AutomationId="Calendar_TxtBalance"
                          FontSize="24" FontWeight="Bold"
                          Foreground="{Binding BalanceColor}"
                          HorizontalAlignment="Center" />
@@ -69,7 +75,7 @@
         </Border>
 
         <!-- ==================== Calendar Grid ==================== -->
-        <Border Classes="Card StatsCard" Padding="8">
+        <Border Classes="Card StatsCard" Padding="8" AutomationProperties.AutomationId="Calendar_GridCard">
           <StackPanel Spacing="4">
 
             <!-- Weekday Header -->
@@ -181,9 +187,9 @@
         </Border>
 
         <!-- ==================== Heatmap Legend ==================== -->
-        <Border Classes="Card StatsCard" Padding="16">
+        <Border Classes="Card StatsCard" Padding="16" AutomationProperties.AutomationId="Calendar_LegendCard">
           <StackPanel Spacing="8">
-            <TextBlock Text="{loc:Translate Legend}"
+            <TextBlock AutomationProperties.AutomationId="Calendar_TxtLegend" Text="{loc:Translate Legend}"
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
 
@@ -253,21 +259,24 @@
     </ScrollViewer>
 
     <!-- ==================== Status Overlay ==================== -->
-    <Border IsVisible="{Binding IsOverlayVisible}"
+    <Border AutomationProperties.AutomationId="Calendar_StatusOverlay"
+            IsVisible="{Binding IsOverlayVisible}"
             Background="{DynamicResource BackgroundBrush}"
             ZIndex="10">
-      <ScrollViewer>
+      <ScrollViewer AutomationProperties.AutomationId="Calendar_OverlayScrollViewer">
         <StackPanel Spacing="16" Margin="16">
 
           <!-- Header with close button -->
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text"
+                    AutomationProperties.AutomationId="Calendar_BtnOverlayBack"
                     Command="{Binding CancelOverlayCommand}">
               <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
                                Foreground="{DynamicResource PrimaryBrush}" />
             </Button>
 
             <TextBlock Grid.Column="1"
+                       AutomationProperties.AutomationId="Calendar_TxtSetStatus"
                        Text="{loc:Translate SetStatus}"
                        FontSize="20" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}"
@@ -275,6 +284,7 @@
                        VerticalAlignment="Center" />
 
             <Button Grid.Column="2" Classes="Text"
+                    AutomationProperties.AutomationId="Calendar_BtnOverlayClose"
                     Command="{Binding CancelOverlayCommand}">
               <mi:MaterialIcon Kind="Close" Width="24" Height="24"
                                Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -282,12 +292,13 @@
           </Grid>
 
           <!-- Selected date display -->
-          <Border Classes="CardElevated" Padding="16">
+          <Border Classes="CardElevated" Padding="16" AutomationProperties.AutomationId="Calendar_OverlayDateCard">
             <StackPanel HorizontalAlignment="Center" Spacing="4">
               <mi:MaterialIcon Kind="CalendarToday" Width="32" Height="32"
                                Foreground="{DynamicResource PrimaryBrush}"
                                HorizontalAlignment="Center" />
               <TextBlock Text="{Binding OverlayDateDisplay}"
+                         AutomationProperties.AutomationId="Calendar_TxtOverlayDate"
                          FontSize="16" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          HorizontalAlignment="Center" />
@@ -296,12 +307,14 @@
 
           <!-- Existing status info -->
           <Border Classes="Card" Padding="12"
+                  AutomationProperties.AutomationId="Calendar_ExistingStatusCard"
                   IsVisible="{Binding OverlayHasExistingStatus}">
             <StackPanel Orientation="Horizontal" Spacing="8"
                         HorizontalAlignment="Center">
               <mi:MaterialIcon Kind="InformationOutline" Width="20" Height="20"
                                Foreground="{DynamicResource PrimaryBrush}" />
               <TextBlock Text="{Binding OverlayExistingStatusText}"
+                         AutomationProperties.AutomationId="Calendar_TxtExistingStatus"
                          FontSize="14"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          VerticalAlignment="Center" />
@@ -314,7 +327,8 @@
               <TextBlock Text="{loc:Translate Type}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <ComboBox ItemsSource="{Binding AvailableStatusTypes}"
+              <ComboBox AutomationProperties.AutomationId="Calendar_CmbStatusType"
+                        ItemsSource="{Binding AvailableStatusTypes}"
                         SelectedItem="{Binding OverlaySelectedType}"
                         HorizontalAlignment="Stretch">
                 <ComboBox.ItemTemplate>
@@ -340,6 +354,7 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <CalendarDatePicker Grid.Row="2" Grid.Column="0"
+                                    AutomationProperties.AutomationId="Calendar_DpkStartDate"
                                     SelectedDate="{Binding OverlayStartDate}"
                                     HorizontalAlignment="Stretch" />
 
@@ -349,12 +364,14 @@
                            FontSize="12"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
                 <CalendarDatePicker Grid.Row="2" Grid.Column="2"
+                                    AutomationProperties.AutomationId="Calendar_DpkEndDate"
                                     SelectedDate="{Binding OverlayEndDate}"
                                     HorizontalAlignment="Stretch" />
               </Grid>
 
               <!-- Calculated work days -->
               <TextBlock Text="{Binding OverlayCalculatedDaysDisplay}"
+                         AutomationProperties.AutomationId="Calendar_TxtCalculatedDays"
                          FontSize="13" FontWeight="Bold"
                          Foreground="{DynamicResource PrimaryBrush}"
                          HorizontalAlignment="Center" />
@@ -367,7 +384,8 @@
               <TextBlock Text="{loc:Translate NoteOptional}"
                          FontSize="14" FontWeight="SemiBold"
                          Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBox Text="{Binding OverlayNote}"
+              <TextBox AutomationProperties.AutomationId="Calendar_TxtOverlayNote"
+                       Text="{Binding OverlayNote}"
                        Watermark="{loc:Translate NotePlaceholder}"
                        MinHeight="60"
                        AcceptsReturn="True"
@@ -378,7 +396,8 @@
           <!-- Action buttons -->
           <StackPanel Spacing="8">
             <!-- Save -->
-            <Button Classes="Primary"
+            <Button AutomationProperties.AutomationId="Calendar_BtnSaveStatus"
+                    Classes="Primary"
                     Command="{Binding SaveStatusCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
@@ -390,7 +409,8 @@
             </Button>
 
             <!-- Remove existing status -->
-            <Button Classes="Outlined"
+            <Button AutomationProperties.AutomationId="Calendar_BtnRemoveStatus"
+                    Classes="Outlined"
                     Command="{Binding RemoveStatusCommand}"
                     IsVisible="{Binding OverlayHasExistingStatus}"
                     HorizontalAlignment="Stretch"
@@ -406,7 +426,8 @@
             </Button>
 
             <!-- Cancel -->
-            <Button Classes="Text"
+            <Button AutomationProperties.AutomationId="Calendar_BtnCancelOverlay"
+                    Classes="Text"
                     Command="{Binding CancelOverlayCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"

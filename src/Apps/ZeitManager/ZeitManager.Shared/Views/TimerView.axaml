@@ -27,20 +27,23 @@
 
     <!-- Quick Timer Chips -->
     <Border Grid.Row="0" Margin="16,16,16,8" Padding="12"
-            Background="{DynamicResource SurfaceBrush}" CornerRadius="12">
+            Background="{DynamicResource SurfaceBrush}" CornerRadius="12"
+            AutomationProperties.AutomationId="Timer_CardQuickTimers">
       <StackPanel Spacing="10">
         <StackPanel Orientation="Horizontal" Spacing="6">
           <mi:MaterialIcon Kind="TimerSand" Width="16" Height="16"
                            Foreground="{DynamicResource TimerAccentBrush}" />
           <TextBlock Text="{Binding QuickTimerText}" Classes="TitleSmall"
-                     Foreground="{DynamicResource TimerAccentBrush}" />
+                     Foreground="{DynamicResource TimerAccentBrush}"
+                     AutomationProperties.AutomationId="Timer_TxtQuickTimerTitle" />
         </StackPanel>
         <WrapPanel Orientation="Horizontal">
           <!-- 1 min - Blitz -->
           <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="16"
                   Background="{DynamicResource CardBrush}" Foreground="{DynamicResource TimerAccentBrush}"
                   BorderBrush="{DynamicResource TimerAccentBrush}" BorderThickness="1.5"
-                  Command="{Binding AddQuickTimerCommand}" CommandParameter="1">
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="1"
+                  AutomationProperties.AutomationId="Timer_BtnQuick1Min">
             <i:Interaction.Behaviors>
               <behaviors:TapScaleBehavior PressedScale="0.92" />
             </i:Interaction.Behaviors>
@@ -53,7 +56,8 @@
           <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="16"
                   Background="{DynamicResource CardBrush}" Foreground="{DynamicResource TimerAccentBrush}"
                   BorderBrush="{DynamicResource TimerAccentBrush}" BorderThickness="1.5"
-                  Command="{Binding AddQuickTimerCommand}" CommandParameter="5">
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="5"
+                  AutomationProperties.AutomationId="Timer_BtnQuick5Min">
             <i:Interaction.Behaviors>
               <behaviors:TapScaleBehavior PressedScale="0.92" />
             </i:Interaction.Behaviors>
@@ -66,7 +70,8 @@
           <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="16"
                   Background="{DynamicResource CardBrush}" Foreground="{DynamicResource TimerAccentBrush}"
                   BorderBrush="{DynamicResource TimerAccentBrush}" BorderThickness="1.5"
-                  Command="{Binding AddQuickTimerCommand}" CommandParameter="10">
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="10"
+                  AutomationProperties.AutomationId="Timer_BtnQuick10Min">
             <i:Interaction.Behaviors>
               <behaviors:TapScaleBehavior PressedScale="0.92" />
             </i:Interaction.Behaviors>
@@ -79,7 +84,8 @@
           <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="16"
                   Background="{DynamicResource CardBrush}" Foreground="{DynamicResource TimerAccentBrush}"
                   BorderBrush="{DynamicResource TimerAccentBrush}" BorderThickness="1.5"
-                  Command="{Binding AddQuickTimerCommand}" CommandParameter="15">
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="15"
+                  AutomationProperties.AutomationId="Timer_BtnQuick15Min">
             <i:Interaction.Behaviors>
               <behaviors:TapScaleBehavior PressedScale="0.92" />
             </i:Interaction.Behaviors>
@@ -92,7 +98,8 @@
           <Button Margin="0,0,8,8" Padding="10,6" CornerRadius="16"
                   Background="{DynamicResource CardBrush}" Foreground="{DynamicResource TimerAccentBrush}"
                   BorderBrush="{DynamicResource TimerAccentBrush}" BorderThickness="1.5"
-                  Command="{Binding AddQuickTimerCommand}" CommandParameter="30">
+                  Command="{Binding AddQuickTimerCommand}" CommandParameter="30"
+                  AutomationProperties.AutomationId="Timer_BtnQuick30Min">
             <i:Interaction.Behaviors>
               <behaviors:TapScaleBehavior PressedScale="0.92" />
             </i:Interaction.Behaviors>
@@ -108,10 +115,12 @@
     <!-- Presets -->
     <Border Grid.Row="1" Margin="16,0,16,8" Padding="12"
             Background="{DynamicResource SurfaceBrush}" CornerRadius="12"
-            IsVisible="{Binding Presets.Count}">
+            IsVisible="{Binding Presets.Count}"
+            AutomationProperties.AutomationId="Timer_CardPresets">
       <StackPanel Spacing="8">
         <TextBlock Text="{Binding PresetsText}" Classes="TitleSmall"
-                   Foreground="{DynamicResource TextMutedBrush}" />
+                   Foreground="{DynamicResource TextMutedBrush}"
+                   AutomationProperties.AutomationId="Timer_TxtPresetsTitle" />
         <ItemsControl ItemsSource="{Binding Presets}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -156,10 +165,12 @@
           Icon="TimerSandEmpty" Title="{Binding NoTimersText}"
           Subtitle="{Binding TimerEmptyHintText}"
           ActionText="{Binding CreateTimerButtonText}"
-          ActionCommand="{Binding ShowCreateTimerCommand}" />
+          ActionCommand="{Binding ShowCreateTimerCommand}"
+          AutomationProperties.AutomationId="Timer_EmptyState" />
 
       <!-- Timer List -->
-      <ScrollViewer IsVisible="{Binding HasTimers}">
+      <ScrollViewer IsVisible="{Binding HasTimers}"
+                    AutomationProperties.AutomationId="Timer_ScrollTimerList">
         <ItemsControl ItemsSource="{Binding Timers}" Margin="16,0">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:TimerItem">
@@ -277,7 +288,8 @@
                 IsVisible="{Binding HasTimers}"
                 HorizontalAlignment="Right"
                 Width="44" Height="44" CornerRadius="22" Padding="0"
-                Background="{DynamicResource SurfaceBrush}">
+                Background="{DynamicResource SurfaceBrush}"
+                AutomationProperties.AutomationId="Timer_BtnDeleteAll">
           <mi:MaterialIcon Kind="DeleteSweep" Width="22" Height="22"
                            Foreground="{DynamicResource ErrorBrush}" />
         </Button>
@@ -286,7 +298,8 @@
                 HorizontalAlignment="Right"
                 Width="56" Height="56" CornerRadius="28" Padding="0"
                 Background="{DynamicResource TimerAccentBrush}"
-                Foreground="White">
+                Foreground="White"
+                AutomationProperties.AutomationId="Timer_FabCreate">
           <mi:MaterialIcon Kind="Plus" Width="28" Height="28" />
         </Button>
       </StackPanel>
@@ -296,7 +309,8 @@
     <!-- Create Timer Dialog Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="3"
             IsVisible="{Binding IsCreatingTimer}"
-            Background="#AA000000">
+            Background="#AA000000"
+            AutomationProperties.AutomationId="Timer_OverlayCreateTimer">
       <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,16,24,32"
@@ -306,15 +320,18 @@
           <Border Width="40" Height="4" CornerRadius="2"
                   Background="{DynamicResource TextMutedBrush}"
                   HorizontalAlignment="Center" Margin="0,0,0,8" />
-          <TextBlock Text="{Binding NewTimerTitleText}" Classes="HeadlineMedium" />
+          <TextBlock Text="{Binding NewTimerTitleText}" Classes="HeadlineMedium"
+                     AutomationProperties.AutomationId="Timer_TxtCreateTitle" />
 
           <TextBox Text="{Binding NewTimerName, Mode=TwoWay}"
-                   Watermark="{Binding $parent[UserControl].((vm:TimerViewModel)DataContext).CreateTimerText}" />
+                   Watermark="{Binding $parent[UserControl].((vm:TimerViewModel)DataContext).CreateTimerText}"
+                   AutomationProperties.AutomationId="Timer_InputTimerName" />
 
           <!-- Time Pickers (Drum Wheel) -->
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
             <StackPanel Spacing="2">
-              <controls:WheelPicker Value="{Binding NewTimerHours}" Minimum="0" Maximum="23" FormatString="D2" />
+              <controls:WheelPicker Value="{Binding NewTimerHours}" Minimum="0" Maximum="23" FormatString="D2"
+                                    AutomationProperties.AutomationId="Timer_PickerHours" />
               <TextBlock Text="{Binding $parent[UserControl].((vm:TimerViewModel)DataContext).HoursText, FallbackValue='h'}"
                          Classes="Caption" HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}" />
@@ -322,14 +339,16 @@
             <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
             <StackPanel Spacing="2">
-              <controls:WheelPicker Value="{Binding NewTimerMinutes}" Minimum="0" Maximum="59" FormatString="D2" />
+              <controls:WheelPicker Value="{Binding NewTimerMinutes}" Minimum="0" Maximum="59" FormatString="D2"
+                                    AutomationProperties.AutomationId="Timer_PickerMinutes" />
               <TextBlock Text="min" Classes="Caption" HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}" />
             </StackPanel>
             <TextBlock Text=":" FontSize="28" FontWeight="Medium" VerticalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,16" />
             <StackPanel Spacing="2">
-              <controls:WheelPicker Value="{Binding NewTimerSeconds}" Minimum="0" Maximum="59" FormatString="D2" />
+              <controls:WheelPicker Value="{Binding NewTimerSeconds}" Minimum="0" Maximum="59" FormatString="D2"
+                                    AutomationProperties.AutomationId="Timer_PickerSeconds" />
               <TextBlock Text="s" Classes="Caption" HorizontalAlignment="Center"
                          Foreground="{DynamicResource TextMutedBrush}" />
             </StackPanel>
@@ -338,19 +357,24 @@
           <!-- Auto-Repeat Toggle -->
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Grid.Column="0" Text="{Binding AutoRepeatText}" Classes="BodyMedium"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Timer_TxtAutoRepeat" />
             <ToggleSwitch Grid.Column="1" IsChecked="{Binding NewTimerAutoRepeat, Mode=TwoWay}"
-                          OnContent="" OffContent="" />
+                          OnContent="" OffContent=""
+                          AutomationProperties.AutomationId="Timer_ToggleAutoRepeat" />
           </Grid>
 
           <!-- Dialog Buttons -->
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding SaveAsPresetText}"
-                    Command="{Binding SaveAsPresetCommand}" />
+                    Command="{Binding SaveAsPresetCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnSavePreset" />
             <Button Classes="Text" Content="{Binding CancelText}"
-                    Command="{Binding HideCreateTimerCommand}" />
+                    Command="{Binding HideCreateTimerCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnCancelCreate" />
             <Button Classes="Primary" Content="{Binding CreateText}"
-                    Command="{Binding CreateTimerCommand}" />
+                    Command="{Binding CreateTimerCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnConfirmCreate" />
           </StackPanel>
         </StackPanel>
       </Border>
@@ -359,7 +383,8 @@
     <!-- Delete Confirmation Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="3"
             IsVisible="{Binding IsDeleteConfirmVisible}"
-            Background="#AA000000">
+            Background="#AA000000"
+            AutomationProperties.AutomationId="Timer_OverlayDeleteConfirm">
       <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,16,24,32"
@@ -369,14 +394,18 @@
           <Border Width="40" Height="4" CornerRadius="2"
                   Background="{DynamicResource TextMutedBrush}"
                   HorizontalAlignment="Center" Margin="0,0,0,8" />
-          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeleteTitleText}" Classes="TitleLarge"
+                     AutomationProperties.AutomationId="Timer_TxtDeleteTitle" />
           <TextBlock Text="{Binding ConfirmDeleteMessageText}" Classes="BodyMedium"
-                     TextWrapping="Wrap" />
+                     TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="Timer_TxtDeleteMessage" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding NoText}"
-                    Command="{Binding CancelDeleteTimerCommand}" />
+                    Command="{Binding CancelDeleteTimerCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnCancelDelete" />
             <Button Classes="Primary" Content="{Binding YesText}"
-                    Command="{Binding ConfirmDeleteTimerCommand}" />
+                    Command="{Binding ConfirmDeleteTimerCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnConfirmDelete" />
           </StackPanel>
         </StackPanel>
       </Border>
@@ -385,7 +414,8 @@
     <!-- Delete All Confirmation Overlay (Bottom-Sheet) -->
     <Border Grid.Row="0" Grid.RowSpan="3"
             IsVisible="{Binding IsDeleteAllConfirmVisible}"
-            Background="#AA000000">
+            Background="#AA000000"
+            AutomationProperties.AutomationId="Timer_OverlayDeleteAllConfirm">
       <Border VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
               Background="{DynamicResource CardBrush}"
               CornerRadius="20,20,0,0" Padding="24,16,24,32"
@@ -395,14 +425,18 @@
           <Border Width="40" Height="4" CornerRadius="2"
                   Background="{DynamicResource TextMutedBrush}"
                   HorizontalAlignment="Center" Margin="0,0,0,8" />
-          <TextBlock Text="{Binding DeleteAllText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding DeleteAllText}" Classes="TitleLarge"
+                     AutomationProperties.AutomationId="Timer_TxtDeleteAllTitle" />
           <TextBlock Text="{Binding ConfirmDeleteAllMessageText}" Classes="BodyMedium"
-                     TextWrapping="Wrap" />
+                     TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="Timer_TxtDeleteAllMessage" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding NoText}"
-                    Command="{Binding CancelDeleteAllTimersCommand}" />
+                    Command="{Binding CancelDeleteAllTimersCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnCancelDeleteAll" />
             <Button Classes="Primary" Content="{Binding YesText}"
-                    Command="{Binding ConfirmDeleteAllTimersCommand}" />
+                    Command="{Binding ConfirmDeleteAllTimersCommand}"
+                    AutomationProperties.AutomationId="Timer_BtnConfirmDeleteAll" />
           </StackPanel>
         </StackPanel>
       </Border>

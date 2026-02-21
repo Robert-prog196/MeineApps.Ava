@@ -6,29 +6,38 @@
              x:Class="FinanzRechner.Views.Calculators.AmortizationView"
              x:DataType="vm:AmortizationViewModel">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto"
+          AutomationProperties.AutomationId="Amortization_Root">
 
         <!-- ═══════ Header Banner ═══════ -->
         <Border Grid.Row="0"
+                AutomationProperties.AutomationId="Amortization_BannerHeader"
                 Background="{DynamicResource SecondaryBrush}"
                 Padding="16,12,16,20"
                 CornerRadius="0,0,24,24">
-          <Grid ColumnDefinitions="Auto,*">
+          <Grid ColumnDefinitions="Auto,*"
+                AutomationProperties.AutomationId="Amortization_Grid_Header">
             <Button Command="{Binding GoBackCommand}"
+                    AutomationProperties.AutomationId="Amortization_BtnBack"
                     Background="#33FFFFFF"
                     CornerRadius="20"
                     Width="40" Height="40"
                     Padding="0">
-              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
+              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White"
+                               AutomationProperties.AutomationId="Amortization_Icon_Back" />
             </Button>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="Amortization_Panel_HeaderTitle"
                         Margin="12,0,0,0" VerticalAlignment="Center">
-              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40"
+                      AutomationProperties.AutomationId="Amortization_Border_TitleIcon">
                 <mi:MaterialIcon Kind="ListStatus" Width="22" Height="22"
+                                 AutomationProperties.AutomationId="Amortization_Icon_Title"
                                  Foreground="White"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
               <TextBlock Text="{Binding TitleText}"
+                         AutomationProperties.AutomationId="Amortization_TxtTitle"
                          FontSize="20" FontWeight="Bold" Foreground="White"
                          VerticalAlignment="Center" />
             </StackPanel>
@@ -36,23 +45,32 @@
         </Border>
 
         <!-- ═══════ Content ═══════ -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="16" Margin="16,16,16,0">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      AutomationProperties.AutomationId="Amortization_ScrollContent">
+            <StackPanel Spacing="16" Margin="16,16,16,0"
+                        AutomationProperties.AutomationId="Amortization_Panel_Content">
 
                 <!-- Input Card -->
-                <Border Classes="Card StatsCard">
-                    <StackPanel Spacing="14">
+                <Border Classes="Card StatsCard"
+                        AutomationProperties.AutomationId="Amortization_CardInput">
+                    <StackPanel Spacing="14"
+                                AutomationProperties.AutomationId="Amortization_Panel_InputFields">
 
                         <!-- Loan Amount -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="Amortization_Panel_LoanAmount">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="Amortization_Panel_LoanAmountLabel">
                                 <mi:MaterialIcon Kind="CashMultiple" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="Amortization_Icon_LoanAmount"
                                                  Foreground="{DynamicResource SecondaryBrush}" />
                                 <TextBlock Text="{Binding LoanAmountText}"
+                                           AutomationProperties.AutomationId="Amortization_TxtLoanAmountLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding LoanAmount}"
+                                     AutomationProperties.AutomationId="Amortization_InputLoanAmount"
                                      Watermark="0.00"
                                      TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -60,15 +78,20 @@
                         </StackPanel>
 
                         <!-- Annual Rate -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="Amortization_Panel_AnnualRate">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="Amortization_Panel_AnnualRateLabel">
                                 <mi:MaterialIcon Kind="Percent" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="Amortization_Icon_AnnualRate"
                                                  Foreground="{DynamicResource SecondaryBrush}" />
                                 <TextBlock Text="{Binding AnnualRateText}"
+                                           AutomationProperties.AutomationId="Amortization_TxtAnnualRateLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding AnnualRate}"
+                                     AutomationProperties.AutomationId="Amortization_InputAnnualRate"
                                      Watermark="0.00"
                                      TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -76,15 +99,20 @@
                         </StackPanel>
 
                         <!-- Years -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="Amortization_Panel_Years">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="Amortization_Panel_YearsLabel">
                                 <mi:MaterialIcon Kind="CalendarRange" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="Amortization_Icon_Years"
                                                  Foreground="{DynamicResource SecondaryBrush}" />
                                 <TextBlock Text="{Binding YearsText}"
+                                           AutomationProperties.AutomationId="Amortization_TxtYearsLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding Years}"
+                                     AutomationProperties.AutomationId="Amortization_InputYears"
                                      Watermark="1"
                                      TextInputOptions.ContentType="Digits"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -96,11 +124,15 @@
 
                 <!-- Fehlermeldung bei Überlauf -->
                 <Border Classes="Card"
+                        AutomationProperties.AutomationId="Amortization_CardError"
                         IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                AutomationProperties.AutomationId="Amortization_Panel_Error">
                         <mi:MaterialIcon Kind="AlertCircle" Width="20" Height="20"
+                                         AutomationProperties.AutomationId="Amortization_Icon_Error"
                                          Foreground="{DynamicResource ExpenseBrush}" />
                         <TextBlock Text="{Binding ErrorMessage}"
+                                   AutomationProperties.AutomationId="Amortization_TxtError"
                                    Foreground="{DynamicResource ExpenseBrush}"
                                    FontSize="14" TextWrapping="Wrap"
                                    VerticalAlignment="Center" />
@@ -109,35 +141,46 @@
 
                 <!-- Summary Result Card -->
                 <Border Classes="Card Elevated StatsCard"
+                        AutomationProperties.AutomationId="Amortization_CardResult"
                         IsVisible="{Binding HasResult}">
-                    <StackPanel Spacing="12">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Spacing="12"
+                                AutomationProperties.AutomationId="Amortization_Panel_Result">
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    AutomationProperties.AutomationId="Amortization_Panel_ResultHeader">
                             <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="Amortization_Icon_Result"
                                              Foreground="{DynamicResource SecondaryBrush}" />
                             <TextBlock Text="{Binding ResultText}"
+                                       AutomationProperties.AutomationId="Amortization_TxtResultTitle"
                                        FontSize="16" FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
 
                         <!-- Primary Result Highlight -->
                         <Border Background="{DynamicResource SecondaryBrush}"
+                                AutomationProperties.AutomationId="Amortization_CardMonthlyPayment"
                                 CornerRadius="12"
                                 Padding="16,12">
-                          <StackPanel>
+                          <StackPanel AutomationProperties.AutomationId="Amortization_Panel_MonthlyPayment">
                             <TextBlock Text="{Binding MonthlyPaymentText}"
+                                       AutomationProperties.AutomationId="Amortization_TxtMonthlyPaymentLabel"
                                        FontSize="12" Foreground="#CCFFFFFF" />
                             <TextBlock Text="{Binding MonthlyPaymentDisplay}"
+                                       AutomationProperties.AutomationId="Amortization_TxtMonthlyPaymentValue"
                                        FontSize="28" FontWeight="Bold" Foreground="White" />
                           </StackPanel>
                         </Border>
 
                         <!-- Secondary Results -->
-                        <Grid ColumnDefinitions="*,Auto" Margin="4,0">
+                        <Grid ColumnDefinitions="*,Auto" Margin="4,0"
+                              AutomationProperties.AutomationId="Amortization_Grid_TotalInterest">
                             <TextBlock Text="{Binding TotalInterestText}"
+                                       AutomationProperties.AutomationId="Amortization_TxtTotalInterestLabel"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalInterestDisplay}"
+                                       AutomationProperties.AutomationId="Amortization_TxtTotalInterestValue"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource ExpenseBrush}"/>
                         </Grid>
@@ -146,30 +189,43 @@
 
                 <!-- Chart Card -->
                 <Border Classes="Card Elevated StatsCard"
+                        AutomationProperties.AutomationId="Amortization_CardChart"
                         IsVisible="{Binding HasResult}">
-                    <StackPanel Spacing="8">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Spacing="8"
+                                AutomationProperties.AutomationId="Amortization_Panel_Chart">
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    AutomationProperties.AutomationId="Amortization_Panel_ChartHeader">
                             <mi:MaterialIcon Kind="ChartLine" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="Amortization_Icon_Chart"
                                              Foreground="{DynamicResource SecondaryBrush}" />
                             <TextBlock Text="{Binding DebtReductionText}"
+                                       AutomationProperties.AutomationId="Amortization_TxtChartTitle"
                                        FontSize="16" FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
 
                         <skia:SKCanvasView x:Name="AmortBarCanvas"
+                                            AutomationProperties.AutomationId="Amortization_CanvasChart"
                                             PaintSurface="OnPaintAmortBars"
                                             Height="200" />
 
                         <!-- Legende -->
-                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center"
+                                    AutomationProperties.AutomationId="Amortization_Panel_Legend">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="Amortization_Panel_LegendPrincipal">
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"
+                                        AutomationProperties.AutomationId="Amortization_Border_LegendPrincipalColor"/>
                                 <TextBlock Text="{Binding PrincipalPortionText}" FontSize="12"
+                                           AutomationProperties.AutomationId="Amortization_TxtLegendPrincipal"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#F59E0B" Width="12" Height="12" CornerRadius="6"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="Amortization_Panel_LegendInterest">
+                                <Border Background="#F59E0B" Width="12" Height="12" CornerRadius="6"
+                                        AutomationProperties.AutomationId="Amortization_Border_LegendInterestColor"/>
                                 <TextBlock Text="{Binding InterestPortionText}" FontSize="12"
+                                           AutomationProperties.AutomationId="Amortization_TxtLegendInterest"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                         </StackPanel>
@@ -178,55 +234,72 @@
 
                 <!-- Amortization Schedule Table (ausklappbar) -->
                 <Border Classes="Card Elevated StatsCard"
+                        AutomationProperties.AutomationId="Amortization_CardSchedule"
                         IsVisible="{Binding HasResult}">
-                    <StackPanel Spacing="10">
+                    <StackPanel Spacing="10"
+                                AutomationProperties.AutomationId="Amortization_Panel_Schedule">
                         <!-- Klickbarer Header zum Auf-/Zuklappen -->
                         <Button Background="Transparent" Padding="0"
+                                AutomationProperties.AutomationId="Amortization_BtnToggleSchedule"
                                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                                 Command="{Binding ToggleScheduleCommand}">
-                          <Grid ColumnDefinitions="Auto,*,Auto">
+                          <Grid ColumnDefinitions="Auto,*,Auto"
+                                AutomationProperties.AutomationId="Amortization_Grid_ScheduleHeader">
                             <mi:MaterialIcon Kind="Table" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="Amortization_Icon_Schedule"
                                              Foreground="{DynamicResource SecondaryBrush}" />
                             <TextBlock Grid.Column="1" Text="{Binding AmortizationScheduleText}"
+                                       AutomationProperties.AutomationId="Amortization_TxtScheduleTitle"
                                        FontSize="16" FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"
                                        Margin="8,0,0,0" VerticalAlignment="Center" />
                             <mi:MaterialIcon Grid.Column="2" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="Amortization_Icon_ScheduleExpand"
                                              Foreground="{DynamicResource TextSecondaryBrush}"
                                              Kind="ChevronDown" IsVisible="{Binding !IsScheduleExpanded}" />
                             <mi:MaterialIcon Grid.Column="2" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="Amortization_Icon_ScheduleCollapse"
                                              Foreground="{DynamicResource TextSecondaryBrush}"
                                              Kind="ChevronUp" IsVisible="{Binding IsScheduleExpanded}" />
                           </Grid>
                         </Button>
 
                         <!-- Tabelle (ausklappbar) -->
-                        <StackPanel Spacing="0" IsVisible="{Binding IsScheduleExpanded}">
+                        <StackPanel Spacing="0" IsVisible="{Binding IsScheduleExpanded}"
+                                    AutomationProperties.AutomationId="Amortization_Panel_ScheduleTable">
                           <!-- Table Header -->
                           <Border Background="{DynamicResource SecondaryBrush}"
+                                  AutomationProperties.AutomationId="Amortization_Border_TableHeader"
                                   CornerRadius="8"
                                   Padding="8,6"
                                   Opacity="0.15">
-                            <Grid ColumnDefinitions="50,*,*,*" ColumnSpacing="8">
+                            <Grid ColumnDefinitions="50,*,*,*" ColumnSpacing="8"
+                                  AutomationProperties.AutomationId="Amortization_Grid_TableHeader">
                               <TextBlock Text="#" FontSize="11" FontWeight="Bold"
+                                         AutomationProperties.AutomationId="Amortization_Txt_TableHeaderMonth"
                                          Foreground="{DynamicResource TextPrimaryBrush}"/>
                               <TextBlock Grid.Column="1" Text="{Binding PrincipalPortionText}"
+                                         AutomationProperties.AutomationId="Amortization_Txt_TableHeaderPrincipal"
                                          FontSize="11" FontWeight="Bold"
                                          Foreground="{DynamicResource TextPrimaryBrush}"/>
                               <TextBlock Grid.Column="2" Text="{Binding InterestPortionText}"
+                                         AutomationProperties.AutomationId="Amortization_Txt_TableHeaderInterest"
                                          FontSize="11" FontWeight="Bold"
                                          Foreground="{DynamicResource TextPrimaryBrush}"/>
                               <TextBlock Grid.Column="3" Text="{Binding BalanceText}"
+                                         AutomationProperties.AutomationId="Amortization_Txt_TableHeaderBalance"
                                          FontSize="11" FontWeight="Bold"
                                          Foreground="{DynamicResource TextPrimaryBrush}"/>
                             </Grid>
                           </Border>
 
                           <!-- Schedule Items -->
-                          <ItemsControl ItemsSource="{Binding Result.Schedule}">
+                          <ItemsControl ItemsSource="{Binding Result.Schedule}"
+                                        AutomationProperties.AutomationId="Amortization_Items_Schedule">
                               <ItemsControl.ItemTemplate>
                                   <DataTemplate>
-                                      <Border Padding="8,5" CornerRadius="4">
+                                      <Border Padding="8,5" CornerRadius="4"
+                                              AutomationProperties.AutomationId="Amortization_Border_ScheduleRow">
                                         <Grid ColumnDefinitions="50,*,*,*" ColumnSpacing="8">
                                           <TextBlock Text="{Binding Month}" FontSize="11"
                                                      Foreground="{DynamicResource TextSecondaryBrush}"/>
@@ -251,26 +324,37 @@
                     </StackPanel>
                 </Border>
 
-                <Border Height="16" />
+                <Border Height="16"
+                        AutomationProperties.AutomationId="Amortization_Border_BottomSpacer" />
 
             </StackPanel>
         </ScrollViewer>
 
         <!-- ═══════ Action Buttons ═══════ -->
-        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
-          <Grid ColumnDefinitions="*,12,*">
+        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+                AutomationProperties.AutomationId="Amortization_SectionActions">
+          <Grid ColumnDefinitions="*,12,*"
+                AutomationProperties.AutomationId="Amortization_Grid_Actions">
             <Button Command="{Binding ResetCommand}" Classes="Outlined"
+                    AutomationProperties.AutomationId="Amortization_BtnReset"
                     HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
-                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center" />
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          AutomationProperties.AutomationId="Amortization_Panel_ResetContent">
+                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20"
+                                 AutomationProperties.AutomationId="Amortization_Icon_Reset" />
+                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Amortization_Txt_Reset" />
               </StackPanel>
             </Button>
             <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+                    AutomationProperties.AutomationId="Amortization_BtnCalculate"
                     HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />
-                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center" />
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          AutomationProperties.AutomationId="Amortization_Panel_CalculateContent">
+                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20"
+                                 AutomationProperties.AutomationId="Amortization_Icon_Calculate" />
+                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="Amortization_Txt_Calculate" />
               </StackPanel>
             </Button>
           </Grid>

@@ -55,12 +55,13 @@
     </Style>
   </UserControl.Styles>
 
-  <Panel>
+  <Panel AutomationProperties.AutomationId="Main_RootPanel">
     <Grid RowDefinitions="*,Auto">
 
       <!-- Content Area -->
-      <Panel Grid.Row="0" Name="ContentPanel">
+      <Panel Grid.Row="0" Name="ContentPanel" AutomationProperties.AutomationId="Main_ContentPanel">
         <Border Classes="TabContent"
+                AutomationProperties.AutomationId="Main_TabContentCalculator"
                 Classes.Active="{Binding IsCalculatorActive}">
           <Grid RowDefinitions="*,Auto">
             <views:CalculatorView Grid.Row="0" DataContext="{Binding CalculatorViewModel}" />
@@ -102,10 +103,12 @@
           </Grid>
         </Border>
         <Border Classes="TabContent"
+                AutomationProperties.AutomationId="Main_TabContentConverter"
                 Classes.Active="{Binding IsConverterActive}">
           <views:ConverterView DataContext="{Binding ConverterViewModel}" />
         </Border>
         <Border Classes="TabContent"
+                AutomationProperties.AutomationId="Main_TabContentSettings"
                 Classes.Active="{Binding IsSettingsActive}">
           <views:SettingsView DataContext="{Binding SettingsViewModel}" />
         </Border>
@@ -113,6 +116,7 @@
 
       <!-- Bottom Navigation Bar -->
       <Border Grid.Row="1"
+              AutomationProperties.AutomationId="Main_BottomNavBar"
               Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderSubtleBrush}"
               BorderThickness="0,1,0,0">
@@ -120,6 +124,7 @@
 
           <!-- Calculator Tab -->
           <Button Grid.Column="0"
+                  AutomationProperties.AutomationId="Main_TabCalculator"
                   Classes="Text"
                   Command="{Binding NavigateToCalculatorCommand}"
                   HorizontalAlignment="Stretch"
@@ -159,6 +164,7 @@
 
           <!-- Converter Tab -->
           <Button Grid.Column="1"
+                  AutomationProperties.AutomationId="Main_TabConverter"
                   Classes="Text"
                   Command="{Binding NavigateToConverterCommand}"
                   HorizontalAlignment="Stretch"
@@ -198,6 +204,7 @@
 
           <!-- Settings Tab -->
           <Button Grid.Column="2"
+                  AutomationProperties.AutomationId="Main_TabSettings"
                   Classes="Text"
                   Command="{Binding NavigateToSettingsCommand}"
                   HorizontalAlignment="Stretch"
@@ -242,14 +249,16 @@
 
     <!-- Floating Text Overlay -->
     <controls:FloatingTextOverlay x:Name="FloatingTextCanvas"
+                                   AutomationProperties.AutomationId="Main_FloatingTextOverlay"
                                    IsHitTestVisible="False" />
 
     <!-- Onboarding Overlay -->
-    <Panel x:Name="OnboardingOverlay" IsVisible="False">
+    <Panel x:Name="OnboardingOverlay" AutomationProperties.AutomationId="Main_OnboardingOverlay" IsVisible="False">
       <!-- Halbtransparenter Hintergrund -->
       <Border Background="#60000000" />
       <!-- Tooltip wird per Code-Behind positioniert -->
       <controls:TooltipBubble x:Name="OnboardingTooltip"
+                               AutomationProperties.AutomationId="Main_OnboardingTooltip"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Margin="32,0">
@@ -268,6 +277,7 @@
 
     <!-- Backdrop -->
     <Border Classes="HistoryBackdrop"
+            AutomationProperties.AutomationId="Main_HistoryBackdrop"
             Background="#80000000"
             IsVisible="{Binding CalculatorViewModel.IsHistoryVisible}"
             IsHitTestVisible="{Binding CalculatorViewModel.IsHistoryVisible}"
@@ -275,6 +285,7 @@
 
     <!-- History Panel -->
     <Border Classes="HistoryPanel"
+            AutomationProperties.AutomationId="Main_HistoryPanel"
             Classes.Visible="{Binding CalculatorViewModel.IsHistoryVisible}"
             VerticalAlignment="Bottom"
             MaxHeight="500"
@@ -301,10 +312,12 @@
             <mi:MaterialIcon Kind="History" Width="22" Height="22"
                              Foreground="{DynamicResource PrimaryBrush}" />
             <TextBlock Text="{Binding CalculatorViewModel.HistoryTitleText}"
+                       AutomationProperties.AutomationId="Main_HistoryTitle"
                        Classes="TitleMedium"
                        VerticalAlignment="Center" />
           </StackPanel>
           <Button Grid.Column="2"
+                  AutomationProperties.AutomationId="Main_BtnCloseHistory"
                   Classes="Text Small"
                   Command="{Binding CalculatorViewModel.HideHistoryCommand}"
                   Padding="8">
@@ -313,7 +326,7 @@
         </Grid>
 
         <!-- History Entries -->
-        <ScrollViewer Grid.Row="2" Margin="0,0,0,0">
+        <ScrollViewer Grid.Row="2" AutomationProperties.AutomationId="Main_HistoryScrollViewer" Margin="0,0,0,0">
           <Panel>
             <!-- Empty State (mit Puls-Animation) -->
             <StackPanel IsVisible="{Binding !CalculatorViewModel.HasHistory}"
@@ -341,6 +354,7 @@
                 </mi:MaterialIcon.Styles>
               </mi:MaterialIcon>
               <TextBlock Text="{Binding CalculatorViewModel.NoCalculationsYetText}"
+                         AutomationProperties.AutomationId="Main_HistoryEmptyText"
                          Foreground="{DynamicResource TextMutedBrush}"
                          HorizontalAlignment="Center"
                          FontSize="14" />
@@ -419,7 +433,8 @@
                 IsVisible="{Binding CalculatorViewModel.HasHistory}">
           <Panel>
             <!-- Normaler Löschen-Button -->
-            <Button Classes="Outlined Small"
+            <Button AutomationProperties.AutomationId="Main_BtnClearHistory"
+                    Classes="Outlined Small"
                     Content="{Binding CalculatorViewModel.ClearHistoryText}"
                     Command="{Binding CalculatorViewModel.ClearHistoryCommand}"
                     HorizontalAlignment="Center"
@@ -429,11 +444,13 @@
                         Spacing="8"
                         HorizontalAlignment="Center"
                         IsVisible="{Binding CalculatorViewModel.ShowClearHistoryConfirm}">
-              <Button Classes="Primary Small"
+              <Button AutomationProperties.AutomationId="Main_BtnConfirmClearHistory"
+                      Classes="Primary Small"
                       Content="&#x2714;"
                       Command="{Binding CalculatorViewModel.ConfirmClearHistoryCommand}"
                       Padding="16,6"/>
-              <Button Classes="Outlined Small"
+              <Button AutomationProperties.AutomationId="Main_BtnCancelClearHistory"
+                      Classes="Outlined Small"
                       Content="&#x2716;"
                       Command="{Binding CalculatorViewModel.CancelClearHistoryCommand}"
                       Padding="16,6"/>

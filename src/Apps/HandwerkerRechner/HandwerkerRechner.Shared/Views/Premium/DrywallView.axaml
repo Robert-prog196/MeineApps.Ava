@@ -7,19 +7,22 @@
              x:Class="HandwerkerRechner.Views.Premium.DrywallView"
              x:DataType="vm:DrywallViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Drywall_RootGrid">
 
     <!-- Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
-            CornerRadius="0,0,24,24">
+            CornerRadius="0,0,24,24"
+            AutomationProperties.AutomationId="Drywall_HeaderBorder">
       <Grid ColumnDefinitions="Auto,*">
         <Button Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
-                Padding="0">
+                Padding="0"
+                AutomationProperties.AutomationId="Drywall_BtnBack">
           <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
@@ -31,21 +34,25 @@
           </Border>
           <TextBlock Text="{loc:Translate DrywallCalculator}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Drywall_TxtTitle" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Drywall_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Input Card -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Drywall_CardInput">
           <StackPanel Spacing="12">
             <TextBlock Text="{loc:Translate WallDimensions}"
                        FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       AutomationProperties.AutomationId="Drywall_TxtWallDimensions" />
 
             <!-- Wall Length -->
             <StackPanel Spacing="4">
@@ -53,7 +60,8 @@
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding WallLength}"
-                       Watermark="m" />
+                       Watermark="m"
+                       AutomationProperties.AutomationId="Drywall_TxtBoxWallLength" />
             </StackPanel>
 
             <!-- Wall Height -->
@@ -62,7 +70,8 @@
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding WallHeight}"
-                       Watermark="m" />
+                       Watermark="m"
+                       AutomationProperties.AutomationId="Drywall_TxtBoxWallHeight" />
             </StackPanel>
 
             <!-- Double Plated -->
@@ -73,7 +82,8 @@
                          VerticalAlignment="Center" />
               <ToggleSwitch Grid.Column="1"
                             IsChecked="{Binding DoublePlated}"
-                            OnContent="" OffContent="" />
+                            OnContent="" OffContent=""
+                            AutomationProperties.AutomationId="Drywall_ToggleDoublePlated" />
             </Grid>
 
             <!-- Price Per Sqm (optional) -->
@@ -82,24 +92,29 @@
                          FontSize="13"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBox Text="{Binding PricePerSqm}"
-                       Watermark="EUR" />
+                       Watermark="EUR"
+                       AutomationProperties.AutomationId="Drywall_TxtBoxPricePerSqm" />
             </StackPanel>
           </StackPanel>
         </Border>
 
         <!-- Visualisierung -->
         <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
-                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="DrywallCanvas" PaintSurface="OnPaintVisualization" />
+                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12"
+                AutomationProperties.AutomationId="Drywall_CardVisualization">
+          <skia:SKCanvasView x:Name="DrywallCanvas" PaintSurface="OnPaintVisualization"
+                             AutomationProperties.AutomationId="Drywall_Canvas" />
         </Border>
 
         <!-- Results Card -->
         <Border Classes="Card Elevated StatsCard"
-                IsVisible="{Binding HasResult}">
+                IsVisible="{Binding HasResult}"
+                AutomationProperties.AutomationId="Drywall_CardResult">
           <StackPanel Spacing="10">
             <TextBlock Text="{loc:Translate Result}"
                        FontSize="16" FontWeight="SemiBold"
-                       Foreground="{DynamicResource PrimaryBrush}" />
+                       Foreground="{DynamicResource PrimaryBrush}"
+                       AutomationProperties.AutomationId="Drywall_TxtResultHeader" />
 
             <!-- Plates Needed -->
             <Grid ColumnDefinitions="*,Auto">
@@ -108,7 +123,8 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1" Text="{Binding PlatesNeeded}"
                          FontSize="15" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AutomationProperties.AutomationId="Drywall_TxtPlatesNeeded" />
             </Grid>
 
             <!-- CW Profiles Needed -->
@@ -118,7 +134,8 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1" Text="{Binding CwProfilesNeeded}"
                          FontSize="15" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AutomationProperties.AutomationId="Drywall_TxtCwProfiles" />
             </Grid>
 
             <!-- UW Length Needed -->
@@ -128,7 +145,8 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1" Text="{Binding UwLengthNeeded}"
                          FontSize="15" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AutomationProperties.AutomationId="Drywall_TxtUwLength" />
             </Grid>
 
             <!-- Screws Needed -->
@@ -138,7 +156,8 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1" Text="{Binding ScrewsNeeded}"
                          FontSize="15" FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextPrimaryBrush}" />
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         AutomationProperties.AutomationId="Drywall_TxtScrews" />
             </Grid>
 
             <!-- Total Cost (when ShowCost) -->
@@ -149,7 +168,8 @@
                          Foreground="{DynamicResource TextSecondaryBrush}" />
               <TextBlock Grid.Column="1" Text="{Binding TotalCostDisplay}"
                          FontSize="17" FontWeight="Bold"
-                         Foreground="{DynamicResource AccentBrush}" />
+                         Foreground="{DynamicResource AccentBrush}"
+                         AutomationProperties.AutomationId="Drywall_TxtTotalCost" />
             </Grid>
             <!-- Aktions-Buttons: Share + PDF Export -->
             <Grid ColumnDefinitions="*,8,*" Margin="0,4,0,0">
@@ -157,7 +177,8 @@
                       Command="{Binding ShareResultCommand}"
                       Classes="Outlined"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Center">
+                      HorizontalContentAlignment="Center"
+                      AutomationProperties.AutomationId="Drywall_BtnShare">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                    Foreground="{DynamicResource AccentBrush}" />
@@ -171,7 +192,8 @@
                       Classes="Outlined"
                       IsEnabled="{Binding !IsExporting}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Center">
+                      HorizontalContentAlignment="Center"
+                      AutomationProperties.AutomationId="Drywall_BtnExport">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                   <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                    Foreground="{DynamicResource AccentBrush}" />
@@ -188,13 +210,15 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Drywall_BottomBar">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Drywall_BtnReset">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -207,7 +231,8 @@
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Drywall_BtnCalculate">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Calculator" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Calculate}"
@@ -220,7 +245,8 @@
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Drywall_BtnSave">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Save}"
@@ -235,34 +261,40 @@
     <Border Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
-            IsVisible="{Binding ShowSaveDialog}">
+            IsVisible="{Binding ShowSaveDialog}"
+            AutomationProperties.AutomationId="Drywall_SaveDialogOverlay">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="Drywall_SaveDialogCard">
         <StackPanel Spacing="16">
           <TextBlock Text="{loc:Translate SaveProject}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Drywall_TxtSaveDialogTitle" />
           <TextBox Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
-                   Classes="Outlined" />
+                   Classes="Outlined"
+                   AutomationProperties.AutomationId="Drywall_TxtBoxProjectName" />
           <Grid ColumnDefinitions="*,12,*">
             <Button Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Cancel}" />
+                    Content="{loc:Translate Cancel}"
+                    AutomationProperties.AutomationId="Drywall_BtnCancelSave" />
             <Button Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Save}" />
+                    Content="{loc:Translate Save}"
+                    AutomationProperties.AutomationId="Drywall_BtnConfirmSave" />
           </Grid>
         </StackPanel>
       </Border>

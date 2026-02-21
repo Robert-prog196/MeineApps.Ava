@@ -12,19 +12,22 @@
     <conv:IntEqualsConverter x:Key="IntEquals" />
   </UserControl.Resources>
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto"
+        AutomationProperties.AutomationId="Garden_RootGrid">
 
     <!-- Header -->
     <Border Grid.Row="0"
             Background="{DynamicResource AccentBrush}"
             Padding="16,12,16,20"
-            CornerRadius="0,0,24,24">
+            CornerRadius="0,0,24,24"
+            AutomationProperties.AutomationId="Garden_HeaderBorder">
       <Grid ColumnDefinitions="Auto,*">
         <Button Command="{Binding GoBackCommand}"
                 Background="#33FFFFFF"
                 CornerRadius="20"
                 Width="40" Height="40"
-                Padding="0">
+                Padding="0"
+                AutomationProperties.AutomationId="Garden_BtnBack">
           <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
         </Button>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
@@ -36,26 +39,32 @@
           </Border>
           <TextBlock Text="{loc:Translate GardenCalculator}"
                      FontSize="20" FontWeight="Bold" Foreground="White"
-                     VerticalAlignment="Center" />
+                     VerticalAlignment="Center"
+                     AutomationProperties.AutomationId="Garden_TxtTitle" />
         </StackPanel>
       </Grid>
     </Border>
 
     <!-- Content -->
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                  AutomationProperties.AutomationId="Garden_ScrollViewer">
       <StackPanel Spacing="16" Margin="16,16,16,200">
 
         <!-- Calculator Selector -->
-        <Border Classes="Card StatsCard">
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Garden_CardSelector">
           <ComboBox ItemsSource="{Binding Calculators}"
                     SelectedIndex="{Binding SelectedCalculator}"
-                    HorizontalAlignment="Stretch" />
+                    HorizontalAlignment="Stretch"
+                    AutomationProperties.AutomationId="Garden_CmbCalculator" />
         </Border>
 
         <!-- Visualisierung -->
         <Border Classes="Card" Padding="0" Height="220" Margin="0,0,0,0"
-                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12">
-          <skia:SKCanvasView x:Name="GardenCanvas" PaintSurface="OnPaintVisualization" />
+                IsVisible="{Binding HasResult}" ClipToBounds="True" CornerRadius="12"
+                AutomationProperties.AutomationId="Garden_CardVisualization">
+          <skia:SKCanvasView x:Name="GardenCanvas" PaintSurface="OnPaintVisualization"
+                             AutomationProperties.AutomationId="Garden_Canvas" />
         </Border>
 
         <!-- Calculator 0: Paving -->
@@ -63,7 +72,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Garden_CardPavingInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate Paving}"
                            FontSize="16" FontWeight="SemiBold"
@@ -73,28 +83,32 @@
                   <TextBlock Text="{loc:Translate UnitSquareMeters}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PavingArea}" Watermark="m²" />
+                  <TextBox Text="{Binding PavingArea}" Watermark="m²"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPavingArea" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate StoneLength}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding StoneLength}" Watermark="cm" />
+                  <TextBox Text="{Binding StoneLength}" Watermark="cm"
+                           AutomationProperties.AutomationId="Garden_TxtBoxStoneLength" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate StoneWidth}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding StoneWidth}" Watermark="cm" />
+                  <TextBox Text="{Binding StoneWidth}" Watermark="cm"
+                           AutomationProperties.AutomationId="Garden_TxtBoxStoneWidth" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate JointWidth}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding JointWidth}" Watermark="mm" />
+                  <TextBox Text="{Binding JointWidth}" Watermark="mm"
+                           AutomationProperties.AutomationId="Garden_TxtBoxJointWidth" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -102,18 +116,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding PricePerStone}"
-                           Watermark="EUR" />
+                           Watermark="EUR"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPricePerStone" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Garden_CardPavingResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Garden_TxtPavingResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UnitPieces}"
@@ -121,7 +138,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PavingResult.StonesNeeded}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtStonesNeeded" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -130,7 +148,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PavingResult.StonesWithReserve}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtStonesWithReserve" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -140,7 +159,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PavingCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtPavingCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -149,7 +169,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnSharePaving">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -163,7 +184,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnExportPaving">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -184,7 +206,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Garden_CardSoilInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate Soil}"
                            FontSize="16" FontWeight="SemiBold"
@@ -194,21 +217,24 @@
                   <TextBlock Text="{loc:Translate UnitSquareMeters}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding SoilArea}" Watermark="m²" />
+                  <TextBox Text="{Binding SoilArea}" Watermark="m²"
+                           AutomationProperties.AutomationId="Garden_TxtBoxSoilArea" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Depth}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding SoilDepth}" Watermark="cm" />
+                  <TextBox Text="{Binding SoilDepth}" Watermark="cm"
+                           AutomationProperties.AutomationId="Garden_TxtBoxSoilDepth" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate UnitLiters}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding BagLiters}" Watermark="L" />
+                  <TextBox Text="{Binding BagLiters}" Watermark="L"
+                           AutomationProperties.AutomationId="Garden_TxtBoxBagLiters" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -216,18 +242,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding PricePerBag}"
-                           Watermark="EUR" />
+                           Watermark="EUR"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPricePerBag" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Garden_CardSoilResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Garden_TxtSoilResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate UnitLiters}"
@@ -235,7 +264,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SoilResult.VolumeLiters}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtVolumeLiters" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -244,7 +274,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SoilResult.BagsNeeded}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtBagsNeeded" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -254,7 +285,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding SoilCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtSoilCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -263,7 +295,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnShareSoil">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -277,7 +310,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnExportSoil">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -298,7 +332,8 @@
           <StackPanel Spacing="16">
 
             <!-- Input -->
-            <Border Classes="Card StatsCard">
+            <Border Classes="Card StatsCard"
+                    AutomationProperties.AutomationId="Garden_CardPondInput">
               <StackPanel Spacing="12">
                 <TextBlock Text="{loc:Translate PondLiner}"
                            FontSize="16" FontWeight="SemiBold"
@@ -308,28 +343,32 @@
                   <TextBlock Text="{loc:Translate PondLength}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PondLength}" Watermark="m" />
+                  <TextBox Text="{Binding PondLength}" Watermark="m"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPondLength" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate PondWidth}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PondWidth}" Watermark="m" />
+                  <TextBox Text="{Binding PondWidth}" Watermark="m"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPondWidth" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate PondDepth}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding PondDepth}" Watermark="m" />
+                  <TextBox Text="{Binding PondDepth}" Watermark="m"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPondDepth" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
                   <TextBlock Text="{loc:Translate Overlap}"
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <TextBox Text="{Binding Overlap}" Watermark="m" />
+                  <TextBox Text="{Binding Overlap}" Watermark="m"
+                           AutomationProperties.AutomationId="Garden_TxtBoxOverlap" />
                 </StackPanel>
 
                 <StackPanel Spacing="4">
@@ -337,18 +376,21 @@
                              FontSize="13"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBox Text="{Binding PricePerSqmLiner}"
-                           Watermark="EUR/m²" />
+                           Watermark="EUR/m²"
+                           AutomationProperties.AutomationId="Garden_TxtBoxPricePerSqmLiner" />
                 </StackPanel>
               </StackPanel>
             </Border>
 
             <!-- Results -->
             <Border Classes="Card Elevated StatsCard"
-                    IsVisible="{Binding HasResult}">
+                    IsVisible="{Binding HasResult}"
+                    AutomationProperties.AutomationId="Garden_CardPondResult">
               <StackPanel Spacing="10">
                 <TextBlock Text="{loc:Translate Result}"
                            FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource PrimaryBrush}" />
+                           Foreground="{DynamicResource PrimaryBrush}"
+                           AutomationProperties.AutomationId="Garden_TxtPondResultHeader" />
 
                 <Grid ColumnDefinitions="*,Auto">
                   <TextBlock Grid.Column="0" Text="{loc:Translate LinerLength}"
@@ -356,7 +398,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerLength}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtLinerLength" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -365,7 +408,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerWidth}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtLinerWidth" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto">
@@ -374,7 +418,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding PondResult.LinerArea}"
                              FontSize="15" FontWeight="SemiBold"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtLinerArea" />
                 </Grid>
 
                 <Grid ColumnDefinitions="*,Auto"
@@ -384,7 +429,8 @@
                              Foreground="{DynamicResource TextSecondaryBrush}" />
                   <TextBlock Grid.Column="1" Text="{Binding LinerCostDisplay}"
                              FontSize="17" FontWeight="Bold"
-                             Foreground="{DynamicResource AccentBrush}" />
+                             Foreground="{DynamicResource AccentBrush}"
+                             AutomationProperties.AutomationId="Garden_TxtLinerCost" />
                 </Grid>
 
                 <!-- Aktions-Buttons: Share + PDF Export -->
@@ -393,7 +439,8 @@
                           Command="{Binding ShareResultCommand}"
                           Classes="Outlined"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnSharePond">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="ContentCopy" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -407,7 +454,8 @@
                           Classes="Outlined"
                           IsEnabled="{Binding !IsExporting}"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Center">
+                          HorizontalContentAlignment="Center"
+                          AutomationProperties.AutomationId="Garden_BtnExportPond">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                       <mi:MaterialIcon Kind="FilePdfBox" Width="16" Height="16"
                                        Foreground="{DynamicResource AccentBrush}" />
@@ -427,13 +475,15 @@
     </ScrollViewer>
 
     <!-- Buttons -->
-    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
+    <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+            AutomationProperties.AutomationId="Garden_BottomBar">
       <Grid ColumnDefinitions="*,8,*,8,*">
         <Button Grid.Column="0"
                 Command="{Binding ResetCommand}"
                 Classes="Outlined"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Garden_BtnReset">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -446,7 +496,8 @@
                 Command="{Binding CalculateCommand}"
                 Classes="Primary"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Garden_BtnCalculate">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="Calculator" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Calculate}"
@@ -460,7 +511,8 @@
                 Command="{Binding SaveProjectCommand}"
                 IsVisible="{Binding HasResult}"
                 HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center">
+                HorizontalContentAlignment="Center"
+                AutomationProperties.AutomationId="Garden_BtnSave">
           <StackPanel Orientation="Horizontal" Spacing="4">
             <mi:MaterialIcon Kind="ContentSave" Width="16" Height="16" />
             <TextBlock Text="{loc:Translate Save}"
@@ -475,34 +527,40 @@
     <Border Grid.Row="0" Grid.RowSpan="3"
             ZIndex="100"
             Background="#80000000"
-            IsVisible="{Binding ShowSaveDialog}">
+            IsVisible="{Binding ShowSaveDialog}"
+            AutomationProperties.AutomationId="Garden_SaveDialogOverlay">
       <Border Background="{DynamicResource SurfaceBrush}"
               CornerRadius="16"
               Padding="24"
               MaxWidth="340"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center">
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="Garden_SaveDialogCard">
         <StackPanel Spacing="16">
           <TextBlock Text="{loc:Translate SaveProject}"
                      FontSize="18" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}"
-                     HorizontalAlignment="Center" />
+                     HorizontalAlignment="Center"
+                     AutomationProperties.AutomationId="Garden_TxtSaveDialogTitle" />
           <TextBox Text="{Binding SaveProjectName}"
                    Watermark="{loc:Translate ProjectName}"
-                   Classes="Outlined" />
+                   Classes="Outlined"
+                   AutomationProperties.AutomationId="Garden_TxtBoxProjectName" />
           <Grid ColumnDefinitions="*,12,*">
             <Button Grid.Column="0"
                     Classes="Outlined"
                     Command="{Binding CancelSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Cancel}" />
+                    Content="{loc:Translate Cancel}"
+                    AutomationProperties.AutomationId="Garden_BtnCancelSave" />
             <Button Grid.Column="2"
                     Classes="Primary"
                     Command="{Binding ConfirmSaveProjectCommand}"
                     HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Center"
-                    Content="{loc:Translate Save}" />
+                    Content="{loc:Translate Save}"
+                    AutomationProperties.AutomationId="Garden_BtnConfirmSave" />
           </Grid>
         </StackPanel>
       </Border>

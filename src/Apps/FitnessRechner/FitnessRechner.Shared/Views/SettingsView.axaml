@@ -6,17 +6,17 @@
              x:Class="FitnessRechner.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Spacing="12" Margin="16">
+  <ScrollViewer AutomationProperties.AutomationId="Settings_ScrollViewer" VerticalScrollBarVisibility="Auto">
+    <StackPanel AutomationProperties.AutomationId="Settings_RootPanel" Spacing="12" Margin="16">
 
       <!-- Header -->
-      <TextBlock Text="{loc:Translate SettingsTitle}"
+      <TextBlock AutomationProperties.AutomationId="Settings_TxtTitle" Text="{loc:Translate SettingsTitle}"
                  FontSize="22" FontWeight="Bold"
                  Foreground="{DynamicResource TextPrimaryBrush}"
                  Margin="0,4,0,4" />
 
       <!-- ==================== Theme Selection Card ==================== -->
-      <Border Classes="SettingsCard">
+      <Border AutomationProperties.AutomationId="Settings_CardTheme" Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <mi:MaterialIcon Kind="Palette" Width="24" Height="24"
@@ -31,7 +31,7 @@
 
             <!-- Midnight Theme -->
             <Panel Grid.Row="0" Grid.Column="0">
-              <Button IsVisible="{Binding IsMidnightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeMidnight" IsVisible="{Binding IsMidnightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Midnight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -59,7 +59,7 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsMidnightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeMidnightOff" IsVisible="{Binding !IsMidnightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Midnight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -85,7 +85,7 @@
 
             <!-- Aurora Theme -->
             <Panel Grid.Row="0" Grid.Column="1">
-              <Button IsVisible="{Binding IsAuroraSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeAurora" IsVisible="{Binding IsAuroraSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Aurora"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -113,7 +113,7 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsAuroraSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeAuroraOff" IsVisible="{Binding !IsAuroraSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Aurora"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -139,7 +139,7 @@
 
             <!-- Daylight Theme -->
             <Panel Grid.Row="1" Grid.Column="0">
-              <Button IsVisible="{Binding IsDaylightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeDaylight" IsVisible="{Binding IsDaylightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Daylight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -167,7 +167,7 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsDaylightSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeDaylightOff" IsVisible="{Binding !IsDaylightSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Daylight"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -193,7 +193,7 @@
 
             <!-- Forest Theme -->
             <Panel Grid.Row="1" Grid.Column="1">
-              <Button IsVisible="{Binding IsForestSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeForest" IsVisible="{Binding IsForestSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Forest"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -221,7 +221,7 @@
                   </Grid>
                 </Border>
               </Button>
-              <Button IsVisible="{Binding !IsForestSelected}"
+              <Button AutomationProperties.AutomationId="Settings_BtnThemeForestOff" IsVisible="{Binding !IsForestSelected}"
                       Command="{Binding SelectThemeCommand}"
                       CommandParameter="Forest"
                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
@@ -250,7 +250,7 @@
       </Border>
 
       <!-- ==================== Language Selection Card ==================== -->
-      <Border Classes="SettingsCard">
+      <Border AutomationProperties.AutomationId="Settings_CardLanguage" Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <mi:MaterialIcon Kind="Translate" Width="24" Height="24"
@@ -264,11 +264,11 @@
           <WrapPanel Orientation="Horizontal">
             <!-- Deutsch -->
             <Panel>
-              <Button Classes="Primary Small" Content="Deutsch"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangDe" Classes="Primary Small" Content="Deutsch"
                       IsVisible="{Binding IsGermanSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Deutsch"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangDeOff" Classes="Outlined Small" Content="Deutsch"
                       IsVisible="{Binding !IsGermanSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="de"
                       Margin="0,0,8,8" />
@@ -276,11 +276,11 @@
 
             <!-- English -->
             <Panel>
-              <Button Classes="Primary Small" Content="English"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEn" Classes="Primary Small" Content="English"
                       IsVisible="{Binding IsEnglishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="English"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEnOff" Classes="Outlined Small" Content="English"
                       IsVisible="{Binding !IsEnglishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="en"
                       Margin="0,0,8,8" />
@@ -288,11 +288,11 @@
 
             <!-- Espanol -->
             <Panel>
-              <Button Classes="Primary Small" Content="Espa&#241;ol"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEs" Classes="Primary Small" Content="Espa&#241;ol"
                       IsVisible="{Binding IsSpanishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Espa&#241;ol"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangEsOff" Classes="Outlined Small" Content="Espa&#241;ol"
                       IsVisible="{Binding !IsSpanishSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="es"
                       Margin="0,0,8,8" />
@@ -300,11 +300,11 @@
 
             <!-- Francais -->
             <Panel>
-              <Button Classes="Primary Small" Content="Fran&#231;ais"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangFr" Classes="Primary Small" Content="Fran&#231;ais"
                       IsVisible="{Binding IsFrenchSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Fran&#231;ais"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangFrOff" Classes="Outlined Small" Content="Fran&#231;ais"
                       IsVisible="{Binding !IsFrenchSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="fr"
                       Margin="0,0,8,8" />
@@ -312,11 +312,11 @@
 
             <!-- Italiano -->
             <Panel>
-              <Button Classes="Primary Small" Content="Italiano"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangIt" Classes="Primary Small" Content="Italiano"
                       IsVisible="{Binding IsItalianSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Italiano"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangItOff" Classes="Outlined Small" Content="Italiano"
                       IsVisible="{Binding !IsItalianSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="it"
                       Margin="0,0,8,8" />
@@ -324,11 +324,11 @@
 
             <!-- Portugues -->
             <Panel>
-              <Button Classes="Primary Small" Content="Portugu&#234;s"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangPt" Classes="Primary Small" Content="Portugu&#234;s"
                       IsVisible="{Binding IsPortugueseSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                       Margin="0,0,8,8" />
-              <Button Classes="Outlined Small" Content="Portugu&#234;s"
+              <Button AutomationProperties.AutomationId="Settings_BtnLangPtOff" Classes="Outlined Small" Content="Portugu&#234;s"
                       IsVisible="{Binding !IsPortugueseSelected}"
                       Command="{Binding SelectLanguageCommand}" CommandParameter="pt"
                       Margin="0,0,8,8" />
@@ -338,7 +338,7 @@
       </Border>
 
       <!-- ==================== Premium Section ==================== -->
-      <Border Classes="SettingsCard"
+      <Border AutomationProperties.AutomationId="Settings_CardPremium" Classes="SettingsCard"
               IsVisible="{Binding IsNotPremium}">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="12">
@@ -349,17 +349,17 @@
                        Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
           </StackPanel>
-          <TextBlock Text="{loc:Translate PremiumDescription}"
+          <TextBlock AutomationProperties.AutomationId="Settings_TxtPremiumDesc" Text="{loc:Translate PremiumDescription}"
                      FontSize="14"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      TextWrapping="Wrap" />
 
-          <Button Content="{loc:Translate PurchasePremium}"
+          <Button AutomationProperties.AutomationId="Settings_BtnPurchase" Content="{loc:Translate PurchasePremium}"
                   Command="{Binding PurchasePremiumCommand}"
                   Classes="Primary"
                   CornerRadius="8" />
 
-          <Button Content="{loc:Translate RestorePurchases}"
+          <Button AutomationProperties.AutomationId="Settings_BtnRestore" Content="{loc:Translate RestorePurchases}"
                   Command="{Binding RestorePurchasesCommand}"
                   Classes="Secondary"
                   CornerRadius="8" />
@@ -367,7 +367,7 @@
       </Border>
 
       <!-- ==================== Feedback & Notifications Section ==================== -->
-      <Border Classes="SettingsCard">
+      <Border AutomationProperties.AutomationId="Settings_CardNotifications" Classes="SettingsCard">
         <StackPanel Spacing="16">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <mi:MaterialIcon Kind="BellOutline" Width="24" Height="24"
@@ -386,7 +386,7 @@
             <TextBlock Grid.Column="1" Text="{loc:Translate HapticFeedback}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsHapticEnabled}"
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_ToggleHaptic" Grid.Column="2" IsChecked="{Binding IsHapticEnabled}"
                           OnContent="" OffContent=""
                           VerticalAlignment="Center" />
           </Grid>
@@ -399,7 +399,7 @@
             <TextBlock Grid.Column="1" Text="{loc:Translate SoundEffects}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsSoundEnabled}"
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_ToggleSound" Grid.Column="2" IsChecked="{Binding IsSoundEnabled}"
                           OnContent="" OffContent=""
                           VerticalAlignment="Center" />
           </Grid>
@@ -414,7 +414,7 @@
             <TextBlock Grid.Column="1" Text="{loc:Translate WaterReminder}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWaterReminderEnabled}"
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_ToggleWaterReminder" Grid.Column="2" IsChecked="{Binding IsWaterReminderEnabled}"
                           OnContent="" OffContent=""
                           VerticalAlignment="Center" />
           </Grid>
@@ -427,7 +427,7 @@
             <TextBlock Grid.Column="1" Text="{loc:Translate WeightReminder}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsWeightReminderEnabled}"
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_ToggleWeightReminder" Grid.Column="2" IsChecked="{Binding IsWeightReminderEnabled}"
                           OnContent="" OffContent=""
                           VerticalAlignment="Center" />
           </Grid>
@@ -440,7 +440,7 @@
             <TextBlock Grid.Column="1" Text="{loc:Translate EveningReminder}"
                        FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}"
                        VerticalAlignment="Center" />
-            <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsEveningSummaryEnabled}"
+            <ToggleSwitch AutomationProperties.AutomationId="Settings_ToggleEveningReminder" Grid.Column="2" IsChecked="{Binding IsEveningSummaryEnabled}"
                           OnContent="" OffContent=""
                           VerticalAlignment="Center" />
           </Grid>
@@ -448,7 +448,7 @@
       </Border>
 
       <!-- ==================== About Section ==================== -->
-      <Border Classes="SettingsCard">
+      <Border AutomationProperties.AutomationId="Settings_CardAbout" Classes="SettingsCard">
         <StackPanel Spacing="12">
           <StackPanel Orientation="Horizontal" Spacing="12">
             <mi:MaterialIcon Kind="InformationOutline" Width="24" Height="24"
@@ -461,11 +461,11 @@
 
           <TextBlock Text="FitnessRechner" FontSize="16" FontWeight="Bold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
-          <TextBlock Text="{Binding AppVersion}"
+          <TextBlock AutomationProperties.AutomationId="Settings_TxtVersion" Text="{Binding AppVersion}"
                      FontSize="14"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
 
-          <Button Content="{loc:Translate FeedbackButton}"
+          <Button AutomationProperties.AutomationId="Settings_BtnFeedback" Content="{loc:Translate FeedbackButton}"
                   Command="{Binding SendFeedbackCommand}"
                   Classes="Outlined"
                   HorizontalAlignment="Stretch"

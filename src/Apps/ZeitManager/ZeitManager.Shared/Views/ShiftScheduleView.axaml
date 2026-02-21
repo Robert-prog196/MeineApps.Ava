@@ -12,43 +12,52 @@
       <!-- Empty State (no active schedule) -->
       <StackPanel IsVisible="{Binding !HasActiveSchedule}"
                   VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12"
-                  Margin="16">
+                  Margin="16"
+                  AutomationProperties.AutomationId="Shift_EmptyState">
         <mi:MaterialIcon Kind="CalendarClock" Width="64" Height="64"
                          Foreground="{DynamicResource TextMutedBrush}"
                          HorizontalAlignment="Center" />
         <TextBlock Text="{Binding NoScheduleText}" Classes="TitleMedium"
                    Foreground="{DynamicResource TextMutedBrush}"
-                   HorizontalAlignment="Center" TextAlignment="Center" />
+                   HorizontalAlignment="Center" TextAlignment="Center"
+                   AutomationProperties.AutomationId="Shift_NoScheduleText" />
         <TextBlock Text="{Binding SetupScheduleText}" Classes="BodyMedium"
                    Foreground="{DynamicResource TextMutedBrush}"
                    HorizontalAlignment="Center" TextWrapping="Wrap"
-                   TextAlignment="Center" MaxWidth="300" />
+                   TextAlignment="Center" MaxWidth="300"
+                   AutomationProperties.AutomationId="Shift_SetupText" />
         <Button Classes="Primary" Content="{Binding ConfigureText}"
                 Command="{Binding ShowEditorCommand}"
-                HorizontalAlignment="Center" Margin="0,8,0,0" />
+                HorizontalAlignment="Center" Margin="0,8,0,0"
+                AutomationProperties.AutomationId="Shift_ConfigureButton" />
       </StackPanel>
 
       <!-- Calendar View (active schedule) -->
-      <ScrollViewer IsVisible="{Binding HasActiveSchedule}">
+      <ScrollViewer IsVisible="{Binding HasActiveSchedule}"
+                    AutomationProperties.AutomationId="Shift_CalendarScrollViewer">
         <StackPanel Margin="16" Spacing="16">
 
           <!-- Month Navigation -->
           <Grid ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0" Classes="Text" MinWidth="48" MinHeight="48" Padding="8"
-                    Command="{Binding PreviousMonthCommand}">
+                    Command="{Binding PreviousMonthCommand}"
+                    AutomationProperties.AutomationId="Shift_PrevMonthButton">
               <mi:MaterialIcon Kind="ChevronLeft" Width="24" Height="24" />
             </Button>
             <TextBlock Grid.Column="1" Text="{Binding DisplayMonthName}"
                        Classes="TitleLarge" HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"
+                       AutomationProperties.AutomationId="Shift_MonthText" />
             <Button Grid.Column="2" Classes="Text" MinWidth="48" MinHeight="48" Padding="8"
-                    Command="{Binding NextMonthCommand}">
+                    Command="{Binding NextMonthCommand}"
+                    AutomationProperties.AutomationId="Shift_NextMonthButton">
               <mi:MaterialIcon Kind="ChevronRight" Width="24" Height="24" />
             </Button>
           </Grid>
 
           <!-- Weekday Headers (localized) -->
-          <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+          <Grid ColumnDefinitions="*,*,*,*,*,*,*"
+                AutomationProperties.AutomationId="Shift_WeekdayHeaders">
             <TextBlock Grid.Column="0" Text="{Binding MondayShortText}" Classes="Caption" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextMutedBrush}" />
             <TextBlock Grid.Column="1" Text="{Binding TuesdayShortText}" Classes="Caption" HorizontalAlignment="Center"
@@ -66,7 +75,8 @@
           </Grid>
 
           <!-- Calendar Grid -->
-          <ItemsControl ItemsSource="{Binding CalendarDays}">
+          <ItemsControl ItemsSource="{Binding CalendarDays}"
+                        AutomationProperties.AutomationId="Shift_CalendarGrid">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <WrapPanel ItemWidth="46" ItemHeight="46" />
@@ -92,7 +102,8 @@
           </ItemsControl>
 
           <!-- Legend -->
-          <Border Classes="Card StatsCard">
+          <Border Classes="Card StatsCard"
+                  AutomationProperties.AutomationId="Shift_Legend">
             <WrapPanel Orientation="Horizontal" Margin="4">
               <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,16,4">
                 <Border Width="16" Height="16" CornerRadius="4" Background="#FBBF24" />
@@ -117,10 +128,12 @@
           <!-- Actions -->
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
             <Button Classes="Outlined" Content="{Binding EditText}"
-                    Command="{Binding ShowEditorCommand}" />
+                    Command="{Binding ShowEditorCommand}"
+                    AutomationProperties.AutomationId="Shift_EditButton" />
             <Button Classes="Text" Content="{Binding DeactivateText}"
                     Command="{Binding DeactivateScheduleCommand}"
-                    Foreground="{DynamicResource ErrorBrush}" />
+                    Foreground="{DynamicResource ErrorBrush}"
+                    AutomationProperties.AutomationId="Shift_DeactivateButton" />
           </StackPanel>
 
         </StackPanel>
@@ -129,35 +142,45 @@
     </Panel>
 
     <!-- Deactivate Confirmation Overlay -->
-    <Border IsVisible="{Binding IsDeactivateConfirmVisible}" Background="#80000000">
+    <Border IsVisible="{Binding IsDeactivateConfirmVisible}" Background="#80000000"
+            AutomationProperties.AutomationId="Shift_DeactivateOverlay">
       <Border Classes="Card" Margin="32"
               VerticalAlignment="Center" HorizontalAlignment="Stretch"
-              MaxWidth="350">
+              MaxWidth="350"
+              AutomationProperties.AutomationId="Shift_DeactivateDialog">
         <StackPanel Spacing="16">
-          <TextBlock Text="{Binding ConfirmDeactivateTitleText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding ConfirmDeactivateTitleText}" Classes="TitleLarge"
+                     AutomationProperties.AutomationId="Shift_DeactivateTitle" />
           <TextBlock Text="{Binding ConfirmDeactivateMessageText}" Classes="BodyMedium"
-                     TextWrapping="Wrap" />
+                     TextWrapping="Wrap"
+                     AutomationProperties.AutomationId="Shift_DeactivateMessage" />
           <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <Button Classes="Text" Content="{Binding NoText}"
-                    Command="{Binding CancelDeactivateScheduleCommand}" />
+                    Command="{Binding CancelDeactivateScheduleCommand}"
+                    AutomationProperties.AutomationId="Shift_DeactivateNoButton" />
             <Button Classes="Primary" Content="{Binding YesText}"
-                    Command="{Binding ConfirmDeactivateScheduleCommand}" />
+                    Command="{Binding ConfirmDeactivateScheduleCommand}"
+                    AutomationProperties.AutomationId="Shift_DeactivateYesButton" />
           </StackPanel>
         </StackPanel>
       </Border>
     </Border>
 
     <!-- Exception-Dialog Overlay -->
-    <Border IsVisible="{Binding IsExceptionDialogVisible}" Background="#80000000">
+    <Border IsVisible="{Binding IsExceptionDialogVisible}" Background="#80000000"
+            AutomationProperties.AutomationId="Shift_ExceptionOverlay">
       <Border Classes="Card" Margin="32"
               VerticalAlignment="Center" HorizontalAlignment="Stretch"
-              MaxWidth="350">
+              MaxWidth="350"
+              AutomationProperties.AutomationId="Shift_ExceptionDialog">
         <StackPanel Spacing="12">
-          <TextBlock Text="{Binding SelectExceptionText}" Classes="TitleLarge" />
+          <TextBlock Text="{Binding SelectExceptionText}" Classes="TitleLarge"
+                     AutomationProperties.AutomationId="Shift_ExceptionTitle" />
           <StackPanel Spacing="6">
             <Button Classes="Outlined" HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
-                    Command="{Binding SetExceptionCommand}" CommandParameter="vacation">
+                    Command="{Binding SetExceptionCommand}" CommandParameter="vacation"
+                    AutomationProperties.AutomationId="Shift_VacationButton">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Border Width="16" Height="16" CornerRadius="4" Background="#34D399" />
                 <TextBlock Text="{Binding VacationText}" VerticalAlignment="Center" />
@@ -165,7 +188,8 @@
             </Button>
             <Button Classes="Outlined" HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
-                    Command="{Binding SetExceptionCommand}" CommandParameter="sick">
+                    Command="{Binding SetExceptionCommand}" CommandParameter="sick"
+                    AutomationProperties.AutomationId="Shift_SickButton">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <Border Width="16" Height="16" CornerRadius="4" Background="#F87171" />
                 <TextBlock Text="{Binding SickText}" VerticalAlignment="Center" />
@@ -173,7 +197,8 @@
             </Button>
             <Button Classes="Outlined" HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
-                    Command="{Binding SetExceptionCommand}" CommandParameter="swap">
+                    Command="{Binding SetExceptionCommand}" CommandParameter="swap"
+                    AutomationProperties.AutomationId="Shift_SwapButton">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="SwapHorizontal" Width="16" Height="16" />
                 <TextBlock Text="{Binding ShiftSwapText}" VerticalAlignment="Center" />
@@ -181,7 +206,8 @@
             </Button>
             <Button Classes="Outlined" HorizontalAlignment="Stretch"
                     HorizontalContentAlignment="Left"
-                    Command="{Binding SetExceptionCommand}" CommandParameter="normal">
+                    Command="{Binding SetExceptionCommand}" CommandParameter="normal"
+                    AutomationProperties.AutomationId="Shift_NormalButton">
               <StackPanel Orientation="Horizontal" Spacing="8">
                 <mi:MaterialIcon Kind="Undo" Width="16" Height="16" />
                 <TextBlock Text="{Binding NormalText}" VerticalAlignment="Center" />
@@ -190,43 +216,53 @@
           </StackPanel>
           <Button Classes="Text" Content="{Binding CloseText}"
                   HorizontalAlignment="Right"
-                  Command="{Binding CloseExceptionDialogCommand}" />
+                  Command="{Binding CloseExceptionDialogCommand}"
+                  AutomationProperties.AutomationId="Shift_ExceptionCloseButton" />
         </StackPanel>
       </Border>
     </Border>
 
     <!-- Editor Overlay -->
-    <Border IsVisible="{Binding IsEditing}" Background="#80000000">
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Border IsVisible="{Binding IsEditing}" Background="#80000000"
+            AutomationProperties.AutomationId="Shift_EditorOverlay">
+      <ScrollViewer VerticalScrollBarVisibility="Auto"
+                    AutomationProperties.AutomationId="Shift_EditorScrollViewer">
         <Border Classes="Card" Margin="16,32"
                 VerticalAlignment="Center" HorizontalAlignment="Stretch"
-                MaxWidth="450">
+                MaxWidth="450"
+                AutomationProperties.AutomationId="Shift_EditorDialog">
           <StackPanel Spacing="16">
 
-            <TextBlock Text="{Binding ConfigureText}" Classes="HeadlineMedium" />
+            <TextBlock Text="{Binding ConfigureText}" Classes="HeadlineMedium"
+                       AutomationProperties.AutomationId="Shift_EditorTitle" />
 
             <!-- Shift Model Selection -->
             <StackPanel Spacing="8">
               <TextBlock Text="{Binding ShiftModelText}" Classes="TitleSmall"
-                         Foreground="{DynamicResource TextMutedBrush}" />
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         AutomationProperties.AutomationId="Shift_ModelLabel" />
               <StackPanel Spacing="4">
                 <Panel>
                   <Button Classes="Primary" Content="{Binding FifteenShiftText}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          IsVisible="{Binding IsFifteenShift}" />
+                          IsVisible="{Binding IsFifteenShift}"
+                          AutomationProperties.AutomationId="Shift_FifteenActiveButton" />
                   <Button Classes="Outlined" Content="{Binding FifteenShiftText}"
                           Command="{Binding SelectFifteenShiftCommand}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          IsVisible="{Binding !IsFifteenShift}" />
+                          IsVisible="{Binding !IsFifteenShift}"
+                          AutomationProperties.AutomationId="Shift_FifteenButton" />
                 </Panel>
                 <Panel>
                   <Button Classes="Primary" Content="{Binding TwentyOneShiftText}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          IsVisible="{Binding IsTwentyOneShift}" />
+                          IsVisible="{Binding IsTwentyOneShift}"
+                          AutomationProperties.AutomationId="Shift_TwentyOneActiveButton" />
                   <Button Classes="Outlined" Content="{Binding TwentyOneShiftText}"
                           Command="{Binding SelectTwentyOneShiftCommand}"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                          IsVisible="{Binding !IsTwentyOneShift}" />
+                          IsVisible="{Binding !IsTwentyOneShift}"
+                          AutomationProperties.AutomationId="Shift_TwentyOneButton" />
                 </Panel>
               </StackPanel>
             </StackPanel>
@@ -234,25 +270,31 @@
             <!-- Group Selection -->
             <StackPanel Spacing="8">
               <TextBlock Text="{Binding ShiftGroupText}" Classes="TitleSmall"
-                         Foreground="{DynamicResource TextMutedBrush}" />
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         AutomationProperties.AutomationId="Shift_GroupLabel" />
               <controls:WheelPicker Value="{Binding SelectedGroup}" Minimum="1" Maximum="{Binding MaxGroup}"
-                                    FormatString="0" HorizontalAlignment="Center" />
+                                    FormatString="0" HorizontalAlignment="Center"
+                                    AutomationProperties.AutomationId="Shift_GroupPicker" />
             </StackPanel>
 
             <!-- Start Date -->
             <StackPanel Spacing="8">
               <TextBlock Text="{Binding StartDateText}" Classes="TitleSmall"
-                         Foreground="{DynamicResource TextMutedBrush}" />
+                         Foreground="{DynamicResource TextMutedBrush}"
+                         AutomationProperties.AutomationId="Shift_StartDateLabel" />
               <CalendarDatePicker SelectedDate="{Binding SelectedStartDate}"
-                                  HorizontalAlignment="Stretch" />
+                                  HorizontalAlignment="Stretch"
+                                  AutomationProperties.AutomationId="Shift_StartDatePicker" />
             </StackPanel>
 
             <!-- Dialog Buttons -->
             <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
               <Button Classes="Text" Content="{Binding CancelText}"
-                      Command="{Binding HideEditorCommand}" />
+                      Command="{Binding HideEditorCommand}"
+                      AutomationProperties.AutomationId="Shift_EditorCancelButton" />
               <Button Classes="Primary" Content="{Binding SaveText}"
-                      Command="{Binding SaveScheduleCommand}" />
+                      Command="{Binding SaveScheduleCommand}"
+                      AutomationProperties.AutomationId="Shift_EditorSaveButton" />
             </StackPanel>
 
           </StackPanel>

@@ -4,31 +4,41 @@
              xmlns:mi="using:Material.Icons.Avalonia"
              xmlns:skia="using:Avalonia.Labs.Controls"
              x:Class="FinanzRechner.Views.Calculators.CompoundInterestView"
-             x:DataType="vm:CompoundInterestViewModel">
+             x:DataType="vm:CompoundInterestViewModel"
+             AutomationProperties.AutomationId="CompoundInterest_Root">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto"
+          AutomationProperties.AutomationId="CompoundInterest_Grid_Root">
 
         <!-- ═══════ Header Banner ═══════ -->
         <Border Grid.Row="0"
+                AutomationProperties.AutomationId="CompoundInterest_BannerHeader"
                 Background="{DynamicResource IncomeBrush}"
                 Padding="16,12,16,20"
                 CornerRadius="0,0,24,24">
-          <Grid ColumnDefinitions="Auto,*">
+          <Grid ColumnDefinitions="Auto,*"
+                AutomationProperties.AutomationId="CompoundInterest_Grid_Header">
             <Button Command="{Binding GoBackCommand}"
+                    AutomationProperties.AutomationId="CompoundInterest_BtnBack"
                     Background="#33FFFFFF"
                     CornerRadius="20"
                     Width="40" Height="40"
                     Padding="0">
-              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White" />
+              <mi:MaterialIcon Kind="ArrowLeft" Width="22" Height="22" Foreground="White"
+                               AutomationProperties.AutomationId="CompoundInterest_Icon_Back" />
             </Button>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12"
+                        AutomationProperties.AutomationId="CompoundInterest_Panel_HeaderTitle"
                         Margin="12,0,0,0" VerticalAlignment="Center">
-              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40">
+              <Border Background="#33FFFFFF" CornerRadius="12" Width="40" Height="40"
+                      AutomationProperties.AutomationId="CompoundInterest_Border_TitleIcon">
                 <mi:MaterialIcon Kind="TrendingUp" Width="22" Height="22"
+                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Title"
                                  Foreground="White"
                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
               </Border>
               <TextBlock Text="{Binding TitleText}"
+                         AutomationProperties.AutomationId="CompoundInterest_TxtTitle"
                          FontSize="20" FontWeight="Bold" Foreground="White"
                          VerticalAlignment="Center" />
             </StackPanel>
@@ -36,23 +46,32 @@
         </Border>
 
         <!-- ═══════ Content ═══════ -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="16" Margin="16,16,16,0">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      AutomationProperties.AutomationId="CompoundInterest_ScrollContent">
+            <StackPanel Spacing="16" Margin="16,16,16,0"
+                        AutomationProperties.AutomationId="CompoundInterest_Panel_Content">
 
                 <!-- Input Card -->
-                <Border Classes="Card StatsCard">
-                    <StackPanel Spacing="14">
+                <Border Classes="Card StatsCard"
+                        AutomationProperties.AutomationId="CompoundInterest_CardInput">
+                    <StackPanel Spacing="14"
+                                AutomationProperties.AutomationId="CompoundInterest_Panel_InputFields">
 
                         <!-- Principal -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_Principal">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_PrincipalLabel">
                                 <mi:MaterialIcon Kind="CashMultiple" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Principal"
                                                  Foreground="{DynamicResource IncomeBrush}" />
                                 <TextBlock Text="{Binding PrincipalText}"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtPrincipalLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding Principal}"
+                                     AutomationProperties.AutomationId="CompoundInterest_InputPrincipal"
                                      Watermark="0.00"
                                      TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -60,15 +79,20 @@
                         </StackPanel>
 
                         <!-- Annual Rate -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_AnnualRate">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_AnnualRateLabel">
                                 <mi:MaterialIcon Kind="Percent" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="CompoundInterest_Icon_AnnualRate"
                                                  Foreground="{DynamicResource IncomeBrush}" />
                                 <TextBlock Text="{Binding AnnualRateText}"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtAnnualRateLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding AnnualRate}"
+                                     AutomationProperties.AutomationId="CompoundInterest_InputAnnualRate"
                                      Watermark="0.00"
                                      TextInputOptions.ContentType="Number"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -76,15 +100,20 @@
                         </StackPanel>
 
                         <!-- Years -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_Years">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_YearsLabel">
                                 <mi:MaterialIcon Kind="CalendarRange" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Years"
                                                  Foreground="{DynamicResource IncomeBrush}" />
                                 <TextBlock Text="{Binding YearsText}"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtYearsLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding Years}"
+                                     AutomationProperties.AutomationId="CompoundInterest_InputYears"
                                      Watermark="1"
                                      TextInputOptions.ContentType="Digits"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -92,15 +121,20 @@
                         </StackPanel>
 
                         <!-- Compoundings per Year -->
-                        <StackPanel Spacing="4">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
+                        <StackPanel Spacing="4"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_Compoundings">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_CompoundingsLabel">
                                 <mi:MaterialIcon Kind="Refresh" Width="16" Height="16"
+                                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Compoundings"
                                                  Foreground="{DynamicResource IncomeBrush}" />
                                 <TextBlock Text="{Binding CompoundingsPerYearText}"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtCompoundingsLabel"
                                            FontSize="12" FontWeight="Medium"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                             <TextBox Text="{Binding CompoundingsPerYear}"
+                                     AutomationProperties.AutomationId="CompoundInterest_InputCompoundings"
                                      Watermark="12"
                                      TextInputOptions.ContentType="Digits"
                                      Background="{DynamicResource ButtonFunctionBgBrush}"
@@ -112,11 +146,15 @@
 
                 <!-- Fehlermeldung bei Überlauf -->
                 <Border Classes="Card"
+                        AutomationProperties.AutomationId="CompoundInterest_CardError"
                         IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                AutomationProperties.AutomationId="CompoundInterest_Panel_Error">
                         <mi:MaterialIcon Kind="AlertCircle" Width="20" Height="20"
+                                         AutomationProperties.AutomationId="CompoundInterest_Icon_Error"
                                          Foreground="{DynamicResource ExpenseBrush}" />
                         <TextBlock Text="{Binding ErrorMessage}"
+                                   AutomationProperties.AutomationId="CompoundInterest_TxtError"
                                    Foreground="{DynamicResource ExpenseBrush}"
                                    FontSize="14" TextWrapping="Wrap"
                                    VerticalAlignment="Center" />
@@ -125,35 +163,46 @@
 
                 <!-- Result Card -->
                 <Border Classes="Card Elevated StatsCard"
+                        AutomationProperties.AutomationId="CompoundInterest_CardResult"
                         IsVisible="{Binding HasResult}">
-                    <StackPanel Spacing="12">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Spacing="12"
+                                AutomationProperties.AutomationId="CompoundInterest_Panel_Result">
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_ResultHeader">
                             <mi:MaterialIcon Kind="CheckCircle" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="CompoundInterest_Icon_Result"
                                              Foreground="{DynamicResource IncomeBrush}" />
                             <TextBlock Text="{Binding ResultText}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtResultHeader"
                                        FontSize="16" FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
 
                         <!-- Primary Result Highlight -->
                         <Border Background="{DynamicResource IncomeBrush}"
+                                AutomationProperties.AutomationId="CompoundInterest_CardFinalAmount"
                                 CornerRadius="12"
                                 Padding="16,12">
-                          <StackPanel>
+                          <StackPanel AutomationProperties.AutomationId="CompoundInterest_Panel_FinalAmount">
                             <TextBlock Text="{Binding FinalAmountText}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtFinalAmountLabel"
                                        FontSize="12" Foreground="#CCFFFFFF" />
                             <TextBlock Text="{Binding FinalAmountDisplay}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtFinalAmount"
                                        FontSize="28" FontWeight="Bold" Foreground="White" />
                           </StackPanel>
                         </Border>
 
                         <!-- Secondary Results -->
-                        <Grid ColumnDefinitions="*,Auto" Margin="4,0">
+                        <Grid ColumnDefinitions="*,Auto" Margin="4,0"
+                              AutomationProperties.AutomationId="CompoundInterest_Grid_InterestEarned">
                             <TextBlock Text="{Binding InterestEarnedText}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtInterestEarnedLabel"
                                        Foreground="{DynamicResource TextSecondaryBrush}"
                                        VerticalAlignment="Center" />
                             <TextBlock Grid.Column="1"
                                        Text="{Binding InterestEarnedDisplay}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtInterestEarned"
                                        FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </Grid>
@@ -162,56 +211,80 @@
 
                 <!-- Chart Card -->
                 <Border Classes="Card Elevated StatsCard"
+                        AutomationProperties.AutomationId="CompoundInterest_CardChart"
                         IsVisible="{Binding HasResult}">
-                    <StackPanel Spacing="8">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                    <StackPanel Spacing="8"
+                                AutomationProperties.AutomationId="CompoundInterest_Panel_Chart">
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_ChartHeader">
                             <mi:MaterialIcon Kind="ChartLine" Width="20" Height="20"
+                                             AutomationProperties.AutomationId="CompoundInterest_Icon_Chart"
                                              Foreground="{DynamicResource IncomeBrush}" />
                             <TextBlock Text="{Binding CapitalGrowthText}"
+                                       AutomationProperties.AutomationId="CompoundInterest_TxtChartTitle"
                                        FontSize="16" FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
 
                         <skia:SKCanvasView x:Name="StackedAreaCanvas"
+                                            AutomationProperties.AutomationId="CompoundInterest_CanvasChart"
                                             PaintSurface="OnPaintStackedArea"
                                             Height="220" />
 
                         <!-- Legende -->
-                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#3B82F6" Width="12" Height="12" CornerRadius="6"/>
+                        <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center"
+                                    AutomationProperties.AutomationId="CompoundInterest_Panel_Legend">
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_LegendPrincipal">
+                                <Border Background="#3B82F6" Width="12" Height="12" CornerRadius="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Border_LegendPrincipalColor"/>
                                 <TextBlock Text="{Binding PrincipalText}" FontSize="12"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtLegendPrincipal"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Panel_LegendInterest">
+                                <Border Background="#22C55E" Width="12" Height="12" CornerRadius="6"
+                                        AutomationProperties.AutomationId="CompoundInterest_Border_LegendInterestColor"/>
                                 <TextBlock Text="{Binding InterestEarnedText}" FontSize="12"
+                                           AutomationProperties.AutomationId="CompoundInterest_TxtLegendInterest"
                                            Foreground="{DynamicResource TextSecondaryBrush}"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border Height="16" />
+                <Border Height="16"
+                        AutomationProperties.AutomationId="CompoundInterest_Border_BottomSpacer" />
 
             </StackPanel>
         </ScrollViewer>
 
         <!-- ═══════ Action Buttons ═══════ -->
-        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}">
-          <Grid ColumnDefinitions="*,12,*">
+        <Border Grid.Row="2" Padding="16,12" Background="{DynamicResource BackgroundBrush}"
+                AutomationProperties.AutomationId="CompoundInterest_SectionActions">
+          <Grid ColumnDefinitions="*,12,*"
+                AutomationProperties.AutomationId="CompoundInterest_Grid_Actions">
             <Button Command="{Binding ResetCommand}" Classes="Outlined"
+                    AutomationProperties.AutomationId="CompoundInterest_BtnReset"
                     HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20" />
-                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center" />
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          AutomationProperties.AutomationId="CompoundInterest_Panel_ResetContent">
+                <mi:MaterialIcon Kind="Refresh" Width="20" Height="20"
+                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Reset" />
+                <TextBlock Text="{Binding ResetText}" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="CompoundInterest_Txt_Reset" />
               </StackPanel>
             </Button>
             <Button Grid.Column="2" Command="{Binding CalculateCommand}" Classes="Primary"
+                    AutomationProperties.AutomationId="CompoundInterest_BtnCalculate"
                     HorizontalAlignment="Stretch" Height="48" CornerRadius="12">
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20" />
-                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center" />
+              <StackPanel Orientation="Horizontal" Spacing="8"
+                          AutomationProperties.AutomationId="CompoundInterest_Panel_CalculateContent">
+                <mi:MaterialIcon Kind="Calculator" Width="20" Height="20"
+                                 AutomationProperties.AutomationId="CompoundInterest_Icon_Calculate" />
+                <TextBlock Text="{Binding CalculateText}" VerticalAlignment="Center"
+                           AutomationProperties.AutomationId="CompoundInterest_Txt_Calculate" />
               </StackPanel>
             </Button>
           </Grid>

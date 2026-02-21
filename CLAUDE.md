@@ -359,6 +359,8 @@ dotnet publish src/Apps/{App}/{App}.Android -c Release
 | InsertAsync gibt falsche ID zurück | sqlite-net `InsertAsync()` gibt Zeilen-Count zurück (immer 1), NICHT Auto-Increment-ID. sqlite-net setzt ID direkt auf dem Objekt | Nach `await db.InsertAsync(entity)` NICHT `entity.Id = result` schreiben - `entity.Id` ist bereits korrekt gesetzt |
 | ScrollViewer scrollt nicht | `Padding` auf `ScrollViewer` verhindert Scrollen in Avalonia | `Padding` entfernen, stattdessen `Margin` auf das direkte Kind-Element setzen + `VerticalScrollBarVisibility="Auto"` |
 | DonutChart-Segment unsichtbar bei 100% | SkiaSharp `ArcTo` bei 360° erzeugt leeren Path (Start=Ende) | Bei `sweepAngle >= 359°` in zwei 180°-Hälften aufteilen |
+| ZIndex-Overlay Touch geht durch (Android) | Avalonia `ZIndex` auf Grid-Kindern funktioniert NICHT für Hit-Testing auf Android - Touch-Events gehen durch Overlay hindurch | Content-Swap statt Overlay: Normalen Content per `IsVisible=false` verstecken, Overlay-Content als Ersatz anzeigen. KEIN ZIndex verwenden für interaktive Overlays |
+| Assembly-Version 1.0.0 (Default) | Shared-Projekt hat keine `<Version>` Property → Assembly-Version ist 1.0.0.0 | `<Version>X.Y.Z</Version>` in Shared .csproj setzen wenn Assembly-Version zur Laufzeit ausgelesen wird |
 
 ---
 
