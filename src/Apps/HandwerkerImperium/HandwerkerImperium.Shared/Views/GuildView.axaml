@@ -1,0 +1,270 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.GuildView"
+             x:DataType="vm:GuildViewModel">
+
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Guild_Grid_Root">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Guild_Border_Header"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="#92400E" Offset="0" />
+          <GradientStop Color="#451A03" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Zurueck-Button -->
+        <Button Classes="Text"
+                AutomationProperties.AutomationId="Guild_Btn_Back"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           AutomationProperties.AutomationId="Guild_Icon_Back"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+        </Button>
+
+        <!-- Titel -->
+        <StackPanel Grid.Column="1"
+                    AutomationProperties.AutomationId="Guild_Panel_Title"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+          <mi:MaterialIcon Kind="AccountGroup" Width="28" Height="28"
+                           AutomationProperties.AutomationId="Guild_Icon_Title"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+          <TextBlock Text="{Binding Title}"
+                     AutomationProperties.AutomationId="Guild_Txt_Title"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Einkommens-Bonus Badge (nur wenn in Gilde) -->
+        <Border Grid.Column="2"
+                AutomationProperties.AutomationId="Guild_Border_BonusBadge"
+                CornerRadius="8" Padding="8,4"
+                IsVisible="{Binding IsInGuild}">
+          <Border.Background>
+            <SolidColorBrush Color="#D97706" Opacity="0.3" />
+          </Border.Background>
+          <TextBlock Text="{Binding IncomeBonusDisplay}"
+                     AutomationProperties.AutomationId="Guild_Txt_BonusBadge"
+                     FontSize="13" FontWeight="Bold"
+                     Foreground="{DynamicResource SuccessBrush}" />
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16,16,16,80">
+
+        <!-- ============================================================= -->
+        <!-- NICHT IN GILDE: Gilden-Auswahl                               -->
+        <!-- ============================================================= -->
+        <StackPanel Spacing="12"
+                    IsVisible="{Binding !IsInGuild}">
+
+          <!-- Verfuegbare Gilden -->
+          <ItemsControl ItemsSource="{Binding AvailableGuilds}"
+                        AutomationProperties.AutomationId="Guild_Items_Available">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:GuildDisplayItem">
+                <Border Classes="Card"
+                        AutomationProperties.AutomationId="Guild_Border_AvailableItem"
+                        Padding="12" Margin="0,0,0,8">
+                  <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                    <!-- Gilden-Icon -->
+                    <Border CornerRadius="12" Width="52" Height="52"
+                            AutomationProperties.AutomationId="Guild_Border_GuildIcon"
+                            VerticalAlignment="Center">
+                      <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                          <GradientStop Color="#D97706" Offset="0" />
+                          <GradientStop Color="#92400E" Offset="1" />
+                        </LinearGradientBrush>
+                      </Border.Background>
+                      <mi:MaterialIcon Kind="ShieldHome" Width="28" Height="28"
+                                       AutomationProperties.AutomationId="Guild_Icon_GuildShield"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <!-- Name + Beschreibung -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="{Binding GuildName}"
+                                 AutomationProperties.AutomationId="Guild_Txt_GuildName"
+                                 FontSize="15" FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding BonusDescription}"
+                                 AutomationProperties.AutomationId="Guild_Txt_GuildDesc"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 TextWrapping="Wrap" MaxLines="2" />
+                    </StackPanel>
+
+                    <!-- Beitreten-Button -->
+                    <Button Grid.Column="2"
+                            Classes="Primary"
+                            AutomationProperties.AutomationId="Guild_Btn_Join"
+                            Padding="12,8"
+                            VerticalAlignment="Center"
+                            Command="{Binding $parent[ItemsControl].((vm:GuildViewModel)DataContext).JoinGuildCommand}"
+                            CommandParameter="{Binding .}">
+                      <TextBlock Text="{loc:Translate JoinGuild}"
+                                 AutomationProperties.AutomationId="Guild_Txt_JoinBtn"
+                                 FontSize="12" FontWeight="Bold" />
+                    </Button>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- ============================================================= -->
+        <!-- IN GILDE: Gilden-Details                                      -->
+        <!-- ============================================================= -->
+        <StackPanel Spacing="12"
+                    IsVisible="{Binding IsInGuild}">
+
+          <!-- Gilden-Info -->
+          <Border Classes="CardElevated"
+                  AutomationProperties.AutomationId="Guild_Border_CurrentGuild"
+                  Padding="16">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#92400E" Offset="0" />
+                <GradientStop Color="#D97706" Offset="1" />
+              </LinearGradientBrush>
+            </Border.Background>
+            <StackPanel Spacing="8" HorizontalAlignment="Center">
+              <mi:MaterialIcon Kind="ShieldHome" Width="40" Height="40"
+                               AutomationProperties.AutomationId="Guild_Icon_CurrentGuild"
+                               Foreground="{StaticResource CraftGoldBrush}"
+                               HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding CurrentGuildName}"
+                         AutomationProperties.AutomationId="Guild_Txt_CurrentGuildName"
+                         FontSize="20" FontWeight="Bold"
+                         Foreground="White"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="{Binding GuildLevel, StringFormat='Lv.{0}'}"
+                         AutomationProperties.AutomationId="Guild_Txt_CurrentGuildLevel"
+                         FontSize="14"
+                         Foreground="{StaticResource CraftGoldBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Wochen-Ziel Fortschritt -->
+          <Border Classes="Card StatsCard"
+                  AutomationProperties.AutomationId="Guild_Border_WeeklyGoal">
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="FlagCheckered" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="Guild_Icon_WeeklyGoal"
+                                 Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                <TextBlock Text="{loc:Translate WeeklyGoal}"
+                           AutomationProperties.AutomationId="Guild_Txt_WeeklyGoalTitle"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+              </StackPanel>
+
+              <TextBlock Text="{Binding GoalProgressDisplay}"
+                         AutomationProperties.AutomationId="Guild_Txt_GoalProgress"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         HorizontalAlignment="Center" />
+            </StackPanel>
+          </Border>
+
+          <!-- Mitglieder-Liste -->
+          <Border Classes="Card StatsCard"
+                  AutomationProperties.AutomationId="Guild_Border_Members">
+            <StackPanel Spacing="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <mi:MaterialIcon Kind="AccountGroup" Width="18" Height="18"
+                                 AutomationProperties.AutomationId="Guild_Icon_Members"
+                                 Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                <TextBlock Text="{loc:Translate Members}"
+                           AutomationProperties.AutomationId="Guild_Txt_MembersHeader"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+              </StackPanel>
+
+              <ItemsControl ItemsSource="{Binding Members}"
+                            AutomationProperties.AutomationId="Guild_Items_Members">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:GuildMemberDisplay">
+                    <Border Background="{DynamicResource SurfaceBrush}"
+                            AutomationProperties.AutomationId="Guild_Border_MemberItem"
+                            CornerRadius="6" Padding="10,6" Margin="0,2">
+                      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                        <mi:MaterialIcon Kind="AccountHardHat" Width="18" Height="18"
+                                         AutomationProperties.AutomationId="Guild_Icon_MemberAvatar"
+                                         Foreground="{DynamicResource TextSecondaryBrush}"
+                                         VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Name}"
+                                     AutomationProperties.AutomationId="Guild_Txt_MemberName"
+                                     FontSize="13" FontWeight="SemiBold"
+                                     Foreground="{DynamicResource TextPrimaryBrush}" />
+                          <TextBlock Text="{Binding RoleDisplay}"
+                                     AutomationProperties.AutomationId="Guild_Txt_MemberLevel"
+                                     FontSize="11"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Text="{Binding ContributionDisplay}"
+                                   AutomationProperties.AutomationId="Guild_Txt_MemberContribution"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource CraftPrimaryLightBrush}"
+                                   VerticalAlignment="Center" />
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Gilde verlassen -->
+          <Button Classes="Secondary"
+                  AutomationProperties.AutomationId="Guild_Btn_Leave"
+                  HorizontalAlignment="Center"
+                  Command="{Binding LeaveGuildCommand}"
+                  Margin="0,8,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <mi:MaterialIcon Kind="ExitToApp" Width="16" Height="16"
+                               AutomationProperties.AutomationId="Guild_Icon_Leave" />
+              <TextBlock Text="{loc:Translate LeaveGuild}"
+                         AutomationProperties.AutomationId="Guild_Txt_LeaveBtn"
+                         FontSize="13" />
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
+
+        <!-- Bottom Spacer -->
+        <Border Height="80" AutomationProperties.AutomationId="Guild_Border_BottomSpacer" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,210 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:m="using:HandwerkerImperium.Models"
+             x:Class="HandwerkerImperium.Views.TournamentView"
+             x:DataType="vm:TournamentViewModel">
+
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Tournament_Grid_Root">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Tournament_Border_Header"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="#92400E" Offset="0" />
+          <GradientStop Color="#451A03" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Zurueck-Button -->
+        <Button Classes="Text"
+                AutomationProperties.AutomationId="Tournament_Btn_Back"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           AutomationProperties.AutomationId="Tournament_Icon_Back"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+        </Button>
+
+        <!-- Titel + Timer -->
+        <StackPanel Grid.Column="1"
+                    AutomationProperties.AutomationId="Tournament_Panel_Title"
+                    HorizontalAlignment="Center"
+                    Spacing="2">
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="TrophyVariant" Width="28" Height="28"
+                             AutomationProperties.AutomationId="Tournament_Icon_Trophy"
+                             Foreground="{StaticResource CraftGoldBrush}" />
+            <TextBlock Text="{Binding Title}"
+                       AutomationProperties.AutomationId="Tournament_Txt_Title"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{StaticResource CraftPrimaryLightBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+          <!-- Countdown -->
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="4">
+            <mi:MaterialIcon Kind="ClockOutline" Width="14" Height="14"
+                             AutomationProperties.AutomationId="Tournament_Icon_Clock"
+                             Foreground="{StaticResource CraftPrimaryLightBrush}" Opacity="0.7" />
+            <TextBlock Text="{Binding TimeRemaining}"
+                       AutomationProperties.AutomationId="Tournament_Txt_Timer"
+                       FontSize="12"
+                       Foreground="{StaticResource CraftPrimaryLightBrush}" Opacity="0.7" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Bester Score -->
+        <Border Grid.Column="2"
+                AutomationProperties.AutomationId="Tournament_Border_BestScore"
+                CornerRadius="8" Padding="10,4">
+          <Border.Background>
+            <SolidColorBrush Color="#D97706" Opacity="0.3" />
+          </Border.Background>
+          <TextBlock Text="{Binding BestScore, StringFormat='Best: {0}'}"
+                     AutomationProperties.AutomationId="Tournament_Txt_BestScore"
+                     FontSize="14" FontWeight="Bold"
+                     Foreground="{StaticResource CraftGoldBrush}" />
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16,16,16,80">
+
+        <!-- Spieltyp-Anzeige -->
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Tournament_Border_GameType">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Border CornerRadius="12" Width="48" Height="48"
+                    AutomationProperties.AutomationId="Tournament_Border_GameTypeIcon">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                  <GradientStop Color="#D97706" Offset="0" />
+                  <GradientStop Color="#92400E" Offset="1" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <mi:MaterialIcon Kind="GamepadVariant" Width="24" Height="24"
+                               AutomationProperties.AutomationId="Tournament_Icon_GameType"
+                               Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="{Binding GameTypeName}"
+                         AutomationProperties.AutomationId="Tournament_Txt_GameTypeName"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}" />
+              <TextBlock Text="{Binding RewardTierDisplay}"
+                         AutomationProperties.AutomationId="Tournament_Txt_RewardTier"
+                         FontSize="12"
+                         Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Teilnahme-Button -->
+        <Button Classes="Primary"
+                AutomationProperties.AutomationId="Tournament_Btn_Enter"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="16,12"
+                IsEnabled="{Binding CanEnter}"
+                Command="{Binding EnterTournamentCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="SwordCross" Width="20" Height="20"
+                             AutomationProperties.AutomationId="Tournament_Icon_Enter" />
+            <TextBlock Text="{Binding EntryCostDisplay}"
+                       AutomationProperties.AutomationId="Tournament_Txt_EnterBtn"
+                       FontSize="16" FontWeight="Bold" />
+          </StackPanel>
+        </Button>
+
+        <!-- Belohnung einloesen -->
+        <Button Classes="Primary"
+                AutomationProperties.AutomationId="Tournament_Btn_Claim"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                IsVisible="{Binding HasRewardsToClaim}"
+                Command="{Binding ClaimRewardsCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="GiftOpen" Width="18" Height="18"
+                             AutomationProperties.AutomationId="Tournament_Icon_Claim" />
+            <TextBlock Text="{loc:Translate ClaimReward}"
+                       AutomationProperties.AutomationId="Tournament_Txt_ClaimBtn"
+                       FontSize="14" FontWeight="Bold" />
+          </StackPanel>
+        </Button>
+
+        <!-- Rangliste -->
+        <Border Classes="Card StatsCard"
+                AutomationProperties.AutomationId="Tournament_Border_Leaderboard">
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <mi:MaterialIcon Kind="FormatListNumbered" Width="20" Height="20"
+                               AutomationProperties.AutomationId="Tournament_Icon_Leaderboard"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}" />
+              <TextBlock Text="{loc:Translate Leaderboard}"
+                         AutomationProperties.AutomationId="Tournament_Txt_LeaderboardTitle"
+                         FontSize="16" FontWeight="Bold"
+                         Foreground="{StaticResource CraftPrimaryLightBrush}" />
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding Leaderboard}"
+                          AutomationProperties.AutomationId="Tournament_Items_Leaderboard">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="m:TournamentLeaderboardEntry">
+                  <Border Background="{DynamicResource SurfaceBrush}"
+                          AutomationProperties.AutomationId="Tournament_Border_LeaderboardEntry"
+                          CornerRadius="6" Padding="10,6" Margin="0,2">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                      <!-- Rang -->
+                      <TextBlock Text="{Binding Rank, StringFormat='#{0}'}"
+                                 AutomationProperties.AutomationId="Tournament_Txt_EntryRank"
+                                 FontSize="14" FontWeight="Bold"
+                                 Foreground="{StaticResource CraftPrimaryLightBrush}"
+                                 VerticalAlignment="Center"
+                                 Width="32" TextAlignment="Center" />
+                      <!-- Name -->
+                      <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                 AutomationProperties.AutomationId="Tournament_Txt_EntryName"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource TextPrimaryBrush}"
+                                 VerticalAlignment="Center" />
+                      <!-- Score -->
+                      <TextBlock Grid.Column="2" Text="{Binding Score}"
+                                 AutomationProperties.AutomationId="Tournament_Txt_EntryScore"
+                                 FontSize="14" FontWeight="SemiBold"
+                                 Foreground="{StaticResource CraftGoldBrush}"
+                                 VerticalAlignment="Center" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- Bottom Spacer -->
+        <Border Height="80" AutomationProperties.AutomationId="Tournament_Border_BottomSpacer" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

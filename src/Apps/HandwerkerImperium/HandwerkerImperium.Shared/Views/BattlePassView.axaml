@@ -1,0 +1,242 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.BattlePassView"
+             x:DataType="vm:BattlePassViewModel">
+
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="BattlePass_Grid_Root">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            AutomationProperties.AutomationId="BattlePass_Border_Header"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="#92400E" Offset="0" />
+          <GradientStop Color="#451A03" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+
+          <!-- Zurueck-Button -->
+          <Button Classes="Text"
+                  AutomationProperties.AutomationId="BattlePass_Btn_Back"
+                  Command="{Binding GoBackCommand}">
+            <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                             AutomationProperties.AutomationId="BattlePass_Icon_Back"
+                             Foreground="{StaticResource CraftPrimaryLightBrush}" />
+          </Button>
+
+          <!-- Titel -->
+          <StackPanel Grid.Column="1"
+                      AutomationProperties.AutomationId="BattlePass_Panel_Title"
+                      Orientation="Horizontal"
+                      HorizontalAlignment="Center"
+                      Spacing="8">
+            <mi:MaterialIcon Kind="ShieldStar" Width="28" Height="28"
+                             AutomationProperties.AutomationId="BattlePass_Icon_Title"
+                             Foreground="{StaticResource CraftGoldBrush}" />
+            <TextBlock Text="{Binding Title}"
+                       AutomationProperties.AutomationId="BattlePass_Txt_Title"
+                       FontSize="20" FontWeight="Bold"
+                       Foreground="{StaticResource CraftPrimaryLightBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Tier-Badge -->
+          <Border Grid.Column="2"
+                  AutomationProperties.AutomationId="BattlePass_Border_TierBadge"
+                  CornerRadius="8" Padding="10,4">
+            <Border.Background>
+              <SolidColorBrush Color="#D97706" Opacity="0.3" />
+            </Border.Background>
+            <TextBlock Text="{Binding CurrentTier, StringFormat='Tier {0}'}"
+                       AutomationProperties.AutomationId="BattlePass_Txt_TierBadge"
+                       FontSize="14" FontWeight="Bold"
+                       Foreground="{StaticResource CraftGoldBrush}" />
+          </Border>
+
+        </Grid>
+
+        <!-- XP-Fortschrittsanzeige -->
+        <TextBlock Grid.Row="1"
+                   Text="{Binding XpProgressDisplay}"
+                   AutomationProperties.AutomationId="BattlePass_Txt_XpDisplay"
+                   FontSize="12"
+                   Foreground="{StaticResource CraftPrimaryLightBrush}"
+                   HorizontalAlignment="Center" />
+
+        <!-- Season-Timer -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="4">
+          <mi:MaterialIcon Kind="ClockOutline" Width="14" Height="14"
+                           AutomationProperties.AutomationId="BattlePass_Icon_Clock"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" Opacity="0.7" />
+          <TextBlock Text="{Binding SeasonTimeRemainingDisplay}"
+                     AutomationProperties.AutomationId="BattlePass_Txt_Timer"
+                     FontSize="12"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}" Opacity="0.7" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT - Tier-Liste                                              -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="12" Margin="16,16,16,80">
+
+        <!-- Tier-Liste -->
+        <ItemsControl ItemsSource="{Binding Tiers}"
+                      AutomationProperties.AutomationId="BattlePass_Items_Tiers">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:BattlePassTierDisplay">
+              <Border AutomationProperties.AutomationId="BattlePass_Border_Tier"
+                      CornerRadius="8"
+                      Padding="12,8"
+                      Margin="0,0,0,4"
+                      Opacity="{Binding DisplayOpacity}"
+                      Background="{DynamicResource CardBrush}">
+                <Grid ColumnDefinitions="Auto,*,*,Auto" ColumnSpacing="8">
+
+                  <!-- Tier-Nummer -->
+                  <Border CornerRadius="8" Width="36" Height="36"
+                          AutomationProperties.AutomationId="BattlePass_Border_TierNumber"
+                          VerticalAlignment="Center">
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#D97706" Offset="0" />
+                        <GradientStop Color="#92400E" Offset="1" />
+                      </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock Text="{Binding TierNumber, StringFormat='{}{0}'}"
+                               AutomationProperties.AutomationId="BattlePass_Txt_TierNumber"
+                               FontSize="14" FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                  </Border>
+
+                  <!-- Gratis-Belohnung -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{loc:Translate FreeReward}"
+                               AutomationProperties.AutomationId="BattlePass_Txt_FreeLabel"
+                               FontSize="10"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding FreeRewardName}"
+                               AutomationProperties.AutomationId="BattlePass_Txt_FreeReward"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               TextTrimming="CharacterEllipsis" />
+                    <!-- Eingesammelt-Haekchen -->
+                    <mi:MaterialIcon Kind="CheckCircle" Width="14" Height="14"
+                                     Foreground="{DynamicResource SuccessBrush}"
+                                     IsVisible="{Binding IsClaimed}" />
+                  </StackPanel>
+
+                  <!-- Premium-Belohnung -->
+                  <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                      <mi:MaterialIcon Kind="Crown" Width="12" Height="12"
+                                       AutomationProperties.AutomationId="BattlePass_Icon_PremiumLabel"
+                                       Foreground="{StaticResource CraftGoldBrush}" />
+                      <TextBlock Text="Premium"
+                                 AutomationProperties.AutomationId="BattlePass_Txt_PremiumLabel"
+                                 FontSize="10"
+                                 Foreground="{StaticResource CraftGoldBrush}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding PremiumRewardName}"
+                               AutomationProperties.AutomationId="BattlePass_Txt_PremiumReward"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               TextTrimming="CharacterEllipsis" />
+                    <!-- Schloss fuer nicht-Premium -->
+                    <mi:MaterialIcon Kind="Lock" Width="14" Height="14"
+                                     AutomationProperties.AutomationId="BattlePass_Icon_PremiumLock"
+                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     IsVisible="{Binding IsPremiumLocked}" />
+                  </StackPanel>
+
+                  <!-- Claim-Button (wenn Free claimbar) -->
+                  <Button Grid.Column="3"
+                          Classes="Primary"
+                          AutomationProperties.AutomationId="BattlePass_Btn_ClaimTier"
+                          Padding="10,6"
+                          VerticalAlignment="Center"
+                          IsVisible="{Binding CanClaim}"
+                          Command="{Binding $parent[ItemsControl].((vm:BattlePassViewModel)DataContext).ClaimTierCommand}"
+                          CommandParameter="{Binding .}">
+                    <mi:MaterialIcon Kind="GiftOpen" Width="16" Height="16"
+                                     AutomationProperties.AutomationId="BattlePass_Icon_ClaimTier" />
+                  </Button>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Premium-Upgrade Button -->
+        <Button Classes="Primary"
+                AutomationProperties.AutomationId="BattlePass_Btn_UpgradePremium"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Padding="16,12"
+                IsVisible="{Binding !IsPremiumPass}"
+                Command="{Binding UpgradeToPremiumCommand}">
+          <Button.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+              <GradientStop Color="#D97706" Offset="0" />
+              <GradientStop Color="#B45309" Offset="1" />
+            </LinearGradientBrush>
+          </Button.Background>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="Crown" Width="20" Height="20"
+                             Foreground="#FFD700"
+                             AutomationProperties.AutomationId="BattlePass_Icon_UpgradeCrown" />
+            <TextBlock Text="{loc:Translate UpgradePremium}"
+                       AutomationProperties.AutomationId="BattlePass_Txt_UpgradeBtn"
+                       FontSize="16" FontWeight="Bold" Foreground="White" />
+          </StackPanel>
+        </Button>
+
+        <!-- Premium-Aktiv Badge -->
+        <Border Classes="CardElevated"
+                AutomationProperties.AutomationId="BattlePass_Border_PremiumActive"
+                Padding="12"
+                IsVisible="{Binding IsPremiumPass}">
+          <Border.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+              <GradientStop Color="#92400E" Offset="0" />
+              <GradientStop Color="#D97706" Offset="1" />
+            </LinearGradientBrush>
+          </Border.Background>
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+            <mi:MaterialIcon Kind="Crown" Width="24" Height="24"
+                             AutomationProperties.AutomationId="BattlePass_Icon_PremiumActive"
+                             Foreground="{StaticResource CraftGoldBrush}" />
+            <TextBlock Text="{loc:Translate PremiumActive}"
+                       AutomationProperties.AutomationId="BattlePass_Txt_PremiumActive"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{StaticResource CraftGoldBrush}" />
+          </StackPanel>
+        </Border>
+
+        <!-- Bottom Spacer -->
+        <Border Height="80" AutomationProperties.AutomationId="BattlePass_Border_BottomSpacer" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

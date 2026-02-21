@@ -1,0 +1,262 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.CraftingView"
+             x:DataType="vm:CraftingViewModel">
+
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Crafting_Grid_Root">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Crafting_Border_Header"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="#92400E" Offset="0" />
+          <GradientStop Color="#451A03" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid ColumnDefinitions="Auto,*">
+
+        <!-- Zurueck-Button -->
+        <Button Classes="Text"
+                AutomationProperties.AutomationId="Crafting_Btn_Back"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           AutomationProperties.AutomationId="Crafting_Icon_Back"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+        </Button>
+
+        <!-- Titel -->
+        <StackPanel Grid.Column="1"
+                    AutomationProperties.AutomationId="Crafting_Panel_Title"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+          <mi:MaterialIcon Kind="Anvil" Width="28" Height="28"
+                           AutomationProperties.AutomationId="Crafting_Icon_Title"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+          <TextBlock Text="{Binding Title}"
+                     AutomationProperties.AutomationId="Crafting_Txt_Title"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="16" Margin="16,16,16,80">
+
+        <!-- Aktive Herstellungen -->
+        <StackPanel Spacing="8"
+                    IsVisible="{Binding HasActiveJobs}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Border CornerRadius="4" Padding="6,3"
+                    AutomationProperties.AutomationId="Crafting_Border_ActiveIconBg"
+                    Background="{StaticResource CraftPrimaryBrush}">
+              <mi:MaterialIcon Kind="ProgressClock" Width="14" Height="14" Foreground="White"
+                               AutomationProperties.AutomationId="Crafting_Icon_ActiveHeader" />
+            </Border>
+            <TextBlock Text="{loc:Translate ActiveCrafting}"
+                       AutomationProperties.AutomationId="Crafting_Txt_ActiveHeader"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{StaticResource CraftPrimaryLightBrush}"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+
+          <ItemsControl ItemsSource="{Binding ActiveJobs}"
+                        AutomationProperties.AutomationId="Crafting_Items_Active">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CraftingJobDisplay">
+                <Border Classes="Card"
+                        AutomationProperties.AutomationId="Crafting_Border_ActiveJob"
+                        Padding="12" Margin="0,0,0,4">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                      <TextBlock Text="{Binding OutputName}"
+                                 AutomationProperties.AutomationId="Crafting_Txt_ActiveJobName"
+                                 FontSize="14" FontWeight="SemiBold"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding TimeRemainingDisplay}"
+                                 AutomationProperties.AutomationId="Crafting_Txt_ActiveJobTime"
+                                 FontSize="11"
+                                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding ProgressPercentDisplay}"
+                               AutomationProperties.AutomationId="Crafting_Txt_ActiveJobPercent"
+                               FontSize="13" FontWeight="Bold"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}"
+                               VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <!-- Verfuegbare Rezepte -->
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Border CornerRadius="4" Padding="6,3"
+                  AutomationProperties.AutomationId="Crafting_Border_RecipesIconBg"
+                  Background="{StaticResource CraftPrimaryBrush}">
+            <mi:MaterialIcon Kind="BookOpenVariant" Width="14" Height="14" Foreground="White"
+                             AutomationProperties.AutomationId="Crafting_Icon_RecipesHeader" />
+          </Border>
+          <TextBlock Text="{loc:Translate Recipes}"
+                     AutomationProperties.AutomationId="Crafting_Txt_RecipesHeader"
+                     FontSize="16" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding Recipes}"
+                      AutomationProperties.AutomationId="Crafting_Items_Recipes">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CraftingRecipeDisplay">
+              <Border Classes="Card"
+                      AutomationProperties.AutomationId="Crafting_Border_Recipe"
+                      Padding="12" Margin="0,0,0,8"
+                      >
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
+
+                  <!-- Rezept-Name -->
+                  <TextBlock Text="{Binding Name}"
+                             AutomationProperties.AutomationId="Crafting_Txt_RecipeName"
+                             FontSize="14" FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                  <!-- Input -> Output -->
+                  <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                    <TextBlock Text="{Binding InputDisplay}"
+                               AutomationProperties.AutomationId="Crafting_Txt_RecipeInput"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                    <mi:MaterialIcon Grid.Column="1" Kind="ArrowRight" Width="16" Height="16"
+                                     AutomationProperties.AutomationId="Crafting_Icon_RecipeArrow"
+                                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                                     VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Text="{Binding OutputName}"
+                               AutomationProperties.AutomationId="Crafting_Txt_RecipeOutput"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}"
+                               VerticalAlignment="Center" />
+                  </Grid>
+
+                  <!-- Dauer -->
+                  <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="4">
+                    <mi:MaterialIcon Kind="ClockOutline" Width="14" Height="14"
+                                     AutomationProperties.AutomationId="Crafting_Icon_RecipeDuration"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding DurationDisplay}"
+                               AutomationProperties.AutomationId="Crafting_Txt_RecipeDuration"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+
+                  <!-- Herstellen-Button -->
+                  <Button Grid.Row="3"
+                          Classes="Primary"
+                          AutomationProperties.AutomationId="Crafting_Btn_StartRecipe"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Center"
+                          Padding="8,6"
+                          IsEnabled="{Binding CanCraft}"
+                          Command="{Binding $parent[ItemsControl].((vm:CraftingViewModel)DataContext).StartCraftingCommand}"
+                          CommandParameter="{Binding .}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <mi:MaterialIcon Kind="Hammer" Width="16" Height="16"
+                                       AutomationProperties.AutomationId="Crafting_Icon_StartRecipe" />
+                      <TextBlock Text="{loc:Translate StartCrafting}"
+                                 AutomationProperties.AutomationId="Crafting_Txt_StartRecipeBtn"
+                                 FontSize="13" FontWeight="Bold" />
+                    </StackPanel>
+                  </Button>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Inventar -->
+        <StackPanel Orientation="Horizontal" Spacing="8"
+                    IsVisible="{Binding HasInventoryItems}">
+          <Border CornerRadius="4" Padding="6,3"
+                  AutomationProperties.AutomationId="Crafting_Border_InventoryIconBg"
+                  Background="{StaticResource CraftPrimaryBrush}">
+            <mi:MaterialIcon Kind="PackageVariant" Width="14" Height="14" Foreground="White"
+                             AutomationProperties.AutomationId="Crafting_Icon_InventoryHeader" />
+          </Border>
+          <TextBlock Text="{loc:Translate Inventory}"
+                     AutomationProperties.AutomationId="Crafting_Txt_InventoryHeader"
+                     FontSize="16" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding InventoryItems}"
+                      AutomationProperties.AutomationId="Crafting_Items_Inventory"
+                      IsVisible="{Binding HasInventoryItems}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:InventoryItemDisplay">
+              <Border Background="{DynamicResource SurfaceBrush}"
+                      AutomationProperties.AutomationId="Crafting_Border_InventoryItem"
+                      CornerRadius="8" Padding="12,8" Margin="0,3">
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                  <!-- Name + Anzahl -->
+                  <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}"
+                               AutomationProperties.AutomationId="Crafting_Txt_InventoryItemName"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding QuantityDisplay}"
+                               AutomationProperties.AutomationId="Crafting_Txt_InventoryItemQty"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+                  <!-- Wert -->
+                  <TextBlock Grid.Column="1" Text="{Binding ValueDisplay}"
+                             AutomationProperties.AutomationId="Crafting_Txt_InventoryItemValue"
+                             FontSize="12"
+                             Foreground="{DynamicResource SuccessBrush}"
+                             VerticalAlignment="Center" />
+                  <!-- Verkaufen -->
+                  <Button Grid.Column="2"
+                          Classes="Outlined"
+                          AutomationProperties.AutomationId="Crafting_Btn_SellItem"
+                          Padding="8,4"
+                          VerticalAlignment="Center"
+                          Command="{Binding $parent[ItemsControl].((vm:CraftingViewModel)DataContext).SellItemCommand}"
+                          CommandParameter="{Binding .}">
+                    <TextBlock Text="{loc:Translate Sell}"
+                               AutomationProperties.AutomationId="Crafting_Txt_SellItemBtn"
+                               FontSize="11" FontWeight="SemiBold" />
+                  </Button>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Bottom Spacer -->
+        <Border Height="80" AutomationProperties.AutomationId="Crafting_Border_BottomSpacer" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             xmlns:skia="using:Avalonia.Labs.Controls"
+             x:Class="HandwerkerImperium.Views.LuckySpinView"
+             x:DataType="vm:LuckySpinViewModel"
+             AutomationProperties.AutomationId="LuckySpin_Root">
+
+  <StackPanel Spacing="16" HorizontalAlignment="Center" MaxWidth="360">
+
+    <!-- Header -->
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <mi:MaterialIcon Kind="ChartDonut" Width="24" Height="24"
+                       Foreground="#FFD700"
+                       AutomationProperties.AutomationId="LuckySpin_Icon_Title" />
+      <TextBlock Grid.Column="1" Text="{Binding Title}"
+                 FontSize="22" FontWeight="Bold"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 Margin="10,0,0,0" VerticalAlignment="Center"
+                 AutomationProperties.AutomationId="LuckySpin_Txt_Title" />
+      <Button Grid.Column="2" Classes="Text" Padding="4"
+              Command="{Binding GoBackCommand}"
+              AutomationProperties.AutomationId="LuckySpin_Btn_Close">
+        <mi:MaterialIcon Kind="Close" Width="24" Height="24" />
+      </Button>
+    </Grid>
+
+    <!-- Rad-Canvas (SkiaSharp) -->
+    <skia:SKCanvasView Width="280" Height="280"
+                       PaintSurface="OnPaintWheel"
+                       AutomationProperties.AutomationId="LuckySpin_Canvas_Wheel" />
+
+    <!-- Gewinn-Anzeige (nach Spin) -->
+    <Border IsVisible="{Binding ShowPrize}"
+            Background="#20FFD700" CornerRadius="12" Padding="16,10"
+            AutomationProperties.AutomationId="LuckySpin_Border_Prize">
+      <StackPanel Spacing="4" HorizontalAlignment="Center">
+        <TextBlock Text="{loc:Translate LuckySpinYourPrize}"
+                   FontSize="14" FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   AutomationProperties.AutomationId="LuckySpin_Txt_PrizeLabel" />
+        <TextBlock Text="{Binding LastPrizeDisplay}"
+                   FontSize="24" FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Foreground="#FFD700"
+                   AutomationProperties.AutomationId="LuckySpin_Txt_PrizeValue" />
+      </StackPanel>
+    </Border>
+
+    <!-- Spin-Button -->
+    <Button Classes="Primary"
+            Background="#D97706"
+            Command="{Binding SpinCommand}"
+            IsEnabled="{Binding CanSpin}"
+            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+            MinHeight="48"
+            AutomationProperties.AutomationId="LuckySpin_Btn_Spin">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <mi:MaterialIcon Kind="ChartDonut" Width="20" Height="20" />
+        <TextBlock Text="{Binding SpinButtonText}"
+                   FontSize="16" FontWeight="Bold"
+                   AutomationProperties.AutomationId="LuckySpin_Txt_SpinButton" />
+      </StackPanel>
+    </Button>
+
+  </StackPanel>
+</UserControl>

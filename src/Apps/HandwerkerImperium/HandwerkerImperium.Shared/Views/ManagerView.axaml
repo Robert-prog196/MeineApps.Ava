@@ -1,0 +1,160 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HandwerkerImperium.ViewModels"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:loc="using:MeineApps.Core.Ava.Localization"
+             x:Class="HandwerkerImperium.Views.ManagerView"
+             x:DataType="vm:ManagerViewModel">
+
+  <Grid RowDefinitions="Auto,*"
+        AutomationProperties.AutomationId="Manager_Grid_Root">
+
+    <!-- ================================================================= -->
+    <!-- HEADER                                                            -->
+    <!-- ================================================================= -->
+    <Border Grid.Row="0"
+            AutomationProperties.AutomationId="Manager_Border_Header"
+            Padding="16,12"
+            CornerRadius="0,0,12,12">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Color="#92400E" Offset="0" />
+          <GradientStop Color="#451A03" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid ColumnDefinitions="Auto,*">
+
+        <!-- Zurueck-Button -->
+        <Button Classes="Text"
+                AutomationProperties.AutomationId="Manager_Btn_Back"
+                Command="{Binding GoBackCommand}">
+          <mi:MaterialIcon Kind="ArrowLeft" Width="24" Height="24"
+                           AutomationProperties.AutomationId="Manager_Icon_Back"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+        </Button>
+
+        <!-- Titel -->
+        <StackPanel Grid.Column="1"
+                    AutomationProperties.AutomationId="Manager_Panel_Title"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8">
+          <mi:MaterialIcon Kind="AccountTie" Width="28" Height="28"
+                           AutomationProperties.AutomationId="Manager_Icon_Title"
+                           Foreground="{StaticResource CraftPrimaryLightBrush}" />
+          <TextBlock Text="{Binding Title}"
+                     AutomationProperties.AutomationId="Manager_Txt_Title"
+                     FontSize="20" FontWeight="Bold"
+                     Foreground="{StaticResource CraftPrimaryLightBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ================================================================= -->
+    <!-- CONTENT                                                           -->
+    <!-- ================================================================= -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="12" Margin="16,16,16,80">
+
+        <!-- Vorarbeiter-Liste -->
+        <ItemsControl ItemsSource="{Binding Managers}"
+                      AutomationProperties.AutomationId="Manager_Items_List">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ManagerDisplayModel">
+              <Border Classes="Card"
+                      AutomationProperties.AutomationId="Manager_Border_Item"
+                      Padding="12"
+                      Margin="0,0,0,8"
+                      Opacity="{Binding DisplayOpacity}">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+
+                  <!-- Farb-Icon -->
+                  <Border CornerRadius="12"
+                          AutomationProperties.AutomationId="Manager_Border_ItemIcon"
+                          Width="56" Height="56"
+                          VerticalAlignment="Center">
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#D97706" Offset="0" />
+                        <GradientStop Color="#92400E" Offset="1" />
+                      </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                      <!-- Schloss-Icon fuer gesperrte Manager -->
+                      <mi:MaterialIcon Kind="Lock" Width="24" Height="24"
+                                       AutomationProperties.AutomationId="Manager_Icon_ItemLock"
+                                       Foreground="White" Opacity="0.6"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       IsVisible="{Binding !IsUnlocked}" />
+                      <!-- Account-Icon fuer freigeschaltete Manager -->
+                      <mi:MaterialIcon Kind="AccountTie" Width="28" Height="28"
+                                       AutomationProperties.AutomationId="Manager_Icon_ItemPerson"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       IsVisible="{Binding IsUnlocked}" />
+                    </Grid>
+                  </Border>
+
+                  <!-- Name, Workshop, Faehigkeit, Level -->
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding Name}"
+                               AutomationProperties.AutomationId="Manager_Txt_ItemName"
+                               FontSize="15" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding WorkshopName}"
+                               AutomationProperties.AutomationId="Manager_Txt_ItemWorkshop"
+                               FontSize="12"
+                               Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                    <TextBlock Text="{Binding AbilityName}"
+                               AutomationProperties.AutomationId="Manager_Txt_ItemAbility"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+
+                    <!-- Level + Bonus -->
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                AutomationProperties.AutomationId="Manager_Panel_ItemLevel"
+                                IsVisible="{Binding IsUnlocked}">
+                      <TextBlock Text="{Binding LevelDisplay}"
+                                 AutomationProperties.AutomationId="Manager_Txt_ItemLevel"
+                                 FontSize="12" FontWeight="SemiBold"
+                                 Foreground="{StaticResource CraftPrimaryLightBrush}" />
+                      <TextBlock Text="{Binding BonusDisplay}"
+                                 AutomationProperties.AutomationId="Manager_Txt_ItemBonus"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource SuccessBrush}" />
+                    </StackPanel>
+                  </StackPanel>
+
+                  <!-- Upgrade-Button -->
+                  <Button Grid.Column="2"
+                          Classes="Primary"
+                          AutomationProperties.AutomationId="Manager_Btn_ItemUpgrade"
+                          Padding="12,8"
+                          VerticalAlignment="Center"
+                          IsVisible="{Binding CanUpgrade}"
+                          Command="{Binding $parent[ItemsControl].((vm:ManagerViewModel)DataContext).UpgradeManagerCommand}"
+                          CommandParameter="{Binding Id}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                      <mi:MaterialIcon Kind="ArrowUpBold" Width="14" Height="14" />
+                      <mi:MaterialIcon Kind="ScrewFlatTop" Width="14" Height="14" Foreground="#FFD700" />
+                      <TextBlock Text="{Binding UpgradeCostDisplay}" FontSize="12" FontWeight="SemiBold" />
+                    </StackPanel>
+                  </Button>
+
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Bottom Spacer -->
+        <Border Height="80" AutomationProperties.AutomationId="Manager_Border_BottomSpacer" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+
+</UserControl>
