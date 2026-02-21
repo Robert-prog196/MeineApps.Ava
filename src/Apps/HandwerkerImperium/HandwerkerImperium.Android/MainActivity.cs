@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MeineApps.Core.Ava.Services;
 using MeineApps.Core.Premium.Ava.Droid;
 using MeineApps.Core.Premium.Ava.Services;
+using Android.Gms.Games;
 using HandwerkerImperium.Android;
 
 namespace HandwerkerImperium;
@@ -53,8 +54,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         // TODO: AndroidNotificationService-Klasse erstellen
         App.NotificationServiceFactory = _ => new AndroidNotificationService(this);
 
-        // Google Play Games für Leaderboards und Achievements
-        // TODO: AndroidPlayGamesService-Klasse erstellen
+        // Google Play Games SDK initialisieren (MUSS vor erstem Client-Aufruf)
+        PlayGamesSdk.Initialize(this);
+
+        // Google Play Games für Leaderboards, Cloud Save und Gilden
         App.PlayGamesServiceFactory = _ => new AndroidPlayGamesService(this);
 
         // In-App Review-Prompt über Google Play Review API

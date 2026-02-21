@@ -74,11 +74,11 @@ public class AndroidNotificationService : INotificationService
             ScheduleNotification(DailyRewardId, "DailyRewardNotif", (long)delay.TotalMilliseconds);
         }
 
-        // 4. Feierabend-Rush (18:00 lokale Zeit)
-        var localNow = DateTime.Now;
-        var rushTime = localNow.Date.AddHours(18);
-        if (rushTime <= localNow) rushTime = rushTime.AddDays(1);
-        var rushDelay = rushTime - localNow;
+        // 4. Feierabend-Rush (18:00 UTC → wird lokal angezeigt)
+        var rushNow = DateTime.UtcNow;
+        var rushTime = rushNow.Date.AddHours(18);
+        if (rushTime <= rushNow) rushTime = rushTime.AddDays(1);
+        var rushDelay = rushTime - rushNow;
         ScheduleNotification(RushAvailableId, "RushAvailableNotif", (long)rushDelay.TotalMilliseconds);
     }
 

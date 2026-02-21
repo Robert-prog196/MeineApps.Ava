@@ -16,6 +16,7 @@
     <PackageReference Include="Xamarin.GooglePlayServices.Ads.Lite" />
     <PackageReference Include="Xamarin.Google.UserMessagingPlatform" />
     <PackageReference Include="Xamarin.Android.Google.BillingClient" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Games.V2" />
   </ItemGroup>
 
   <ItemGroup>

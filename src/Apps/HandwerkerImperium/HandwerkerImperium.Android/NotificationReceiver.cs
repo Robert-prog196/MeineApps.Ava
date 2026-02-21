@@ -44,13 +44,46 @@ public class NotificationReceiver : BroadcastReceiver
 
     private static string GetLocalizedMessage(Context context, string messageKey)
     {
-        // Einfaches Mapping - im Produktionscode würde man den ResourceManager nutzen
+        // Lokalisierte Benachrichtigungstexte basierend auf Gerätesprache
+        var locale = Java.Util.Locale.Default?.Language ?? "en";
         return messageKey switch
         {
-            "ResearchDoneNotif" => "Research complete! Come collect your results.",
-            "DeliveryWaitingNotif" => "A supplier is waiting with a delivery!",
-            "RushAvailableNotif" => "Rush hour is available! Double your income now.",
-            "DailyRewardNotif" => "Your daily reward is waiting! Don't miss it.",
+            "ResearchDoneNotif" => locale switch
+            {
+                "de" => "Forschung abgeschlossen! Hole deine Ergebnisse ab.",
+                "es" => "Investigacion completada! Recoge tus resultados.",
+                "fr" => "Recherche terminee ! Collectez vos resultats.",
+                "it" => "Ricerca completata! Raccogli i tuoi risultati.",
+                "pt" => "Pesquisa concluida! Recolha os seus resultados.",
+                _ => "Research complete! Come collect your results."
+            },
+            "DeliveryWaitingNotif" => locale switch
+            {
+                "de" => "Ein Lieferant wartet mit einer Lieferung!",
+                "es" => "Un proveedor espera con una entrega!",
+                "fr" => "Un fournisseur attend avec une livraison !",
+                "it" => "Un fornitore aspetta con una consegna!",
+                "pt" => "Um fornecedor espera com uma entrega!",
+                _ => "A supplier is waiting with a delivery!"
+            },
+            "RushAvailableNotif" => locale switch
+            {
+                "de" => "Feierabend-Rush verfügbar! Verdopple jetzt dein Einkommen.",
+                "es" => "Hora punta disponible! Duplica tus ingresos ahora.",
+                "fr" => "Rush disponible ! Doublez vos revenus maintenant.",
+                "it" => "Rush disponibile! Raddoppia le tue entrate ora.",
+                "pt" => "Rush disponivel! Duplique a sua renda agora.",
+                _ => "Rush hour is available! Double your income now."
+            },
+            "DailyRewardNotif" => locale switch
+            {
+                "de" => "Deine tägliche Belohnung wartet! Nicht verpassen.",
+                "es" => "Tu recompensa diaria te espera! No te la pierdas.",
+                "fr" => "Votre recompense quotidienne vous attend !",
+                "it" => "La tua ricompensa giornaliera ti aspetta!",
+                "pt" => "A sua recompensa diaria esta a espera!",
+                _ => "Your daily reward is waiting! Don't miss it."
+            },
             _ => messageKey
         };
     }
